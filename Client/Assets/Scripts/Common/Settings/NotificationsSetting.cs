@@ -7,12 +7,11 @@ namespace Common.Settings
     
     public class NotificationsSetting : SettingBase<bool>, INotificationSetting
     {
-        public override UnityAction<bool> OnValueSet   { get; set; }
-        public override SaveKey<bool>     Key          => SaveKeysCommon.SettingNotificationsOn;
-        public override string            TitleKey     => "Notifications";
-        public override ESettingLocation  Location     => ESettingLocation.MiniButtons;
-        public override ESettingType      Type         => ESettingType.OnOff;
-        public override string            SpriteOnKey  { get; }
-        public override string            SpriteOffKey { get; }
+        public override SaveKey<bool>    Key          => SaveKeysCommon.SettingNotificationsOn;
+        public override string           TitleKey     => "Notifications";
+        public override ESettingLocation Location     => ESettingLocation.MiniButtons;
+        public override ESettingType     Type         => ESettingType.OnOff;
+        public override string           SpriteOnKey  => "setting_notifications_on";
+        public override string           SpriteOffKey => "setting_notifications_off";
     }
 }

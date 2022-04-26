@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
 using Common.Entities;
@@ -10,9 +11,8 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.SpawnPools;
-using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Utils;
@@ -28,8 +28,10 @@ namespace RMAZOR.Views.Characters
         ICharacterMoveFinished,
         IAppear
     {
-        void OnRotationFinished(MazeRotationEventArgs _Args);
-        void OnAllPathProceed(V2Int                   _LastPath);
+        Transform    Transform { get; }
+        Collider2D[] Colliders { get; }
+        void         OnRotationFinished(MazeRotationEventArgs _Args);
+        void         OnAllPathProceed(V2Int                   _LastPath);
     }
     
     public class ViewCharacterHead : IViewCharacterHead
@@ -47,10 +49,12 @@ namespace RMAZOR.Views.Characters
         private static int AnimKeyBump         => AnimKeys.Anim2;
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
 
+        private MazeOrientation    m_MazeOrientation;
         private EMazeMoveDirection m_PrevHorDir = EMazeMoveDirection.Right;
         private GameObject         m_Head;
         private GameObject         m_Border;
         private Animator           m_Animator;
+        private CircleCollider2D   m_HeadCollider;
         private Rectangle          m_HeadShape, m_BorderShape;
         private Rectangle          m_Eye1Shape, m_Eye2Shape;
         private bool               m_Activated;
@@ -108,7 +112,13 @@ namespace RMAZOR.Views.Characters
             }
         }
 
-        public void OnRotationFinished(MazeRotationEventArgs _Args) { }
+        public Transform    Transform => m_Head.transform;
+        public Collider2D[] Colliders => new Collider2D[] {m_HeadCollider};
+
+        public void OnRotationFinished(MazeRotationEventArgs _Args)
+        {
+            m_MazeOrientation = _Args.NextOrientation;
+        }
 
         public void OnAllPathProceed(V2Int _LastPath)
         {
@@ -122,14 +132,16 @@ namespace RMAZOR.Views.Characters
             switch (_Args.Stage)
             {
                 case ELevelStage.Loaded:
-                    SetDefaultState(false);
+                    m_MazeOrientation = MazeOrientation.North;
+                    SetDefaultState();
                     break;
                 case ELevelStage.ReadyToStart:
-                    SetDefaultState(true);
+                    ActivateShapes(true);
+                    break;
+                case ELevelStage.CharacterKilled:
+                    ActivateShapes(false);
                     break;
             }
-            if (_Args.Stage == ELevelStage.CharacterKilled)
-                ActivateShapes(false);
         }
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
@@ -186,27 +198,28 @@ namespace RMAZOR.Views.Characters
                     break;
                 case ColorIds.Character2:
                     m_BorderShape.SetColor(Color.black);
-                    m_Eye1Shape.SetColor(Color.black);
-                    m_Eye2Shape.SetColor(Color.black);
+                    m_Eye1Shape  .SetColor(Color.black);
+                    m_Eye2Shape  .SetColor(Color.black);
                     break;
             }
         }
         
         private void InitPrefab()
         {
-            var go = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
-            var prefab = PrefabSetManager.InitPrefab(
-                go.transform, 
+            var contGo = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
+            var go = PrefabSetManager.InitPrefab(
+                contGo.transform, 
                 CommonPrefabSetNames.Views,
                 "character");
-            prefab.transform.SetLocalPosXY(Vector2.zero);
-            m_Head = prefab.GetContentItem("head");
-            m_Border = prefab.GetContentItem("border");
-            m_Animator = prefab.GetCompItem<Animator>("animator");
-            m_HeadShape = prefab.GetCompItem<Rectangle>("head shape");
-            m_Eye1Shape = prefab.GetCompItem<Rectangle>("eye_1");
-            m_Eye2Shape = prefab.GetCompItem<Rectangle>("eye_2");
-            m_BorderShape = prefab.GetCompItem<Rectangle>("border");
+            go.transform.SetLocalPosXY(Vector2.zero);
+            m_Head = go.GetContentItem("head");
+            m_Border = go.GetContentItem("border");
+            m_Animator = go.GetCompItem<Animator>("animator");
+            m_HeadCollider = go.GetCompItem<CircleCollider2D>("collider");
+            m_HeadShape = go.GetCompItem<Rectangle>("head shape");
+            m_Eye1Shape = go.GetCompItem<Rectangle>("eye_1");
+            m_Eye2Shape = go.GetCompItem<Rectangle>("eye_2");
+            m_BorderShape = go.GetCompItem<Rectangle>("border");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
             m_HeadShape.SetColor(ColorProvider.GetColor(ColorIds.Character))
                 .SetSortingOrder(SortingOrders.Character);
@@ -267,9 +280,10 @@ namespace RMAZOR.Views.Characters
             };
             m_HorizontalScaleInverse = horScale < 0f;
             m_VerticalScaleInverse = _VerticalInverse;
-            var angleVec = Vector3.forward * angle;
-            m_Head.transform.eulerAngles = angleVec;
-            m_Border.transform.eulerAngles = angleVec;
+            
+            var localRot = Quaternion.Euler(Vector3.forward * (angle + GetMazeAngleByCurrentOrientation()));
+            m_Head.transform.localRotation = localRot;
+            m_Border.transform.localRotation = localRot;
             float vertScale = _VerticalInverse ? -1f : 1f;
             float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
             var localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
@@ -277,17 +291,10 @@ namespace RMAZOR.Views.Characters
             m_Border.transform.localScale = localScale;
         }
         
-        private void SetDefaultState(bool _EnableHead)
+        private void SetDefaultState()
         {
-            Cor.Run(Cor.WaitWhile(
-                () => !m_Initialized,
-                () =>
-                {
-                    LookAtByOrientation(EMazeMoveDirection.Right, false);
-                    if (_EnableHead)
-                        ActivateShapes(true);
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
-                }));
+            LookAtByOrientation(EMazeMoveDirection.Right, false);
+            m_Animator.SetTrigger(AnimKeyStartJumping);
         }
 
         private void ActivateShapes(bool _Active)
@@ -296,6 +303,18 @@ namespace RMAZOR.Views.Characters
             m_BorderShape.enabled = _Active;
             m_Eye1Shape.enabled   = _Active;
             m_Eye2Shape.enabled   = _Active;
+        }
+        
+        private float GetMazeAngleByCurrentOrientation()
+        {
+            return m_MazeOrientation switch
+            {
+                MazeOrientation.North => 0f,
+                MazeOrientation.East  => 90f,
+                MazeOrientation.South => 180f,
+                MazeOrientation.West  => 270f,
+                _                     => throw new SwitchExpressionException(m_MazeOrientation)
+            };
         }
 
         #endregion

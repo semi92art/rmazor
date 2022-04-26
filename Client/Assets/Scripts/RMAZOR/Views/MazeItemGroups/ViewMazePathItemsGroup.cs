@@ -6,6 +6,7 @@ using Common.Helpers;
 using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
 

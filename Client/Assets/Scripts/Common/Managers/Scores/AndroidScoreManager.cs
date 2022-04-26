@@ -104,7 +104,7 @@ namespace Common.Managers.Scores
             PlayGamesPlatform.InitializeInstance(config);
             PlayGamesPlatform.Activate();
             PlayGamesPlatform.Instance.Authenticate(
-                SignInInteractivity.NoPrompt,
+                SignInInteractivity.CanPromptOnce,
                 _Status =>
                 {
                     if (_Status == SignInStatus.Success)

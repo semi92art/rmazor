@@ -20,7 +20,7 @@ namespace RMAZOR.Views.InputConfigurators
         void                       UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group);
         IEnumerable<EInputCommand> GetAllCommands();
         void                       UnlockAllCommands(string _Group = "common");
-        void                       RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
+        bool                       RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
         bool                       IsCommandLocked(EInputCommand _Key);
     }
     
@@ -95,17 +95,18 @@ namespace RMAZOR.Views.InputConfigurators
             UnlockCommands(allCommands, _Group);
         }
         
-        public void RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
+        public virtual bool RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
         {
             InternalCommand?.Invoke(_Key, _Args);
             if (_Forced)
             {
                 Command?.Invoke(_Key, _Args);
-                return;
+                return true;
             }
             if (LockedCommands.Values.Any(_Group => _Group.Contains(_Key)))
-                return;
+                return false;
             Command?.Invoke(_Key, _Args);
+            return true;
         }
 
         public bool IsCommandLocked(EInputCommand _Key)

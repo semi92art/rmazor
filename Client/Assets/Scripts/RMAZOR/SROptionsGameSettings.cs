@@ -5,6 +5,7 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -56,7 +57,7 @@ namespace RMAZOR
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
-                .Concat(RazorMazeUtils.MoveAndRotateCommands);
+                .Concat(RmazorUtils.MoveAndRotateCommands);
             if (_Visible)
                 _commandsProceeder.LockCommands(commands, nameof(SROptions));
             else
@@ -68,8 +69,8 @@ namespace RMAZOR
         [Category(CategoryCharacter)]
         public float Speed
         {
-            get => _modelSettings.CharacterSpeed;
-            set => _modelSettings.CharacterSpeed = value;
+            get => _modelSettings.characterSpeed;
+            set => _modelSettings.characterSpeed = value;
         }
 
         [Category(CategoryCharacter)]
@@ -82,8 +83,8 @@ namespace RMAZOR
         [Category(CategoryMazeItems)]
         public float Turret_Projectile_Speed
         {
-            get => _modelSettings.TurretProjectileSpeed;
-            set => _modelSettings.TurretProjectileSpeed = value;
+            get => _modelSettings.turretProjectileSpeed;
+            set => _modelSettings.turretProjectileSpeed = value;
         }
 
         #endregion
@@ -326,7 +327,7 @@ namespace RMAZOR
                 if (!value)
                     return;
                 _managers.AdsManager.ShowRewardedAd(
-                    () => CommonData.PausedByAdvertising = true, 
+                    () => CommonData.PausedByAdvertisingOrPurchasing = true, 
                     () => Dbg.Log("Rewarded ad was shown."));
             }
         }
@@ -340,7 +341,7 @@ namespace RMAZOR
                 if (!value)
                     return;
                 _managers.AdsManager.ShowInterstitialAd(
-                    () => CommonData.PausedByAdvertising = true, 
+                    () => CommonData.PausedByAdvertisingOrPurchasing = true, 
                     () => Dbg.Log("Interstitial ad was shown."));
             }
         }
@@ -564,6 +565,34 @@ namespace RMAZOR
                 if (!value)
                     return;
                 Dbg.Log("Running coroutines count: " + Cor.GetRunningCoroutinesCount());
+            }
+        }
+
+        [Category(CategoryCommon)]
+        public bool Send_Notifications
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                var locMan = _managers.LocalizationManager;
+                var notMan = _managers.NotificationsManager;
+                string title = Application.productName;
+                var dict = new Dictionary<string, DateTime>
+                {
+                    {locMan.GetTranslation("notification_1"), DateTime.Now.AddSeconds(10)},
+                    {locMan.GetTranslation("notification_2"), DateTime.Now.AddSeconds(20)},
+                };
+                foreach ((string body, var dateTime) in dict)
+                {
+                    notMan.SendNotification(
+                        title, 
+                        body, 
+                        dateTime,
+                        _SmallIcon: "main_icon",
+                        _LargeIcon: "main_icon_large");
+                }
             }
         }
 

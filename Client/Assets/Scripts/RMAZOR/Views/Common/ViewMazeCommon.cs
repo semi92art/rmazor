@@ -43,7 +43,6 @@ namespace RMAZOR.Views.Common
         
         #region api
         
-
         public override void Init()
         {
             InitBlockPools();
@@ -66,9 +65,14 @@ namespace RMAZOR.Views.Common
             return (T) GetItem(_Info);
         }
 
-        public List<IViewMazeItem> GetItems(bool _OnlyActive = true)
+        public List<IViewMazeItem> GetItems(bool _OnlyActive = true, bool _OnlyInitialized = true)
         {
-            return _OnlyActive ? m_ActiveItemsCached : m_AllItemsCached;
+            if (_OnlyInitialized)
+                return _OnlyActive ? m_ActiveItemsCached : m_AllItemsCached;
+            var result = new List<IViewMazeItem>();
+            foreach (var (_, pool) in m_ItemPools)
+                result.AddRange(pool);
+            return result;
         }
 
         public List<T> GetItems<T>(bool _OnlyActive = true) where T : class, IViewMazeItem
@@ -84,19 +88,7 @@ namespace RMAZOR.Views.Common
             MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_ItemPools);
             m_AllItemsCached.Clear();
             m_ActiveItemsCached.Clear();
-            foreach (var kvp in m_ItemPools)
-            {
-                for (int i = 0; i < kvp.Value.Count; i++)
-                {
-                    var item = kvp.Value[i];
-                    if (item.Props == null)
-                        continue;
-                    m_AllItemsCached.Add(item);
-                    if (!item.ActivatedInSpawnPool)
-                        continue;
-                    m_ActiveItemsCached.Add(item);
-                }
-            }
+            CachePools();
         }
 
         #endregion
@@ -108,7 +100,7 @@ namespace RMAZOR.Views.Common
             var itemTypes = Enum
                 .GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
-                .Except(new[] {EMazeItemType.Block})
+                .Except(new[] {EMazeItemType.Block, EMazeItemType.Bazooka})
                 .ToList();
             foreach (var type in itemTypes)
             {
@@ -126,6 +118,23 @@ namespace RMAZOR.Views.Common
         {
             foreach (var pool in m_ItemPools.Values)
                 pool.DeactivateAll();
+        }
+
+        private void CachePools()
+        {
+            foreach (var (_, value) in m_ItemPools)
+            {
+                for (int i = 0; i < value.Count; i++)
+                {
+                    var item = value[i];
+                    if (item.Props == null)
+                        continue;
+                    m_AllItemsCached.Add(item);
+                    if (!item.ActivatedInSpawnPool)
+                        continue;
+                    m_ActiveItemsCached.Add(item);
+                }
+            }
         }
         
         #endregion

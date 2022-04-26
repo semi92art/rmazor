@@ -71,10 +71,11 @@ namespace RMAZOR
 
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
-        private float m_SwipeDragThreshold;
-        private int m_CurrentCommand;
-        private int m_Index;
-        private bool m_IsVisible;
+        private float   m_SwipeDragThreshold;
+        private int     m_CurrentCommand;
+        private int     m_Index;
+        private bool    m_IsVisible;
+        private bool    m_EnableDebug;
  
         private Vector2 m_FirstPressPos;
         private Vector2 m_SecondPressPos;
@@ -91,6 +92,21 @@ namespace RMAZOR
 
         public IDebugConsoleController        Controller { get; } = new DebugConsoleController();
         public event VisibilityChangedHandler VisibilityChanged;
+        
+        public void Init(
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IAdsManager                 _AdsManager,
+            IScoreManager               _ScoreManager)
+        {
+            m_CommandsProceeder = _CommandsProceeder;
+            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager);
+        }
+        
+        public void EnableDebug(bool _Enable)
+        {
+            m_EnableDebug = _Enable;
+        }
 
         public void Monitor(string _Name, bool _Enable, System.Func<object> _Value)
         {
@@ -102,7 +118,44 @@ namespace RMAZOR
             textParent.SetGoActive(m_MonitoringValuesDict.Any());
             textParent.sizeDelta = new Vector2(textParent.sizeDelta.x, 20f * m_MonitoringValuesDict.Count);
         }
-        
+
+        public void UpCommand()
+        {
+            m_CurrentCommand++;
+            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index >= 0 && Controller.CommandHistory.Count != 0)
+                inputField.text = Controller.CommandHistory[m_Index];
+            else
+                m_CurrentCommand = Controller.CommandHistory.Count;
+
+            inputField.ActivateInputField();
+            inputField.Select();
+        }
+
+        public void DownCommand()
+        {
+            m_CurrentCommand--;
+            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
+            if (m_Index < Controller.CommandHistory.Count)
+                inputField.text = Controller.CommandHistory[m_Index];
+            else
+            {
+                inputField.text = "";
+                m_CurrentCommand = 0;
+            }
+            inputField.ActivateInputField();
+            inputField.Select();
+        }
+
+        public void RunCommand()
+        {
+            Controller.RunCommandString(inputField.text);
+            inputField.text = "";
+            inputField.ActivateInputField();
+            inputField.Select();
+            m_CurrentCommand = 0;
+        }
+
         #endregion
 
         #region engine methods
@@ -112,6 +165,7 @@ namespace RMAZOR
             Controller.OnLogChanged += OnLogChanged;
             UpdateLogStr(Controller.Log);
             m_SwipeDragThreshold = GraphicUtils.ScreenSize.x * 0.2f;
+            SetVisibility(false);
         }
 
         private void OnDestroy()
@@ -121,6 +175,8 @@ namespace RMAZOR
 
         private void Update()
         {
+            if (!m_EnableDebug)
+                return;
             if (LeanInput.GetDown(KeyCode.Escape) && m_IsVisible)
                 ToggleVisibility();
             if (LeanInput.GetDown(KeyCode.Return))
@@ -185,57 +241,6 @@ namespace RMAZOR
 
         #endregion
 
-        #region public methods
-
-        public void Init(
-            IModelGame                  _Model,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IAdsManager                 _AdsManager,
-            IScoreManager               _ScoreManager)
-        {
-            m_CommandsProceeder = _CommandsProceeder;
-            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager);
-        }
-        
-        public void UpCommand()
-        {
-            m_CurrentCommand++;
-            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index >= 0 && Controller.CommandHistory.Count != 0)
-                inputField.text = Controller.CommandHistory[m_Index];
-            else
-                m_CurrentCommand = Controller.CommandHistory.Count;
-
-            inputField.ActivateInputField();
-            inputField.Select();
-        }
-
-        public void DownCommand()
-        {
-            m_CurrentCommand--;
-            m_Index = Controller.CommandHistory.Count - m_CurrentCommand;
-            if (m_Index < Controller.CommandHistory.Count)
-                inputField.text = Controller.CommandHistory[m_Index];
-            else
-            {
-                inputField.text = "";
-                m_CurrentCommand = 0;
-            }
-            inputField.ActivateInputField();
-            inputField.Select();
-        }
-
-        public void RunCommand()
-        {
-            Controller.RunCommandString(inputField.text);
-            inputField.text = "";
-            inputField.ActivateInputField();
-            inputField.Select();
-            m_CurrentCommand = 0;
-        }
-
-        #endregion
-
         #region nonpublic methods
 
         private void ToggleVisibility()
@@ -244,14 +249,14 @@ namespace RMAZOR
             textScrollbar.verticalNormalizedPosition = 0f;
             inputField.ActivateInputField();
             inputField.Select();
-        
         }
 
         private void SetVisibility(bool _Visible)
         {
+            Dbg.Log(nameof(SetVisibility) + " " + _Visible);
             VisibilityChanged?.Invoke(_Visible);
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
-                .Concat(RazorMazeUtils.MoveAndRotateCommands);
+                .Concat(RmazorUtils.MoveAndRotateCommands);
             if (_Visible)
                 m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));
             else

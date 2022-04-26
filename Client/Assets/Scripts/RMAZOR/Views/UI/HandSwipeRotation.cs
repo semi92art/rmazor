@@ -129,48 +129,42 @@ namespace RMAZOR.Views.UI
             if (TutorialFinished)
                 yield break;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                @params.aTimeStart,
-                _Progress =>
-                {
-                    hand.color = hand.color.SetA(_Progress);
-                    trace1.startColor = trace1.endColor = trace1.startColor.SetA(_Progress * 0.5f);
-                    trace2.startColor = trace2.endColor = trace2.startColor.SetA(_Progress * 0.5f);
-                },
                 Ticker,
+                @params.aTimeStart,
+                _OnProgress: _P =>
+                {
+                    hand.color = hand.color.SetA(_P);
+                    trace1.startColor = trace1.endColor = trace1.startColor.SetA(_P * 0.5f);
+                    trace2.startColor = trace2.endColor = trace2.startColor.SetA(_P * 0.5f);
+                },
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
             if (TutorialFinished)
                 yield break;
             trace1.enabled = trace2.enabled = true;
             yield return Cor.Lerp(
-                0f,
-                1f,
+                Ticker,
                 @params.aTimeMiddle - @params.aTimeStart, 
-                _Progress =>
+                _OnProgress: _P =>
                 {
-                    var trace1Pos = Vector2.Lerp(a1.posStart, a1.posMiddle, _Progress);
+                    var trace1Pos = Vector2.Lerp(a1.posStart, a1.posMiddle, _P);
                     trace1.SetPosition(1, trace1Pos);
-                    var trace2Pos = Vector2.Lerp(a2.posStart, a2.posMiddle, _Progress);
+                    var trace2Pos = Vector2.Lerp(a2.posStart, a2.posMiddle, _P);
                     trace2.SetPosition(1, trace2Pos);
                 },
-                Ticker,
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
             if (TutorialFinished)
                 yield break;
             var traceCol = trace1.startColor;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                @params.aTimeEnd - @params.aTimeMiddle, 
-                _Progress =>
-                {
-                    trace1.SetPosition(1, Vector2.Lerp(a1.posMiddle, a1.posEnd, _Progress));
-                    trace1.startColor = trace1.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _Progress);
-                    trace2.SetPosition(1, Vector2.Lerp(a2.posMiddle, a2.posEnd, _Progress));
-                    trace2.startColor = trace2.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _Progress);
-                },
                 Ticker,
+                @params.aTimeEnd - @params.aTimeMiddle, 
+                _OnProgress: _P =>
+                {
+                    trace1.SetPosition(1, Vector2.Lerp(a1.posMiddle, a1.posEnd, _P));
+                    trace1.startColor = trace1.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _P);
+                    trace2.SetPosition(1, Vector2.Lerp(a2.posMiddle, a2.posEnd, _P));
+                    trace2.startColor = trace2.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _P);
+                },
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
         }
 

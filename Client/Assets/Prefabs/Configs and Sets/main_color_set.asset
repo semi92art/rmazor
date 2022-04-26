@@ -15,9 +15,15 @@ MonoBehaviour:
   set:
     array:
     - name: Main
-      color: {r: 0.27450982, g: 0.227451, b: 0.2901961, a: 1}
+      color: {r: 0.6320754, g: 0.024787273, b: 0, a: 1}
     - name: Maze Item 1
       color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Path Item
+      color: {r: 1, g: 0, b: 0, a: 1}
+    - name: Path Fill
+      color: {r: 1, g: 0.026891619, b: 0, a: 1}
+    - name: Path Background
+      color: {r: 0.20754719, g: 0, b: 0, a: 0.8352941}
     - name: Money Item
       color: {r: 1, g: 0.8855696, b: 0.3820755, a: 1}
     - name: Character
@@ -25,9 +31,9 @@ MonoBehaviour:
     - name: Character Tail
       color: {r: 1, g: 1, b: 1, a: 0.5019608}
     - name: Background 1
-      color: {r: 0.42352948, g: 0.726053, b: 0.9647059, a: 1}
+      color: {r: 0, g: 0, b: 0, a: 1}
     - name: Background 2
-      color: {r: 0.36850303, g: 0.6598669, b: 0.8584906, a: 1}
+      color: {r: 0.16037738, g: 0, b: 0, a: 1}
     - name: UI
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Ui Dialog Item Normal

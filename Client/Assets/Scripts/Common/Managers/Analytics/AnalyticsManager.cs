@@ -18,7 +18,7 @@ namespace Common.Managers.Analytics
             IUnityAnalyticsProvider    _UnityAnalyticsProvider,
             IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider)
         {
-            GameSettings = _GameSettings;
+            GameSettings              = _GameSettings;
             UnityAnalyticsProvider    = _UnityAnalyticsProvider;
             FirebaseAnalyticsProvider = _FirebaseAnalyticsProvider;
         }
@@ -29,6 +29,8 @@ namespace Common.Managers.Analytics
         
         public override void Init()
         {
+            if (Initialized)
+                return;
             if (!GameSettings.debugEnabled)
             {
                 UnityAnalyticsProvider.Init();

@@ -52,8 +52,8 @@ namespace Editor
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "configs", "view_settings");
-            int group = RazorMazeUtils.GetGroupIndex(m_LevelIndex);
-            int levels = (_Previous ? -1 : 1) * RazorMazeUtils.GetLevelsInGroup(_Previous ? group - 1 : group);
+            int group = RmazorUtils.GetGroupIndex(m_LevelIndex);
+            int levels = (_Previous ? -1 : 1) * RmazorUtils.GetLevelsInGroup(_Previous ? group - 1 : group);
             m_LevelIndex = MathUtils.ClampInverse(m_LevelIndex + levels, 0, settings.levelsCountMain - 1);
             var fakeArgs = new LevelStageArgs(
                 m_LevelIndex, 

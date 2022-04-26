@@ -2,7 +2,9 @@
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
+using Common.Enums;
 using Common.Extensions;
+using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -17,18 +19,18 @@ namespace RMAZOR.UI.Panels
 {
     public interface ISettingSelectorDialogPanel : IDialogPanel
     {
-        void PreInit(string _DefaultValue, List<string> _Items, UnityAction<string> _OnSelect);
+        void PreInit(string _DefaultValue, List<object> _Items, UnityAction<object> _OnSelect);
     }
     
     public class SettingsSelectorPanel : DialogPanelBase, ISettingSelectorDialogPanel
     {
         #region private members
 
-        private List<string> m_Items;
-        private UnityAction<string> m_OnSelect;
-        private string m_DefaultValue;
-        private RectTransform m_Content;
-        private ToggleGroup m_ToggleGroup;
+        private List<object>        m_Items;
+        private UnityAction<object> m_OnSelect;
+        private string              m_DefaultValue;
+        private RectTransform       m_Content;
+        private ToggleGroup         m_ToggleGroup;
         
         #endregion
 
@@ -36,14 +38,12 @@ namespace RMAZOR.UI.Panels
         
         public SettingsSelectorPanel(
             IBigDialogViewer _DialogViewer,
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
-        { }
-
-
+            IManagersGetter  _Managers,
+            IUITicker        _UITicker,
+            ICameraProvider  _CameraProvider,
+            IColorProvider   _ColorProvider) 
+            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider) { }
+        
         #endregion
 
         #region api
@@ -52,7 +52,7 @@ namespace RMAZOR.UI.Panels
         public override bool        AllowMultiple => true;
 
 
-        public void PreInit(string _DefaultValue, List<string> _Items, UnityAction<string> _OnSelect)
+        public void PreInit(string _DefaultValue, List<object> _Items, UnityAction<object> _OnSelect)
         {
             m_DefaultValue = _DefaultValue;
             m_Items = _Items;
@@ -98,7 +98,18 @@ namespace RMAZOR.UI.Panels
             {
                 var sspiClone = sspi.Clone();
                 SettingSelectorItem si = sspiClone.GetComponent<SettingSelectorItem>();
-                si.Init(Managers, Ticker, ColorProvider, item, m_OnSelect, item == m_DefaultValue);
+                si.Init(
+                    Ticker,
+                    ColorProvider,
+                    Managers.AudioManager,
+                    Managers.LocalizationManager,
+                    Managers.PrefabSetManager,
+                    item is ELanguage lang ? LocalizationUtils.GetLanguageTitle(lang) : item.ToString(),
+                    item,
+                    m_OnSelect,
+                    item.ToString() == m_DefaultValue,
+                    () => item is ELanguage lang ?
+                        Managers.LocalizationManager.GetFont(ETextType.MenuUI, lang) : null);
                 selectorItems.Add(si);
             }
 

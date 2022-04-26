@@ -19,6 +19,7 @@ namespace RMAZOR.Views.InputConfigurators
     public interface IViewInputTouchProceeder : IInit, IOnLevelStageChanged
     {
         event UnityAction<Vector2> OnTap;
+        bool                       ProceedRotation { get; set; }
         bool                       AreFingersOnScreen(int                   _Count);
         Vector2                    GetFingerPosition(int                    _Index);
         void                       OnRotationFinished(MazeRotationEventArgs _Args);
@@ -28,7 +29,7 @@ namespace RMAZOR.Views.InputConfigurators
     {
         #region constants
 
-        private const float SwipeThresholdSeconds    = 0.1f;
+        private const float SwipeThresholdSeconds     = 0.1f;
         private const float SwipeThresholdCentimeters = 0.05f;
 
         #endregion
@@ -79,7 +80,8 @@ namespace RMAZOR.Views.InputConfigurators
         #region api
 
         public event UnityAction<Vector2> OnTap;
-
+        public bool                       ProceedRotation { get; set; }
+        
         public override void Init()
         {
             InitLeanTouch();
@@ -96,16 +98,16 @@ namespace RMAZOR.Views.InputConfigurators
                 m_LeanFingerTap.OnFinger.AddListener(MoveNext);
             if (_Args.Stage != ELevelStage.ReadyToStart || _Args.PreviousStage != ELevelStage.Loaded) 
                 return;
-            if (RazorMazeUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
+            if (RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
             {
                 CommandsProceeder.UnlockCommands(
-                    RazorMazeUtils.RotateCommands, 
+                    RmazorUtils.RotateCommands, 
                     nameof(IViewInputTouchProceeder));
             }
             else
             {
                 CommandsProceeder.LockCommands(
-                    RazorMazeUtils.RotateCommands, 
+                    RmazorUtils.RotateCommands, 
                     nameof(IViewInputTouchProceeder));
             }
         }
@@ -141,12 +143,12 @@ namespace RMAZOR.Views.InputConfigurators
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
             lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
             
-            LeanTouch.OnFingerUp -= OnFingerUp;
-            LeanTouch.OnFingerUp += OnFingerUp;
+            LeanTouch.OnFingerUp   -= OnFingerUp;
+            LeanTouch.OnFingerUp   += OnFingerUp;
             LeanTouch.OnFingerDown -= LeanTouchOnOnFingerDown;
             LeanTouch.OnFingerDown += LeanTouchOnOnFingerDown;
-            LeanTouch.OnFingerUp -= LeanTouchOnOnFingerUp;
-            LeanTouch.OnFingerUp += LeanTouchOnOnFingerUp;
+            LeanTouch.OnFingerUp   -= LeanTouchOnOnFingerUp;
+            LeanTouch.OnFingerUp   += LeanTouchOnOnFingerUp;
         }
         
         private void LeanTouchOnOnFingerDown(LeanFinger _Obj)
@@ -231,6 +233,8 @@ namespace RMAZOR.Views.InputConfigurators
 
         private void ProceedTouchForRotate(LeanFinger _Finger)
         {
+            if (!ProceedRotation)
+                return;
             if (!m_EnableRotation)
                 return;
             var pos = _Finger.ScreenPosition;
@@ -366,12 +370,12 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void LockCommandsOnRotationStarted()
         {
-            CommandsProceeder.LockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
+            CommandsProceeder.LockCommands(RmazorUtils.MoveAndRotateCommands, GetGroupName());
         }
 
         private void UnlockCommandsOnRotationFinished()
         {
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, GetGroupName());
+            CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, GetGroupName());
         }
 
         private static string GetGroupName()

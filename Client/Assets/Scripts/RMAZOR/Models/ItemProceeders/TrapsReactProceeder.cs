@@ -4,6 +4,7 @@ using System.Linq;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 
@@ -30,14 +31,6 @@ namespace RMAZOR.Models.ItemProceeders
     
     public class TrapsReactProceeder : ItemsProceederBase, ITrapsReactProceeder
     {
-        #region constants
-        
-        public const int StagePreReact = 1;
-        public const int StageReact = 2;
-        public const int StageAfterReact = 3;
-        
-        #endregion
-
         #region inject
         
         public TrapsReactProceeder(
@@ -51,7 +44,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        protected override    EMazeItemType[]         Types                    => new[] {EMazeItemType.TrapReact};
+        protected override EMazeItemType[]         Types                    => new[] {EMazeItemType.TrapReact};
         protected override bool                    StopProceedOnLevelFinish => false;
         public event MazeItemTrapReactEventHandler TrapReactStageChanged;
 
@@ -74,7 +67,7 @@ namespace RMAZOR.Models.ItemProceeders
                 if (!info.ReadyToSwitchStage)
                     continue;
                 var trapReactFinalPoint = (info.CurrentPosition + info.Direction);
-                var path = RazorMazeUtils.GetFullPath(
+                var path = RmazorUtils.GetFullPath(
                     (V2Int) _Args.PreviousPrecisePosition, (V2Int) _Args.PrecisePosition);
                 if (path.Contains(trapReactFinalPoint))
                     ProceedCoroutine(info, ProceedTrap(info));
@@ -93,9 +86,9 @@ namespace RMAZOR.Models.ItemProceeders
                 () => time + duration > GameTicker.Time,
                 () =>
                 {
-                    if (_Info.ProceedingStage == StageAfterReact)
+                    if (_Info.ProceedingStage == ModelCommonData.TrapReactStageAfterReact)
                     {
-                        _Info.ProceedingStage = StageIdle;
+                        _Info.ProceedingStage = ModelCommonData.StageIdle;
                         _Info.ReadyToSwitchStage = true;
                         return;
                     }
@@ -105,16 +98,13 @@ namespace RMAZOR.Models.ItemProceeders
 
         private float GetStageDuration(int _Stage)
         {
-            switch (_Stage)
+            return _Stage switch
             {
-                case StagePreReact:
-                    return Settings.TrapPreReactTime;
-                case StageReact:
-                    return Settings.TrapReactTime;
-                case StageAfterReact:
-                    return Settings.TrapAfterReactTime;
-                default: return 0;
-            }
+                ModelCommonData.TrapReactStagePreReact   => Settings.trapPreReactTime,
+                ModelCommonData.TrapReactStageReact      => Settings.trapReactTime,
+                ModelCommonData.TrapReactStageAfterReact => Settings.trapAfterReactTime,
+                _                                        => 0
+            };
         }
         
         #endregion

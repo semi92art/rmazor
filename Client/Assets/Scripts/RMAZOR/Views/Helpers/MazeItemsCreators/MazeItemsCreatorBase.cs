@@ -9,47 +9,53 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
     public abstract class MazeItemsCreatorBase : IMazeItemsCreator
     {
         #region nonpublic members
-        
-        protected IViewMazeItemPath             ItemPath { get; }
-        protected IViewMazeItemGravityBlock     GravityBlock { get; }
-        protected IViewMazeItemMovingTrap       MovingTrap { get; }
-        protected IViewMazeItemShredingerBlock  ShredingerBlock { get; }
-        protected IViewMazeItemTurret           Turret { get; }
-        protected IViewMazeItemSpringboard      Springboard { get; }
-        protected IViewMazeItemPortal           Portal { get; }
-        protected IViewMazeItemGravityTrap      GravityTrap { get; }
-        protected IViewMazeItemTrapReact        TrapReact { get; }
-        protected IViewMazeItemTrapIncreasing   TrapIncreasing { get; }
-        protected IViewMazeItemGravityBlockFree GravityBlockFree { get; }
+
+        private IViewMazeItemPath             ItemPath         { get; }
+        private IViewMazeItemGravityBlock     GravityBlock     { get; }
+        private IViewMazeItemMovingTrap       MovingTrap       { get; }
+        private IViewMazeItemShredingerBlock  ShredingerBlock  { get; }
+        private IViewMazeItemTurret           Turret           { get; }
+        private IViewMazeItemSpringboard      Springboard      { get; }
+        private IViewMazeItemPortal           Portal           { get; }
+        private IViewMazeItemGravityTrap      GravityTrap      { get; }
+        private IViewMazeItemTrapReact        TrapReact        { get; }
+        private IViewMazeItemTrapIncreasing   TrapIncreasing   { get; }
+        private IViewMazeItemGravityBlockFree GravityBlockFree { get; }
+        private IViewMazeItemHammer           Hammer           { get; }
+        private IViewMazeItemBazooka         Bazooka         { get; }
 
         #endregion
 
         #region protected constructor
 
         protected MazeItemsCreatorBase(
-            IViewMazeItemPath             _ItemPath         = null,
-            IViewMazeItemGravityBlock     _GravityBlock     = null,
-            IViewMazeItemMovingTrap       _MovingTrap       = null,
-            IViewMazeItemShredingerBlock  _ShredingerBlock  = null,
-            IViewMazeItemTurret           _Turret           = null,
-            IViewMazeItemSpringboard      _Springboard      = null,
-            IViewMazeItemPortal           _Portal           = null,
-            IViewMazeItemGravityTrap      _GravityTrap      = null,
-            IViewMazeItemTrapReact        _TrapReact        = null,
-            IViewMazeItemTrapIncreasing   _TrapIncreasing   = null,
-            IViewMazeItemGravityBlockFree _GravityBlockFree = null)
+            IViewMazeItemPath             _ItemPath        ,
+            IViewMazeItemGravityBlock     _GravityBlock    ,
+            IViewMazeItemMovingTrap       _MovingTrap      ,
+            IViewMazeItemShredingerBlock  _ShredingerBlock ,
+            IViewMazeItemTurret           _Turret          ,
+            IViewMazeItemSpringboard      _Springboard     ,
+            IViewMazeItemPortal           _Portal          ,
+            IViewMazeItemGravityTrap      _GravityTrap     ,
+            IViewMazeItemTrapReact        _TrapReact       ,
+            IViewMazeItemTrapIncreasing   _TrapIncreasing  ,
+            IViewMazeItemGravityBlockFree _GravityBlockFree,
+            IViewMazeItemHammer           _Hammer          ,
+            IViewMazeItemBazooka         _Bazooka        )
         {
-            ItemPath = _ItemPath;
-            GravityBlock = _GravityBlock;
-            MovingTrap = _MovingTrap;
-            ShredingerBlock = _ShredingerBlock;
-            Turret = _Turret;
-            Springboard = _Springboard;
-            Portal = _Portal;
-            GravityTrap = _GravityTrap;
-            TrapReact = _TrapReact;
-            TrapIncreasing = _TrapIncreasing;
+            ItemPath         = _ItemPath;
+            GravityBlock     = _GravityBlock;
+            MovingTrap       = _MovingTrap;
+            ShredingerBlock  = _ShredingerBlock;
+            Turret           = _Turret;
+            Springboard      = _Springboard;
+            Portal           = _Portal;
+            GravityTrap      = _GravityTrap;
+            TrapReact        = _TrapReact;
+            TrapIncreasing   = _TrapIncreasing;
             GravityBlockFree = _GravityBlockFree;
+            Hammer           = _Hammer;
+            Bazooka         = _Bazooka;
         }
 
         #endregion
@@ -84,11 +90,12 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 case EMazeItemType.Turret:           item = Turret;          break;
                 case EMazeItemType.GravityBlockFree: item = GravityBlockFree;break;
                 case EMazeItemType.Springboard:      item = Springboard;     break;
+                case EMazeItemType.Hammer:           item = Hammer;          break;
+                case EMazeItemType.Bazooka:         item = Bazooka;          break;
                 case EMazeItemType.Block:                       
-                case EMazeItemType.MovingBlockFree: 
                     item = null; break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Type);
+                    item = null; break;
             }
             return (IViewMazeItem)item?.Clone();
         }

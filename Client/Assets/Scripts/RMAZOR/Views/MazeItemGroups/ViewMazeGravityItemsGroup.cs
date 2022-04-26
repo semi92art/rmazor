@@ -14,6 +14,6 @@ namespace RMAZOR.Views.MazeItemGroups
             IViewMazeCommon _Common)
             : base(_CoordinateConverter, _Common) { }
 
-        public override IEnumerable<EMazeItemType> Types => RazorMazeUtils.GravityItemTypes;
+        public override IEnumerable<EMazeItemType> Types => RmazorUtils.GravityItemTypes;
     }
 }

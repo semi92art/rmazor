@@ -8,42 +8,17 @@ using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Props;
 using UnityEngine;
-using Zenject;
 
 namespace RMAZOR.Views.Helpers.MazeItemsCreators
 {
     public class MazeItemsCreatorProt : MazeItemsCreatorBase
     {
-        #region inject
-        
-        [Inject]
-        public MazeItemsCreatorProt(
-            IViewMazeItemPath _ItemPath,
-            IViewMazeItemGravityBlock _GravityBlock,
-            IViewMazeItemMovingTrap _MovingTrap,
-            IViewMazeItemShredingerBlock _ShredingerBlock,
-            IViewMazeItemTurret _Turret,
-            IViewMazeItemSpringboard _Springboard,
-            IViewMazeItemPortal _Portal,
-            IViewMazeItemGravityTrap _GravityTrap,
-            IViewMazeItemTrapReact _TrapReact,
-            IViewMazeItemTrapIncreasing _TrapIncreasing) : base(
-            _ItemPath,
-            _GravityBlock, 
-            _MovingTrap,
-            _ShredingerBlock,
-            _Turret, 
-            _Springboard,
-            _Portal,
-            _GravityTrap,
-            _TrapReact,
-            _TrapIncreasing) { }
-        
-        #endregion
-        
         #region protected constructor
         
-        protected MazeItemsCreatorProt() { }
+        protected MazeItemsCreatorProt() : base(
+            null, null, null, null, null,
+            null, null, null, null, null, 
+            null, null, null) { }
         
         #endregion
         
@@ -62,9 +37,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         #endregion
         
         #region nonpublic methods
-
-
-
+        
         protected override void AddPathItem(ICollection<IViewMazeItem> _Items, MazeInfo _Info, PathItem _Item)
         {
             AddPathItemProt(
@@ -90,7 +63,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 Pair = _Item.Pair,
                 IsNode = false,
                 IsStartNode = false,
-                Blank = _Item.Blank
+                Blank = _Item.Blank,
+                Args = _Item.Args
             };
             AddMazeItemProt(_Items, _Info.Size, props);
         }

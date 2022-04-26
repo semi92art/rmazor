@@ -34,6 +34,8 @@ namespace Common.Managers.Scores
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             RemoteSavedGameProvider.Init();
             base.Init();
         }

@@ -5,7 +5,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using RMAZOR.Managers;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -20,15 +19,17 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         private bool m_IsIconNotNull;
 
         public void Init(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider,
-            bool _IsOn,
-            UnityAction<bool> _Action,
-            Sprite _SpriteOn,
-            Sprite _SpriteOff)
+            IUITicker            _UITicker,
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                 _IsOn,
+            UnityAction<bool>    _Action,
+            Sprite               _SpriteOn,
+            Sprite               _SpriteOff)
         {
-            base.Init(_Managers.AudioManager, _UITicker, _ColorProvider);
+            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
             icon.sprite = _IsOn ? _SpriteOn : _SpriteOff;
             icon.color = _ColorProvider.GetColor(ColorIds.UI);
             toggle.isOn = _IsOn;
@@ -37,7 +38,13 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             toggle.onValueChanged.AddListener(_On => icon.sprite = _On ? _SpriteOn : _SpriteOff);
         }
 
-        public override void Init(IAudioManager _AudioManager, IUITicker _UITicker, IColorProvider _ColorProvider)
+        public override void Init(
+            IUITicker            _UITicker, 
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                 _AutoFont = true)
         {
             throw new NotSupportedException();
         }

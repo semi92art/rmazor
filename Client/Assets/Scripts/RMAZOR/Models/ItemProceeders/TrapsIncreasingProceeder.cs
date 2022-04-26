@@ -9,8 +9,8 @@ namespace RMAZOR.Models.ItemProceeders
 {
     public class MazeItemTrapIncreasingEventArgs : EventArgs
     {
-        public IMazeItemProceedInfo Item { get; }
-        public int Stage { get; }
+        public IMazeItemProceedInfo Item  { get; }
+        public int                  Stage { get; }
 
         public MazeItemTrapIncreasingEventArgs(IMazeItemProceedInfo _Item, int _Stage)
         {
@@ -28,18 +28,18 @@ namespace RMAZOR.Models.ItemProceeders
     
     public class TrapsIncreasingProceeder : ItemsProceederBase, IUpdateTick, ITrapsIncreasingProceeder
     {
-        #region constants
-        
-        public const int StageIncreased = 1;
-        
+        #region nonpublic members
+
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
+
         #endregion
 
         #region inject
         
         public TrapsIncreasingProceeder(
-            ModelSettings _Settings,
-            IModelData _Data,
-            IModelCharacter _Character,
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _GameTicker) { }
 
@@ -47,7 +47,6 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapIncreasing};
         public event MazeItemTrapIncreasingEventHandler TrapIncreasingStageChanged;
 
         public void UpdateTick()
@@ -73,7 +72,8 @@ namespace RMAZOR.Models.ItemProceeders
         
         private IEnumerator ProceedTrap(IMazeItemProceedInfo _Info)
         {
-            _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageIncreased : StageIdle;
+            _Info.ProceedingStage = _Info.ProceedingStage == ModelCommonData.StageIdle
+                ? ModelCommonData.TrapIncreasingStageIncreased : ModelCommonData.StageIdle;
             float duration = GetStageDuration(_Info.ProceedingStage);
             float time = GameTicker.Time;
             yield return Cor.WaitWhile(
@@ -88,14 +88,12 @@ namespace RMAZOR.Models.ItemProceeders
         
         private float GetStageDuration(int _Stage)
         {
-            switch (_Stage)
+            return _Stage switch
             {
-                case StageIdle:
-                    return Settings.TrapIncreasingIdleTime;
-                case StageIncreased:
-                    return Settings.TrapIncreasingIncreasedTime;
-                default: return 0;
-            }
+                ModelCommonData.StageIdle                    => Settings.trapIncreasingIdleTime,
+                ModelCommonData.TrapIncreasingStageIncreased => Settings.trapIncreasingIncreasedTime,
+                _                                            => 0
+            };
         }
 
         #endregion

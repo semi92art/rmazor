@@ -1,6 +1,7 @@
 ﻿using Common.Entities;
 using Common.Helpers;
 using Common.Utils;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Common.Settings
@@ -17,7 +18,6 @@ namespace Common.Settings
             Settings = _Settings;
         }
         
-        public override UnityAction<bool> OnValueSet { get; set; }
         public override SaveKey<bool>     Key        => SaveKeysCommon.DebugUtilsOn;
         public override string            TitleKey   => "Debug";
         public override ESettingLocation  Location   => ESettingLocation.Main;
@@ -26,12 +26,8 @@ namespace Common.Settings
         public override void Put(bool _Value)
         {
             SaveUtils.PutValue(Key, _Value);
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            OnValueSet?.Invoke(_Value);
-#else
-            if (Settings.debugEnabled)
-                OnValueSet?.Invoke(_Value);
-#endif
+            if (Application.isEditor && (CommonData.DevelopmentBuild || Settings.debugEnabled))
+                RaiseValueSetEvent(_Value);
         }
     }
 }

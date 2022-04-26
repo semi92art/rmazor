@@ -109,15 +109,16 @@ namespace Common.Utils
         }
         
          public static IEnumerator Lerp(
-            float                    _From,
-            float                    _To,
-            float                    _Time,
-            UnityAction<float>       _OnProgress,
             ITicker                  _Ticker,
-            UnityAction<bool, float> _OnFinish        = null,
+            float                    _Time,
+            float                    _From            = 0f,
+            float                    _To              = 1f,
+            UnityAction<float>       _OnProgress      = null,
+            UnityAction              _OnFinish        = null,
             Func<bool>               _BreakPredicate  = null,
             Func<float, float>       _ProgressFormula = null,
-            bool                     _FixedUpdate     = false)
+            bool                     _FixedUpdate     = false,
+            UnityAction<bool, float> _OnFinishEx      = null)
         {
             if (_OnProgress == null)
                 yield break;
@@ -155,7 +156,8 @@ namespace Common.Utils
             }
             if (_Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
-            _OnFinish?.Invoke(breaked, breaked ? progress : _To);
+            _OnFinish?.Invoke();
+            _OnFinishEx?.Invoke(breaked, breaked ? progress : _To);
         }
 
         private static IEnumerator PauseCoroutine(bool _FixedUpdate)

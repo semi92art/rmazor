@@ -108,7 +108,7 @@ namespace Common.Managers.Advertising
         private string GetGameId()
         {
             return AdsData.Elements("game_id")
-                .FirstOrDefault(_El => _El.Attribute("os")?.Value == CommonUtils.GetOsName())
+                .FirstOrDefault(_El => _El.Attribute("os")?.Value == CommonUtils.GetOsName().ToLower())
                 ?.Value;
         }
         

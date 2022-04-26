@@ -65,3 +65,9 @@ MonoBehaviour:
     - item: {fileID: 21300000, guid: a93c9533151308244a03e75c09beef2a, type: 3}
       name: dark_theme_off
       bundle: 0
+    - item: {fileID: 21300000, guid: eae48fc16919f5a46b1557a4c6afbb36, type: 3}
+      name: setting_notifications_on
+      bundle: 0
+    - item: {fileID: 21300000, guid: 88e9174ba4a95ae45a541f7d11afd5d2, type: 3}
+      name: setting_notifications_off
+      bundle: 0

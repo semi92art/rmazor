@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
@@ -19,7 +20,7 @@ using UnityEngine;
 namespace RMAZOR.Views.MazeItems
 {
     [ExecuteInEditMode, Serializable, SelectionBase]
-    public class ViewMazeItemProt : MonoBehaviour, IViewMazeItem
+    public partial class ViewMazeItemProt : MonoBehaviour, IViewMazeItem
     {
         #region serialized fields
         
@@ -27,30 +28,30 @@ namespace RMAZOR.Views.MazeItems
         [SerializeField, HideInInspector] private ShapeRenderer shape;
         [SerializeField, HideInInspector] private SpriteRenderer hint;
         [SerializeField, HideInInspector] private V2Int mazeSize;
+        [SerializeField, HideInInspector] private MazeCoordinateConverter converter;
         
         #endregion
 
         #region nonpublic members
 
-        private IMazeCoordinateConverter m_Converter;
-        private IContainersGetter        m_ContainersGetter;
-        private IPrefabSetManager        m_PrefabSetManager;
-        private IMazeCoordinateConverter Converter
+        private IContainersGetter m_ContainersGetter;
+        private IPrefabSetManager m_PrefabSetManager;
+        private MazeCoordinateConverter Converter
         {
             get
             {
-                if (m_Converter == null || !m_Converter.InitializedAndMazeSizeSet())
+                if (converter == null || !converter.InitializedAndMazeSizeSet())
                 {
                     m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
                         "configs", "view_settings");
-                    m_Converter = new MazeCoordinateConverter(settings, null, false);
-                    m_ContainersGetter = new ContainersGetterRmazor(null, m_Converter);
-                    m_Converter.GetContainer = m_ContainersGetter.GetContainer;
-                    m_Converter.Init();
-                    m_Converter.SetMazeSize(mazeSize);
+                    converter = new MazeCoordinateConverter(settings, null, false);
+                    m_ContainersGetter = new ContainersGetterRmazor(null, converter);
+                    converter.GetContainer = m_ContainersGetter.GetContainer;
+                    converter.Init();
+                    converter.SetMazeSize(mazeSize);
                 }
-                return m_Converter;
+                return converter;
             }
         }
 
@@ -104,7 +105,7 @@ namespace RMAZOR.Views.MazeItems
             SetShapeAndHint(_Type, _IsNode);
         }
 
-        public void SetSpringboardDirection(V2Int _Direction)
+        public void SetDirection(V2Int _Direction)
         {
             if (!props.Directions.Any())
                 props.Directions.Add(_Direction);
@@ -155,18 +156,20 @@ namespace RMAZOR.Views.MazeItems
             string objectName = null;
             switch (_Type)
             {
-                case EMazeItemType.Block: break;
-                case EMazeItemType.Springboard:             objectName = "springboard"; break;
-                case EMazeItemType.ShredingerBlock:         objectName = "shredinger"; break;
-                case EMazeItemType.Portal:                  objectName = "portal"; break;
-                case EMazeItemType.Turret:                  objectName = "turret"; break;
-                case EMazeItemType.TrapMoving:              objectName = "trap-moving"; break;
-                case EMazeItemType.GravityBlock:            objectName = "block-gravity"; break;
-                case EMazeItemType.GravityTrap:             objectName = "trap-gravity"; break;
-                case EMazeItemType.TrapIncreasing:          objectName = "trap-increase"; break;
-                case EMazeItemType.GravityBlockFree:        objectName = "gravity-block-free"; break;
-                case EMazeItemType.TrapReact:               objectName = "trap-react"; break;
-                default: throw new SwitchCaseNotImplementedException(_Type);
+                case EMazeItemType.Block:                                               break;
+                case EMazeItemType.Springboard:      objectName = "springboard";        break;
+                case EMazeItemType.ShredingerBlock:  objectName = "shredinger";         break;
+                case EMazeItemType.Portal:           objectName = "portal";             break;
+                case EMazeItemType.Turret:           objectName = "turret";             break;
+                case EMazeItemType.TrapMoving:       objectName = "trap-moving";        break;
+                case EMazeItemType.GravityBlock:     objectName = "block-gravity";      break;
+                case EMazeItemType.GravityTrap:      objectName = "trap-gravity";       break;
+                case EMazeItemType.TrapIncreasing:   objectName = "trap-increase";      break;
+                case EMazeItemType.GravityBlockFree: objectName = "gravity-block-free"; break;
+                case EMazeItemType.TrapReact:        objectName = "trap-react";         break;
+                case EMazeItemType.Hammer:           objectName = "hammer";             break;
+                case EMazeItemType.Bazooka:          objectName = "bazooka";            break;
+                default:                             throw new SwitchCaseNotImplementedException(_Type);
             }
             if (string.IsNullOrEmpty(objectName)) 
                 return;
@@ -184,197 +187,33 @@ namespace RMAZOR.Views.MazeItems
                 return Color.white;
             if (_Inner)
                 return Color.black;
-            switch (_Type)
+            var blockCol = new Color(0.5f, 0.5f, 0.5f);
+            var trapCol = new Color(1f, 0.29f, 0.29f);
+            return _Type switch
             {
-                case EMazeItemType.Block:                   
-                case EMazeItemType.GravityBlock:
-                case EMazeItemType.GravityBlockFree:
-                    return new Color(0.5f, 0.5f, 0.5f);
-                case EMazeItemType.ShredingerBlock:
-                    return new Color(0.49f, 0.79f, 1f);
-                case EMazeItemType.Portal:
-                    return new Color(0.13f, 1f, 0.07f);
-                case EMazeItemType.TrapReact:               
-                case EMazeItemType.TrapIncreasing:
-                case EMazeItemType.TrapMoving: 
-                case EMazeItemType.GravityTrap:
-                    return new Color(1f, 0.29f, 0.29f);
-                case EMazeItemType.Turret: 
-                    return new Color(0.99f, 0.14f, 0.7f);
-                case EMazeItemType.Springboard:
-                    return new Color(0.41f, 1f, 0.79f);
-                case EMazeItemType.MovingBlockFree:
-                default: throw new SwitchCaseNotImplementedException(_Type);
-            }
+                EMazeItemType.Block            => blockCol,
+                EMazeItemType.GravityBlock     => blockCol,
+                EMazeItemType.GravityBlockFree => blockCol,
+                EMazeItemType.TrapReact        => trapCol,
+                EMazeItemType.TrapIncreasing   => trapCol,
+                EMazeItemType.TrapMoving       => trapCol,
+                EMazeItemType.GravityTrap      => trapCol,
+                EMazeItemType.ShredingerBlock  => new Color(0.49f, 0.79f, 1f),
+                EMazeItemType.Portal           => new Color(0.13f, 1f, 0.07f),
+                EMazeItemType.Turret           => new Color(0.99f, 0.14f, 0.7f),
+                EMazeItemType.Springboard      => new Color(0.41f, 1f, 0.79f),
+                EMazeItemType.Hammer           => new Color(0.66f, 0.43f, 0.12f),
+                EMazeItemType.Bazooka         => new Color(0.7f, 0.67f, 1f),
+                _                              => throw new SwitchExpressionException(_Type)
+            };
         }
 
-        private void OnDrawGizmos()
-        {
-            if (Application.isPlaying)
-                return;
-            if (props.Blank)
-            {
-                Gizmos.color = Color.magenta;
-                DrawGizmosBlankNode();
-            }
-            if (props.IsNode)
-            {
-                if (!props.IsStartNode) 
-                    return;
-                Gizmos.color = Color.yellow;
-                DrawGizmosStartNode();
-                return;
-            }
-            Gizmos.color = GetShapeColor(props.Type, false, props.IsNode);
-            switch (props.Type)
-            {
-                case EMazeItemType.Block:
-                case EMazeItemType.ShredingerBlock:
-                case EMazeItemType.GravityBlockFree:
-                case EMazeItemType.GravityTrap:
-                    //do nothing
-                    break;
-                case EMazeItemType.TrapIncreasing:
-                    DrawGizmosTrapIncreasing();
-                    break;
-                case EMazeItemType.TrapMoving:
-                case EMazeItemType.GravityBlock:
-                    DrawGizmosPath();
-                    break;
-                case EMazeItemType.TrapReact:
-                case EMazeItemType.Turret:
-                    DrawGizmosDirections();
-                    break;
-                case EMazeItemType.Portal:
-                    DrawGizmosPortal();
-                    break;
-                case EMazeItemType.Springboard:
-                    DrawGizmosSpringboard();
-                    break;
-                default: throw new SwitchCaseNotImplementedException(props.Type);
-            }
-        }
-
-        private void DrawGizmosStartNode()
-        {
-            var p = (Vector3)ToWorldPosition(props.Position);
-            Gizmos.DrawSphere(p, 1f);
-        }
-        
-        private void DrawGizmosBlankNode()
-        {
-            var p = (Vector3)ToWorldPosition(props.Position);
-            Gizmos.DrawCube(p, Vector3.one);
-        }
-        
-        private void DrawGizmosTrapIncreasing()
-        {
-            var p1 = new V2Int(props.Position.X - 1, props.Position.Y - 1);
-            var p2 = new V2Int(props.Position.X - 1, props.Position.Y + 1);
-            var p3 = new V2Int(props.Position.X + 1, props.Position.Y + 1);
-            var p4 = new V2Int(props.Position.X + 1, props.Position.Y - 1);
-
-            var p1V2 = (Vector3)ToWorldPosition(p1);
-            var p2V2 = (Vector3)ToWorldPosition(p2);
-            var p3V2 = (Vector3)ToWorldPosition(p3);
-            var p4V2 = (Vector3)ToWorldPosition(p4);
-
-            Gizmos.DrawLine(p1V2, p2V2);
-            Gizmos.DrawLine(p2V2, p3V2);
-            Gizmos.DrawLine(p3V2, p4V2);
-            Gizmos.DrawLine(p4V2, p1V2);
-            Gizmos.DrawLine(p1V2, p3V2);
-            Gizmos.DrawLine(p2V2, p4V2);
-
-            Gizmos.DrawSphere(p1V2, 0.5f);
-            Gizmos.DrawSphere(p2V2, 0.5f);
-            Gizmos.DrawSphere(p3V2, 0.5f);
-            Gizmos.DrawSphere(p4V2, 0.5f);
-        }
-
-        private void DrawGizmosPath()
-        {
-            if (!props.Path.Any())
-                return;
-            for (int i = 0; i < props.Path.Count; i++)
-            {
-                var pos = props.Path[i];
-                Gizmos.DrawSphere(ToWorldPosition(pos), 0.5f);
-                if (i == props.Path.Count - 1)
-                    return;
-                Gizmos.DrawLine(ToWorldPosition(pos), ToWorldPosition(props.Path[i + 1]));
-            }
-        }
-
-        private void DrawGizmosDirections()
-        {
-            if (!props.Directions.Any())
-                return;
-            var pos = ToWorldPosition(props.Position);
-            foreach (var dir in props.Directions)
-            {
-                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.5f);
-                Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
-            }
-        }
-        
-        private void DrawGizmosPortal()
-        {
-#if UNITY_EDITOR
-            if (props.Pair == default)
-                return;
-            var pairItem = LevelDesigner.Instance.maze
-                .FirstOrDefault(_Item => _Item.props.Position == props.Pair);
-            if (pairItem != null && (pairItem.props.Type != EMazeItemType.Portal || pairItem.props.IsNode))
-            {
-                props.Pair = default;
-                return;
-            }
-            var pos = ToWorldPosition(props.Position);
-            var pairPos = ToWorldPosition(props.Pair);
-            Gizmos.DrawSphere(pos, 0.5f);
-            Gizmos.DrawSphere(pairPos, 0.5f);
-            Gizmos.DrawLine(pos, pairPos);
-#endif
-        }
-
-        private void DrawGizmosSpringboard()
-        {
-            if (!props.Directions.Any())
-                return;
-            var pos = ToWorldPosition(props.Position);
-            var dir = props.Directions.First();
-
-            var dirs = new List<V2Int>();
-            if (dir == V2Int.Up + V2Int.Left)
-                dirs = new List<V2Int> {V2Int.Up, V2Int.Left};
-            else if (dir == V2Int.Up + V2Int.Right)
-                dirs = new List<V2Int> {V2Int.Up, V2Int.Right};
-            else if (dir == V2Int.Down + V2Int.Left)
-                dirs = new List<V2Int> {V2Int.Down, V2Int.Left};
-            else if (dir == V2Int.Down + V2Int.Right)
-                dirs = new List<V2Int> {V2Int.Down, V2Int.Right};
-            
-            foreach (var direct in dirs)
-            {
-                Vector2 posVector2 = props.Position;
-                Vector2 dirVector2 = direct;
-                Gizmos.DrawSphere(ToWorldPosition(posVector2 + dirVector2), 0.3f);
-                Gizmos.DrawLine(pos, ToWorldPosition(posVector2 + dirVector2));
-            }
-        }
-
-        private Vector2 ToWorldPosition(Vector2 _Point)
-        {
-            return Converter.ToLocalMazeItemPosition(_Point);
-        }
-        
         #endregion
 
         #region unused api
         
-        public EAppearingState  AppearingState       { get; set; }
         public Component[]      Shapes               => null;
+        public EAppearingState  AppearingState       { get; set; }
         public EProceedingStage ProceedingStage      { get; set; }
         public bool             ActivatedInSpawnPool { get; set; }
         public GameObject       Object               => gameObject;

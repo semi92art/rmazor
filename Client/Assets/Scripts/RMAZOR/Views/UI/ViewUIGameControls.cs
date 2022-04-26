@@ -36,7 +36,7 @@ namespace RMAZOR.Views.UI
         private IColorProvider                ColorProvider            { get; }
         private IViewUIPrompt                 Prompt                   { get; }
         private IViewUICongratsMessage        CongratsMessage          { get; }
-        private IViewUIGameLogo              GameLogo                { get; }
+        private IViewUIGameLogo               GameLogo                 { get; }
         private IViewUILevelsPanel            LevelsPanel              { get; }
         private IViewUIRotationControls       RotationControls         { get; }
         private IViewUITopButtons             TopButtons               { get; }
@@ -57,14 +57,14 @@ namespace RMAZOR.Views.UI
             : base(_Model, _CommandsProceeder)
         {
             BetweenLevelTransitioner = _BetweenLevelTransitioner;
-            ColorProvider = _ColorProvider;
-            Prompt = _Prompt;
-            CongratsMessage = _CongratsMessage;
-            GameLogo = _GameLogo;
-            LevelsPanel = _LevelsPanel;
-            RotationControls = _RotationControls;
-            TopButtons = _TopButtons;
-            Tutorial = _Tutorial;
+            ColorProvider            = _ColorProvider;
+            Prompt                   = _Prompt;
+            CongratsMessage          = _CongratsMessage;
+            GameLogo                 = _GameLogo;
+            LevelsPanel              = _LevelsPanel;
+            RotationControls         = _RotationControls;
+            TopButtons               = _TopButtons;
+            Tutorial                 = _Tutorial;
         }
 
         #endregion
@@ -194,9 +194,9 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.UnlockAllCommands(group);
                     
                     if (MazeContainsGravityItems())
-                        CommandsProceeder.UnlockCommands(RazorMazeUtils.RotateCommands, group);
+                        CommandsProceeder.UnlockCommands(RmazorUtils.RotateCommands, group);
                     else
-                        CommandsProceeder.LockCommands(RazorMazeUtils.RotateCommands, group);
+                        CommandsProceeder.LockCommands(RmazorUtils.RotateCommands, group);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.Stage);
@@ -206,7 +206,7 @@ namespace RMAZOR.Views.UI
         private bool MazeContainsGravityItems()
         {
             return Model.GetAllProceedInfos()
-                .Any(_Info => RazorMazeUtils.GravityItemTypes.ContainsAlt(_Info.Type));
+                .Any(_Info => RmazorUtils.GravityItemTypes.ContainsAlt(_Info.Type));
         }
 
         private T[] GetInterfaceOfProceeders<T>() where T : class

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
+using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using UnityEngine;
@@ -48,14 +50,16 @@ namespace RMAZOR.Views.Common
 
         private void LoadSets()
         {
-            const string set = "configs";
-            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
-            if (m_BackAndFrontColorsSetItemsLight == null)
-            {
-                var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                    (set, "back_and_front_colors_set_light");
-                m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
-            }
+            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet
+                .Where(_Item => _Item.inUse)
+                .ToList();
+            if (!m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
+                return;
+            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                ("configs", "back_and_front_colors_set_light");
+            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set
+                .Where(_Item => _Item.inUse)
+                .ToList();
         }
         
         protected override void SetColorsOnNewLevel(long _LevelIndex)
@@ -67,7 +71,7 @@ namespace RMAZOR.Views.Common
         private Color GetMainColor(long _LevelIndex)
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             return colorsSet[setItemIdx].main;
         }

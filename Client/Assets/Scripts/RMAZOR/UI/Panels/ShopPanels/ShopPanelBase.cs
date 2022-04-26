@@ -93,10 +93,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     Price = itemInSet.price.ToString()
                 };
                 item.Init(
-                    Managers.AudioManager,
-                    Managers.LocalizationManager,
                     Ticker,
                     ColorProvider,
+                    Managers.AudioManager,
+                    Managers.LocalizationManager,
+                    Managers.PrefabSetManager,
                     () =>
                     {
                         

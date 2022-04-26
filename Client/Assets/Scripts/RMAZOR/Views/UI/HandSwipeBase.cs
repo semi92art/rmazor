@@ -181,27 +181,23 @@ namespace RMAZOR.Views.UI
                     throw new SwitchCaseNotImplementedException(_Direction);
             }
             yield return Cor.Lerp(
-                0f,
-                1f,
+                Ticker,
                 _Params.aTimeMiddle,
-                _Progress =>
+                _OnProgress: _P =>
                 {
-                    var pos = Vector2.Lerp(posStart, posEnd, _Progress);
+                    var pos = Vector2.Lerp(posStart, posEnd, _P);
                     hand.transform.SetLocalPosXY(pos);
                 },
-                Ticker,
                 _BreakPredicate: () => ReadyToAnimate,
                 _ProgressFormula: _P => _P);
             var handCol = hand.color;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                _Params.aTimeEnd - _Params.aTimeMiddle,
-                _Progress =>
-                {
-                    hand.color = Color.Lerp(handCol.SetA(1f), handCol.SetA(0f), _Progress);
-                },
                 Ticker,
+                _Params.aTimeEnd - _Params.aTimeMiddle,
+                _OnProgress: _P =>
+                {
+                    hand.color = Color.Lerp(handCol.SetA(1f), handCol.SetA(0f), _P);
+                },
                 _BreakPredicate: () => ReadyToAnimate);
         }
 

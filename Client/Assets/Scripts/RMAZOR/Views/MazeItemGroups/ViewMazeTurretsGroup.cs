@@ -10,7 +10,6 @@ using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.Utils;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItemGroups
 {

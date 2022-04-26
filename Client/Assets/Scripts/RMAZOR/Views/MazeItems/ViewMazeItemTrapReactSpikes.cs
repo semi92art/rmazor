@@ -136,12 +136,18 @@ namespace RMAZOR.Views.MazeItems
             IEnumerator coroutine = null;
             switch (_Args.Stage)
             {
-                case ItemsProceederBase.StageIdle: break;
-                case TrapsReactProceeder.StagePreReact:   coroutine = HandlePreReact(); break;
-                case TrapsReactProceeder.StageReact:
+                case ModelCommonData.StageIdle:
+                    break;
+                case ModelCommonData.TrapReactStagePreReact:
+                    coroutine = HandlePreReact(); 
+                    break;
+                case ModelCommonData.TrapReactStageReact:
                     Managers.AudioManager.PlayClip(GetAudioClipInfoTrapReactOut());
-                    coroutine = HandleReact(); break;
-                case TrapsReactProceeder.StageAfterReact: coroutine = HandlePostReact(); break;
+                    coroutine = HandleReact();
+                    break;
+                case ModelCommonData.TrapReactStageAfterReact:
+                    coroutine = HandlePostReact();
+                    break;
                 default: throw new ArgumentOutOfRangeException(
                     nameof(_Args.Stage), $"Stage {_Args.Stage} was not implemented");
             }
@@ -177,8 +183,6 @@ namespace RMAZOR.Views.MazeItems
             trap.color = col;
             trap.maskInteraction = SpriteMaskInteraction.None;
             AdditionalBackground.GroupsCollected += SetStencilRefValues;
-
-
             (m_Trap, m_Line) = (trap, line);
         }
         
@@ -257,11 +261,11 @@ namespace RMAZOR.Views.MazeItems
             float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
+                GameTicker,
+                0.1f,
                 StartPos,
                 MiddlePos,
-                0.1f,
-                _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTicker
+                _Progress => SetReactProgress(dir, scale, _Progress)
             );
         }
 
@@ -270,11 +274,11 @@ namespace RMAZOR.Views.MazeItems
             float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
+                GameTicker,
+                0.02f,
                 MiddlePos,
                 FinalPos,
-                0.02f,
-                _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTicker
+                _Progress => SetReactProgress(dir, scale, _Progress)
             );
         }
 
@@ -283,11 +287,11 @@ namespace RMAZOR.Views.MazeItems
             float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
+                GameTicker,
+                0.05f,
                 FinalPos,
                 StartPos,
-                0.05f,
-                _Progress => SetReactProgress(dir, scale, _Progress),
-                GameTicker
+                _Progress => SetReactProgress(dir, scale, _Progress)
             );
         }
 
@@ -326,7 +330,7 @@ namespace RMAZOR.Views.MazeItems
             if (character.IsMoving)
             {
                 var charInfo = Model.Character.MovingInfo;
-                var path = RazorMazeUtils.GetFullPath(
+                var path = RmazorUtils.GetFullPath(
                     (V2Int) charInfo.PreviousPrecisePosition, (V2Int) charInfo.PrecisePosition);
                 if (path.Contains(itemPos))
                     CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 

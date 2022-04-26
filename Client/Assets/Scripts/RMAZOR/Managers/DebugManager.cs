@@ -56,8 +56,9 @@ namespace RMAZOR.Managers
 
         public override void Init()
         {
-            DebugConsoleView.Instance.VisibilityChanged += _Value => VisibilityChanged?.Invoke(_Value);
-            DebugSetting.OnValueSet = EnableDebug;
+            if (Initialized)
+                return;
+            DebugSetting.ValueSet += EnableDebug;
             InitDebugConsole();
             EnableDebug(DebugSetting.Get());
             base.Init();
@@ -69,13 +70,23 @@ namespace RMAZOR.Managers
 
         private void InitDebugConsole()
         {
-            if (Application.isEditor || Settings.debugEnabled)
-                DebugConsoleView.Instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
+            if (!Application.isEditor && !Settings.debugEnabled)
+                return;
+            var instance = DebugConsoleView.Instance;
+            instance.VisibilityChanged += _Value =>
+            {
+                CommandsProceeder.RaiseCommand(
+                    _Value ? EInputCommand.EnableDebug : EInputCommand.DisableDebug,
+                    null,
+                    true);
+                VisibilityChanged?.Invoke(_Value);
+            };
+            instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
         }
     
         private static void EnableDebug(bool _Enable)
         {
-            DebugConsoleView.Instance.enabled = _Enable;
+            DebugConsoleView.Instance.EnableDebug(_Enable);
         }
 
         #endregion

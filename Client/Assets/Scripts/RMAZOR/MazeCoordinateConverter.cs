@@ -89,8 +89,9 @@ namespace RMAZOR
 
         public void Init()
         {
+            (float leftScreenOffset, float rightScreenOffset) = RmazorUtils.GetRightAndLeftScreenOffsets();
             var vs = ViewSettings;
-            (m_LeftOffset, m_RightOffset) = (vs.leftScreenOffset, vs.rightScreenOffset);
+            (m_LeftOffset, m_RightOffset) = (leftScreenOffset, rightScreenOffset);
             (m_BottomOffset, m_TopOffset) = (vs.bottomScreenOffset, vs.topScreenOffset);
             SetCenterPoint();
             m_Initialized = true;

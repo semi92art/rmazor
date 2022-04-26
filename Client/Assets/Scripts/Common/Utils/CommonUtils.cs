@@ -13,6 +13,8 @@ namespace Common.Utils
 {
     public static class CommonUtils
     {
+        private static object @lock = new object();
+        
         public static RuntimePlatform Platform 
         { 
             get
@@ -34,9 +36,9 @@ namespace Common.Utils
             switch (Platform)
             {
                 case RuntimePlatform.IPhonePlayer:
-                    return "ios";
+                    return "iOS";
                 case RuntimePlatform.Android:
-                    return "android";
+                    return "Android";
                 default: return null;
             }
         }
@@ -127,14 +129,38 @@ namespace Common.Utils
         public static Entity<string> GetIdfa()
         {
             var result = new Entity<string>();
-
-                Application.RequestAdvertisingIdentifierAsync(
+            Application.RequestAdvertisingIdentifierAsync(
                 (_AdvertisingId, _Success, _Error) =>
                 {
-                    result.Value = _AdvertisingId;
-                    result.Result = _Success ? EEntityResult.Success : EEntityResult.Fail;
-                }
-            );
+                    lock (@lock)
+                    {
+                        if (result.Result != EEntityResult.Pending)
+                            return;
+                        result.Value = _AdvertisingId;
+                        result.Result = _Success ? EEntityResult.Success : EEntityResult.Fail;
+                    }
+                });
+            Cor.Run(Cor.Delay(Application.platform == RuntimePlatform.Android ? 0.5f : 2f,
+                () =>
+                {
+#if UNITY_ANDROID
+                    MiniIT.Utils.AdvertisingIdFetcher.RequestAdvertisingId(_AdvertisingId =>
+                    {
+                        lock (@lock)
+                        {
+                            if (result.Result != EEntityResult.Pending)
+                                return;
+                            result.Value = _AdvertisingId;
+                            result.Result = EEntityResult.Success;
+                        }
+                    });
+#elif UNITY_IOS
+                    lock (@lock)
+                    {
+                        result.Result = EEntityResult.Fail;
+                    }
+#endif
+                }));
             return result;
         }
 

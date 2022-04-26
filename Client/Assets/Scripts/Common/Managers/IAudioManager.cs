@@ -68,9 +68,11 @@ namespace Common.Managers
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             GameTicker.Register(this);
-            MusicSetting.OnValueSet = _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Music);
-            SoundSetting.OnValueSet = _MusicOn =>
+            MusicSetting.ValueSet += _MusicOn => EnableAudio(_MusicOn, EAudioClipType.Music);
+            SoundSetting.ValueSet += _MusicOn =>
             {
                 EnableAudio(_MusicOn, EAudioClipType.UiSound);
                 EnableAudio(_MusicOn, EAudioClipType.GameSound);
@@ -233,12 +235,12 @@ namespace Common.Managers
             float startVolume = _AttenuateUp ? 0f : _Info.Volume;
             float endVolume = !_AttenuateUp ? 0f : _Info.Volume;
             yield return Cor.Lerp(
+                _Info.Type == EAudioClipType.UiSound ? (ITicker)Ticker : GameTicker,
+                _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 startVolume,
                 endVolume,
-                _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 _Volume => _Info.Volume = _Volume,
-                _Info.Type == EAudioClipType.UiSound ? (ITicker)Ticker : GameTicker,
-                (_Broken, _Progress) =>
+                () =>
                 {
                     if (!_AttenuateUp)
                         _Info.Playing = false;

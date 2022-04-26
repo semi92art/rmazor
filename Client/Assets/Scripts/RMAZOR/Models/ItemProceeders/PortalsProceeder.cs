@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
 using Common.Ticker;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using UnityEngine;
@@ -58,7 +59,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
+            m_CurrentFullPath = RmazorUtils.GetFullPath(_Args.From, _Args.To);
         }
         
         public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
@@ -69,7 +70,7 @@ namespace RMAZOR.Models.ItemProceeders
                 var info = ProceedInfos[i];
                 if (!m_CurrentFullPath.Contains(info.CurrentPosition))
                     continue;
-                if (RazorMazeUtils.CompareItemsOnPath(
+                if (RmazorUtils.CompareItemsOnPath(
                     m_CurrentFullPath, _Args.Position, info.CurrentPosition) < 0)
                     continue;
                 possiblePortals.Add(info);

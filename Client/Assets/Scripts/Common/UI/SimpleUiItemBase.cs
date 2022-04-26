@@ -25,9 +25,11 @@ namespace Common.UI
         
         #region nonpublic members
 
-        private   IAudioManager  AudioManager  { get; set; }
-        private   IUITicker      Ticker        { get; set; }
-        protected IColorProvider ColorProvider { get; private set; }
+        private   IAudioManager        AudioManager        { get; set; }
+        private   IUITicker            Ticker              { get; set; }
+        protected IColorProvider       ColorProvider       { get; private set; }
+        protected IPrefabSetManager    PrefabSetManager    { get; private set; }
+        protected ILocalizationManager LocalizationManager { get; private set; }
 
         private bool   m_IsBackgroundNotNull;
         private bool   m_IsBorderNotNull;
@@ -47,16 +49,23 @@ namespace Common.UI
         #region nonpublic methods
 
         public virtual void Init(
-            IAudioManager   _AudioManager,
-            IUITicker       _UITicker,
-            IColorProvider  _ColorProvider)
+            IUITicker            _UITicker,
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                _AutoFont = true)
         {
-            AudioManager = _AudioManager;
-            Ticker        = _UITicker;
-            ColorProvider = _ColorProvider;
+            Ticker              = _UITicker;
+            ColorProvider       = _ColorProvider;
+            AudioManager        = _AudioManager;
+            LocalizationManager = _LocalizationManager;
+            PrefabSetManager    = _PrefabSetManager;
             ColorProvider.ColorChanged += OnColorChanged;
             CheckIfSerializedItemsNotNull();
             SetColorsOnInit();
+            foreach (var text in texts.Where(_Text => _Text.IsNotNull()))
+                LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(text, ETextType.MenuUI));
         }
 
         protected virtual void CheckIfSerializedItemsNotNull()

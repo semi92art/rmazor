@@ -1,4 +1,4 @@
-﻿#if UNITY_IOS || UNITY_IPHONE
+﻿#if UNITY_IOS
 using Common.Helpers;
 using Common.Utils;
 using UnityEngine;

@@ -73,7 +73,7 @@ namespace Editor
             defSymbols = defSymbols + $";GAME_{m_GameInfos[m_GamePopupIdx].GameId}";
             PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTarget, defSymbols);
             if (m_BuildBundles)
-                BuildAssetBundles.BuildBundles();
+                AssetBundlesBuildTools.BuildBundles();
         
             var bpo = new BuildPlayerOptions();
             bpo.scenes = new[] {SceneNames.Preload, SceneNames.Level}

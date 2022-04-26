@@ -29,7 +29,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public abstract IEnumerable<EMazeItemType> Types { get; }
 
-        public IEnumerable<IViewMazeItem> GetActiveItems()
+        public virtual IEnumerable<IViewMazeItem> GetActiveItems()
         {
             var result = new List<IViewMazeItem>();
             var items = Common.GetItems();

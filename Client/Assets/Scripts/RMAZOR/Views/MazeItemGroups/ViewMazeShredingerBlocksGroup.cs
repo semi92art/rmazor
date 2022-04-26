@@ -2,6 +2,7 @@
 using System.Linq;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
@@ -24,7 +25,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {
             var item = Common.GetItem<IViewMazeItemShredingerBlock>(_Args.Info);
-            item.BlockClosed = _Args.Stage == ShredingerBlocksProceeder.StageClosed;
+            item.BlockClosed = _Args.Stage == ModelCommonData.ShredingerStageClosed;
         }
 
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)

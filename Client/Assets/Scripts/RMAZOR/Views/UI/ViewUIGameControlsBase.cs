@@ -32,25 +32,25 @@ namespace RMAZOR.Views.UI
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (!RazorMazeUtils.GravityItemTypes.ContainsAlt(type)) 
+            if (!RmazorUtils.GravityItemTypes.ContainsAlt(type)) 
                 return;
             CommandsProceeder.LockCommands(
-                RazorMazeUtils.MoveAndRotateCommands, 
+                RmazorUtils.MoveAndRotateCommands, 
                 nameof(IViewUIGameControls));
         }
 
         public virtual void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args)
         {
             var type = _Args.Info.Type;
-            if (!RazorMazeUtils.GravityItemTypes.ContainsAlt(type)) 
+            if (!RmazorUtils.GravityItemTypes.ContainsAlt(type)) 
                 return;
-            if (Model.GravityItemsProceeder.ProceedInfos
-                .Any(_I => _I.ProceedingStage == GravityItemsProceeder.StageDrop))
+            if (Model.ModelItemsProceedersSet.GravityItemsProceeder.ProceedInfos
+                .Any(_I => _I.ProceedingStage == ModelCommonData.GravityItemStageDrop))
             {
                 return;
             }
             CommandsProceeder.UnlockCommands(
-                RazorMazeUtils.MoveAndRotateCommands, 
+                RmazorUtils.MoveAndRotateCommands, 
                 nameof(IViewUIGameControls));
         }
     }

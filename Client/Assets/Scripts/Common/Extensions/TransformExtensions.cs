@@ -187,6 +187,12 @@ namespace Common.Extensions
             _T.eulerAngles = DirectionEulerAngles(_T.transform.position, _To);
             return _T;
         }
+        
+        public static Transform SetParentEx(this Transform _Item, Transform _Parent)
+        {
+            _Item.SetParent(_Parent);
+            return _Item;
+        }
 
         public static bool IsFullyVisibleFrom(this RectTransform _Item, RectTransform _Rect)
         {
@@ -201,6 +207,7 @@ namespace Common.Extensions
                 return false;
             return _Item.CountCornersVisibleFrom(_Rect) > 0;
         }
+
         
         #endregion
         

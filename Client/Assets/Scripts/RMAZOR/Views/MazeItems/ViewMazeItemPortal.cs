@@ -125,19 +125,19 @@ namespace RMAZOR.Views.MazeItems
             if (_Args.IsPortFrom)
                 Managers.AudioManager.PlayClip(AudioClipArgsPortal);
             Cor.Run(Cor.Lerp(
+                GameTicker,
+                0.07f,
                 1f, 
                 3f,
-                0.07f,
                 _Progress => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _Progress,
-                GameTicker,
-                (_Broken, _Progress) =>
+                () =>
                 {
                     Cor.Run(Cor.Lerp(
+                        GameTicker,
+                        0.07f,
                         3f,
                         1f,
-                        0.07f,
-                        _P => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _P,
-                        GameTicker));
+                        _P => m_Center.Radius = CoordinateConverter.Scale * 0.2f * _P));
                 }));
         }
 
@@ -232,18 +232,14 @@ namespace RMAZOR.Views.MazeItems
             float dist = 1f + Random.value * CoordinateConverter.Scale * 1f;
             item.transform.SetLocalPosXY(v * dist);
             Cor.Run(Cor.Lerp(
-                0f,
-                1f,
-                0.5f,
-                _Progress => item.Color = item.Color.SetA(_Progress * 0.7f),
-                GameTicker));
-            Cor.Run(Cor.Lerp(
-                1f,
-                0f,
-                dist * GravityItemsSpeed,
-                _Progress => item.transform.SetLocalPosXY(v * dist * _Progress),
                 GameTicker,
-                (_Broken, _Progress) =>
+                0.5f,
+                _OnProgress: _P => item.Color = item.Color.SetA(_P * 0.7f)));
+            Cor.Run(Cor.Lerp(
+                GameTicker,
+                dist * GravityItemsSpeed,
+                _OnProgress: _P => item.transform.SetLocalPosXY(v * dist * (1f -_P)),
+                _OnFinish: () =>
                 {
                     item.Color = item.Color.SetA(0f);
                     m_GravityItems.Deactivate(item);

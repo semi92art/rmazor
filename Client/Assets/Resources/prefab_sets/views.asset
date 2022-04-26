@@ -44,13 +44,18 @@ MonoBehaviour:
     - item: {fileID: 21300000, guid: 9e9b57a1039f2d14c940fa36dfe59f1d, type: 3}
       name: trap_react_spikes_sprite
       bundle: 0
-    - item: {fileID: 11400000, guid: fcaebc104eabc2c4a9876fa77caea83d, type: 2}
-      name: color_set_dark
-      bundle: 0
     - item: {fileID: 11400000, guid: 4861d579d6b7c604bad88f6ceecf4d84, type: 2}
       name: color_set_light
       bundle: 0
     - item: {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79,
         type: 3}
       name: money_item
+      bundle: 0
+    - item: {fileID: 8310000528555401521, guid: 434acbc794db71245964ddb90e9f02eb,
+        type: 3}
+      name: hammer
+      bundle: 0
+    - item: {fileID: 6249100031341951073, guid: 6480efb53c273a04da4c3f4cb61d399d,
+        type: 3}
+      name: bazooka
       bundle: 0

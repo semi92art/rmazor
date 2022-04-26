@@ -138,8 +138,8 @@ namespace RMAZOR.Views.Common
         {
             ActivateTexturePropertiesSet(_Args.LevelIndex, out var provider);
             IdleItems.SetSpawnPool(GetProviderIndex(provider));
-            int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
-            long firstLevInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
+            int group = RmazorUtils.GetGroupIndex(_Args.LevelIndex);
+            long firstLevInGroup = RmazorUtils.GetFirstLevelInGroup(group);
             bool predicate = _Args.LevelIndex == firstLevInGroup || m_IsFirstLoad;
             var colFrom1 = predicate ? BackCol1Current : BackCol1Prev;
             var colFrom2 = predicate ? BackCol2Current : BackCol2Prev;
@@ -154,7 +154,7 @@ namespace RMAZOR.Views.Common
 
         private void ActivateTexturePropertiesSet(long _LevelIndex, out IViewMazeBackgroundTextureProvider _Provider)
         {
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int idx = group % m_TextureSetItems.Count;
             Dbg.Log("group: " + group + ", idx: " + idx);
             var setItem = m_TextureSetItems[idx];

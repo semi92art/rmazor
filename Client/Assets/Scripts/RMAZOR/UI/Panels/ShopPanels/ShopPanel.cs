@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Common.CameraProviders;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -76,20 +77,24 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {"shop_tails_icon", new Tuple<string, UnityAction>("tails", OpenShopTailsPanel)}
             };
             
-            foreach (var kvp in dict)
+            foreach ((string key, (string item1, var item2)) in dict)
             {
                 var item = CreateItem();
-                Managers.LocalizationManager.AddTextObject(item.title, kvp.Value.Item1);
+                Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
+                    item.title,
+                    ETextType.MenuUI,
+                    item1));
                 var args = new ViewShopItemInfo
                 {
-                    Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, kvp.Key)
+                    Icon = Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, key)
                 };
                 item.Init(
-                    Managers.AudioManager,
-                    Managers.LocalizationManager,
                     Ticker,
                     ColorProvider,
-                    kvp.Value.Item2,
+                    Managers.AudioManager,
+                    Managers.LocalizationManager,
+                    Managers.PrefabSetManager,
+                    item2,
                     args);
             }
         }

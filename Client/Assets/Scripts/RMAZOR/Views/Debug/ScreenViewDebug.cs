@@ -1,4 +1,5 @@
 ﻿#if UNITY_EDITOR
+using System;
 using Common;
 using Common.Entities;
 using Common.Extensions;
@@ -58,24 +59,20 @@ namespace RMAZOR.Views.Debug
             {
                 Gizmos.color = Color.red;
                 Gizmos.DrawWireCube(mazeBds.center, mazeBds.size);
-                // Gizmos.DrawLine(new Vector2(mazeBds.min.x, scrBds.min.y), new Vector2(mazeBds.min.x, scrBds.max.y));
-                // Gizmos.DrawLine(new Vector2(mazeBds.max.x, scrBds.min.y), new Vector2(mazeBds.max.x, scrBds.max.y));
-                // Gizmos.DrawLine(new Vector2(scrBds.min.x, mazeBds.min.y), new Vector2(scrBds.max.x, mazeBds.min.y));
-                // Gizmos.DrawLine(new Vector2(scrBds.min.x, mazeBds.min.y), new Vector2(scrBds.max.x, mazeBds.min.y));
                 Gizmos.DrawCube(mazeBds.center, Vector3.one);
             }
-            if (drawScreenOffsets)
-            {
-                Gizmos.color = Color.green;
-                float a = scrBds.min.x + m_Settings.leftScreenOffset;
-                Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
-                a = scrBds.max.x - m_Settings.rightScreenOffset;
-                Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
-                a = scrBds.min.y + m_Settings.bottomScreenOffset;
-                Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
-                a = scrBds.max.y - m_Settings.topScreenOffset;
-                Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
-            }
+            if (!drawScreenOffsets)
+                return;
+            (float leftScreenOffset, float rightScreenOffset) = RmazorUtils.GetRightAndLeftScreenOffsets();
+            Gizmos.color = Color.green;
+            float a = scrBds.min.x + leftScreenOffset;
+            Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
+            a = scrBds.max.x - rightScreenOffset;
+            Gizmos.DrawLine(new Vector2(a, scrBds.min.y), new Vector2(a, scrBds.max.y));
+            a = scrBds.min.y + m_Settings.bottomScreenOffset;
+            Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
+            a = scrBds.max.y - m_Settings.topScreenOffset;
+            Gizmos.DrawLine(new Vector2(scrBds.min.x, a), new Vector2(scrBds.max.x, a));
         }
     }
 

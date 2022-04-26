@@ -12,11 +12,9 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.Common;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -131,21 +129,24 @@ namespace RMAZOR.Views.MazeItems
             const float delta = 0.5f;
             const float duration = 0.1f;
             var startPos = m_ClosedBlock.transform.localPosition;
-            Vector2 dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation);
+            Vector2 dir = RmazorUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation);
             Cor.Run(Cor.Lerp(
+                GameTicker,
+                duration * 0.5f,
                 0f,
                 delta,
-                duration * 0.5f,
                 _Progress => m_ClosedBlock.transform.localPosition = startPos + (Vector3) dir * _Progress,
-                GameTicker,
-                (_Finished, _) =>
+                () =>
                 {
                     Cor.Run(Cor.Lerp(
+                        GameTicker,
+                        duration * 0.5f,
                         delta,
                         0f,
-                        duration * 0.5f,
-                        _Progress => m_ClosedBlock.transform.localPosition = startPos + (Vector3) dir * _Progress,
-                        GameTicker));
+                        _Progress =>
+                        {
+                            m_ClosedBlock.transform.localPosition = startPos + (Vector3) dir * _Progress;
+                        }));
                 }));
         }
 
@@ -336,21 +337,20 @@ namespace RMAZOR.Views.MazeItems
             else
                 shapesOpen.ForEach(_Shape => _Shape.enabled = true);
             yield return Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 0.2f,
-                _Progress =>
+                _OnProgress: _P =>
                 {
-                    float cAppear = 1f - (_Progress - 1f) * (_Progress - 1f);
-                    float cDissapear = 1f - _Progress * _Progress;
+                    float cAppear = 1f - (_P - 1f) * (_P - 1f);
+                    float cDissapear = 1f - _P * _P;
                     var col = ColorProvider.GetColor(ColorIds.Main);
                     var partsOpenColor = col.SetA(_Close ? cDissapear : cAppear);
                     var partsClosedColor = col.SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
                     m_ClosedBlock.Color = partsClosedColor;
                 },
-                GameTicker,
-                (_Broken, _Progress) =>
+                _BreakPredicate: () => m_IsCloseOrOpenImmediately,
+                _OnFinishEx: (_Broken, _Progress) =>
                 {
                     IndicateCoroutineStage(false, _Close);
                     if (_Broken)
@@ -359,8 +359,7 @@ namespace RMAZOR.Views.MazeItems
                         shapesOpen.ForEach(_Shape => _Shape.enabled = false);
                     else
                         m_ClosedBlock.enabled = false;
-                },
-                () => m_IsCloseOrOpenImmediately);
+                });
         }
 
         protected override void OnAppearStart(bool _Appear)

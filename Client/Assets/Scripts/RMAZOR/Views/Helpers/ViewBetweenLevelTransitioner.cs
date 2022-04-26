@@ -167,12 +167,12 @@ namespace RMAZOR.Views.Helpers
             if (_Appear)
                 BetweenLevelTextureProvider.Activate(true);
             yield return Cor.Lerp(
+                GameTicker,
+                m_FullTransitionTime,
                 _Appear ? 0f : 1f,
                 _Appear ? 1f : 0f,
-                m_FullTransitionTime,
                 _P => BetweenLevelTextureProvider.SetTransitionValue(_P),
-                GameTicker,
-                (_Broken, _Progress) =>
+                () =>
                 {
                     if (!_Appear)
                         BetweenLevelTextureProvider.Activate(false);

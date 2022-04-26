@@ -26,10 +26,10 @@ namespace RMAZOR
         
         #region nonpublic members
 
-        private static readonly float LineHeight = EditorGUIUtility.singleLineHeight;
-        private static readonly Color ContentColor = Color.white;
+        private static readonly float LineHeight                   = EditorGUIUtility.singleLineHeight;
+        private static readonly Color ContentColor                 = Color.white;
         private static readonly Color BackgroundSelectedLevelColor = new Color(0.16f, 0.27f, 0.58f);
-        private static readonly Color BackgroundLoadedLevelColor = new Color(0f, 1f, 0.19f, 0.43f);
+        private static readonly Color BackgroundLoadedLevelColor   = new Color(0f, 1f, 0.19f, 0.43f);
 
         private ReorderableList List { get; set; }
 
@@ -59,7 +59,11 @@ namespace RMAZOR
         public int            SelectedIndex => (page - 1) * LevelsOnPage + List.index;
         public int            Count         => (levels ?? LevelsCached).Count;
 
-        public HeapReorderableList(int _GameId, int _HeapIndex, UnityAction<int> _OnSelect, List<MazeInfo> _Levels)
+        public HeapReorderableList(
+            int              _GameId,
+            int              _HeapIndex,
+            UnityAction<int> _OnSelect,
+            List<MazeInfo>   _Levels)
         {
             gameId = _GameId;
             heapIndex = _HeapIndex;
@@ -206,7 +210,7 @@ namespace RMAZOR
         {
             var fltrs = Enum.GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
-                .Except(new[] {EMazeItemType.Block, EMazeItemType.MovingBlockFree})
+                .Except(new[] {EMazeItemType.Block})
                 .ToList();
             filters = new SerializableDictionary<EMazeItemType, bool>();
             foreach (var filter in fltrs)
@@ -302,16 +306,16 @@ namespace RMAZOR
 
         private static Color GetContentColor(int _Index)
         {
-            int groupIndex = RazorMazeUtils.GetGroupIndex(_Index);
-            int idx = (groupIndex - 1) % RazorMazeUtils.LevelsInGroupList.Length;
+            int groupIndex = RmazorUtils.GetGroupIndex(_Index);
+            int idx = (groupIndex - 1) % RmazorUtils.LevelsInGroupList.Length;
             return GroupColors[idx];
         }
 
         private static readonly Color[] GroupColors =
         {
             new Color(0.2f, 0.2f, 0.2f),
-            new Color(0.32f, 0.32f, 0.32f),
-            new Color(0.41f, 0.41f, 0.41f),
+            new Color(0.4f, 0.34f, 0.34f),
+            new Color(0.32f, 0.34f, 0.4f),
         };
         
         private static readonly Dictionary<EMazeItemType, Color> FilterColors = new Dictionary<EMazeItemType, Color>
@@ -325,12 +329,17 @@ namespace RMAZOR
             {EMazeItemType.GravityTrap,      new Color(0.7f, 0f, 1f)},
             {EMazeItemType.Turret,           new Color(1f, 0f, 0.64f)},
             {EMazeItemType.GravityBlockFree, new Color(0.94f, 1f, 0.96f)},
-            {EMazeItemType.Springboard, Color.black}
+            {EMazeItemType.Springboard,      Color.black},
+            {EMazeItemType.Hammer,           new Color(1f, 0.54f, 0.55f)},
+            {EMazeItemType.Bazooka,          new Color(0.05f, 0.05f, 0.37f)},
         };
         
         private static LevelsSaver GetLevelsSaver()
         {
-            return new LevelsSaver(new PrefabSetManager(new AssetBundleManagerFake()));
+            var assetBundleManager = new AssetBundleManagerFake();
+            var prefabSetManager = new PrefabSetManager(assetBundleManager);
+            var mazeInfoValidator = new MazeInfoValidator();
+            return new LevelsSaver(prefabSetManager, mazeInfoValidator);
         }
 
         #endregion

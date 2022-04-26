@@ -16,7 +16,6 @@ namespace Common.Settings
             AnalyticsManager = _AnalyticsManager;
         }
         
-        public override UnityAction<bool> OnValueSet   { get; set; }
         public override SaveKey<bool>     Key          => SaveKeysCommon.SettingSoundOn;
         public override string            TitleKey     => "Sound";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;

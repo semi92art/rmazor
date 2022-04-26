@@ -8,7 +8,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using RMAZOR.Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -22,33 +21,42 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         
         [SerializeField] private TextMeshProUGUI title;
         [SerializeField] private Animator animator;
+
+        private object        m_Value;
         
         #endregion
         
         private bool                             m_IsInitialized;
         private IEnumerable<SettingSelectorItem> m_Items;
-        private UnityAction<string>              m_OnSelect;
+        private UnityAction<object>              m_Select;
         private bool                             m_IsTitleNotNull;
         private float                            m_BackgroundColorAlphaNormal;
         private float                            m_BackgroundColorAlphaSelected;
         
         public void Init(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider,
-            string _Text,
-            UnityAction<string> _Select,
-            bool _IsOn)
+            IUITicker            _UITicker,
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            string               _Text,
+            object               _Value,
+            UnityAction<object>  _Select,
+            bool                 _IsOn,
+            Func<TMP_FontAsset>  _Font = null)
         {
-            base.Init(_Managers.AudioManager, _UITicker, _ColorProvider);
+            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
             m_BackgroundColorAlphaNormal = dialogBackground.color.a;
             m_BackgroundColorAlphaSelected = m_BackgroundColorAlphaNormal + 0.1f;
             title.text = _Text;
+            m_Value = _Value;
+            if (_Font != null)
+                title.font = _Font();
+            else LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(title, ETextType.MenuUI));
             name = $"{_Text} Setting";
-            m_OnSelect = _Select;
-
+            m_Select = _Select;
             m_IsInitialized = true;
-
             if (_IsOn)
             {
                 Cor.Run(Cor.WaitWhile(
@@ -56,7 +64,13 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             }
         }
 
-        public override void Init(IAudioManager _AudioManager, IUITicker _UITicker, IColorProvider _ColorProvider)
+        public override void Init(
+            IUITicker            _UITicker, 
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                 _AutoFont = true)
         {
             throw new NotSupportedException();
         }
@@ -71,7 +85,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             if (!m_IsInitialized) 
                 return;
             SoundOnClick();
-            m_OnSelect?.Invoke(title.text);
+            m_Select?.Invoke(m_Value);
 
             foreach (var item in m_Items.ToArray())
             {

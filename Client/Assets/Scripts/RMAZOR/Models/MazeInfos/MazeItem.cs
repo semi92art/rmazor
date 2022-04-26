@@ -19,7 +19,8 @@ namespace RMAZOR.Models.MazeInfos
         Turret,
         GravityBlockFree,
         Springboard,
-        MovingBlockFree
+        Hammer,
+        Bazooka
     }
     
     [Serializable]
@@ -31,6 +32,7 @@ namespace RMAZOR.Models.MazeInfos
         [JsonIgnore] [SerializeField] private List<V2Int>   directions = new List<V2Int>();
         [JsonIgnore] [SerializeField] private V2Int         pair;
         [JsonIgnore] [SerializeField] private bool          blank;
+        [JsonIgnore] [SerializeField] private List<string>  args = new List<string>();
 
         [JsonProperty(PropertyName = "T")]
         public EMazeItemType Type
@@ -73,6 +75,14 @@ namespace RMAZOR.Models.MazeInfos
             get => blank;
             set => blank = value;
         }
+        
+        [JsonProperty(PropertyName = "A")]
+        public List<string> Args
+        {
+            get => args;
+            set => args = value;
+        }
+
 
         public override int GetHashCode()
         {
@@ -85,6 +95,8 @@ namespace RMAZOR.Models.MazeInfos
                 hash = hash * 23 + Pair.GetHashCode();
                 foreach (var item in Path)
                     hash = hash * 23 + item.GetHashCode();
+                foreach (string arg in Args)
+                    hash = hash * 23 + arg.GetHashCode();
                 return hash;
             }
         }

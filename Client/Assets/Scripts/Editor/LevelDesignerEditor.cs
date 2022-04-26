@@ -38,9 +38,9 @@ namespace RMAZOR.Editor
 
         private static LevelDesigner Des => LevelDesigner.Instance;
         
+        private        ViewSettings             m_ViewSettings;
         private        IPrefabSetManager        m_PrefabSetManager;
         private        IAssetBundleManager      m_AssetBundleManager;
-        private        ViewSettings             m_ViewSettings;
         private        IMazeCoordinateConverter m_CoordinateConverter;
         private        IContainersGetter        m_ContainersGetter;
         private        IMazeItemsCreator        m_MazeItemsCreator;

@@ -1,4 +1,5 @@
-﻿using Common.Constants;
+﻿using System;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
@@ -36,13 +37,16 @@ namespace RMAZOR.Views.Characters
 
         public abstract EAppearingState AppearingState { get; }
         public virtual  bool            Activated      { get; set; }
-        public abstract void            OnRotationFinished(MazeRotationEventArgs _Args);
-        public abstract void            OnAllPathProceed(V2Int _LastPath);
-        public abstract void            OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args);
+        public abstract Transform       Transform      { get; }
+        public abstract Collider2D[]    Colliders      { get; }
+        
+        public abstract void            OnRotationFinished(MazeRotationEventArgs                   _Args);
+        public abstract void            OnAllPathProceed(V2Int                                     _LastPath);
+        public abstract void            OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args);
         public abstract void            OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args);
-        public abstract void            OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args);
-        public abstract void            OnLevelStageChanged(LevelStageArgs _Args);
-        public abstract void            Appear(bool _Appear);
+        public abstract void            OnCharacterMoveFinished(CharacterMovingFinishedEventArgs   _Args);
+        public abstract void            OnLevelStageChanged(LevelStageArgs                         _Args);
+        public abstract void            Appear(bool                                                _Appear);
 
         #endregion
         
@@ -52,5 +56,6 @@ namespace RMAZOR.Views.Characters
             ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
         
         #endregion
+
     }
 }

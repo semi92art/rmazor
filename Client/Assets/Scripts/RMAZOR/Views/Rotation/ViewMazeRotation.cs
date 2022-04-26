@@ -92,21 +92,21 @@ namespace RMAZOR.Views.Rotation
                 out float realSkidAngle);
             
             yield return Cor.Lerp(
+                GameTicker, 
+                rotationAngleDistance / (90f * ViewSettings.mazeRotationSpeed),
                 startAngle,
                 endAngle + realSkidAngle,
-                rotationAngleDistance / (90f * ViewSettings.mazeRotationSpeed),
                 _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
-                GameTicker, 
-                (_Broken, _Progress) =>
+                () =>
                 {
                     RotationFinished?.Invoke(_Args);
                     Cor.Run(Cor.Lerp(
+                        GameTicker,
+                        1 / (ViewSettings.mazeRotationSpeed * 2f),
                         endAngle + realSkidAngle,
                         endAngle,
-                        1 / (ViewSettings.mazeRotationSpeed * 2f),
                         _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
-                        GameTicker,
-                        (_Broken1, _Progress1) => Character.OnRotationFinished(_Args)));
+                        () => Character.OnRotationFinished(_Args)));
                 });
         }
 

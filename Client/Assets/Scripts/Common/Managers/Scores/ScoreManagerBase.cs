@@ -98,6 +98,8 @@ namespace Common.Managers.Scores
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             Ticker.Register(this);
             AuthenticatePlatformGameService(() => base.Init());
         }

@@ -13,7 +13,6 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
@@ -127,8 +126,8 @@ namespace RMAZOR.Views.MazeItems
         {
             switch (_Args.Stage)
             {
-                case TrapsIncreasingProceeder.StageIncreased: OpenTrap(); break;
-                case TrapsIncreasingProceeder.StageIdle: CloseTrap();  break;
+                case ModelCommonData.TrapIncreasingStageIncreased: OpenTrap();  break;
+                case ModelCommonData.StageIdle:                    CloseTrap(); break;
             }
         }
         

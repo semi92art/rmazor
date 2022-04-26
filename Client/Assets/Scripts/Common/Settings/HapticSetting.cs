@@ -16,7 +16,6 @@ namespace Common.Settings
             AnalyticsManager = _AnalyticsManager;
         }
         
-        public override UnityAction<bool> OnValueSet   { get; set; }
         public override SaveKey<bool>     Key          => SaveKeysCommon.SettingHapticsOn;
         public override string            TitleKey     => "Haptics";
         public override ESettingLocation  Location     => ESettingLocation.MiniButtons;

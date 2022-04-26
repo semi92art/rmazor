@@ -96,19 +96,22 @@ namespace RMAZOR.Views.Common
         
         protected virtual void LoadSets()
         {
-            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet;
-            if (m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
-            {
-                var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                    ("configs", "back_and_front_colors_set_light");
-                m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set;
-            }
+            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet
+                .Where(_Item => _Item.inUse)
+                .ToList();
+            if (!m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
+                return;
+            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
+                ("configs", "back_and_front_colors_set_light");
+            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set
+                .Where(_Item => _Item.inUse)
+                    .ToList();
         }
 
         private Color GetBackgroundColor(int _ColorId, long _LevelIndex)
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             var setItem = colorsSet[setItemIdx];
             return _ColorId switch

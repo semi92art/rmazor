@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using Common.Constants;
 using Common.Entities;
@@ -8,6 +10,7 @@ using Common.Extensions;
 using Common.Utils;
 using Lean.Localization;
 using RMAZOR.Models;
+using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,21 +22,28 @@ namespace RMAZOR.DebugConsole
         
         public static void RegisterCommands()
         {
-            Controller.RegisterCommand("help",            Help,                        "Print command list.");
-            Controller.RegisterCommand("restart",         Restart,                     "Restart game.");
-            Controller.RegisterCommand("load",            Load,                        "Reload specified level.");
-            Controller.RegisterCommand("reload",          Reload,                      "Reload current level.");
-            Controller.RegisterCommand("clc",             ClearConsole,                "Clear console.");
-            Controller.RegisterCommand("set_lang",        SetLanguage,                 "set language");
-            Controller.RegisterCommand("target_fps",      SetTargetFps,                "Set target frame rate");
-            Controller.RegisterCommand("wof_spin_enable", EnableSpinButton,            "Enable wheel of fortune spin.");
-            Controller.RegisterCommand("enable_ads",      EnableAds,                   "Enable or disable advertising (true/false)");
-            Controller.RegisterCommand("load_level",      LoadLevel,                   "Load level by index");
-            Controller.RegisterCommand("set_money",       SetMoney,                    "Set money count");
-            Controller.RegisterCommand("rate_game_panel", ShowRateGamePanel,           "Set money count");
-            Controller.RegisterCommand("int_conn",        InternetConnectionAvailable, "Check if internet connection available");
-            Controller.RegisterCommand("show_money",      ShowMoney,                   "Show money");
-            Controller.RegisterCommand("run_cor",         GetRunningCoroutinesCount,   "Show running coroutines count");
+            var commandArgsList = new List<DebugCommandArgs>
+            {
+                new DebugCommandArgs("restart",          Restart, "Restart game."),
+                new DebugCommandArgs("load",             Load, "Reload specified level."),
+                new DebugCommandArgs("reload",           Reload, "Reload current level."),
+                new DebugCommandArgs("clc",              ClearConsole, "Clear console."),
+                new DebugCommandArgs("set_lang",         SetLanguage, "set language"),
+                new DebugCommandArgs("target_fps",       SetTargetFps, "Set target frame rate"),
+                new DebugCommandArgs("wof_spin_enable",  EnableSpinButton, "Enable wheel of fortune spin."),
+                new DebugCommandArgs("enable_ads",       EnableAds, "Enable or disable advertising (true/false)"),
+                new DebugCommandArgs("load_level",       LoadLevel, "Load level by index"),
+                new DebugCommandArgs("set_money",        SetMoney, "Set money count"),
+                new DebugCommandArgs("rate_game_panel",  ShowRateGamePanel, "Show rate game panel"),
+                new DebugCommandArgs("int_conn",         InternetConnectionAvailable, "Check if internet connection available"),
+                new DebugCommandArgs("show_money",       ShowMoney, "Show money"),
+                new DebugCommandArgs("run_cor",          GetRunningCoroutinesCount, "Show running coroutines count"),
+                new DebugCommandArgs("dis_rot_coms",     ShowDisabledRotationCommands, "Show disabled rotation commands on this moment"),
+                new DebugCommandArgs("dis_mov_coms",     ShowDisabledMovementCommands, "Show disabled movement commands on this moment"),
+            };
+
+            foreach (var args in commandArgsList)
+                Controller.RegisterCommand(args);
         }
 
         private static void Reload(string[] _Args)
@@ -50,8 +60,8 @@ namespace RMAZOR.DebugConsole
             {
                 Dbg.Log("Print: command list");
                 Controller.AppendLogLine("Current command list:");
-                foreach (var kvp in Controller.Commands)
-                    Controller.AppendLogLine($"{kvp.Key}: {kvp.Value.Description}");
+                foreach ((string key, var value) in Controller.Commands)
+                    Controller.AppendLogLine($"[{key}]: {value.Description}");
             }
             else if (_Args.Any(_Arg => _Arg == "woodpecker"))
                 Controller.AppendLogLine("Work is filled up, woodpeckers!");
@@ -116,7 +126,7 @@ namespace RMAZOR.DebugConsole
                     if (arg == "-h")
                     {
                         Controller.AppendLogLine("Current language list:");
-                        foreach (var lang in Enum.GetValues(typeof(Language)))
+                        foreach (var lang in Enum.GetValues(typeof(ELanguage)))
                         {
                             Controller.AppendLogLine(lang.ToString());
                         }
@@ -230,6 +240,36 @@ namespace RMAZOR.DebugConsole
         private static void GetRunningCoroutinesCount(string[] _Args)
         {
             Dbg.Log("Running coroutines count: " + Cor.GetRunningCoroutinesCount());
+        }
+
+        private static void ShowDisabledRotationCommands(string[] _Args)
+        {
+            var groupNames = (Controller.CommandsProceeder as ViewInputCommandsProceeder)?
+                .LockedCommands
+                .Where(_Kvp => RmazorUtils.RotateCommands.Any(
+                    _Command => _Kvp.Value.Contains(_Command)))
+                .Select(_Kvp => _Kvp.Key).ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("Locked commands by groups: ");
+            if (groupNames != null)
+                foreach (string gName in groupNames)
+                    sb.AppendLine(gName);
+            Dbg.Log(sb.ToString());
+        }
+        
+        private static void ShowDisabledMovementCommands(string[] _Args)
+        {
+            var groupNames = (Controller.CommandsProceeder as ViewInputCommandsProceeder)?
+                .LockedCommands
+                .Where(_Kvp => RmazorUtils.MoveCommands.Any(
+                    _Command => _Kvp.Value.Contains(_Command)))
+                .Select(_Kvp => _Kvp.Key).ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("Locked commands by groups: ");
+            if (groupNames != null)
+                foreach (string gName in groupNames)
+                    sb.AppendLine(gName);
+            Dbg.Log(sb.ToString());
         }
     }
 }

@@ -11,6 +11,7 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.SpawnPools;
+using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Utils;
@@ -29,11 +30,9 @@ namespace RMAZOR.Views.Common
     {
         #region constants
 
-        private const float AdditionalScale       = 1.005f;
         private const int   BordersPoolCount      = 100;
         private const int   CornersPoolCount      = 20;
         private const int   MasksPoolCount        = 10;
-        private const int   TextureTypesCount     = 9;
         private const int   TextureRenderersCount = 3;
         private const float BorderRelativeIndent  = 0.5f;
 
@@ -200,11 +199,16 @@ namespace RMAZOR.Views.Common
                 renderer.tileMode = SpriteTileMode.Continuous;
                 m_TextureRenderers.Add(renderer);
             }
-            for (int i = 1; i <= TextureTypesCount; i++)
+            float ratio = GraphicUtils.AspectRatio;
+            string prefabNameSuffix;
+            if (ratio > 0.7f)       prefabNameSuffix = "high_ratio";
+            else if (ratio > 0.54f) prefabNameSuffix = "middle_ratio";
+            else                    prefabNameSuffix = "low_ratio";
+            for (int i = 1; i <= ViewSettings.additionalBackTexturesCount; i++)
             {
                 var textureSprite = PrefabSetManager.GetObject<Sprite>(
                     "background", 
-                    $"additional_background_texture_{i}");
+                    $"additional_background_texture_{i}_{prefabNameSuffix}");
                 m_TextureSprites.Add(textureSprite);
             }
             for (int i = 1; i <= MasksPoolCount; i++)
@@ -293,8 +297,8 @@ namespace RMAZOR.Views.Common
             float scale = CoordinateConverter.Scale;
             float width = scale * (maxX - minX + 2f * (0.5f + BorderRelativeIndent));
             float height = scale * (maxY - minY + 2f * (0.5f + BorderRelativeIndent));
-            int group = RazorMazeUtils.GetGroupIndex(_LevelIndex);
-            int textureTypeIdx = group % TextureTypesCount;
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int textureTypeIdx = group % ViewSettings.additionalBackTexturesCount;
             var renderer = m_TextureRenderers.FirstInactive;
             m_TextureRenderers.Activate(renderer);
             renderer.sprite = m_TextureSprites[textureTypeIdx];

@@ -16,7 +16,7 @@ using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.UI
 {
-    public class ViewUI : ViewUIBase, IApplicationPause
+    public class ViewUI : ViewUIBase, IApplicationFocus
     {
         #region inject
 
@@ -105,6 +105,7 @@ namespace RMAZOR.Views.UI
                     if (span.Days > 31)
                     {
                         Managers.ShopManager.RateGame(true);
+                        SaveUtils.PutValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown, DateTime.Now);
                     }
                     else
                     {
@@ -119,16 +120,18 @@ namespace RMAZOR.Views.UI
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            if (_Args.Stage == ELevelStage.Finished && _Args.LevelIndex == ViewSettings.firstLevelToRateGame)
+                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             GameControls.OnLevelStageChanged(_Args);
         }
         
-        public void OnApplicationPause(bool _Pause)
+        public void OnApplicationFocus(bool _Focus)
         {
-            if (_Pause)
+            if (!_Focus)
                 return;
-            if (CommonData.PausedByAdvertising)
+            if (CommonData.PausedByAdvertisingOrPurchasing)
             {
-                CommonData.PausedByAdvertising = false;
+                CommonData.PausedByAdvertisingOrPurchasing = false;
                 return;
             }
             if (MustShowRateGamePanel())

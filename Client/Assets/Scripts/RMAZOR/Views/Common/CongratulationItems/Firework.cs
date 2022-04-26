@@ -103,16 +103,16 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 SetColorByTheme(m_Discs[i], col);
             }
             yield return Cor.Lerp(
+                m_Ticker,
+                duration,
                 1f,
                 0f,
-                duration,
                 _Progress =>
                 {
                     for (int i = 0; i < count; i++)
                         m_Discs[i].Color = m_Discs[i].Color.SetA(_Progress);
                 },
-                m_Ticker,
-                (_Broken, _Progress) =>
+                () =>
                 {
                     for (int i = 0; i < count; i++)
                     {

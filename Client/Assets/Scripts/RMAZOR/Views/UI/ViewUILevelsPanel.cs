@@ -4,6 +4,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Managers;
@@ -65,12 +66,12 @@ namespace RMAZOR.Views.UI
             IViewGameTicker             _GameTicker,
             IManagersGetter             _Managers)
         {
-            Model = _Model;
+            Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
-            ContainersGetter = _ContainersGetter;
-            CameraProvider = _CameraProvider;
-            GameTicker = _GameTicker;
-            Managers = _Managers;
+            ContainersGetter  = _ContainersGetter;
+            CameraProvider    = _CameraProvider;
+            GameTicker        = _GameTicker;
+            Managers          = _Managers;
         }
 
         #endregion
@@ -108,10 +109,11 @@ namespace RMAZOR.Views.UI
         {
             if (!_Show)
                 return;
-            Managers.LocalizationManager.AddTextObject(
+            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
                 m_LevelText,
+                ETextType.GameUI,
                 "level", 
-                _Text => _Text + " " + (Model.LevelStaging.LevelIndex + 1));
+                _Text => _Text + " " + (Model.LevelStaging.LevelIndex + 1)));
         }
 
         #endregion
@@ -120,12 +122,11 @@ namespace RMAZOR.Views.UI
         
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
-            if (!m_FirstMoveOrRotateCommandInvoked 
-                && RazorMazeUtils.MoveAndRotateCommands.ContainsAlt(_Command))
-            {
-                AnimateLevelsPanelAfterFirstMove();
-                m_FirstMoveOrRotateCommandInvoked = true;
-            }
+            if (m_FirstMoveOrRotateCommandInvoked ||
+                !RmazorUtils.MoveAndRotateCommands.ContainsAlt(_Command))
+                return;
+            AnimateLevelsPanelAfterFirstMove();
+            m_FirstMoveOrRotateCommandInvoked = true;
         }
         
         private void InitLevelPanel()
@@ -173,8 +174,8 @@ namespace RMAZOR.Views.UI
             foreach (var checkmark in m_CheckMarks)
                 checkmark.gameObject.SetActive(false);
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
-            int groupIndex = RazorMazeUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
-            int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(groupIndex);
+            int groupIndex = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
+            int levelsInGroup = RmazorUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - m_TopOffset - 3f;
             for (int i = 0; i < levelsInGroup; i++)
             {
@@ -195,17 +196,17 @@ namespace RMAZOR.Views.UI
             foreach (var transform in m_LevelPanelItemsFinishPositions.Keys)
             {
                 Cor.Run(Cor.Lerp(
+                    GameTicker,
+                    animTime,
                     transform.localPosition.y,
                     m_LevelPanelItemsFinishPositions[transform],
-                    animTime,
-                    _YPos => transform.SetLocalPosXY(transform.localPosition.x, _YPos),
-                    GameTicker));
+                    _YPos => transform.SetLocalPosXY(transform.localPosition.x, _YPos)));
             }
         }
         
         private void SetLevelCheckMarks(long _LevelIndex, bool _Passed)
         {
-            int levelIndexInGroup = RazorMazeUtils.GetIndexInGroup(_LevelIndex);
+            int levelIndexInGroup = RmazorUtils.GetIndexInGroup(_LevelIndex);
             for (int i = 0; i < levelIndexInGroup; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyChekMarkSet);
             m_CheckMarks[levelIndexInGroup].SetTrigger(_Passed ? AnimKeyCheckMarkPass : AnimKeyCheckMarkIdle);

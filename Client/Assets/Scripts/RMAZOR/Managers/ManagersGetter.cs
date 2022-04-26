@@ -5,6 +5,7 @@ using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.Analytics;
 using Common.Managers.IAP;
+using Common.Managers.Notifications;
 using Common.Managers.Scores;
 using RMAZOR.Models;
 using RMAZOR.Views;
@@ -13,17 +14,17 @@ namespace RMAZOR.Managers
 {
     public interface IManagersGetter : IOnLevelStageChanged, IInit
     {
-        IAudioManager        AudioManager        { get; }
-        IAnalyticsManager    AnalyticsManager    { get; }
-        IAdsManager          AdsManager          { get; } 
-        IShopManager         ShopManager         { get; }
-        ILocalizationManager LocalizationManager { get; }
-        IScoreManager        ScoreManager        { get; }
-        IHapticsManager      HapticsManager      { get; }
-        IPrefabSetManager    PrefabSetManager    { get; }
-        IAssetBundleManager  AssetBundleManager  { get; }
-        IRemoteConfigManager RemoteConfigManager { get; }
-        IDebugManager        DebugManager        { get; }
+        IAudioManager         AudioManager         { get; }
+        IAnalyticsManager     AnalyticsManager     { get; }
+        IAdsManager           AdsManager           { get; } 
+        IShopManager          ShopManager          { get; }
+        ILocalizationManager  LocalizationManager  { get; }
+        IScoreManager         ScoreManager         { get; }
+        IHapticsManager       HapticsManager       { get; }
+        IPrefabSetManager     PrefabSetManager     { get; }
+        IRemoteConfigManager  RemoteConfigManager  { get; }
+        IDebugManager         DebugManager         { get; }
+        INotificationsManager NotificationsManager { get; }
     }
 
     public class ManagersGetter : InitBase, IManagersGetter
@@ -36,42 +37,42 @@ namespace RMAZOR.Managers
         
         #region inject
         
-        public IAudioManager        AudioManager        { get; }
-        public IAnalyticsManager    AnalyticsManager    { get; }
-        public IAdsManager          AdsManager          { get; } 
-        public IShopManager         ShopManager         { get; }
-        public ILocalizationManager LocalizationManager { get; }
-        public IScoreManager        ScoreManager        { get; }
-        public IHapticsManager      HapticsManager      { get; }
-        public IPrefabSetManager    PrefabSetManager    { get; }
-        public IAssetBundleManager  AssetBundleManager  { get; }
-        public IRemoteConfigManager RemoteConfigManager { get; }
-        public IDebugManager        DebugManager        { get; }
+        public IAudioManager         AudioManager         { get; }
+        public IAnalyticsManager     AnalyticsManager     { get; }
+        public IAdsManager           AdsManager           { get; } 
+        public IShopManager          ShopManager          { get; }
+        public ILocalizationManager  LocalizationManager  { get; }
+        public IScoreManager         ScoreManager         { get; }
+        public IHapticsManager       HapticsManager       { get; }
+        public IPrefabSetManager     PrefabSetManager     { get; }
+        public IRemoteConfigManager  RemoteConfigManager  { get; }
+        public IDebugManager         DebugManager         { get; }
+        public INotificationsManager NotificationsManager { get; }
 
         public ManagersGetter(
-            IAudioManager        _AudioManager,
-            IAnalyticsManager    _AnalyticsManager,
-            IAdsManager          _AdsManager,
-            IShopManager         _ShopManager,
-            ILocalizationManager _LocalizationManager,
-            IScoreManager        _ScoreManager,
-            IHapticsManager      _HapticsManager,
-            IPrefabSetManager    _PrefabSetManager,
-            IAssetBundleManager  _AssetBundleManager,
-            IRemoteConfigManager _RemoteConfigManager, 
-            IDebugManager        _DebugManager)
+            IAudioManager         _AudioManager,
+            IAnalyticsManager     _AnalyticsManager,
+            IAdsManager           _AdsManager,
+            IShopManager          _ShopManager,
+            ILocalizationManager  _LocalizationManager,
+            IScoreManager         _ScoreManager,
+            IHapticsManager       _HapticsManager,
+            IPrefabSetManager     _PrefabSetManager,
+            IRemoteConfigManager  _RemoteConfigManager,
+            IDebugManager         _DebugManager,
+            INotificationsManager _NotificationsManager)
         {
-            AudioManager        = _AudioManager;
-            AnalyticsManager    = _AnalyticsManager;
-            AdsManager          = _AdsManager;
-            ShopManager         = _ShopManager;
-            LocalizationManager = _LocalizationManager;
-            ScoreManager        = _ScoreManager;
-            HapticsManager      = _HapticsManager;
-            PrefabSetManager    = _PrefabSetManager;
-            AssetBundleManager  = _AssetBundleManager;
-            RemoteConfigManager = _RemoteConfigManager;
-            DebugManager        = _DebugManager;
+            AudioManager         = _AudioManager;
+            AnalyticsManager     = _AnalyticsManager;
+            AdsManager           = _AdsManager;
+            ShopManager          = _ShopManager;
+            LocalizationManager  = _LocalizationManager;
+            ScoreManager         = _ScoreManager;
+            HapticsManager       = _HapticsManager;
+            PrefabSetManager     = _PrefabSetManager;
+            RemoteConfigManager  = _RemoteConfigManager;
+            DebugManager         = _DebugManager;
+            NotificationsManager = _NotificationsManager;
         }
         
         #endregion
@@ -80,8 +81,6 @@ namespace RMAZOR.Managers
 
         public override void Init()
         {
-            AudioManager.Init();
-            AssetBundleManager.Init();
             m_ProceedersCached = new object[]
             {
                 AudioManager,
@@ -92,9 +91,12 @@ namespace RMAZOR.Managers
                 ScoreManager,
                 HapticsManager,
                 PrefabSetManager,
-                AssetBundleManager,
-                RemoteConfigManager
+                RemoteConfigManager,
+                NotificationsManager
             };
+            var proceeders = GetInterfaceOfProceeders<IInit>();
+            foreach (var proceeder in proceeders)
+                proceeder?.Init();
             base.Init();
         }
 

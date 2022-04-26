@@ -91,7 +91,7 @@ namespace RMAZOR.Views.MazeItems
             base.OnColorChanged(_ColorId, _Color);
             switch (_ColorId)
             {
-                case ColorIds.PathBackground: m_PathBackground.SetColor(_Color.SetA(0.7f)); break;
+                case ColorIds.PathBackground: m_PathBackground.SetColor(_Color.SetA(ViewSettings.filledPathAlpha)); break;
                 case ColorIds.PathFill:
                     var col = _Color;
                     if (_Color == ColorProvider.GetColor(ColorIds.Main))
@@ -180,7 +180,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var col = ColorProvider.GetColor(ColorIds.PathBackground).SetA(0.7f);
+            var col = ColorProvider.GetColor(ColorIds.PathBackground).SetA(ViewSettings.filledPathAlpha);
             var result = base.GetAppearSets(_Appear);
             result.Add(new [] {m_PathBackground}, () => col);
             return result;

@@ -1,4 +1,5 @@
-﻿using Common.Constants;
+﻿using Common;
+using Common.Constants;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -6,12 +7,12 @@ using UnityToolbarExtender;
 
 namespace RMAZOR.Editor
 {
-    [InitializeOnLoad]
     public static class SceneViewFocuserEditor
     {
-        static SceneViewFocuserEditor()
+        [InitializeOnLoadMethod]
+        public static void AddButtonToToolbar()
         {
-            ToolbarExtender.RightToolbarGUI.Insert(1, OnToolbarGUI);
+            ToolbarExtender.RightToolbarGUI.Insert(0, OnToolbarGUI);
         }
 
         private static void OnToolbarGUI()
@@ -23,6 +24,7 @@ namespace RMAZOR.Editor
                 new GUIContent(null, tex, "Focus SceneView when entering play mode"),
                 "Command"))
             {
+                Dbg.Log("Focus");
                 SceneView.lastActiveSceneView.in2DMode = true; 
                 LevelDesignerEditor.Instance.FocusCamera(LevelDesigner.Instance.size);
             }

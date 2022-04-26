@@ -52,6 +52,8 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: e2b3b24047bbb6146be8c4686e47db21, type: 3}
   - {fileID: 21300000, guid: 51953f40069ceef4694aa58053d12cd7, type: 3}
+  - {fileID: 21300000, guid: 8b995270c57c6a741947fae659a52d5f, type: 3}
+  - {fileID: 21300000, guid: f9f50c70e85ed324a9980948da1270f4, type: 3}
   - {fileID: 21300000, guid: 1b2939b040932a340b29854f260fff67, type: 3}
   - {fileID: 21300000, guid: 8dbe85d08b27850478f0837efd9b267a, type: 3}
   - {fileID: 21300000, guid: f1cf26219a94e46969962dc097a6e73b, type: 3}
@@ -65,13 +67,16 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1f8bea132df1d364ebe0dcafbf9b47ec, type: 3}
   - {fileID: 21300000, guid: a93c9533151308244a03e75c09beef2a, type: 3}
   - {fileID: 21300000, guid: 7fc19bb38f1364f4f9e85b1074149e83, type: 3}
+  - {fileID: 21300000, guid: 28f9a34449d241b40a28fd2128be3660, type: 3}
   - {fileID: 21300000, guid: 7cce7674fe546f64a9d7fbdfbd07ad47, type: 3}
   - {fileID: 21300000, guid: 89705da449739d946ba46ea878ce7bfe, type: 3}
   - {fileID: 21300000, guid: 3a5b10b5b94926944b1561fad76d691f, type: 3}
   - {fileID: 21300000, guid: 165fa3c519486b24c825895beee1992a, type: 3}
   - {fileID: 21300000, guid: 2ba4ea26f4d1cd043a306bf6901a2aa9, type: 3}
+  - {fileID: 21300000, guid: 9993fe7631113cb419aad9088df415d3, type: 3}
   - {fileID: 21300000, guid: 4d2b838604b669146bc164b33de3d98d, type: 3}
   - {fileID: 21300000, guid: 7fe552b69a36a2548a37a14657a4551d, type: 3}
+  - {fileID: 21300000, guid: d2ee71e7f58cb7d458d0c124272bdebd, type: 3}
   - {fileID: 21300000, guid: 9577c428d7714d741bff2986f7030699, type: 3}
   - {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
   - {fileID: 21300000, guid: 1f4e95e85e185ef4f8fc3fde12cc6cca, type: 3}
@@ -98,9 +103,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 38128ebe161ea084c9341c0ad4177217, type: 3}
   - {fileID: 21300000, guid: 18c9eade2007517449c31f69142fffb0, type: 3}
   - {fileID: 21300000, guid: 5ad697ee6ff2f414e8ae241b1a7aa586, type: 3}
+  - {fileID: 21300000, guid: 51e2b9bfbe06cd247a3f85ff368786b3, type: 3}
   m_PackedSpriteNamesToIndex:
   - icon_haptics_off
   - border
+  - hammer-2
+  - hammer
   - spikes_custom_3
   - hand-1-finger
   - sickle
@@ -114,13 +122,16 @@ SpriteAtlas:
   - icon_circle
   - icon_dark_theme_off
   - icon_help
+  - hammer-3
   - icon_star
   - icon_price
   - trap_react
   - icon_settings_2
   - five_stars
+  - spear
   - icon_sound_off
   - icon_haptics_on
+  - spear-border
   - spikes_custom
   - icon-square
   - icon_dark_theme_on
@@ -147,6 +158,7 @@ SpriteAtlas:
   - spike
   - spike1
   - icon_leaderboards
+  - hammer-4
   m_RenderDataMap: {}
   m_Tag: Atlas 1
   m_IsVariant: 0

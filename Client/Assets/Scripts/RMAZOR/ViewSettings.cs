@@ -20,12 +20,9 @@ namespace RMAZOR
         public float finishTimeExcellent;
         public float finishTimeGood;
         public float gravityTrapRotationSpeed;
-        public float leftScreenOffset;
-        public float rightScreenOffset;
         public float bottomScreenOffset;
         public float topScreenOffset;
         public float moveSwipeThreshold;
-        public bool  springboardAnimatedHighlight;
         public float afterRotationEnableMoveDelay;
         public int   rateRequestsFrequency;
         public int   adsRequestsFrequency;
@@ -33,6 +30,10 @@ namespace RMAZOR
         public int   firstLevelToRateGame;
         public float mazeItemTransitionTime;
         public float mazeItemTransitionDelayCoefficient;
+        public float bazookaProjectileSpeed;
+        public float bazookaRotationSpeed;
+        public int   additionalBackTexturesCount;
+        public float filledPathAlpha;
 
         public float LineWidth
         {

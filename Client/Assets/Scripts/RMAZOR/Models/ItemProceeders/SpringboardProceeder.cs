@@ -1,6 +1,7 @@
 ﻿using System;
 using Common.Entities;
 using Common.Ticker;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 
@@ -68,7 +69,7 @@ namespace RMAZOR.Models.ItemProceeders
             }
             if (m_LastArgs != null && !_Forced)
                 return;
-            var charInverseDir = -1 * RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
+            var charInverseDir = -1 * RmazorUtils.GetDirectionVector(_Direction, Data.Orientation);
             V2Int newDirection = default;
             if (_Info.Direction == V2Int.Up + V2Int.Left)
                 newDirection = charInverseDir == V2Int.Up ? V2Int.Left : V2Int.Up;
@@ -78,7 +79,7 @@ namespace RMAZOR.Models.ItemProceeders
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Left : V2Int.Down;
             else if (_Info.Direction == V2Int.Down + V2Int.Right)
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Right : V2Int.Down;
-            var moveDirection = RazorMazeUtils.GetMoveDirection(newDirection, Data.Orientation);
+            var moveDirection = RmazorUtils.GetMoveDirection(newDirection, Data.Orientation);
             m_LastArgs = new SpringboardEventArgs(moveDirection, _Info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }

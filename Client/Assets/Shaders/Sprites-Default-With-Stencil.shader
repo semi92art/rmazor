@@ -1,4 +1,4 @@
-﻿Shader "Sprites/Default With Stencil"
+﻿Shader "RMAZOR/Sprites Default With Stencil"
 {
 	Properties
 	{

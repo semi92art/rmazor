@@ -16,9 +16,11 @@ namespace RMAZOR
     [Serializable]
     public class BackAndFrontColorsSetItem
     {
-        public                       Color                  main;
-        public                       Color                  bacground1;
-        public                       Color                  bacground2;
+        public Color main;
+        public Color bacground1;
+        public Color bacground2;
+        public bool  inUse;
+        
         [JsonProperty("F1")] public EBackAndFrontColorType pathItemFillType;
         [JsonProperty("F2")] public EBackAndFrontColorType pathBackgroundFillType;
         [JsonProperty("F3")] public EBackAndFrontColorType pathFillFillType;

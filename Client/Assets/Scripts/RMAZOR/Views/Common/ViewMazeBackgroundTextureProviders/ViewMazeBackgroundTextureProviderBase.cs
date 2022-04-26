@@ -98,17 +98,15 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
                 yield break;
             }
             yield return Cor.Lerp(
-                0f,
-                1f,
+                Ticker,
                 _Time,
-                _P =>
+                _OnProgress: _P =>
                 {
                     var newCol1 = Color.Lerp(_ColorFrom1, _ColorTo1, _P);
                     var newCol2 = Color.Lerp(_ColorFrom2, _ColorTo2, _P);
                     Material.SetColor(Color1Id, newCol1);
                     Material.SetColor(Color2Id, newCol2);
-                },
-                Ticker);
+                });
         }
 
         #endregion

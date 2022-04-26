@@ -5,6 +5,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Managers;
 using Common.Managers.IAP;
 using Common.Providers;
 using Common.ScriptableObjects;
@@ -185,7 +186,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
             };
             var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
             m_Items.Add(PurchaseKeys.NoAds, itemDisableAds);
-            Managers.LocalizationManager.AddTextObject(itemDisableAds.title, "no_ads");
+            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
+                itemDisableAds.title,
+                ETextType.MenuUI,
+                "no_ads"));
         }
 
         private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
@@ -199,21 +203,25 @@ namespace RMAZOR.UI.Panels.ShopPanels
             }
             var item = CreateItem();
             item.Init(
-                Managers.AudioManager,
-                Managers.LocalizationManager,
                 Ticker,
                 ColorProvider,
+                Managers.AudioManager,
+                Managers.LocalizationManager,
+                Managers.PrefabSetManager,
                 () =>
                 {
                     if (_Info.BuyForWatchingAd)
                     {
                         Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
                         Managers.AdsManager.ShowRewardedAd(
-                            () => CommonData.PausedByAdvertising = true,
+                            () => CommonData.PausedByAdvertisingOrPurchasing = true,
                             OnPaidReal);
                     }
                     else
+                    {
+                        CommonData.PausedByAdvertisingOrPurchasing = true;
                         Managers.ShopManager.Purchase(_Info.PurchaseKey);
+                    }
                 },
                 _Info);
             Cor.Run(Cor.WaitWhile(

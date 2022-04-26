@@ -42,21 +42,15 @@ namespace RMAZOR.Models.ItemProceeders
     
     public class TurretsProceeder : ItemsProceederBase, IUpdateTick, ITurretsProceeder, IGetAllProceedInfos
     {
-        #region constants
-
-        public const int StageShoot = 1;
-        
-        #endregion
-
         #region inject
         
         private IPathItemsProceeder PathItemsProceeder { get; }
         
         public TurretsProceeder(
-            ModelSettings _Settings,
-            IModelData _Data,
-            IModelCharacter _Character,
-            IModelGameTicker _GameTicker,
+            ModelSettings       _Settings,
+            IModelData          _Data,
+            IModelCharacter     _Character,
+            IModelGameTicker    _GameTicker,
             IPathItemsProceeder _PathItemsProceeder) 
             : base(_Settings, _Data, _Character, _GameTicker)
         {
@@ -96,15 +90,17 @@ namespace RMAZOR.Models.ItemProceeders
 
         private IEnumerator ProceedTurretCoroutine(IMazeItemProceedInfo _Info)
         {
+            const int stageIdle = ModelCommonData.StageIdle;
             float duration = GetStageDuration(_Info.ProceedingStage); 
             float time = GameTicker.Time;
             yield return Cor.WaitWhile(
                 () => time + duration > GameTicker.Time,
                 () =>
                 {
-                    ProceedTurret(_Info, _Info.ProceedingStage == StageIdle);
+                    ProceedTurret(_Info, _Info.ProceedingStage == stageIdle);
                     _Info.ReadyToSwitchStage = true;
-                    _Info.ProceedingStage = _Info.ProceedingStage == StageIdle ? StageShoot : StageIdle;
+                    _Info.ProceedingStage = _Info.ProceedingStage == stageIdle 
+                        ? ModelCommonData.TurretStageShoot : stageIdle;
                 });
         }
 
@@ -137,7 +133,7 @@ namespace RMAZOR.Models.ItemProceeders
                     && _Info.CurrentPosition == _Position);
 
             if (shredinger != null)
-                return shredinger.ProceedingStage != ShredingerBlocksProceeder.StageClosed;
+                return shredinger.ProceedingStage != ModelCommonData.ShredingerStageClosed;
             return isOnNode && !isMazeItem;
         }
         
@@ -146,9 +142,9 @@ namespace RMAZOR.Models.ItemProceeders
             switch (_Stage)
             {
                 case 0:
-                    return Settings.TurretPreShootInterval;
+                    return Settings.turretPreShootInterval;
                 case 1:
-                    return Settings.TurretShootInterval;
+                    return Settings.turretShootInterval;
                 default: return 0;
             }
         }

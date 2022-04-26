@@ -115,7 +115,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
-            if (!m_OnStart || !RazorMazeUtils.MoveAndRotateCommands.ContainsAlt(_Command)) 
+            if (!m_OnStart || !RmazorUtils.MoveAndRotateCommands.ContainsAlt(_Command)) 
                 return;
             HideGameLogo();
             m_OnStart = false;
@@ -237,28 +237,24 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
             Cor.Run(Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 HideBackgroundTime * 0.5f,
-                _P =>
+                _OnProgress: _P =>
                 {
                     var pos = Vector2.Lerp(startPos, finalPos, _P);
                     float scale = Mathf.Lerp(startScale, finalScale, _P);
                     SetGameLogoTransform(pos, scale);
-                },
-                GameTicker));
+                }));
             yield return Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 HideBackgroundTime,
-                _P =>
+                _OnProgress: _P =>
                 {
                     if (_P > 0.5f)
                         Shown = true;
                     LogoTextureProvider.SetTransitionValue(_P);
                 }, 
-                GameTicker,
-                (_Broken, _Progress) =>
+                _OnFinish: () =>
                 {
                     LockGameplayAndUiCommands(false);
                     m_GameLogoDisappeared = true;
@@ -268,7 +264,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void LockGameplayAndUiCommands(bool _Lock)
         {
-            var commands = RazorMazeUtils.MoveAndRotateCommands
+            var commands = RmazorUtils.MoveAndRotateCommands
                 .Concat(new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu});
             const string lockGroup = nameof(IViewUIGameLogo); 
             if (_Lock)

@@ -25,6 +25,8 @@
         LoadRandomLevelWithRotation,
         ReadyToUnloadLevel,
         LoadLevelByIndex,
-        LoadFirstLevelFromRandomGroup
+        LoadFirstLevelFromRandomGroup,
+        EnableDebug,
+        DisableDebug
     }
 }

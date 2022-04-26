@@ -26,8 +26,10 @@ namespace Common.Managers
         
         public override void Init()
         {
+            if (Initialized)
+                return;
             HapticController.Init();
-            Setting.OnValueSet = EnableHaptics;
+            Setting.ValueSet += EnableHaptics;
             EnableHaptics(Setting.Get());
             base.Init();
         }

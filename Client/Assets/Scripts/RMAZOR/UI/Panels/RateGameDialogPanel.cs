@@ -6,6 +6,7 @@ using Common.Constants;
 using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -19,7 +20,11 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface IRateGameDialogPanel : IDialogPanel { }
+    public interface IRateGameDialogPanel : IDialogPanel
+    {
+        bool CanBeClosed { get; set; }
+        void SetDialogText(string _Text);
+    }
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
     {
@@ -40,17 +45,22 @@ namespace RMAZOR.UI.Panels
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public RateGameDialogPanel(
-            IManagersGetter _Managers,
-            IUITicker _Ticker,
-            IBigDialogViewer _DialogViewer,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
-            IProposalDialogViewer _ProposalDialogViewer,
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            IBigDialogViewer            _DialogViewer,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
-            : base( _Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base(
+                _Managers, 
+                _Ticker, 
+                _DialogViewer, 
+                _CameraProvider,
+                _ColorProvider)
         {
             ProposalDialogViewer = _ProposalDialogViewer;
-            CommandsProceeder = _CommandsProceeder;
+            CommandsProceeder    = _CommandsProceeder;
         }
 
         #endregion
@@ -59,6 +69,12 @@ namespace RMAZOR.UI.Panels
 
         public override EUiCategory Category      => EUiCategory.RateGame;
         public override bool        AllowMultiple => false;
+
+        public bool CanBeClosed
+        {
+            get => m_ButtonClose.gameObject.activeSelf;
+            set => m_ButtonClose.SetGoActive(value);
+        }
 
         public override void LoadPanel()
         {
@@ -78,12 +94,14 @@ namespace RMAZOR.UI.Panels
             m_Stars           = go.GetCompItem<Image>("stars");
             m_Triggerer.Trigger1 = () => Cor.Run(OnPanelStartAnimationFinished());
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
-            panel.Init(Managers.AudioManager, Ticker, ColorProvider);
+            panel.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             var button = go.GetCompItem<SimpleUiButtonView>("rate_game_button");
-            button.Init(Managers.AudioManager, Ticker, ColorProvider);
+            button.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             button.Highlighted = true;
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
             m_ButtonRateGame.onClick.AddListener(OnRateGameButtonClick);
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextRateGame, ETextType.MenuUI, "rate_game"));
             m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
             m_Stars.color = ColorProvider.GetColor(ColorIds.UI);
             var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
@@ -106,7 +124,14 @@ namespace RMAZOR.UI.Panels
         {
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
         }
+
+        public void SetDialogText(string _Text)
+        {
+            m_TextRateGame.text = _Text;
+        }
+
         
+
         #endregion
 
         #region nonpublic methods
@@ -143,9 +168,15 @@ namespace RMAZOR.UI.Panels
 
         private static IEnumerable<EInputCommand> GetCommandsToLock()
         {
-            return RazorMazeUtils.MoveAndRotateCommands;
+            return RmazorUtils.MoveAndRotateCommands;
         }
 
         #endregion
+    }
+
+    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel
+    {
+        public bool CanBeClosed                 { get; set; }
+        public void SetDialogText(string _Text) { }
     }
 }

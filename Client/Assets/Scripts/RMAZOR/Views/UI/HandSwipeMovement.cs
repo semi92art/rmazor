@@ -130,43 +130,37 @@ namespace RMAZOR.Views.UI
             if (TutorialFinished)
                 yield break;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                moveParams.aTimeStart,
-                _Progress =>
-                {
-                    hand.color = hand.color.SetA(_Progress);
-                    trace.startColor = trace.endColor = trace.startColor.SetA(_Progress * 0.5f);
-                },
                 Ticker,
+                moveParams.aTimeStart,
+                _OnProgress: _P =>
+                {
+                    hand.color = hand.color.SetA(_P);
+                    trace.startColor = trace.endColor = trace.startColor.SetA(_P * 0.5f);
+                },
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
             if (TutorialFinished)
                 yield break;
             trace.enabled = true;
             yield return Cor.Lerp(
-                0f,
-                1f,
+                Ticker,
                 moveParams.aTimeMiddle - moveParams.aTimeStart, 
-                _P =>
+                _OnProgress: _P =>
                 {
                     var vec = Vector2.Lerp(a.posStart, a.posMiddle, _P);
                     trace.SetPosition(1, vec);
                 },
-                Ticker,
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
             if (TutorialFinished)
                 yield break;
             var traceCol = trace.startColor;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                moveParams.aTimeEnd - moveParams.aTimeMiddle, 
-                _Progress =>
-                {
-                    trace.SetPosition(1, Vector2.Lerp(a.posMiddle, a.posEnd, _Progress));
-                    trace.startColor = trace.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _Progress);
-                },
                 Ticker,
+                moveParams.aTimeEnd - moveParams.aTimeMiddle, 
+                _OnProgress: _P =>
+                {
+                    trace.SetPosition(1, Vector2.Lerp(a.posMiddle, a.posEnd, _P));
+                    trace.startColor = trace.endColor = Color.Lerp(traceCol.SetA(0.5f), traceCol.SetA(0f), _P);
+                },
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
         }
 

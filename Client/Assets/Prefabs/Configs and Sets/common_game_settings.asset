@@ -15,7 +15,7 @@ MonoBehaviour:
   adsProvider: -1
   adsLoadDelay: 3
   debugEnabled: 1
-  testAds: 0
+  testAds: 1
   logLevel: 5
   admobRate: 80
   unityAdsRate: 20
@@ -29,3 +29,4 @@ MonoBehaviour:
   ironSourceAppKeyIos: 
   moneyItemCoast: 0
   gameId: 1
+  levelsPackVersion: 0

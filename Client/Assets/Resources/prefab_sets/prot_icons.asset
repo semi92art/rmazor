@@ -16,29 +16,43 @@ MonoBehaviour:
     array:
     - item: {fileID: 21300000, guid: bf43b2cb06a404d4ca6d97d8b6e8b1c2, type: 3}
       name: turret
-    - item: {fileID: 21300000, guid: b10723808d3cb644e8bbde2d4f3ebda9, type: 3}
-      name: turret-rotate
-    - item: {fileID: 21300000, guid: b10723808d3cb644e8bbde2d4f3ebda9, type: 3}
-      name: turret-rotate
+      bundle: 0
     - item: {fileID: 21300000, guid: 7f664eb52c7766e4881ba2816ec3606c, type: 3}
       name: block-gravity
+      bundle: 0
     - item: {fileID: 21300000, guid: 3417a80f0f6fd4046bbe457cbb3496c2, type: 3}
       name: portal
+      bundle: 0
     - item: {fileID: 21300000, guid: 21819db3562a3a246b94885e91589566, type: 3}
       name: trap-gravity
+      bundle: 0
     - item: {fileID: 21300000, guid: ddaa992ddcf8115488c4de22dd1913a0, type: 3}
       name: trap-increase
+      bundle: 0
     - item: {fileID: 21300000, guid: 6907f400f9965b4499b2e749685f68e8, type: 3}
       name: trap-moving
+      bundle: 0
     - item: {fileID: 21300000, guid: 5aee6871fb8cd0e41bb977d08171481f, type: 3}
       name: trap-react
-    - item: {fileID: 21300000, guid: 4f08cbf4c6138264ba6a56e665340de8, type: 3}
-      name: trap
+      bundle: 0
     - item: {fileID: 21300000, guid: 53c7c7e999c03b444804afa14bdbf8b7, type: 3}
       name: gravity-block-free
+      bundle: 0
     - item: {fileID: 21300000, guid: 218386cb18c1c18409baa86353658ba9, type: 3}
       name: trap-gravity-free
+      bundle: 0
     - item: {fileID: 21300000, guid: f7b4a956b48ac574cb1b225cad716416, type: 3}
       name: shredinger
+      bundle: 0
     - item: {fileID: 21300000, guid: 0607dd72cd725d841bef1c4132aa959f, type: 3}
       name: springboard
+      bundle: 0
+    - item: {fileID: 21300000, guid: 64e836a5bc7523a41ab6f677a9afc780, type: 3}
+      name: hammer
+      bundle: 0
+    - item: {fileID: 21300000, guid: 7a96ae8cd7e38ca4d8cf4b6f1b4ccdb0, type: 3}
+      name: crossbow
+      bundle: 0
+    - item: {fileID: 21300000, guid: c6224ffbb0be1f343bb18d76a9f44101, type: 3}
+      name: bazooka
+      bundle: 0

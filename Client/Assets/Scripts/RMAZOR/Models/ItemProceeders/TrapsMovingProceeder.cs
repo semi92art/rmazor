@@ -16,11 +16,12 @@ namespace RMAZOR.Models.ItemProceeders
 
     public class TrapsMovingProceeder : MovingItemsProceederBase, IUpdateTick, ITrapsMovingProceeder
     {
-        #region constants
+        #region nonpublic members
 
-        public const int StageMoving = 1;
+        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         #endregion
+        
 
         #region inject
 
@@ -35,7 +36,6 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         public void UpdateTick()
         {
@@ -53,14 +53,14 @@ namespace RMAZOR.Models.ItemProceeders
                 var info = ProceedInfos[i];
                 if (!info.IsProceeding)
                     continue;
-                if (info.ProceedingStage != StageIdle)
+                if (info.ProceedingStage != ModelCommonData.StageIdle)
                     continue;
                 info.PauseTimer += GameTicker.DeltaTime;
-                if (info.PauseTimer < Settings.MovingItemsPause)
+                if (info.PauseTimer < Settings.movingItemsPause)
                     continue;
                 info.PauseTimer = 0;
-                info.ProceedingStage = StageMoving;
-                ProceedTrapMoving(info, () => info.ProceedingStage = StageIdle);
+                info.ProceedingStage = ModelCommonData.TrapMovingStageMoving;
+                ProceedTrapMoving(info, () => info.ProceedingStage = ModelCommonData.StageIdle);
             }
         }
         
@@ -113,28 +113,27 @@ namespace RMAZOR.Models.ItemProceeders
         {
             _Info.IsMoving = true;
             _Info.CurrentPosition = _From;
+            float movingItemsSpeed = Settings.movingItemsSpeed;
             InvokeMoveStarted(new MazeItemMoveEventArgs(
-                _Info, _From, _To, Settings.MovingItemsSpeed,0));
+                _Info, _From, _To, movingItemsSpeed,0));
             float distance = V2Int.Distance(_From, _To);
             yield return Cor.Lerp(
-                0f,
-                1f,
-                distance / Settings.MovingItemsSpeed,
-                _Progress =>
+                GameTicker,
+                distance / movingItemsSpeed,
+                _OnProgress: _P =>
                 {
-                    var precisePosition = V2Int.Lerp(_From, _To, _Progress);
+                    var precisePosition = V2Int.Lerp(_From, _To, _P);
                     _Info.CurrentPosition = V2Int.Round(precisePosition);
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, Settings.MovingItemsSpeed, _Progress));
+                        _Info, _From, _To, movingItemsSpeed, _P));
                 },
-                GameTicker,
-                (_Stopped, _Progress) =>
+                 _OnFinish: () =>
                 {
                     _Info.CurrentPosition = _To;
                     _Info.IsMoving = false;
                     _OnFinish?.Invoke();
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
-                        _Info, _From, _To, Settings.MovingItemsSpeed,1f));
+                        _Info, _From, _To, movingItemsSpeed,1f));
                 });
         }
         

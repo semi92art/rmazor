@@ -56,10 +56,10 @@ namespace RMAZOR.Models
             IModelLevelStaging _LevelStaging,
             IModelGameTicker   _GameTicker)
         {
-            Settings = _Settings;
-            Data = _Data;
+            Settings     = _Settings;
+            Data         = _Data;
             LevelStaging = _LevelStaging;
-            GameTicker = _GameTicker;
+            GameTicker   = _GameTicker;
         }
 
         #endregion
@@ -107,7 +107,6 @@ namespace RMAZOR.Models
         
         public void OnPortal(PortalEventArgs _Args)
         {
-            Dbg.Log(nameof(OnPortal));
             Position = _Args.Info.Pair;
             Move(_Args.Direction);
         }
@@ -126,7 +125,7 @@ namespace RMAZOR.Models
         {
             var nextPos = Position;
             var infos = GetAllProceedInfos();
-            var dirVector = RazorMazeUtils.GetDirectionVector(_Direction, Data.Orientation);
+            var dirVector = RmazorUtils.GetDirectionVector(_Direction, Data.Orientation);
             while (IsNextPositionValid(
                 infos,
                 Data.PathItems,
@@ -184,7 +183,7 @@ namespace RMAZOR.Models
             if (shredinger != null)
             {
                 _ShredingerBlockPosWhoStopped = _NextPosition;
-                return shredinger.ProceedingStage == ItemsProceederBase.StageIdle;
+                return shredinger.ProceedingStage == ModelCommonData.StageIdle;
             }
             bool isMazeItem = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
@@ -273,23 +272,21 @@ namespace RMAZOR.Models
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             float lastProgress = 0f;
             yield return Cor.Lerp(
-                0f,
-                1f,
-                pathLength / Settings.CharacterSpeed,
-                _Progress =>
+                GameTicker,
+                pathLength / Settings.characterSpeed,
+                _OnProgress: _P =>
                 {
                     MovingInfo = new CharacterMovingContinuedEventArgs(
                         _Direction,
                         _From,
                         _To,
-                        _Progress,
+                        _P,
                         lastProgress);
-                    lastProgress = _Progress;
+                    lastProgress = _P;
                     Position = V2Int.Round(MovingInfo.PrecisePosition);
                     CharacterMoveContinued?.Invoke(MovingInfo);
                 },
-                GameTicker,
-                (_Stopped, _Progress) =>
+                _OnFinish: () =>
                 {
                     var infos = GetAllProceedInfos();
                     IMazeItemProceedInfo blockOnFinish = null;
@@ -323,7 +320,7 @@ namespace RMAZOR.Models
                     IsMoving = false;
                     Position = _To;
                 },
-                () => thisCount != m_Counter || !Alive,
+                _BreakPredicate: () => thisCount != m_Counter || !Alive,
                 _FixedUpdate: true);
         }
         

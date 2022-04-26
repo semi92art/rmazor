@@ -128,8 +128,10 @@ namespace RMAZOR.Views.MazeItems
                 return;
             if (ProceedingStage != EProceedingStage.ActiveAndWorking)
                 return;
-            DoRotation();
+            if (m_Rotate)
+                DoRotation();
             CheckForCharacterDeath();
+            HighlightTrap();
         }
         
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -161,9 +163,9 @@ namespace RMAZOR.Views.MazeItems
             base.OnMoveFinished(_Args);
             SetLocalPosition(CoordinateConverter.ToLocalMazeItemPosition(_Args.To));
             m_Rotate = false;
-            if (Model.GravityItemsProceeder.ProceedInfos
+            if (Model.ModelItemsProceedersSet.GravityItemsProceeder.ProceedInfos
                 .Where(_I => _I.Type == EMazeItemType.GravityTrap)
-                .Any(_I => _I.ProceedingStage == GravityItemsProceeder.StageDrop))
+                .Any(_I => _I.ProceedingStage == ModelCommonData.GravityItemStageDrop))
             {
                 return;
             }
@@ -200,11 +202,20 @@ namespace RMAZOR.Views.MazeItems
 
         private void DoRotation()
         {
-            if (!m_Rotate)
-                return;
             m_Angles += m_RotateDirection * (GameTicker.DeltaTime * ViewSettings.gravityTrapRotationSpeed);
             m_Angles = ClampAngles(m_Angles);
             m_MaceTr.rotation = Quaternion.Euler(m_Angles);
+        }
+
+        private void HighlightTrap()
+        {
+            const float lerpSpeed = 7f;
+            const float maxLerpValue = 0.3f;
+            var col1 = ColorProvider.GetColor(ColorIds.Background1);
+            var col2 = ColorProvider.GetColor(ColorIds.MazeItem1);
+            float lerpCoeff = maxLerpValue * (1f + 0.5f * Mathf.Cos(lerpSpeed * GameTicker.Time));
+            var col = Color.Lerp(col1, col2, lerpCoeff);
+            m_InnerDisc.SetColor(col);
         }
         
         private Vector3 GetRotationDirection(Vector2 _DropDirection)

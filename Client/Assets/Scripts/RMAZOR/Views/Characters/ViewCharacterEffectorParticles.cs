@@ -181,7 +181,7 @@ namespace RMAZOR.Views.Characters
             if (m_MoveDirection.HasValue && _Death)
             {
                 float sqrt2 = Mathf.Sqrt(2f);
-                Vector2 moveDir = RazorMazeUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North);
+                Vector2 moveDir = RmazorUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North);
                 for (int i = 0; i < deathShapesCount; i++)
                 {
                     float dist = Vector2.Distance(moveDir, startDirections[i]);
@@ -200,21 +200,19 @@ namespace RMAZOR.Views.Characters
 
             var col = ColorProvider.GetColor(ColorIds.Character);
             yield return Cor.Lerp(
-                0f,
+                GameTicker,
                 1f,
-                1f,
-                _Progress =>
+                _OnProgress: _P =>
                 {
                     for (int i = 0; i < deathShapesCount; i++)
                     {
                         var shape = m_DeathShapes[i];
                         shape.transform.localPosition =
-                            Vector3.Lerp(startPositions[i], endPositions[i], _Progress);
-                        shape.Color = col.SetA(1f - _Progress);
+                            Vector3.Lerp(startPositions[i], endPositions[i], _P);
+                        shape.Color = col.SetA(1f - _P);
                     }
                 },
-                GameTicker,
-                (_Finished, _Progress) => Activated = false);
+                _OnFinish: () => Activated = false);
         }
         
         private void OnCommand(EInputCommand _Command, object[] _Args)

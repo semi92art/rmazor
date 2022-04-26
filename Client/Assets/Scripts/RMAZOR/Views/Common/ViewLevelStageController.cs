@@ -71,6 +71,7 @@ namespace RMAZOR.Views.Common
         private IViewMazePathItemsGroup     PathItemsGroup       { get; }
         private CompanyLogo                 CompanyLogo          { get; }
         private IViewUIGameLogo             GameLogo             { get; }
+        private IRateGameDialogPanel        RateGameDialogPanel  { get; }
 
         public ViewLevelStageController(
             CommonGameSettings          _GameSettings,
@@ -88,7 +89,8 @@ namespace RMAZOR.Views.Common
             IViewMazeItemsGroupSet      _MazeItemsGroupSet,
             IViewMazePathItemsGroup     _PathItemsGroup,
             CompanyLogo                 _CompanyLogo,
-            IViewUIGameLogo             _GameLogo)
+            IViewUIGameLogo             _GameLogo,
+            IRateGameDialogPanel        _RateGameDialogPanel)
         {
             GameSettings         = _GameSettings;
             ViewSettings         = _ViewSettings;
@@ -105,7 +107,8 @@ namespace RMAZOR.Views.Common
             MazeItemsGroupSet    = _MazeItemsGroupSet;
             PathItemsGroup       = _PathItemsGroup;
             CompanyLogo          = _CompanyLogo;
-            GameLogo = _GameLogo;
+            GameLogo             = _GameLogo;
+            RateGameDialogPanel  = _RateGameDialogPanel;
         }
 
         #endregion
@@ -306,7 +309,7 @@ namespace RMAZOR.Views.Common
                 UnityAction<UnityAction, UnityAction> act = Managers.AdsManager.ShowRewardedAd;
                 if (GameSettings.showRewardedInsteadOfInterstitialOnUnpause)
                     act = Managers.AdsManager.ShowInterstitialAd;
-                act(() => CommonData.PausedByAdvertising = true, null);
+                act(() => CommonData.PausedByAdvertisingOrPurchasing = true, null);
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(false);
@@ -358,16 +361,20 @@ namespace RMAZOR.Views.Common
                 _Ticker: ViewGameTicker));
             if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
-                int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
-                int firstLevelInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
-                int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(group);
-                bool isLastLevelInGroup = _Args.LevelIndex == firstLevelInGroup + levelsInGroup - 1;
-                if (isLastLevelInGroup)
-                    CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
+                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
+                string panelText = Managers.LocalizationManager.GetTranslation("rate_game_text_all_levels_passed");
+                RateGameDialogPanel.SetDialogText(panelText);
+                RateGameDialogPanel.CanBeClosed = false;
+                // int group = RazorMazeUtils.GetGroupIndex(_Args.LevelIndex);
+                // int firstLevelInGroup = RazorMazeUtils.GetFirstLevelInGroup(group);
+                // int levelsInGroup = RazorMazeUtils.GetLevelsInGroup(group);
+                // bool isLastLevelInGroup = _Args.LevelIndex == firstLevelInGroup + levelsInGroup - 1;
+                // if (isLastLevelInGroup)
+                //     CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromRandomGroup, null, true);
             }
             else if (m_NextLevelMustBeFirstInGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
-            else if (RazorMazeUtils.LoadNextLevelAutomatically)
+            else if (CommonData.LoadNextLevelAutomatically)
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
         }
 

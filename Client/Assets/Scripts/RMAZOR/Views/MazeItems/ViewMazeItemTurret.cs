@@ -241,7 +241,7 @@ namespace RMAZOR.Views.MazeItems
             var pos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
             Projectile.Transform.SetLocalPosXY(pos);
             ProjectileFake.Transform.SetLocalPosXY(pos);
-            m_ProjectileMask.SetWidth(scale).SetHeight(scale);
+            m_ProjectileMask.SetWidth(scale).SetHeight(scale).enabled = false;
             m_TurretBackground.SetWidth(scale).SetHeight(scale);
             m_TurretBackground.SetCornerRadii(GetMaskCornerRadii())
                 .SetColor(Color.Lerp(
@@ -308,11 +308,9 @@ namespace RMAZOR.Views.MazeItems
         private IEnumerator IncreaseRotatingSpeed(float _Duration)
         {
             yield return Cor.Lerp(
-                0f, 
-                1f,
+                GameTicker,
                 _Duration, 
-                _Progress => m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed * _Progress,
-                GameTicker);
+                _OnProgress: _P => m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed * _P);
         }
 
         private IEnumerator ActivateRealProjectileAndOpenBarrel(float _Delay)
@@ -355,12 +353,10 @@ namespace RMAZOR.Views.MazeItems
             ProjectileFake.MainRenderer.enabled = true;
             ProjectileFake.Transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             yield return Cor.Lerp(
-                0f, 
-                1f,
+                GameTicker,
                 0.2f,
-                _Progress => ProjectileFake.Transform.localScale =
-                    Vector3.one * _Progress * CoordinateConverter.Scale * ProjectileContainerRadius * 0.9f,
-                GameTicker);
+                _OnProgress: _P => ProjectileFake.Transform.localScale =
+                    Vector3.one * _P * CoordinateConverter.Scale * ProjectileContainerRadius * 0.9f);
         }
         
         private IEnumerator OpenBarrel(bool _Open, bool _Instantly, bool _Forced = false)
@@ -381,15 +377,13 @@ namespace RMAZOR.Views.MazeItems
                 yield break;
             }
             yield return Cor.Lerp(
-                0f,
-                1f,
-                0.1f,
-                _Progress =>
-                {
-                    m_Body.AngRadiansStart = Mathf.Lerp(startFrom, startTo, _Progress);
-                    m_Body.AngRadiansEnd = Mathf.Lerp(endFrom, endTo, _Progress);
-                },
                 GameTicker,
+                0.1f,
+                _OnProgress: _P =>
+                {
+                    m_Body.AngRadiansStart = Mathf.Lerp(startFrom, startTo, _P);
+                    m_Body.AngRadiansEnd = Mathf.Lerp(endFrom, endTo, _P);
+                },
                 _BreakPredicate: () =>
                 {
                     if (_Forced)
@@ -410,14 +404,12 @@ namespace RMAZOR.Views.MazeItems
                 yield break;
             }
             yield return Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 0.1f,
-                _P =>
+                _OnProgress: _P =>
                 {
                     m_Body.Color = Color.Lerp(StartCol(), EndCol(), _P);
                 },
-                GameTicker,
                 _BreakPredicate: () => AppearingState != EAppearingState.Appeared
                                        || Model.LevelStaging.LevelStage == ELevelStage.Finished);
         }
@@ -432,7 +424,7 @@ namespace RMAZOR.Views.MazeItems
             bool movedToTheEnd = false;
             m_ProjRotating = true;
             m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed;
-            var fullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
+            var fullPath = RmazorUtils.GetFullPath(_Args.From, _Args.To);
             bool Predicate()
             {
                 return ProjectileMovingPredicate(
@@ -446,7 +438,7 @@ namespace RMAZOR.Views.MazeItems
                 () =>
                 {
                     projectilePosPrev = projectilePos;
-                    projectilePos += (Vector2)_Args.Direction * Model.Settings.TurretProjectileSpeed * GameTicker.FixedDeltaTime;
+                    projectilePos += (Vector2)_Args.Direction * Model.Settings.turretProjectileSpeed * GameTicker.FixedDeltaTime;
                     Projectile.Transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
                     point = V2Int.Round(projectilePos);
                     Projectile.Tail.ShowTail(_Args, projectilePos);
@@ -541,7 +533,6 @@ namespace RMAZOR.Views.MazeItems
                 ProjectileFake.Tail.HideTail();
                 m_ProjRotating = false;
                 Projectile.MainRenderer.enabled = true;
-                m_ProjectileMask.enabled = true;
                 m_TurretBackground.enabled = true;
                 ProjectileFake.MainRenderer.enabled = false;
                 Cor.Run(AnimateFakeProjectileBeforeShoot());
@@ -554,6 +545,8 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!_Appear)
                 m_ProjRotating = m_ProjectileMask.enabled = m_TurretBackground.enabled = false;
+            else
+                m_ProjectileMask.enabled = false;
             base.OnAppearFinish(_Appear);
         }
 

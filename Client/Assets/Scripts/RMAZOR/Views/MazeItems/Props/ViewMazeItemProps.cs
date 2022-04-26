@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Common.Entities;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
+// ReSharper disable InconsistentNaming
 
 namespace RMAZOR.Views.MazeItems.Props
 {
@@ -18,6 +19,7 @@ namespace RMAZOR.Views.MazeItems.Props
         public V2Int         Pair;
         public bool          IsMoneyItem;
         public bool          Blank;
+        public List<string>  Args = new List<string>();
 
         public bool Equals(IMazeItemProceedInfo _Info)
         {
@@ -25,9 +27,7 @@ namespace RMAZOR.Views.MazeItems.Props
                 return false;
             if (_Info.StartPosition != Position)
                 return false;
-            if (Directions[0] != _Info.Direction)
-                return false;
-            return true;
+            return Directions[0] == _Info.Direction;
         }
     }
 }

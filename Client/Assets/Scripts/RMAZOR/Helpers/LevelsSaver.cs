@@ -12,8 +12,8 @@ namespace RMAZOR.Helpers
 {
     public class LevelsSaver : LevelsLoader
     {
-        public LevelsSaver(IPrefabSetManager _PrefabSetManager) 
-            : base(_PrefabSetManager) { }
+        public LevelsSaver(IPrefabSetManager _PrefabSetManager, IMazeInfoValidator _Validator) 
+            : base(_PrefabSetManager, _Validator) { }
         
         public MazeLevelsList LoadHeapLevels(int _GameId, int _HeapIndex)
         {

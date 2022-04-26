@@ -186,22 +186,20 @@ namespace RMAZOR.Views.Characters
             var finishA = CoordinateConverter.ToLocalCharacterPosition(_Args.To - dir * 0.4f);
             float distance = V2Int.Distance(_Args.From, _Args.To);
             yield return Cor.Lerp(
-                0f,
-                1f,
-                distance / ModelSettings.CharacterSpeed,
-                _Progress =>
+                GameTicker,
+                distance / ModelSettings.characterSpeed,
+                _OnProgress: _P =>
                 {
-                    var a = Vector2.Lerp(startA, finishA, _Progress);
+                    var a = Vector2.Lerp(startA, finishA, _P);
                     m_Tail.A = a;
                     m_TailBorder.A = a;
                 },
-                GameTicker,
-                (_Broken, _Progress) =>
+                _OnFinish: () =>
                 {
                     m_Tail.Color = tailCol.SetA(0f);
                     m_TailBorder.Color = tailBorderCol.SetA(0f);
                 },
-                () => !m_Hiding || !m_ShowTail);
+                _BreakPredicate: () => !m_Hiding || !m_ShowTail);
         }
 
         #endregion

@@ -68,6 +68,5 @@ namespace Common.Managers.Advertising
                 m_InterstitialAd.LoadAd();
             }
         }
-
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
 using Newtonsoft.Json;
@@ -14,81 +15,90 @@ namespace Common.Managers
     public interface IAssetBundleManager : IInit
     {
         bool         BundlesLoaded { get; }
-        T            GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object;
+        T            GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object;
+    }
+
+    public class BundleAssetPathInfo
+    {
+        [JsonProperty] public string BundleName { get; set; }
+        [JsonProperty] public string AssetName  { get; set; }
+        [JsonProperty] public string AssetPath  { get; set; }
+
+        public BundleAssetPathInfo(string _BundleName, string _AssetName, string _AssetPath)
+        {
+            BundleName = _BundleName;
+            AssetName  = _AssetName;
+            AssetPath  = _AssetPath;
+        }
     }
     
     public class AssetBundleManager : InitBase, IAssetBundleManager
     {
         #region types
 
-        private class AssetInfo
+        private class BundleAssetObjectInfo
         {
-            public string Name  { get; }
+            public string Path  { get; }
             public object Asset { get; }
 
-            public AssetInfo(string _Name, object _Asset)
+            public BundleAssetObjectInfo(string _Path, object _Asset)
             {
-                Name = _Name;
+                Path = _Path;
                 Asset = _Asset;
             }
         }
-        
+
         #endregion
         
         #region constants
 
-        public const  string BundleNamesListName = "bundle_names";
-        public const  string CommonBundleName    = "common";
-        private const string SoundsBundleName    = "sounds";
-        private const string LevelsBundleName    = "levels";
-        private const string BundlesUri          = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
+        public const  string BundleNamesAssetName = "bundle_names";
+        public const  string CommonBundleName     = "common";
+        private const string BundlesUri           = "https://raw.githubusercontent.com/semi92art/bundles/main/mgc";
         
         #endregion
         
         #region nonpublic members
 
-        private readonly string[] m_BundleNames = {CommonBundleName, SoundsBundleName, LevelsBundleName};
-        private readonly Dictionary<string, List<AssetInfo>> m_Bundles = new Dictionary<string, List<AssetInfo>>();
-        private Dictionary<string, string> m_BundleNamesDict = new Dictionary<string, string>();
+        private readonly string[] m_BundleNames = {CommonBundleName, "sounds", "game_1_levels"};
+
+        private readonly Dictionary<string, List<BundleAssetObjectInfo>> m_BundleAssetObjectInfos =
+            new Dictionary<string, List<BundleAssetObjectInfo>>();
+
+        private List<BundleAssetPathInfo> m_BundleAssetPathInfos = new List<BundleAssetPathInfo>();
         
         #endregion
 
         #region api
 
-        public bool              BundlesLoaded { get; private set; }
-        
+        public bool BundlesLoaded { get; private set; }
+
         public override void Init()
         {
             Cor.Run(LoadBundles());
         }
 
-        public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
+        public T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
         {
             if (!BundlesLoaded)
             {
                 Dbg.LogError("Bundles were not initialized");
-                _Success = false;
                 return default;
             }
-            if (!m_BundleNamesDict.ContainsKey(_AssetName))
+            var pathInfo = m_BundleAssetPathInfos.FirstOrDefault(
+                _I => _I.BundleName == _PrefabSetName && _I.AssetName == _AssetName);
+            if (pathInfo == null)
             {
                 Dbg.LogError($"Bundle key \"{_AssetName}\" was not found in bundles names dictionary");
-                _Success = false;
                 return default;
             }
-            string bundleName = m_BundleNamesDict[_AssetName];
-            var dict = m_Bundles[_PrefabSetName]
-                .ToDictionary(
-                    _Bundle => _Bundle.Name,
-                    _Bundle => _Bundle.Asset);
-            if (!dict.ContainsKey(bundleName))
-            {
-                Dbg.LogError($"Bundle name \"{bundleName}\" was not found in bundles");
-                _Success = false;
-                return default;
-            }
-            _Success = true;
-            return dict[bundleName] as T;
+            string path = pathInfo.AssetPath;
+            var objectInfo = m_BundleAssetObjectInfos[_PrefabSetName]
+                .FirstOrDefault(_I => _I.Path.EqualsIgnoreCase(path));
+            if (objectInfo != null) 
+                return objectInfo.Asset as T;
+            Dbg.LogError($"Bundle path \"{path}\" was not found in bundles");
+            return default;
         }
         
         #endregion
@@ -99,19 +109,26 @@ namespace Common.Managers
         {
             foreach (string bundleName in m_BundleNames)
                 yield return LoadBundle(bundleName);
+            if (!m_BundleAssetObjectInfos.ContainsKey(CommonBundleName))
+            {
+                Dbg.LogWarning("Bundle with other bundle names was not loaded correctly.");
+                base.Init();
+                yield break;
+            }
             var bundleNamesRaw =
-                m_Bundles[CommonBundleName]
-                    .FirstOrDefault(_Info => _Info.Name.Contains(BundleNamesListName))
+                m_BundleAssetObjectInfos[CommonBundleName]
+                    .FirstOrDefault(_Info => _Info.Path.Contains(BundleNamesAssetName))
                     ?.Asset as TextAsset;
             if (bundleNamesRaw == null)
             {
-                Dbg.LogError("Bundle with other bundle names was not loaded correctly.");
+                Dbg.LogWarning("Bundle with other bundle names was not loaded correctly.");
+                base.Init();
                 yield break;
             }
-            m_BundleNamesDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(bundleNamesRaw.text);
+            m_BundleAssetPathInfos = JsonConvert.DeserializeObject<List<BundleAssetPathInfo>>(bundleNamesRaw.text);
             BundlesLoaded = true;
             base.Init();
-            Dbg.Log("Bundles initialized!");
+            Dbg.Log("Bundles initialized successfully!");
         }
         
         private IEnumerator LoadBundle(string _BundleName)
@@ -126,7 +143,7 @@ namespace Common.Managers
             if (bundleVersionRequest.result == UnityWebRequest.Result.ConnectionError)
             {
                 Dbg.LogWarning(bundleVersionRequest.error);
-                version = GetCahcedHash(bundleVersionPath);
+                version = GetCachedHash(bundleVersionPath);
             }
             else
             {
@@ -138,6 +155,11 @@ namespace Common.Managers
             var uri = new Uri(GetRemotePath($"{_BundleName}.unity3d"));
             using var bundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(uri, cachedBundle);
             yield return bundleRequest.SendWebRequest();
+            if (bundleRequest.result != UnityWebRequest.Result.Success)
+            {
+                Dbg.LogWarning(bundleRequest.error);
+                yield break;
+            }
             var loadedBundle = DownloadHandlerAssetBundle.GetContent(bundleRequest);
             if (loadedBundle == null)
             {
@@ -145,11 +167,11 @@ namespace Common.Managers
                 Dbg.LogError(error);
                 yield break;
             }
-            m_Bundles.Add(_BundleName, new List<AssetInfo>());
-            var cachedAssets = m_Bundles[_BundleName];
+            m_BundleAssetObjectInfos.Add(_BundleName, new List<BundleAssetObjectInfo>());
+            var cachedAssets = m_BundleAssetObjectInfos[_BundleName];
             cachedAssets.AddRange(from assetName in loadedBundle.GetAllAssetNames() 
                 let asset = loadedBundle.LoadAsset(assetName) 
-                select new AssetInfo(assetName, asset));
+                select new BundleAssetObjectInfo(assetName, asset));
         }
 
         private static string GetRemotePath(string _Name)
@@ -157,7 +179,7 @@ namespace Common.Managers
             return string.Join("/", BundlesUri, CommonUtils.GetOsName(), _Name);
         }
 
-        private static uint GetCahcedHash(string _BundleName)
+        private static uint GetCachedHash(string _BundleName)
         {
             var saveKey = SaveKeysCommon.BundleVersion(_BundleName);
             return SaveUtils.GetValue(saveKey);
@@ -175,9 +197,8 @@ namespace Common.Managers
     public class AssetBundleManagerFake : InitBase, IAssetBundleManager
     {
         public bool              BundlesLoaded => false;
-        public List<string>      Errors        => null;
 
-        public T GetAsset<T>(string _AssetName, string _PrefabSetName, out bool _Success) where T : Object
+        public T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
         {
             throw new NotSupportedException();
         }

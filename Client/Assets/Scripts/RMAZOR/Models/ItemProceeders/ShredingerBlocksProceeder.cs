@@ -4,6 +4,7 @@ using System.Linq;
 using Common.Extensions;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 
@@ -35,7 +36,6 @@ namespace RMAZOR.Models.ItemProceeders
     {
         #region constants
         
-        public const int StageClosed = 1;
         
         #endregion
 
@@ -58,17 +58,17 @@ namespace RMAZOR.Models.ItemProceeders
 
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
+            var path = RmazorUtils.GetFullPath(_Args.From, _Args.To);
             foreach (var info in ProceedInfos.Where(_Info => _Info.IsProceeding))
             {
                 if (!path.Contains(info.CurrentPosition))
                     continue;
                 if (info.CurrentPosition == _Args.To)
                     continue;
-                if (info.ProceedingStage != StageIdle)
+                if (info.ProceedingStage != ModelCommonData.StageIdle)
                     continue;
-                SwitchStage(info, StageClosed);
-                ProceedCoroutine(info, ProceedBlock(info, StageIdle));
+                SwitchStage(info, ModelCommonData.ShredingerStageClosed);
+                ProceedCoroutine(info, ProceedBlock(info, ModelCommonData.StageIdle));
             }
         }
 
@@ -79,16 +79,16 @@ namespace RMAZOR.Models.ItemProceeders
         private IEnumerator ProceedBlock(IMazeItemProceedInfo _Info, int _Stage)
         {
             yield return Cor.Delay(
-                Settings.ShredingerBlockProceedTime,
+                Settings.shredingerBlockProceedTime,
                 () =>
                 {
                     var gravityItems = GetAllProceedInfos()
-                        .Where(_Inf => RazorMazeUtils.GravityItemTypes.ContainsAlt(_Inf.Type))
+                        .Where(_Inf => RmazorUtils.GravityItemTypes.ContainsAlt(_Inf.Type))
                         .ToList();
                     if (gravityItems.Any())
                     {
                         Cor.Run(Cor.WaitWhile(
-                            () => gravityItems.Any(_Inf => _Inf.ProceedingStage != StageIdle),
+                            () => gravityItems.Any(_Inf => _Inf.ProceedingStage != ModelCommonData.StageIdle),
                             () => SwitchStage(_Info, _Stage)));
                     }
                     else 

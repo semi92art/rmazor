@@ -7,6 +7,7 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 // ReSharper disable ClassNeverInstantiated.Global
@@ -26,7 +27,6 @@ namespace RMAZOR.Models.ItemProceeders
     {
         #region constants
 
-        public const int StageDrop = 1;
         
         #endregion
 
@@ -49,7 +49,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region api
 
-        protected override EMazeItemType[]              Types              => RazorMazeUtils.GravityItemTypes;
+        protected override EMazeItemType[]              Types              => RmazorUtils.GravityItemTypes;
         public             Func<IMazeItemProceedInfo[]> GetAllProceedInfos { private get; set; }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -80,7 +80,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
         {
-            var dropDirection = RazorMazeUtils.GetDropDirection(_Orientation);
+            var dropDirection = RmazorUtils.GetDropDirection(_Orientation);
             var infos = ProceedInfos.Where(_Info => _Info.IsProceeding);
             var infosMovedDict = 
                 infos.ToDictionary(_Info => _Info, _Info => false);
@@ -157,7 +157,7 @@ namespace RMAZOR.Models.ItemProceeders
                 else
                     return false;
             }
-            _Info.ProceedingStage = StageDrop;
+            _Info.ProceedingStage = ModelCommonData.GravityItemStageDrop;
             ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
             _GravityItemsMovedDict[_Info] = true;
@@ -200,7 +200,7 @@ namespace RMAZOR.Models.ItemProceeders
                 else
                     return false;
             }
-            _Info.ProceedingStage = StageDrop;
+            _Info.ProceedingStage = ModelCommonData.GravityItemStageDrop;
             ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
             _GravityItemsMovedDict[_Info] = true;
@@ -234,7 +234,7 @@ namespace RMAZOR.Models.ItemProceeders
                 else
                     return false;
             }
-            _Info.ProceedingStage = StageDrop;
+            _Info.ProceedingStage = ModelCommonData.GravityItemStageDrop;
             ProceedCoroutine(_Info, MoveMazeItemGravityCoroutine(_Info, to));
             _Info.NextPosition = to;
             _GravityItemsMovedDict[_Info] = true;
@@ -306,36 +306,34 @@ namespace RMAZOR.Models.ItemProceeders
             var from = _Info.CurrentPosition;
             if (from == _To)
             {
-                _Info.ProceedingStage = StageIdle;
+                _Info.ProceedingStage = ModelCommonData.StageIdle;
                 yield break;
             }
             float speed = _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityBlockFree
-                ? Settings.GravityBlockSpeed
-                : Settings.GravityTrapSpeed;
+                ? Settings.gravityBlockSpeed
+                : Settings.gravityTrapSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(_Info, from, _To, speed, 0));
             var direction = (_To - from).Normalized;
             float distance = V2Int.Distance(from, _To);
             yield return Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 distance / speed,
-                _Progress =>
+                _OnProgress: _P =>
                 {
-                    var addict = direction * ((_Progress + 0.1f) * distance);
+                    var addict = direction * ((_P + 0.1f) * distance);
                     busyPositions.Clear();
                     busyPositions.Add(from + V2Int.Floor(addict));
                     if (busyPositions[0] != _To)
                         busyPositions.Add(from + V2Int.Ceil(addict));
                     InvokeMoveContinued(new MazeItemMoveEventArgs(
-                        _Info, from, _To, speed, _Progress));
+                        _Info, from, _To, speed, _P));
                 },
-                GameTicker,
-                (_Stopped, _Progress) =>
+                _OnFinishEx: (_Stopped, _Progress) =>
                 {
                     var to = !_Stopped ? _To : _Info.BusyPositions[0];  
                     _Info.CurrentPosition = to;
-                    _Info.ProceedingStage = StageIdle;
+                    _Info.ProceedingStage = ModelCommonData.StageIdle;
                     InvokeMoveFinished(new MazeItemMoveEventArgs(
                         _Info, from, to, speed, _Progress));
                     busyPositions.Clear();
@@ -356,7 +354,7 @@ namespace RMAZOR.Models.ItemProceeders
                 if (_N.CurrentPosition != _Position)
                     return false;
                 if (_N.Type == EMazeItemType.ShredingerBlock
-                    && _N.ProceedingStage == ShredingerBlocksProceeder.StageClosed)
+                    && _N.ProceedingStage == ModelCommonData.ShredingerStageClosed)
                     return true;
                 return _N.Type != EMazeItemType.ShredingerBlock;
             });

@@ -38,19 +38,20 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
         private bool                 m_IsBuyButtonNotNull;
         private bool                 m_IsWatchAdImageNotNull;
         private IEnumerator          m_StopIndicateLoadingCoroutine;
-        private ILocalizationManager m_LocalizationManager;
 
         public virtual void Init(
-            IAudioManager        _AudioManager,
-            ILocalizationManager _LocalizationManager,
             IUITicker            _UITicker,
             IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
             UnityAction          _Click,
             ViewShopItemInfo     _Info)
         {
-            base.Init(_AudioManager, _UITicker, _ColorProvider);
-            m_LocalizationManager = _LocalizationManager;
+            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
             m_Info = _Info;
+            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(title, ETextType.MenuUI));
+            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(price, ETextType.Currency));
             watchAdImage.SetGoActive(true);
             loadingAnim.SetGoActive(true);
             name = "Shop Item";
@@ -69,9 +70,12 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
         }
         
         public override void Init(
-            IAudioManager _AudioManager,
-            IUITicker _UITicker, 
-            IColorProvider _ColorProvider)
+            IUITicker            _UITicker, 
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                 _AutoFont = true)
         {
             throw new NotSupportedException();
         }
@@ -119,10 +123,11 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
             price.SetGoActive(!m_Info.BuyForWatchingAd);
             if (m_Info.BuyForWatchingAd) 
                 return;
-            // price.text = $"{m_Info.Price} {m_Info.Currency}";
             price.text = $"{m_Info.Price}";
-            if (string.IsNullOrEmpty(price.text) || string.IsNullOrWhiteSpace(price.text))
-                price.text = m_LocalizationManager.GetTranslation("buy");
+            if (!string.IsNullOrEmpty(price.text) && !string.IsNullOrWhiteSpace(price.text))
+                return;
+            price.text = LocalizationManager.GetTranslation("buy");
+            price.font = LocalizationManager.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
         }
 
         protected override void OnDestroy()

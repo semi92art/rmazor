@@ -18,7 +18,7 @@ namespace RMAZOR.Views.Common
     {
         bool        ShakeMaze { get; set; }
         IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args);
-        IEnumerator ShakeMazeCoroutine();
+        IEnumerator ShakeMazeCoroutine(float                          _Duration, float _Amplitude);
         void OnCharacterDeathAnimation(
             Vector2             _DeathPosition,
             List<IViewMazeItem> _MazeItems,
@@ -82,45 +82,36 @@ namespace RMAZOR.Views.Common
         public IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
             const float amplitude = 0.5f;
-            var dir = RazorMazeUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
             const float duration = 0.1f;
             yield return Cor.Lerp(
-                0f,
-                1f,
+                GameTicker,
                 duration,
-                _Progress =>
+                _OnProgress: _P =>
                 {
-                    float distance = _Progress < 0.5f ? _Progress * amplitude : (1f - _Progress) * amplitude;
+                    float distance = _P < 0.5f ? _P * amplitude : (1f - _P) * amplitude;
                     var res = (Vector2)m_StartPosition + distance * dir;
                     m_MazeContainer.position = res;
                 },
-                GameTicker,
-                (_Finished, _Progress) =>
-                {
-                    m_MazeContainer.position = m_StartPosition;
-                });
+                _OnFinish: () => m_MazeContainer.position = m_StartPosition);
         }
 
-        public IEnumerator ShakeMazeCoroutine()
+        public IEnumerator ShakeMazeCoroutine(float _Duration, float _Amplitude)
         {
-            const float duration = 1f;
             yield return Cor.Lerp(
+                GameTicker,
+                _Duration,
                 1f,
                 0f,
-                duration,
                 _Progress =>
                 {
-                    float amplitude = 0.5f * _Progress;
+                    float amplitude =_Amplitude * _Progress;
                     Vector2 res;
                     res.x = m_StartPosition.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
                     res.y = m_StartPosition.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
                     m_MazeContainer.position = res;
                 },
-                GameTicker,
-                (_Finished, _Progress) =>
-                {
-                    m_MazeContainer.position = m_StartPosition;
-                });
+                () => m_MazeContainer.position = m_StartPosition);
         }
         
         public void UpdateTick()
@@ -165,16 +156,14 @@ namespace RMAZOR.Views.Common
                 () =>
                 {
                     Cor.Run(Cor.Lerp(
-                    0f,
-                    1f,
+                    GameTicker,
                     transitionTime,
-                    _Progress =>
+                    _OnProgress: _P =>
                     {
-                        var scale = startLocalScale * (1f + _Progress * scaleCoeff);
+                        var scale = startLocalScale * (1f + _P * scaleCoeff);
                         shape.transform.localScale = scale;
                     },
-                    GameTicker,
-                    (_, __) =>
+                    _OnFinish: () =>
                     {
                         shape.transform.localScale = startLocalScale;
                         finished[shape] = true;

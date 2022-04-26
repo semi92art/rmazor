@@ -2,7 +2,9 @@
 using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
+using UnityEngine;
 
 namespace RMAZOR.Views.Characters
 {
@@ -14,8 +16,9 @@ namespace RMAZOR.Views.Characters
         ICharacterMoveFinished,
         IAppear
     {
-        
-        void OnRotationFinished(MazeRotationEventArgs _Args);
-        void OnAllPathProceed(V2Int _LastPath);
+        Transform    Transform { get; }
+        Collider2D[] Colliders { get; }
+        void         OnRotationFinished(MazeRotationEventArgs _Args);
+        void         OnAllPathProceed(V2Int                   _LastPath);
     }
 }

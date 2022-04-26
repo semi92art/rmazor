@@ -53,13 +53,7 @@ namespace RMAZOR.Models.ItemProceeders
         protected virtual bool StopProceedOnLevelFinish => true;
         
         #endregion
-        
-        #region constants
 
-        public const int StageIdle = 0; 
-        
-        #endregion
-        
         #region inject
         
         protected ModelSettings      Settings     { get; }
@@ -123,7 +117,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         #region nonpublic methods
         
-        protected virtual void CollectItems(MazeInfo _Info)
+        protected void CollectItems(MazeInfo _Info)
         {
             var infos = new List<IMazeItemProceedInfo>();
 
@@ -160,7 +154,7 @@ namespace RMAZOR.Models.ItemProceeders
                 info.IsProceeding = true;
                 info.ReadyToSwitchStage = true;
                 info.CurrentPosition = info.StartPosition;
-                info.ProceedingStage = StageIdle;
+                info.ProceedingStage = ModelCommonData.StageIdle;
             }
         }
         
@@ -195,7 +189,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         protected static bool PathContainsItem(V2Int _From, V2Int _To, V2Int _Point)
         {
-            var fullPath = RazorMazeUtils.GetFullPath(_From, _To);
+            var fullPath = RmazorUtils.GetFullPath(_From, _To);
             return fullPath.Contains(_Point);
         }
         

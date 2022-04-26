@@ -233,6 +233,8 @@ MonoBehaviour:
       name: triggerer
     - item: {fileID: 4971899311667763340}
       name: border
+    - item: {fileID: 4053558951622077852}
+      name: collider
 --- !u!95 &4139325896498370262
 Animator:
   serializedVersion: 4
@@ -277,6 +279,7 @@ GameObject:
   - component: {fileID: 8961204445542969580}
   - component: {fileID: 7863594798523661652}
   - component: {fileID: 5181235751006683254}
+  - component: {fileID: 6724646232953849711}
   m_Layer: 0
   m_Name: Head
   m_TagString: Untagged
@@ -403,6 +406,22 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 10
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!58 &6724646232953849711
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4053558951622077852}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &4212089789563415148
 GameObject:
   m_ObjectHideFlags: 0

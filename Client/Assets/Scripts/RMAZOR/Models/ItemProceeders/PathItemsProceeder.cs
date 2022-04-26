@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views;
@@ -55,7 +56,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            m_CurrentFullPath = RazorMazeUtils.GetFullPath(_Args.From, _Args.To);
+            m_CurrentFullPath = RmazorUtils.GetFullPath(_Args.From, _Args.To);
             m_AllPathItemsNotInPathProceeded = true;
             foreach ((var key, bool value) in PathProceeds)
             {
@@ -70,7 +71,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
-            var path = RazorMazeUtils.GetFullPath(_Args.From, _Args.Position);
+            var path = RmazorUtils.GetFullPath(_Args.From, _Args.Position);
             for (int i = 0; i < path.Length; i++)
                 ProceedPathItem(path[i]);
         }

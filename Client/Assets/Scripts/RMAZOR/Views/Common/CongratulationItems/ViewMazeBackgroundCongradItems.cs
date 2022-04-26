@@ -135,15 +135,15 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 {
                     float startColA = col.a;
                     Cor.Run(Cor.Lerp(
+                        GameTicker,
+                    1f / (6f * CongratsAnimSpeed),
                     1f,
                     0f,
-                    1f / (6f * CongratsAnimSpeed),
                     _Progress =>
                     {
                         foreach (var shape in shapes)
                             shape.Color = shape.Color.SetA(_Progress * startColA);
-                    },
-                    GameTicker));
+                    }));
                 };
                 triggerer.Trigger3 = () => m_BackCongratsItemsPool.Deactivate(sourceAnim);
                 m_BackCongratsItemsPool.Add(sourceAnim);

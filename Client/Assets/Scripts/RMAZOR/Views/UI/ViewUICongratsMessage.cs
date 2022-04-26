@@ -5,6 +5,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers;
 using Common.Providers;
 using Common.Utils;
 using RMAZOR.Managers;
@@ -117,7 +118,10 @@ namespace RMAZOR.Views.UI
         
         private void SetCongratsString()
         {
-            Managers.LocalizationManager.AddTextObject(m_CompletedText, "completed");
+            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
+                m_CompletedText, 
+                ETextType.GameUI,
+                "completed"));
             float levelTime = Model.LevelStaging.LevelTime;
             int diesCount = Model.LevelStaging.DiesCount;
             int pathesCount = Model.PathItemsProceeder.PathProceeds.Count;
@@ -129,10 +133,11 @@ namespace RMAZOR.Views.UI
                 congradsKey = "good_job";
             else
                 congradsKey = "not_bad";
-            Managers.LocalizationManager.AddTextObject(
+            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
                 m_CongratsText, 
-                congradsKey, 
-                _Text => _Text.ToUpperInvariant());
+                ETextType.GameUI,
+                congradsKey,
+                _Text => _Text.ToUpperInvariant()));
         }
 
         private void ConsiderCongratsPanelWhileAppearing(bool _Consider)

@@ -12,7 +12,7 @@ namespace RMAZOR.DebugConsole
     
     public delegate void CommandHandler(string[] _Args);
 
-    public class CommandRegistration
+    public class DebugCommandArgs
     {
         // ReSharper disable once UnusedAutoPropertyAccessor.Global
         // ReSharper disable once MemberCanBePrivate.Global
@@ -20,7 +20,7 @@ namespace RMAZOR.DebugConsole
         public CommandHandler Handler     { get; }
         public string         Description { get; }
 
-        public CommandRegistration(string _Command, CommandHandler _Handler, string _Description)
+        public DebugCommandArgs(string _Command, CommandHandler _Handler, string _Description)
         {
             Command = _Command;
             Handler = _Handler;
@@ -37,7 +37,7 @@ namespace RMAZOR.DebugConsole
         IModelGame                              Model             { get; }
         Queue<string>                           Scrollback        { get; }
         string[]                                Log               { get; }
-        Dictionary<string, CommandRegistration> Commands          { get; }
+        Dictionary<string, DebugCommandArgs> Commands          { get; }
         List<string>                            CommandHistory    { get; }
         
         void Init(
@@ -45,8 +45,8 @@ namespace RMAZOR.DebugConsole
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager, 
             IScoreManager               _ScoreManager);
-        void RegisterCommand(string _Command, CommandHandler _Handler, string _Description);
-        void RunCommandString(string _CommandString);
+        void RegisterCommand(DebugCommandArgs _DebugCommandArgs);
+        void RunCommandString(string          _CommandString);
         void AppendLogLine(string             _Line);
         void RaiseLogChangedEvent(string[]    _Args);
     }
@@ -79,7 +79,7 @@ namespace RMAZOR.DebugConsole
 
         public string[]                                Log { get; private set; }
         public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
-        public Dictionary<string, CommandRegistration> Commands { get; } = new Dictionary<string, CommandRegistration>();
+        public Dictionary<string, DebugCommandArgs> Commands { get; } = new Dictionary<string, DebugCommandArgs>();
 
         // ReSharper disable once CollectionNeverQueried.Local
         public List<string> CommandHistory { get; } = new List<string>();
@@ -100,9 +100,9 @@ namespace RMAZOR.DebugConsole
             Model             = _Model;
         }
 
-        public void RegisterCommand(string _Command, CommandHandler _Handler, string _Description)
+        public void RegisterCommand(DebugCommandArgs _DebugCommandArgs)
         {
-            Commands.Add(_Command, new CommandRegistration(_Command, _Handler, _Description));
+            Commands.Add(_DebugCommandArgs.Command, _DebugCommandArgs);
         }
         
         public void AppendLogLine(string _Line)

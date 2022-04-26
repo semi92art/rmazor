@@ -92,7 +92,7 @@ namespace Common.Managers.Advertising
             return AdsData.Elements("ad")
                 .First(_El =>
                     Compare(_El.Attribute("source")?.Value, _Source)
-                    && Compare(_El.Attribute("os")?.Value, CommonUtils.GetOsName())
+                    && Compare(_El.Attribute("os")?.Value, CommonUtils.GetOsName().ToLower())
                     && Compare(_El.Attribute("type")?.Value, _Type)).Value;
         }
         

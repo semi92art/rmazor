@@ -168,6 +168,16 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
+            ShiftOffsetsOfDashedBorders();
+            HighlightBordersAndCorners();
+        }
+
+        #endregion
+        
+        #region nonpublic methods
+
+        private void ShiftOffsetsOfDashedBorders()
+        {
             const float maxOffset = 10f;
             float dOffset = GameTicker.DeltaTime * 3f;
             m_DashedOffset += dOffset;
@@ -192,40 +202,25 @@ namespace RMAZOR.Views.MazeItems
                 float offset = !m_IsTopBorderInverseOffset ? -m_DashedOffset : m_DashedOffset + 0.5f;
                 m_TopBorder.DashOffset = offset;
             }
-
-            // var col = ColorProvider.GetColor(ColorIds.Main);
-            // Color.RGBToHSV(col, out float h, out float s, out float v);
-            // const float amplitude = 0.2f;
-            // if (s > 1f - amplitude)
-            //     s = 1f - amplitude;
-            // else if (s < amplitude)
-            //     s = amplitude;
-            // s += amplitude * Mathf.Cos(Time.time * 3.0f);
-            // s = Mathf.Clamp01(s);
-            // var newCol = Color.HSVToRGB(h, s, v);
-            // if (m_LeftBorderInited)
-            //     m_LeftBorder.SetColor(newCol);
-            // if (m_RightBorderInited)
-            //     m_RightBorder.SetColor(newCol);
-            // if (m_BottomBorderInited)
-            //     m_BottomBorder.SetColor(newCol);
-            // if (m_TopBorderInited)
-            //     m_TopBorder.SetColor(newCol);
-            // if (BottomLeftCornerInited)
-            //     m_BottomLeftCorner.SetColor(newCol);
-            // if (TopLeftCornerInited)
-            //     m_TopLeftCorner.SetColor(newCol);
-            // if (TopRightCornerInited)
-            //     m_TopRightCorner.SetColor(newCol);
-            // if (BottomRightCornerInited)
-            //     m_BottomRightCorner.SetColor(newCol);
         }
 
-        #endregion
-        
-        #region nonpublic methods
-
-
+        private void HighlightBordersAndCorners()
+        {
+            const float lerpSpeed = 4f;
+            const float maxLerpValue = 0.2f;
+            var col1 = ColorProvider.GetColor(ColorIds.Main);
+            var col2 = ColorProvider.GetColor(ColorIds.Background1);
+            float lerpCoeff = maxLerpValue * (1f + 0.5f * Mathf.Cos(lerpSpeed * GameTicker.Time));
+            var col = Color.Lerp(col1, col2, lerpCoeff);
+            if (m_LeftBorderInited)      m_LeftBorder.SetColor(col);
+            if (m_RightBorderInited)     m_RightBorder.SetColor(col);
+            if (m_BottomBorderInited)    m_BottomBorder.SetColor(col);
+            if (m_TopBorderInited)       m_TopBorder.SetColor(col);
+            if (BottomLeftCornerInited)  m_BottomLeftCorner.SetColor(col);
+            if (TopLeftCornerInited)     m_TopLeftCorner.SetColor(col);
+            if (TopRightCornerInited)    m_TopRightCorner.SetColor(col);
+            if (BottomRightCornerInited) m_BottomRightCorner.SetColor(col);
+        }
 
         protected override void InitShape()
         {
@@ -633,7 +628,7 @@ namespace RMAZOR.Views.MazeItems
             start = CoordinateConverter.ToLocalMazeItemPosition(start);
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
 
-            var dir = RazorMazeUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Side, MazeOrientation.North);
             bool dashed = Model.GetAllProceedInfos().Any(_Item =>
                 _Item.CurrentPosition == Props.Position + dir &&
                 (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir

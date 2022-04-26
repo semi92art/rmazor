@@ -39,6 +39,7 @@ namespace RMAZOR
         private IShopManager          ShopManager          { get; set; }
         private IRemoteConfigManager  RemoteConfigManager  { get; set; }
         private IPermissionsRequester PermissionsRequester { get; set; }
+        private IAssetBundleManager   AssetBundleManager   { get; set; }
 
         [Inject] 
         public void Inject(
@@ -63,6 +64,7 @@ namespace RMAZOR
             LevelsLoader         = _LevelsLoader;
             ScoreManager         = _ScoreManager;
             HapticsManager       = _HapticsManager;
+            AssetBundleManager   = _AssetBundleManager;
             ShopManager          = _ShopManager;
             RemoteConfigManager  = _RemoteConfigManager;
             PermissionsRequester = _PermissionsRequester;
@@ -75,17 +77,15 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
+            CommonData.GameId = 1;
             LogAppInfo();
             yield return Cor.Delay(0.5f, null); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
-                yield return null;
+                yield return new WaitForEndOfFrame();
             InitStartData();
-            InitLogging();
             InitGameManagers();
             InitDefaultData();
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            SceneManager.sceneLoaded += OnSceneLoaded;
             yield return LoadSceneLevel();
         }
 
@@ -108,8 +108,10 @@ namespace RMAZOR
             Dbg.Log(sb.ToString());
         }
 
-        private static IEnumerator LoadSceneLevel()
+        private IEnumerator LoadSceneLevel()
         {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
             var @params = new LoadSceneParameters(LoadSceneMode.Single);
             var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
@@ -123,7 +125,11 @@ namespace RMAZOR
                 return;
             Cor.Run(Cor.WaitWhile(
                 () => !RemoteConfigManager.Initialized,
-                InitGameController));
+                () =>
+                {
+                    LevelsLoader.Init();
+                    InitGameController();
+                }));
         }
 
         #endregion
@@ -132,12 +138,12 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
-            
             if (CommonData.DevelopmentBuild)
                 RemoteConfigManager.Initialize += SRDebug.Init;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
             RemoteConfigManager.Init();
+            AssetBundleManager .Init();
             ShopManager.RegisterProductInfos(GetProductInfos());
             ShopManager        .Init();
             ScoreManager.RegisterLeaderboards(GetLeaderBoardIdKeyPairs());
@@ -145,6 +151,7 @@ namespace RMAZOR
             ScoreManager       .Init();
             GameClient         .Init();
             LocalizationManager.Init();
+            
         }
 
         private void InitGameController()
@@ -232,47 +239,38 @@ namespace RMAZOR
             if (SaveUtils.GetValue(SaveKeysCommon.NotFirstLaunch))
                 return;
             Dbg.Log(nameof(InitDefaultData));
-            SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn, true);
-            SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn, true);
-            SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn, true);
-            SaveUtils.PutValue(SaveKeysCommon.NotFirstLaunch, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn,         true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn,         true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingNotificationsOn, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn,       true);
+            SaveUtils.PutValue(SaveKeysCommon.NotFirstLaunch,         true);
             SetDefaultLanguage();
         }
 
-        private static void InitStartData()
+        private void InitStartData()
         {
-            RazorMazeUtils.LoadNextLevelAutomatically = true;
+            CommonData.LoadNextLevelAutomatically = true;
+            CommonData.Release = true;
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
-            CommonData.Release = true;
-        }
-
-        private void InitLogging()
-        {
             Dbg.LogLevel = Settings.logLevel;
         }
 
         private void SetDefaultLanguage()
         {
-            var language = Language.English;
-            switch (Application.systemLanguage)
+            ELanguage lang = Application.systemLanguage switch
             {
-                case SystemLanguage.Russian:
-                case SystemLanguage.Belarusian:
-                case SystemLanguage.Ukrainian:
-                    language = Language.Russian;
-                    LocalizationManager.SetLanguage(Language.Russian);
-                    break;
-                case SystemLanguage.Spanish:
-                    language = Language.Spanish;
-                    LocalizationManager.SetLanguage(Language.Spanish);
-                    break;
-                case SystemLanguage.Portuguese:
-                    language = Language.Portugal;
-                    LocalizationManager.SetLanguage(Language.Portugal);
-                    break;
-            }
-            LocalizationManager.SetLanguage(language);
+                SystemLanguage.Russian    => ELanguage.Russian,
+                SystemLanguage.Belarusian => ELanguage.Russian,
+                SystemLanguage.Ukrainian  => ELanguage.Russian,
+                SystemLanguage.German     => ELanguage.German,
+                SystemLanguage.Spanish    => ELanguage.Spanish,
+                SystemLanguage.Portuguese => ELanguage.Portugal,
+                SystemLanguage.Japanese   => ELanguage.Japaneese,
+                SystemLanguage.Korean     => ELanguage.Korean,
+                _                         => ELanguage.English
+            };
+            LocalizationManager.SetLanguage(lang);
         }
         
         private static List<ProductInfo> GetProductInfos()

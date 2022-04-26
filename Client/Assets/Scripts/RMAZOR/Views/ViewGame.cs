@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Helpers;
 using Common.Providers;
+using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
@@ -16,6 +18,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
+using UnityEngine;
 
 namespace RMAZOR.Views
 {
@@ -29,7 +32,7 @@ namespace RMAZOR.Views
         ViewSettings                  Settings             { get; }
         IViewUI                       UI                   { get; }
         IViewLevelStageController     LevelStageController { get; }
-        IViewInputController          InputController      { get; }
+        IViewInputTouchProceeder      TouchProceeder       { get; }
         IViewInputCommandsProceeder   CommandsProceeder    { get; }
         IViewCharacter                Character            { get; }
         IViewMazeRotation             MazeRotation         { get; }
@@ -40,7 +43,7 @@ namespace RMAZOR.Views
         IViewMazeAdditionalBackground AdditionalBackground { get; }
     }
     
-    public class ViewGame : InitBase, IViewGame
+    public class ViewGame : InitBase, IViewGame, IApplicationFocus
     {
         #region inject
 
@@ -48,8 +51,8 @@ namespace RMAZOR.Views
         public IContainersGetter             ContainersGetter     { get; }
         public IViewUI                       UI                   { get; }
         public IViewLevelStageController     LevelStageController { get; }
-        public IViewInputController          InputController      { get; }
         public IViewInputCommandsProceeder   CommandsProceeder    { get; }
+        public IViewInputTouchProceeder      TouchProceeder       { get; }
         public IViewCharacter                Character            { get; }
         public IViewMazeRotation             MazeRotation         { get; }
         public IViewMazeItemsGroupSet        MazeItemsGroupSet    { get; }
@@ -65,14 +68,15 @@ namespace RMAZOR.Views
         private ICameraProvider               CameraProvider           { get; }
         private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
+        private IViewGameTicker               ViewGameTicker           { get; }
 
         public ViewGame(
             ViewSettings                  _Settings,
             IContainersGetter             _ContainersGetter,
             IViewUI                       _UI,
             IViewLevelStageController     _LevelStageController,
-            IViewInputController          _InputController,
             IViewInputCommandsProceeder   _CommandsProceeder,
+            IViewInputTouchProceeder      _TouchProceeder,
             IViewCharacter                _Character,
             IViewMazeCommon               _Common,
             IViewBackground               _Background,
@@ -86,14 +90,15 @@ namespace RMAZOR.Views
             ICameraProvider               _CameraProvider,
             IBigDialogViewer              _BigDialogViewer,
             IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
-            IViewMazeAdditionalBackground _AdditionalBackground)
+            IViewMazeAdditionalBackground _AdditionalBackground,
+            IViewGameTicker               _ViewGameTicker)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
             UI                           = _UI;
-            InputController              = _InputController;
             LevelStageController         = _LevelStageController;
             CommandsProceeder            = _CommandsProceeder;
+            TouchProceeder               = _TouchProceeder;
             Character                    = _Character;
             Common                       = _Common;
             Background                   = _Background;
@@ -108,6 +113,7 @@ namespace RMAZOR.Views
             BigDialogViewer              = _BigDialogViewer;
             BetweenLevelTransitioner     = _BetweenLevelTransitioner;
             AdditionalBackground         = _AdditionalBackground;
+            ViewGameTicker               = _ViewGameTicker;
         }
         
         #endregion
@@ -122,7 +128,9 @@ namespace RMAZOR.Views
 
         public override void Init()
         {
+            ViewGameTicker.Register(this);
             InitProceeders();
+            SendNotifications();
             base.Init();
         }
         
@@ -151,6 +159,13 @@ namespace RMAZOR.Views
             foreach (var proceeder in proceeders)
                 proceeder?.OnCharacterMoveFinished(_Args);
         }
+        
+        public void OnApplicationFocus(bool _Focus)
+        {
+            if (!_Focus)
+                return;
+            Cor.Run(Cor.Delay(1f, SendNotifications));
+        }
 
         #endregion
         
@@ -167,7 +182,8 @@ namespace RMAZOR.Views
                 ContainersGetter,
                 Common,
                 UI,
-                InputController,
+                TouchProceeder,
+                CommandsProceeder,
                 Character,
                 MazeRotation,
                 PathItemsGroup,
@@ -201,11 +217,36 @@ namespace RMAZOR.Views
             {
                 CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
             };
+            TouchProceeder.ProceedRotation = Application.isEditor;
         }
 
         private T[] GetInterfaceOfProceeders<T>(object[] _Proceeders = null) where T : class
         {
             return Array.ConvertAll(_Proceeders ?? m_ProceedersCached, _Item => _Item as T);
+        }
+
+        private void SendNotifications()
+        {
+            if (!CommonData.Release)
+                return;
+            var locMan = Managers.LocalizationManager;
+            var notMan = Managers.NotificationsManager;
+            string title = Application.productName;
+            var dict = new Dictionary<string, DateTime>
+            {
+                {locMan.GetTranslation("notification_1"), DateTime.Now.AddDays(1)},
+                {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(2)}
+            };
+            foreach ((string body, var dateTime) in dict)
+            {
+                notMan.SendNotification(
+                    title, 
+                    body, 
+                    dateTime,
+                    _Reschedule: true,
+                    _SmallIcon: "main_icon",
+                    _LargeIcon: "main_icon_large");
+            }
         }
         
         #endregion

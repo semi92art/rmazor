@@ -14,32 +14,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 21300000, guid: 395d60db59a134642b0d09eebdfd2e1f, type: 3}
-      name: additional_background_texture_1
-      bundle: 0
     - item: {fileID: 21300000, guid: 02c846a62b907db448c94b33770803e3, type: 3}
-      name: additional_background_texture_2
+      name: additional_background_texture_1_low_ratio
       bundle: 0
-    - item: {fileID: 21300000, guid: e356c533935632e44803a5333296d8f7, type: 3}
-      name: additional_background_texture_3
+    - item: {fileID: 21300000, guid: 4dc5f509a10d1e9449e418bafa73a822, type: 3}
+      name: additional_background_texture_1_middle_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 20c92edebeda8664f87ee22f2b3eb586, type: 3}
+      name: additional_background_texture_1_high_ratio
       bundle: 0
     - item: {fileID: 21300000, guid: fbaa4d472792cdc45834943364a2c385, type: 3}
-      name: additional_background_texture_4
+      name: additional_background_texture_2_low_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 2d6d53f93b86dd5458aeca325f68ddf1, type: 3}
+      name: additional_background_texture_2_middle_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 7b8f2c81842d0c24f8d8b27f548b8059, type: 3}
+      name: additional_background_texture_2_high_ratio
       bundle: 0
     - item: {fileID: 21300000, guid: d509743dacbbfc941be11ba4feb29b27, type: 3}
-      name: additional_background_texture_5
+      name: additional_background_texture_3_low_ratio
       bundle: 0
-    - item: {fileID: 21300000, guid: cc8cbdee2b8eb7943a3d5dd4c989aecd, type: 3}
-      name: additional_background_texture_6
+    - item: {fileID: 21300000, guid: 0da9be076f5de2e4ba20c84969faae1f, type: 3}
+      name: additional_background_texture_3_middle_ratio
       bundle: 0
-    - item: {fileID: 21300000, guid: 2181b7d7dc233dd4eb5f8d596a365272, type: 3}
-      name: additional_background_texture_7
+    - item: {fileID: 21300000, guid: dfbbbea0879b13b49865547d067f1a27, type: 3}
+      name: additional_background_texture_3_high_ratio
       bundle: 0
     - item: {fileID: 21300000, guid: e4354b871efd1344a8853c5720154176, type: 3}
-      name: additional_background_texture_8
+      name: additional_background_texture_4_low_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 946be071e9c192941ba4e67b8a4f2127, type: 3}
+      name: additional_background_texture_4_middle_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 261a0cdc99aec2742949df953a454095, type: 3}
+      name: additional_background_texture_4_high_ratio
       bundle: 0
     - item: {fileID: 21300000, guid: 439a4b2a4f0bb2d4bba9bfeb69c19f6e, type: 3}
-      name: additional_background_texture_9
+      name: additional_background_texture_5_low_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 4ec64143abb9e92468210a8ba6a99600, type: 3}
+      name: additional_background_texture_5_middle_ratio
+      bundle: 0
+    - item: {fileID: 21300000, guid: 74bd8f75e88323f4f90a6e2d34c562de, type: 3}
+      name: additional_background_texture_5_high_ratio
       bundle: 0
     - item: {fileID: 7569679583809919746, guid: b74308dc2298d874a9cfc7377cb1b80f,
         type: 3}

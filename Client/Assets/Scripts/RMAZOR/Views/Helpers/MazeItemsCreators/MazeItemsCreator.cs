@@ -25,7 +25,9 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             IViewMazeItemGravityTrap      _GravityTrap,
             IViewMazeItemTrapReact        _TrapReact,
             IViewMazeItemTrapIncreasing   _TrapIncreasing,
-            IViewMazeItemGravityBlockFree _GravityBlockFree) 
+            IViewMazeItemGravityBlockFree _GravityBlockFree,
+            IViewMazeItemHammer           _Hammer,
+            IViewMazeItemBazooka         _Bazooka) 
             : base(
             _ItemPath,
             _GravityBlock, 
@@ -37,7 +39,9 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             _GravityTrap,
             _TrapReact,
             _TrapIncreasing,
-            _GravityBlockFree) { }
+            _GravityBlockFree,
+            _Hammer,
+            _Bazooka) { }
         
         #endregion
         
@@ -66,7 +70,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     IsNode = true,
                     IsStartNode = pathItemPos == _Info.PathItems[0].Position,
                     Position = pathItemPos,
-                    Blank = _Info.PathItems[i].Blank
+                    Blank = _Info.PathItems[i].Blank,
                 };
                 if (moneyItemIndices.Contains(i)
                     && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos)
@@ -83,7 +87,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
 
         public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
-            foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Type != EMazeItemType.Block))
+            foreach (var mazeItem in _Info.MazeItems.Where(_Item => 
+                !new [] {EMazeItemType.Block, EMazeItemType.Bazooka}.Contains(_Item.Type)))
             {
                 var props = new ViewMazeItemProps
                 {
@@ -93,6 +98,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     Directions = mazeItem.Directions,
                     Pair = mazeItem.Pair,
                     Blank = mazeItem.Blank,
+                    Args = mazeItem.Args,
                     IsNode = false,
                     IsStartNode = false
                 };

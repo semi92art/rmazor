@@ -1,5 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -113,7 +114,8 @@ namespace RMAZOR
                                 Path = _Item.Path,
                                 Type = _Item.Type,
                                 Position = _Item.Position,
-                                Blank = _Item.Blank
+                                Blank = _Item.Blank,
+                                Args = _Item.Args
                             });
                     }).ToList()
             };
@@ -143,7 +145,7 @@ namespace RMAZOR
                     CommonData.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
-                    SceneManager.LoadScene(SceneNames.Level);
+                    Cor.Run(LoadSceneLevel());
                     EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                     break;
                 case PlayModeStateChange.ExitingPlayMode:
@@ -151,6 +153,14 @@ namespace RMAZOR
                 default:
                     throw new SwitchCaseNotImplementedException(_Change);
             }
+        }
+        
+        private static IEnumerator LoadSceneLevel()
+        {
+            var @params = new LoadSceneParameters(LoadSceneMode.Single);
+            var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+            while (!op.isDone)
+                yield return null;
         }
 
         private static void OnSceneUnloaded(PlayModeStateChange _State)
@@ -176,7 +186,7 @@ namespace RMAZOR
             {
                 int selectedLevel = SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerSelectedLevel);
                 controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
-                RazorMazeUtils.LoadNextLevelAutomatically = false;
+                CommonData.LoadNextLevelAutomatically = false;
             };
             controller.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;

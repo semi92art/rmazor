@@ -6,6 +6,7 @@ using Common.Entities;
 using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -102,7 +103,6 @@ namespace RMAZOR.UI.Panels
                 CommonPrefabSetNames.DialogPanels, PrefabName);
             PanelObject = go.RTransform();
             go.SetActive(false);
-
             m_Animator                = go.GetCompItem<Animator>("animator");
             m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
             m_ButtonWatchAds          = go.GetCompItem<Button>("watch_ads_button");
@@ -119,9 +119,12 @@ namespace RMAZOR.UI.Panels
             m_RoundFilledBorder       = go.GetCompItem<Image>("round_filled_border");
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
             m_TextPayMoneyCount.text  = CommonGameSettings.payToContinueMoneyCount.ToString();
-            m_TextYouHaveMoney.text   = Managers.LocalizationManager.GetTranslation("you_have") + ":";
-            m_TextContinue.text       = Managers.LocalizationManager.GetTranslation("continue");
-            m_TextNotEnoughMoney.text = Managers.LocalizationManager.GetTranslation("not_enough_money");
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have"));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue"));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextNotEnoughMoney, ETextType.MenuUI, "not_enough_money"));
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
             m_MoneyIcon1.sprite = moneyIconSprite;
@@ -129,10 +132,12 @@ namespace RMAZOR.UI.Panels
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             m_RoundFilledBorder.color = ColorProvider.GetColor(ColorIds.UiBorder);
-            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(Managers.AudioManager, Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(Managers.AudioManager, Ticker, ColorProvider);
-            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(Managers.AudioManager, Ticker, ColorProvider);
-
+            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(
+                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
+            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(
+                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
+            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(
+                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             m_AdsWatched = false;
             m_MoneyPayed = false;
         }
@@ -181,7 +186,7 @@ namespace RMAZOR.UI.Panels
             CommandsProceeder.UnlockCommands(
                 new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
                 nameof(ICharacterDiedDialogPanel));
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, "all");
+            CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, "all");
         }
 
         #endregion
@@ -228,7 +233,7 @@ namespace RMAZOR.UI.Panels
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
             Managers.AdsManager.ShowRewardedAd(
-                () => CommonData.PausedByAdvertising = true, 
+                () => CommonData.PausedByAdvertisingOrPurchasing = true, 
                 () => m_AdsWatched = true);
         }
 
@@ -247,12 +252,11 @@ namespace RMAZOR.UI.Panels
         private IEnumerator StartCountdown()
         {
             yield return Cor.Lerp(
-                1f,
-                0f,
-                CountdownTime,
-                _Progress => m_RoundFilledBorder.fillAmount = _Progress,
                 Ticker,
-                (_Broken, _Progress) =>
+                CountdownTime,
+                _OnProgress: _P => m_RoundFilledBorder.fillAmount = 1f - _P,
+                _BreakPredicate: () => m_AdsWatched || m_MoneyPayed,
+                _OnFinishEx: (_Broken, _) =>
                 {
                     void RaiseContinueCommand()
                     {
@@ -270,8 +274,7 @@ namespace RMAZOR.UI.Panels
                     }
                     ProposalDialogViewer.Back(_Broken ?
                         (UnityAction)RaiseContinueCommand : RaiseLoadFirstLevelInGroupCommand);
-                },
-                () => m_AdsWatched || m_MoneyPayed);
+                });
         }
         
         #endregion

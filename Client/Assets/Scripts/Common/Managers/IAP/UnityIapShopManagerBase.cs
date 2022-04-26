@@ -52,6 +52,8 @@ namespace Common.Managers.IAP
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             InitializePurchasing();
         }
         

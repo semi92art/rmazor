@@ -17,10 +17,10 @@ namespace RMAZOR.Views.Utils
             PathLine                     = Path + 50,
             PathJoint                    = Path + 100,
             MoneyItem                    = Path + 150,
-            Character                    = Path + 500,
-            BetweenLevelForeground       = Path + 550,
-            GameLogoBackground           = Path + 600,
-            GameLogoForeground           = Path + 650;
+            Character                    = Path + 600,
+            BetweenLevelForeground       = Path + 650,
+            GameLogoBackground           = Path + 700,
+            GameLogoForeground           = Path + 750;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -42,8 +42,11 @@ namespace RMAZOR.Views.Utils
                     return Path + 200;
                 case EMazeItemType.TrapReact:
                     return Path + 300;
-                case EMazeItemType.MovingBlockFree:
-                default: throw new SwitchCaseNotImplementedException(_Type);
+                case EMazeItemType.Hammer:
+                    return Path + 350;
+                case EMazeItemType.Bazooka:
+                    return Path + 450;
+                default: return Path + 500;
             }
         }
     }

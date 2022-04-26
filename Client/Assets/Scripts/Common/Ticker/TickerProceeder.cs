@@ -17,15 +17,17 @@ namespace Common.Ticker
         private readonly List<ILateUpdateTick>   m_LateUpdateInfoDict   = new List<ILateUpdateTick>();
         private readonly List<IDrawGizmosTick>   m_DrawGizmosInfoDict   = new List<IDrawGizmosTick>();
         private readonly List<IApplicationPause> m_ApplicationPauseDict = new List<IApplicationPause>();
-        
+        private readonly List<IApplicationFocus> m_ApplicationFocusDict = new List<IApplicationFocus>();
+        private readonly List<IDestroy>          m_DestroyDict          = new List<IDestroy>();
+
         #endregion
 
         #region api
 
         public event UnityAction Paused;
         public event UnityAction UnPaused;
-        public float             Time           { get; private set; }
-        public float             FixedTime      { get; private set; }
+        public float             Time      { get; private set; }
+        public float             FixedTime { get; private set; }
 
         public bool Pause
         {
@@ -35,7 +37,7 @@ namespace Common.Ticker
                 m_Paused = value;
                 if (value)
                     Paused?.Invoke();
-                else 
+                else
                     UnPaused?.Invoke();
             }
         }
@@ -46,7 +48,7 @@ namespace Common.Ticker
             Time = 0f;
             m_Delta = 0f;
         }
-        
+
         public void RegisterObject(object _Object)
         {
             if (_Object == null)
@@ -68,6 +70,10 @@ namespace Common.Ticker
                 m_DrawGizmosInfoDict.Remove(onDrawGizmosObj);
             if (_Object is IApplicationPause onAppPauseObj)
                 m_ApplicationPauseDict.Remove(onAppPauseObj);
+            if (_Object is IApplicationFocus onAppFocusObj)
+                m_ApplicationFocusDict.Remove(onAppFocusObj);
+            if (_Object is IDestroy onDestroy)
+                m_DestroyDict.Remove(onDestroy);
         }
 
         public void Clear()
@@ -77,6 +83,8 @@ namespace Common.Ticker
             m_FixedUpdateInfoDict .Clear();
             m_DrawGizmosInfoDict  .Clear();
             m_ApplicationPauseDict.Clear();
+            m_ApplicationFocusDict.Clear();
+            m_DestroyDict         .Clear();
         }
 
         #endregion
@@ -90,6 +98,7 @@ namespace Common.Ticker
                 m_Delta += UnityEngine.Time.deltaTime;
                 return;
             }
+
             Time = UnityEngine.Time.time - m_Delta;
             for (int i = 0; i < m_UpdateInfoDict.Count; i++)
                 m_UpdateInfoDict[i]?.UpdateTick();
@@ -102,6 +111,7 @@ namespace Common.Ticker
                 m_FixedDelta += UnityEngine.Time.fixedTime;
                 return;
             }
+
             FixedTime = UnityEngine.Time.fixedTime - m_FixedDelta;
             for (int i = 0; i < m_FixedUpdateInfoDict.Count; i++)
                 m_FixedUpdateInfoDict[i]?.FixedUpdateTick();
@@ -114,7 +124,7 @@ namespace Common.Ticker
             for (int i = 0; i < m_LateUpdateInfoDict.Count; i++)
                 m_LateUpdateInfoDict[i]?.LateUpdateTick();
         }
-        
+
         private void OnDrawGizmos()
         {
             if (Pause)
@@ -131,10 +141,22 @@ namespace Common.Ticker
                 m_ApplicationPauseDict[i]?.OnApplicationPause(_Pause);
         }
 
+        private void OnApplicationFocus(bool _HasFocus)
+        {
+            for (int i = 0; i < m_ApplicationFocusDict.Count; i++)
+                m_ApplicationFocusDict[i]?.OnApplicationFocus(_HasFocus);
+        }
+
+        private void OnDestroy()
+        {
+            for (int i = 0; i < m_DestroyDict.Count; i++)
+                m_DestroyDict[i]?.OnDestroy();
+        }
+
         #endregion
 
         #region nonpublic methods
-        
+
         private void RegisterUpdateMethods(object _Object)
         {
             if (_Object is IUpdateTick onUpdateObj)
@@ -147,12 +169,18 @@ namespace Common.Ticker
                 m_DrawGizmosInfoDict.Add(onDrawGizmosObj);
             if (_Object is IApplicationPause onAppPauseObj)
                 m_ApplicationPauseDict.Add(onAppPauseObj);
-            
+            if (_Object is IApplicationFocus onAppFocusObj)
+                m_ApplicationFocusDict.Add(onAppFocusObj);
+            if (_Object is IDestroy onDestroy)
+                m_DestroyDict.Add(onDestroy);
+
             m_UpdateInfoDict      .RemoveAll(_Obj => _Obj == null);
             m_FixedUpdateInfoDict .RemoveAll(_Obj => _Obj == null);
             m_LateUpdateInfoDict  .RemoveAll(_Obj => _Obj == null);
             m_DrawGizmosInfoDict  .RemoveAll(_Obj => _Obj == null);
             m_ApplicationPauseDict.RemoveAll(_Obj => _Obj == null);
+            m_ApplicationFocusDict.RemoveAll(_Obj => _Obj == null);
+            m_DestroyDict         .RemoveAll(_Obj => _Obj == null);
         }
 
         #endregion

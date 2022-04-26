@@ -63,6 +63,8 @@ namespace Common.Managers.Advertising
         
         public override void Init()
         {
+            if (Initialized)
+                return;
             InitProviders();
             base.Init();
         }

@@ -29,7 +29,8 @@ namespace RMAZOR.Models
                     || _Item.Type == EMazeItemType.GravityTrap
                     || _Item.Type == EMazeItemType.ShredingerBlock
                     || _Item.Type == EMazeItemType.TrapMoving
-                    || _Item.Type == EMazeItemType.GravityBlockFree)
+                    || _Item.Type == EMazeItemType.GravityBlockFree
+                    || _Item.Type == EMazeItemType.Bazooka)
                 .ToList();
             foreach (var item in itemsForAdditionalNodes
                 .Where(_Item => !_Info.PathItems.Select(_PI => _PI.Position).Contains(_Item.Position)))

@@ -1,4 +1,5 @@
 ﻿using RMAZOR;
+using UnityEngine;
 using Zenject;
 
 namespace Mono_Installers
@@ -7,9 +8,7 @@ namespace Mono_Installers
     {
         public override void InstallBindings()
         {
-            #if UNITY_EDITOR
-                Container.Bind<LevelDesigner>().FromComponentInHierarchy().AsSingle();
-            #endif
+            Container.Bind<PromotionGraphics>().FromComponentInHierarchy().AsSingle();
         }
     }
 }

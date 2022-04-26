@@ -1,11 +1,12 @@
 ﻿using System;
 using Common;
+using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using RMAZOR.Managers;
+using Common.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -21,18 +22,26 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         private bool m_IsTitleNotNull;
 
         public void Init(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IColorProvider _ColorProvider,
-            UnityAction _Select)
+            IUITicker            _UITicker,
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            UnityAction          _Select)
         {
-            base.Init(_Managers.AudioManager, _UITicker, _ColorProvider);
+            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
             name = "Setting";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Select);
         }
 
-        public override void Init(IAudioManager _AudioManager, IUITicker _UITicker, IColorProvider _ColorProvider)
+        public override void Init(
+            IUITicker            _UITicker, 
+            IColorProvider       _ColorProvider,
+            IAudioManager        _AudioManager,
+            ILocalizationManager _LocalizationManager,
+            IPrefabSetManager    _PrefabSetManager,
+            bool                 _AutoFont = true)
         {
             throw new NotSupportedException();
         }

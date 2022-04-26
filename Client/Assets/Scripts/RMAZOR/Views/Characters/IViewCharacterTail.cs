@@ -2,6 +2,7 @@
 using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 
 namespace RMAZOR.Views.Characters
 {

@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
+  m_Name: fonts
+  m_EditorClassIdentifier: 
+  prefabs:
+    array:
+    - item: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
+      name: fulbo-argenta-cirillic
+      bundle: 0
+    - item: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      name: liberation-sans
+      bundle: 0
+    - item: {fileID: 11400000, guid: e05d4a14b3eb9414ba9296440455b47c, type: 2}
+      name: montserrat-ace-regular
+      bundle: 0
+    - item: {fileID: 11400000, guid: 0f159f8240858864181345655c609f0b, type: 2}
+      name: segoe-ui
+      bundle: 0
+    - item: {fileID: 11400000, guid: 7808e7cfd1ec1fb40992eb375a7914bb, type: 2}
+      name: japaneese
+      bundle: 0
+    - item: {fileID: 11400000, guid: e551e313639949643bbadf429c6a45b7, type: 2}
+      name: korean
+      bundle: 0

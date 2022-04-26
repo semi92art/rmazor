@@ -72,6 +72,8 @@ namespace RMAZOR.Managers
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             LoadPropertiesFromCache(FetchConfigs);
         }
 
@@ -181,10 +183,12 @@ namespace RMAZOR.Managers
             if (Application.isEditor && !Instance.CommonGameSettings.rewriteSettingsByRemoteConfigInEditor)
             {
                 _fetchCompletedActionDone = true;
+                return;
             }
             
             if (_Response.status != ConfigRequestStatus.Success)
             {
+                Dbg.Log("Remote Config Initialized with status: " + _Response.status);
                 _fetchCompletedActionDone = true;
                 return;
             }
@@ -375,8 +379,7 @@ namespace RMAZOR.Managers
                     Instance.CommonGameSettings.debugEnabled = isThisDeviceForTesting;
                     Instance.CommonGameSettings.testAds = isThisDeviceForTesting;
                     _fetchCompletedActionDone = true;
-                },
-                _Seconds: 3f));
+                }));
         }
         
         private static void GetConfig<T>(ref T _Parameter, string _Key, bool _IsJson = false)

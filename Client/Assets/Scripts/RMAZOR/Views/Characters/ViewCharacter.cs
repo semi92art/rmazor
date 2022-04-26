@@ -1,4 +1,5 @@
-﻿using Common.Entities;
+﻿using System;
+using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
@@ -9,6 +10,7 @@ using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Characters
 {
@@ -65,7 +67,7 @@ namespace RMAZOR.Views.Characters
         #endregion
         
         #region api
-        
+
         public override EAppearingState AppearingState => Head.AppearingState;
         
         public override bool Activated
@@ -96,6 +98,9 @@ namespace RMAZOR.Views.Characters
             m_EnableMoving = false;
         }
 
+        public override Transform    Transform => Head.Transform;
+        public override Collider2D[] Colliders => Head.Colliders;
+
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
             Head.OnRotationFinished(_Args);
@@ -115,7 +120,7 @@ namespace RMAZOR.Views.Characters
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
-            CommandsProceeder.LockCommands(RazorMazeUtils.MoveAndRotateCommands, nameof(IViewCharacter));
+            CommandsProceeder.LockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
         }
 
         public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
@@ -133,7 +138,7 @@ namespace RMAZOR.Views.Characters
                 return;
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
-            CommandsProceeder.UnlockCommands(RazorMazeUtils.MoveAndRotateCommands, nameof(IViewCharacter));
+            CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
             Head.OnCharacterMoveFinished(_Args);
             Tail.OnCharacterMoveFinished(_Args);
             Effector.OnCharacterMoveFinished(_Args);
@@ -158,7 +163,7 @@ namespace RMAZOR.Views.Characters
                 case ELevelStage.CharacterKilled:
                     Managers.AudioManager.PlayClip(GetCharacterDeadArgs());
                     Managers.HapticsManager.PlayPreset(EHapticsPresetType.Failure);
-                    Cor.Run(MazeShaker.ShakeMazeCoroutine());
+                    Cor.Run(MazeShaker.ShakeMazeCoroutine(1f, 0.5f));
                     break;
             }
             Head.OnLevelStageChanged(_Args);

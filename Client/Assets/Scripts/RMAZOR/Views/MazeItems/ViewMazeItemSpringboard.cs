@@ -137,11 +137,9 @@ namespace RMAZOR.Views.MazeItems
                     GetSpringboardEdgesOnJump(_Progress * JumpCoefficient);
             }
             yield return Cor.Lerp(
-                0,
-                1f,
-                0.1f,
-                DoOnProgress,
                 GameTicker,
+                0.1f,
+                _OnProgress: DoOnProgress,
                 _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P));
         }
         
