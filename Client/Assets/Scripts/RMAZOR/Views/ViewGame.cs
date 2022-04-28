@@ -4,8 +4,8 @@ using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Helpers;
+using Common.Managers.Notifications;
 using Common.Providers;
-using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
@@ -43,7 +43,7 @@ namespace RMAZOR.Views
         IViewMazeAdditionalBackground AdditionalBackground { get; }
     }
     
-    public class ViewGame : InitBase, IViewGame, IApplicationFocus
+    public class ViewGame : InitBase, IViewGame
     {
         #region inject
 
@@ -68,7 +68,6 @@ namespace RMAZOR.Views
         private ICameraProvider               CameraProvider           { get; }
         private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
-        private IViewGameTicker               ViewGameTicker           { get; }
 
         public ViewGame(
             ViewSettings                  _Settings,
@@ -90,8 +89,7 @@ namespace RMAZOR.Views
             ICameraProvider               _CameraProvider,
             IBigDialogViewer              _BigDialogViewer,
             IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
-            IViewMazeAdditionalBackground _AdditionalBackground,
-            IViewGameTicker               _ViewGameTicker)
+            IViewMazeAdditionalBackground _AdditionalBackground)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -113,7 +111,6 @@ namespace RMAZOR.Views
             BigDialogViewer              = _BigDialogViewer;
             BetweenLevelTransitioner     = _BetweenLevelTransitioner;
             AdditionalBackground         = _AdditionalBackground;
-            ViewGameTicker               = _ViewGameTicker;
         }
         
         #endregion
@@ -128,9 +125,8 @@ namespace RMAZOR.Views
 
         public override void Init()
         {
-            ViewGameTicker.Register(this);
             InitProceeders();
-            SendNotifications();
+            SendNotificationsOnInit();
             base.Init();
         }
         
@@ -158,13 +154,6 @@ namespace RMAZOR.Views
             var proceeders = GetInterfaceOfProceeders<ICharacterMoveFinished>();
             foreach (var proceeder in proceeders)
                 proceeder?.OnCharacterMoveFinished(_Args);
-        }
-        
-        public void OnApplicationFocus(bool _Focus)
-        {
-            if (!_Focus)
-                return;
-            Cor.Run(Cor.Delay(1f, SendNotifications));
         }
 
         #endregion
@@ -225,25 +214,30 @@ namespace RMAZOR.Views
             return Array.ConvertAll(_Proceeders ?? m_ProceedersCached, _Item => _Item as T);
         }
 
-        private void SendNotifications()
+        private void SendNotificationsOnInit()
         {
             if (!CommonData.Release)
                 return;
-            var locMan = Managers.LocalizationManager;
             var notMan = Managers.NotificationsManager;
-            string title = Application.productName;
+            var locMan = Managers.LocalizationManager;
             var dict = new Dictionary<string, DateTime>
             {
                 {locMan.GetTranslation("notification_1"), DateTime.Now.AddDays(1)},
                 {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(3)}
             };
+            notMan.LastNotificationsCountToReschedule = dict.Count;
+            notMan.OperatingMode = Application.platform == RuntimePlatform.Android
+                ? ENotificationsOperatingMode.QueueClearAndReschedule
+                : ENotificationsOperatingMode.NoQueue;
+            notMan.ClearAllNotifications();
+            string title = Application.productName;
             foreach ((string body, var dateTime) in dict)
             {
                 notMan.SendNotification(
                     title, 
                     body, 
                     dateTime,
-                    _Reschedule: true,
+                    _Reschedule: Application.platform == RuntimePlatform.Android,
                     _SmallIcon: "main_icon",
                     _LargeIcon: "main_icon_large");
             }

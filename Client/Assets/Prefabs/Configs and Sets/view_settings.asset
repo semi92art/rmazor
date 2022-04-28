@@ -18,8 +18,8 @@ MonoBehaviour:
   movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: -1000
-  blockItemsCount: 100
-  pathItemsCount: 300
+  blockItemsCount: 200
+  pathItemsCount: 1000
   collectStartPathItemOnLevelLoaded: 0
   mazeRotationSpeed: 5
   finishTimeExcellent: 3

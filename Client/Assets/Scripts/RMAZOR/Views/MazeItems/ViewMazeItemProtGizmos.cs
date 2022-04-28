@@ -9,6 +9,13 @@ namespace RMAZOR.Views.MazeItems
 {
     public partial class ViewMazeItemProt
     {
+        private const float AdditionalScale = 0.25f;
+
+        private float GetScale()
+        {
+            return AdditionalScale * scale;
+        }
+        
         private void OnDrawGizmos()
         {
             if (Application.isPlaying)
@@ -62,13 +69,13 @@ namespace RMAZOR.Views.MazeItems
         private void DrawGizmosStartNode()
         {
             var p = (Vector3) ToWorldPosition(props.Position);
-            Gizmos.DrawSphere(p, 1f);
+            Gizmos.DrawSphere(p, GetScale());
         }
 
         private void DrawGizmosBlankNode()
         {
             var p = (Vector3) ToWorldPosition(props.Position);
-            Gizmos.DrawCube(p, Vector3.one);
+            Gizmos.DrawCube(p, Vector3.one * GetScale());
         }
 
         private void DrawGizmosTrapIncreasing()
@@ -90,10 +97,10 @@ namespace RMAZOR.Views.MazeItems
             Gizmos.DrawLine(p1V2, p3V2);
             Gizmos.DrawLine(p2V2, p4V2);
 
-            Gizmos.DrawSphere(p1V2, 0.5f);
-            Gizmos.DrawSphere(p2V2, 0.5f);
-            Gizmos.DrawSphere(p3V2, 0.5f);
-            Gizmos.DrawSphere(p4V2, 0.5f);
+            Gizmos.DrawSphere(p1V2, 0.5f * GetScale());
+            Gizmos.DrawSphere(p2V2, 0.5f * GetScale());
+            Gizmos.DrawSphere(p3V2, 0.5f * GetScale());
+            Gizmos.DrawSphere(p4V2, 0.5f * GetScale());
         }
 
         private void DrawGizmosPath()
@@ -103,7 +110,7 @@ namespace RMAZOR.Views.MazeItems
             for (int i = 0; i < props.Path.Count; i++)
             {
                 var pos = props.Path[i];
-                Gizmos.DrawSphere(ToWorldPosition(pos), 0.5f);
+                Gizmos.DrawSphere(ToWorldPosition(pos), 0.5f * GetScale());
                 if (i == props.Path.Count - 1)
                     return;
                 Gizmos.DrawLine(ToWorldPosition(pos), ToWorldPosition(props.Path[i + 1]));
@@ -117,7 +124,7 @@ namespace RMAZOR.Views.MazeItems
             var pos = ToWorldPosition(props.Position);
             foreach (var dir in props.Directions)
             {
-                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.5f);
+                Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.5f * GetScale());
                 Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
             }
         }
@@ -136,8 +143,8 @@ namespace RMAZOR.Views.MazeItems
             }
             var pos = ToWorldPosition(props.Position);
             var pairPos = ToWorldPosition(props.Pair);
-            Gizmos.DrawSphere(pos, 0.5f);
-            Gizmos.DrawSphere(pairPos, 0.5f);
+            Gizmos.DrawSphere(pos, 0.5f * GetScale());
+            Gizmos.DrawSphere(pairPos, 0.5f * GetScale());
             Gizmos.DrawLine(pos, pairPos);
 #endif
         }
@@ -159,7 +166,7 @@ namespace RMAZOR.Views.MazeItems
                 dirs = new List<V2Int> {V2Int.Down, V2Int.Right};
             foreach (var direct in dirs)
             {
-                Gizmos.DrawSphere(ToWorldPosition(props.Position + direct), 0.3f);
+                Gizmos.DrawSphere(ToWorldPosition(props.Position + direct), 0.3f * GetScale());
                 Gizmos.DrawLine(pos, ToWorldPosition(props.Position + direct));
             }
         }
@@ -170,7 +177,7 @@ namespace RMAZOR.Views.MazeItems
                 return;
             var pos = ToWorldPosition(props.Position);
             var dir = props.Directions.First();
-            Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.35f);
+            Gizmos.DrawSphere(ToWorldPosition(props.Position + dir), 0.35f * GetScale());
             Gizmos.DrawLine(pos, ToWorldPosition(props.Position + dir));
             if (!props.Args.Any())
                 return;
@@ -204,19 +211,19 @@ namespace RMAZOR.Views.MazeItems
             {
                 var dir90 = ToWorldPosition(RotateDirPointAroundCenterBy90Deg(1, closkwise));
                 Gizmos.DrawLine(pos, dir90);
-                Gizmos.DrawSphere(dir90, 0.25f);
+                Gizmos.DrawSphere(dir90, 0.25f * GetScale());
             }
             if (angle >= 180)
             {
                 var dir180 = ToWorldPosition(RotateDirPointAroundCenterBy90Deg(2, closkwise));
                 Gizmos.DrawLine(pos, dir180);
-                Gizmos.DrawSphere(dir180, 0.2f);
+                Gizmos.DrawSphere(dir180, 0.2f * GetScale());
             }
             if (angle >= 270)
             {
                 var dir270 = ToWorldPosition(RotateDirPointAroundCenterBy90Deg(3, closkwise));
                 Gizmos.DrawLine(pos, dir270);
-                Gizmos.DrawSphere(dir270, 0.15f);
+                Gizmos.DrawSphere(dir270, 0.15f * GetScale());
             }
         }
 

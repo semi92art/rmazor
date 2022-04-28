@@ -82,13 +82,6 @@ namespace Common.Managers.Notifications
 
         ENotificationsOperatingMode OperatingMode { get; set; }
 
-        /// <summary>
-        /// Gets a collection of notifications that are scheduled or queued.
-        /// </summary>
-        List<PendingNotification> PendingNotifications { get; }
-
-        void EnableNotifications(bool _Enable);
-
         void SendNotification(
             string   _Title,
             string   _Body,
@@ -98,6 +91,10 @@ namespace Common.Managers.Notifications
             string   _ChannelId   = null,
             string   _SmallIcon   = null,
             string   _LargeIcon   = null);
+
+        int? LastNotificationsCountToReschedule { get; set; }
+        
+        void ClearAllNotifications();
     }
 
     public class NotificationsManagerUnity : InitBase, INotificationsManager, IUpdateTick, IApplicationFocus, IDestroy
@@ -113,8 +110,7 @@ namespace Common.Managers.Notifications
 
         private bool m_InForeground = true;
 
-        private ENotificationsOperatingMode m_Mode = ENotificationsOperatingMode.QueueClearAndReschedule;
-        private IGameNotificationsPlatform  Platform { get; set; }
+        private          IGameNotificationsPlatform  Platform { get; set; }
 
         // Minimum amount of time that a notification should be into the future before it's queued when we background.
         private static readonly TimeSpan MinimumNotificationTime = new TimeSpan(0, 0, 2);
@@ -131,6 +127,8 @@ namespace Common.Managers.Notifications
         /// <see cref="ENotificationsOperatingMode.RescheduleAfterClearing"/> mode.
         /// </summary>
         private IPendingNotificationsSerializer m_Serializer;
+        
+        private List<PendingNotification> PendingNotifications { get; set; }
 
         #endregion
 
@@ -143,7 +141,7 @@ namespace Common.Managers.Notifications
             ICommonTicker        _Ticker,
             INotificationSetting _Setting)
         {
-            Ticker = _Ticker;
+            Ticker  = _Ticker;
             Setting = _Setting;
         }
 
@@ -154,7 +152,7 @@ namespace Common.Managers.Notifications
         public ENotificationsOperatingMode       OperatingMode { get; set; }
         public event Action<PendingNotification> LocalNotificationDelivered;
         public event Action<PendingNotification> LocalNotificationExpired;
-        public List<PendingNotification>         PendingNotifications { get; private set; }
+        public int?                              LastNotificationsCountToReschedule { get; set; }
 
         public override void Init()
         {
@@ -167,12 +165,6 @@ namespace Common.Managers.Notifications
             InitNotifications(channel);
             base.Init();
             OnForegrounding();
-        }
-
-        public void EnableNotifications(bool _Enable)
-        {
-            if (!_Enable)
-                Platform.CancelAllScheduledNotifications();
         }
 
         public void SendNotification(
@@ -204,6 +196,12 @@ namespace Common.Managers.Notifications
                     "Title: " + _Title + ", \n" +
                     "Body: " + _Body + ", \n" +
                     "Delivery time: " + _DeliveryTime);
+        }
+        
+        public void ClearAllNotifications()
+        {
+            Platform.CancelAllScheduledNotifications();
+            m_Serializer.Serialize(new List<PendingNotification>());
         }
 
         #endregion
@@ -288,7 +286,7 @@ namespace Common.Managers.Notifications
                 return null;
             // If we queue, don't schedule immediately.
             // Also immediately schedule non-time based deliveries (for iOS)
-            if ((m_Mode & ENotificationsOperatingMode.Queue) != ENotificationsOperatingMode.Queue ||
+            if ((OperatingMode & ENotificationsOperatingMode.Queue) != ENotificationsOperatingMode.Queue ||
                 _Notification.DeliveryTime == null)
             {
                 Platform.ScheduleNotification(_Notification);
@@ -309,24 +307,25 @@ namespace Common.Managers.Notifications
         // Clear foreground notifications and reschedule stuff from a file
         private void OnForegrounding()
         {
-            PendingNotifications.Clear();
+            if (!Setting.Get())
+                return;
             Platform.OnForeground();
+            PendingNotifications.Clear();
             // Deserialize saved items
             IList<IGameNotification> loaded = m_Serializer?.Deserialize(Platform);
             // Foregrounding
-            if ((m_Mode & ENotificationsOperatingMode.ClearOnForegrounding) ==
+            if ((OperatingMode & ENotificationsOperatingMode.ClearOnForegrounding) ==
                 ENotificationsOperatingMode.ClearOnForegrounding)
             {
                 // Clear on foregrounding
                 Platform.CancelAllScheduledNotifications();
                 // Only reschedule in reschedule mode, and if we loaded any items
                 if (loaded == null ||
-                    (m_Mode & ENotificationsOperatingMode.RescheduleAfterClearing) !=
+                    (OperatingMode & ENotificationsOperatingMode.RescheduleAfterClearing) !=
                     ENotificationsOperatingMode.RescheduleAfterClearing)
                 {
                     return;
                 }
-
                 // Reschedule notifications from deserialization
                 foreach (IGameNotification savedNotification in loaded)
                 {
@@ -354,8 +353,10 @@ namespace Common.Managers.Notifications
 
         public void UpdateTick()
         {
+            if (!Setting.Get())
+                return;
             if (PendingNotifications == null || !PendingNotifications.Any()
-                                             || (m_Mode & ENotificationsOperatingMode.Queue) !=
+                                             || (OperatingMode & ENotificationsOperatingMode.Queue) !=
                                              ENotificationsOperatingMode.Queue)
             {
                 return;
@@ -375,6 +376,8 @@ namespace Common.Managers.Notifications
 
         public void OnApplicationFocus(bool _HasFocus)
         {
+            if (!Setting.Get())
+                return;
             if (Platform == null || !Initialized)
                 return;
             m_InForeground = _HasFocus;
@@ -387,7 +390,7 @@ namespace Common.Managers.Notifications
             Platform.OnBackground();
             // Backgrounding
             // Queue future dated notifications
-            if ((m_Mode & ENotificationsOperatingMode.Queue) == ENotificationsOperatingMode.Queue)
+            if ((OperatingMode & ENotificationsOperatingMode.Queue) == ENotificationsOperatingMode.Queue)
             {
                 // Filter out past events
                 for (int i = PendingNotifications.Count - 1; i >= 0; i--)
@@ -453,19 +456,26 @@ namespace Common.Managers.Notifications
 
             // Calculate notifications to save
             var notificationsToSave = new List<PendingNotification>(PendingNotifications.Count);
-            foreach (PendingNotification pendingNotification in PendingNotifications)
+            var notificationsSortedByDeliveryTime = PendingNotifications
+                .Where(_N => _N.Reschedule)
+                .Where(_N => _N.Notification.DeliveryTime.HasValue)
+                .OrderByDescending(_N => _N.Notification.DeliveryTime.Value)
+                .ToList();
+
+            int countToReschedule = LastNotificationsCountToReschedule ?? notificationsSortedByDeliveryTime.Count;
+            for (int i = 0; i < countToReschedule; i++)
             {
+                var pendingNotification = notificationsSortedByDeliveryTime[i];
                 // If we're in clear mode, add nothing unless we're in rescheduling mode
                 // Otherwise add everything
-                if ((m_Mode & ENotificationsOperatingMode.ClearOnForegrounding) ==
+                if ((OperatingMode & ENotificationsOperatingMode.ClearOnForegrounding) ==
                     ENotificationsOperatingMode.ClearOnForegrounding)
                 {
-                    if ((m_Mode & ENotificationsOperatingMode.RescheduleAfterClearing) !=
+                    if ((OperatingMode & ENotificationsOperatingMode.RescheduleAfterClearing) !=
                         ENotificationsOperatingMode.RescheduleAfterClearing)
                     {
                         continue;
                     }
-
                     // In reschedule mode, add ones that have been scheduled, are marked for
                     // rescheduling, and that have a time
                     if (pendingNotification.Reschedule &&
@@ -497,6 +507,16 @@ namespace Common.Managers.Notifications
         }
 
         #endregion
+
+        #region nonpublic methods
+
+        private void EnableNotifications(bool _Enable)
+        {
+            if (!_Enable)
+                ClearAllNotifications();
+        }
+
+        #endregion
     }
 
     public class NotificationsManagerFake : InitBase, INotificationsManager
@@ -506,6 +526,7 @@ namespace Common.Managers.Notifications
 
         public ENotificationsOperatingMode OperatingMode        { get; set; } = ENotificationsOperatingMode.NoQueue;
         public List<PendingNotification>   PendingNotifications => new List<PendingNotification>();
+        public int?  LastNotificationsCountToReschedule { get; set; }
 
         public void EnableNotifications(bool _Enable)
         {
@@ -521,5 +542,7 @@ namespace Common.Managers.Notifications
             string   _ChannelId   = null,
             string   _SmallIcon   = null,
             string   _LargeIcon   = null) { }
+
+        public void ClearAllNotifications() { }
     }
 }

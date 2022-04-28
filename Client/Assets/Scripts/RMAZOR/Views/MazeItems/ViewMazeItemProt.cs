@@ -24,11 +24,12 @@ namespace RMAZOR.Views.MazeItems
     {
         #region serialized fields
         
-        [SerializeField] private ViewMazeItemProps props;
-        [SerializeField, HideInInspector] private ShapeRenderer shape;
-        [SerializeField, HideInInspector] private SpriteRenderer hint;
-        [SerializeField, HideInInspector] private V2Int mazeSize;
+        [SerializeField]                  private ViewMazeItemProps       props;
+        [SerializeField, HideInInspector] private ShapeRenderer           shape;
+        [SerializeField, HideInInspector] private SpriteRenderer          hint;
+        [SerializeField, HideInInspector] private V2Int                   mazeSize;
         [SerializeField, HideInInspector] private MazeCoordinateConverter converter;
+        [SerializeField]                  private float                   scale;
         
         #endregion
 
@@ -50,6 +51,7 @@ namespace RMAZOR.Views.MazeItems
                     converter.GetContainer = m_ContainersGetter.GetContainer;
                     converter.Init();
                     converter.SetMazeSize(mazeSize);
+                    scale = converter.Scale;
                 }
                 return converter;
             }
@@ -151,6 +153,7 @@ namespace RMAZOR.Views.MazeItems
             var hintGo = new GameObject("Hint");
             hintGo.SetParent(gameObject);
             hintGo.transform.SetLocalPosXY(Vector2.zero);
+            hintGo.transform.SetLocalScaleXY(GetScale() * Vector2.one);
             hint = hintGo.AddComponent<SpriteRenderer>();
             hintGo.layer = 31;
             string objectName = null;

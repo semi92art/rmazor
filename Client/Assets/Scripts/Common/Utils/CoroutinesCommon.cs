@@ -122,7 +122,13 @@ namespace Common.Utils
         {
             if (_OnProgress == null)
                 yield break;
-            float GetTime() => _FixedUpdate ? _Ticker.FixedTime : _Ticker.Time;
+            float GetTime()
+            {
+                if (_Ticker == null)
+                    return Time.time;
+                return _FixedUpdate ? _Ticker.FixedTime : _Ticker.Time;
+            }
+
             float currTime = GetTime();
             float progress = _From;
             bool breaked = false;
@@ -133,7 +139,7 @@ namespace Common.Utils
                     breaked = true;
                     break;
                 }
-                if (_Ticker.Pause)
+                if (_Ticker != null && _Ticker.Pause)
                 {
                     yield return PauseCoroutine(_FixedUpdate);
                     continue;
@@ -147,14 +153,14 @@ namespace Common.Utils
             }
             if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;
-            if (_Ticker.Pause)
+            if (_Ticker != null && _Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             if (!breaked)
             {
                 progress = _ProgressFormula?.Invoke(_To) ?? _To;
                 _OnProgress(progress);
             }
-            if (_Ticker.Pause)
+            if (_Ticker != null && _Ticker.Pause)
                 yield return PauseCoroutine(_FixedUpdate);
             _OnFinish?.Invoke();
             _OnFinishEx?.Invoke(breaked, breaked ? progress : _To);

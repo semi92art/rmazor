@@ -2,6 +2,7 @@
 using Common.Constants;
 using Common.Extensions;
 using Common.Utils;
+using Lean.Common;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -18,8 +19,9 @@ namespace RMAZOR
 
         private ViewSettings m_ViewSettings;
 
-        private float m_BottomScreenOffsetDefault;
-        private float m_TopScreenOffsetDefault;
+        private float          m_BottomScreenOffsetDefault;
+        private float          m_TopScreenOffsetDefault;
+        private SpriteRenderer m_Renderer;
         
         [Inject]
         private void Inject(ViewSettings _ViewSettings)
@@ -48,23 +50,46 @@ namespace RMAZOR
         {
             if (_Scene.name != SceneNames.Level)
                 return;
-            if (_instance.IsNotNull())
-                _instance.Show();
+            // if (_instance.IsNotNull())
+            //     _instance.Show();
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         private void Show()
         {
             var bounds = GraphicUtils.GetVisibleBounds();
-            var rend = gameObject.AddComponentOnNewChild<SpriteRenderer>("Renderer", out _);
-            rend.sprite = image;
-            rend.transform.SetPosXY(bounds.center.x, bounds.min.y + bottomImageOffset);
+            m_Renderer = gameObject.AddComponentOnNewChild<SpriteRenderer>("Renderer", out _);
+            m_Renderer.sprite = image;
+            m_Renderer.color = Color.white.SetA(0f);
+            m_Renderer.transform.SetPosXY(bounds.center.x, bounds.min.y + bottomImageOffset);
+            Cor.Run(Cor.Lerp(
+                null,
+                0.5f,
+                _OnProgress: _P => m_Renderer.color = Color.white.SetA(_P)));
+        }
+
+        private void Hide()
+        {
+            Cor.Run(Cor.Lerp(
+                null,
+                0.5f,
+                _OnProgress: _P => m_Renderer.color = Color.white.SetA(1f - _P)));
         }
 
         private void OnDestroy()
         {
+            if (!show)
+                return;
             m_ViewSettings.bottomScreenOffset = m_BottomScreenOffsetDefault;
             m_ViewSettings.topScreenOffset = m_TopScreenOffsetDefault;
+        }
+
+        private void Update()
+        {
+            if (LeanInput.GetDown(KeyCode.P))
+                Show();
+            if (LeanInput.GetDown(KeyCode.O))
+                Hide();
         }
     }
 }

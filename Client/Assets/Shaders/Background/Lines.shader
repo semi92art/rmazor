@@ -39,7 +39,12 @@ Shader "RMAZOR/Background/Lines"
 				if (all(_Color1 == _Color2))
 					return _Color1;
 				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
-				fixed lerp_coeff = floor(frac(pos.x) + 0.5);
+				fixed lerp_coeff = 0.0;
+#if SHADER_API_GLES3
+				lerp_coeff = 0.0;
+#else
+				lerp_coeff = floor(frac(pos.x) + 0.5);
+#endif
 				return lerp(_Color1, _Color2, lerp_coeff);
 			}
 			ENDCG
