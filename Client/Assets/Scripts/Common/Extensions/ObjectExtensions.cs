@@ -112,15 +112,29 @@ namespace Common.Extensions
             return cloned;
         }
 
-        public static bool IsNull<T>(this T _Item) where T : Component
+        /// <summary>
+        /// Performs a TRUE null-check.
+        /// See http://answers.unity.com/answers/1224404/view.html
+        /// </summary>
+        /// <param name="_Item">An object to check.</param>
+        /// <returns>Returns <c>true</c> if object is null, <c>false</c> otherwise.</returns>
+        public static bool IsNull<T>(this T _Item) where T : Object
         {
-            if (_Item is UIBehaviour beh)
-                return beh.IsDestroyed();
-            return _Item == null;
+            // ReSharper disable once RedundantCast.0
+            return (object)_Item == null;
         }
 
-        public static bool IsNotNull<T>(this T _Item) where T : Component => !IsNull(_Item);
-        
+        /// <summary>
+        /// Performs a TRUE null-check.
+        /// See http://answers.unity.com/answers/1224404/view.html
+        /// </summary>
+        /// <param name="_Item">An object to check.</param>
+        /// <returns>Returns <c>false</c> if object is null, <c>true</c> otherwise.</returns>
+        public static bool IsNotNull<T>(this T _Item) where T : Object
+        {
+            return !IsNull(_Item);
+        }
+
         public static T AddComponentOnNewChild<T>(
             this Transform  _Parent,
             string          _Name,

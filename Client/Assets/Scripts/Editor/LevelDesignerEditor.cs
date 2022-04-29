@@ -29,13 +29,7 @@ namespace RMAZOR.Editor
         #endregion
         
         #region nonpublic members
-
-        private HeapReorderableList LevelsList
-        {
-            get => Des.levelsList;
-            set => Des.levelsList = value;
-        }
-
+        
         private static LevelDesigner Des => LevelDesigner.Instance;
         
         private        ViewSettings             m_ViewSettings;
@@ -46,16 +40,18 @@ namespace RMAZOR.Editor
         private        IMazeItemsCreator        m_MazeItemsCreator;
         private static CommonGameSettings       _commonGameSettings;
         
+        private static HeapReorderableList LevelsList
+        {
+            get => Des.levelsList;
+            set => Des.levelsList = value;
+        }
+        
         private static int HeapIndex
         {
             get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerHeapIndex);
             set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
         }
         private static int _heapIndexCheck;
-        
-        #endregion
-        
-        #region nonpublic members
 
         private Vector2  m_HeapScroll;
         private int      m_TabPage;
@@ -142,6 +138,12 @@ namespace RMAZOR.Editor
         #endregion
 
         #region api
+        
+        public void LoadLevel(MazeInfo _Info)
+        {
+            CreateObjects(_Info);
+            FocusCamera(_Info.Size);
+        }
 
         public void FocusCamera(V2Int _Size)
         {
@@ -161,21 +163,14 @@ namespace RMAZOR.Editor
             if (LevelsList.SelectedIndex == -1)
                 return;
             var info = LevelsList.Levels[LevelsList.SelectedIndex];
-            CreateObjects(info);
-            FocusCamera(info.Size);
+            LoadLevel(info);
             LevelDesigner.Instance.loadedLevelIndex = LevelsList.SelectedIndex;
             LevelDesigner.Instance.loadedLevelHeapIndex = HeapIndex;
             LevelsList.SetupLoadedLevel(
                 LevelDesigner.Instance.loadedLevelIndex,
                 LevelDesigner.Instance.loadedLevelHeapIndex);
         }
-
-        private void LoadLevel(MazeInfo _Info)
-        {
-            CreateObjects(_Info);
-            FocusCamera(_Info.Size);
-        }
-
+        
         private void ReloadReorderableLevels(bool _Forced = false)
         {
             LevelsList.OnSelect = _SelectedIndex =>

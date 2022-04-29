@@ -1,4 +1,5 @@
-﻿using Common.Ticker;
+﻿using Common;
+using Common.Ticker;
 using Lean.Common;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -16,11 +17,11 @@ namespace RMAZOR.Views.InputConfigurators
         
         #region inject
 
-        private IUITicker     Ticker       { get; }
+        private IUITicker Ticker { get; }
 
-        public ViewCommandsProceederInEditor(IUITicker     _UITicker)
+        public ViewCommandsProceederInEditor(IUITicker _UITicker)
         {
-            Ticker       = _UITicker;
+            Ticker = _UITicker;
         }
 
         #endregion
@@ -29,6 +30,8 @@ namespace RMAZOR.Views.InputConfigurators
 
         public override void Init()
         {
+            if (!CommonData.Release)
+                m_DoProceed = true;
             Ticker.Register(this);
             base.Init();
         }

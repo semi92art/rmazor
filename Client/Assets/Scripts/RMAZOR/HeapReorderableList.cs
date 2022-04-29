@@ -99,7 +99,7 @@ namespace RMAZOR
                     selectedIndexCheck = _List.index;
                     OnSelect?.Invoke(_List.index);
                 },
-                onChangedCallback = _List => Save(),
+                onChangedCallback = _List => SaveHeap(_List.list.Cast<MazeInfo>().ToList()),
                 drawElementCallback = OnDrawElementCallback
             };
         }
@@ -205,6 +205,11 @@ namespace RMAZOR
         #endregion
 
         #region nonpublic methods
+
+        private void SaveHeap(List<MazeInfo> _Levels)
+        {
+            GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, _Levels);
+        }
 
         private void InitFilters()
         {

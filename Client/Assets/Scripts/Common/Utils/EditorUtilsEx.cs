@@ -130,16 +130,25 @@ namespace Common.Utils
             EditorGUI.DrawRect(r, _C.Value);
         }
 
-        public static void HorizontalZone(UnityAction _Action)
+        public static void HorizontalZone(UnityAction _Action, params GUILayoutOption[] _Options)
         {
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal(_Options);
             _Action?.Invoke();
             GUILayout.EndHorizontal();
         }
-        
-        public static void VerticalZone(UnityAction _Action)
+
+        public static void AreaZone(UnityAction _Action, Rect _Rect, GUIContent _Content = null, GUIStyle _Style = null)
         {
-            GUILayout.BeginVertical();
+            _Content ??= GUIContent.none;
+            _Style ??= GUIStyle.none;
+            GUILayout.BeginArea(_Rect, _Content, _Style);
+            _Action?.Invoke();
+            GUILayout.EndArea();
+        }
+        
+        public static void VerticalZone(UnityAction _Action, params GUILayoutOption[] _Options)
+        {
+            GUILayout.BeginVertical(_Options);
             _Action?.Invoke();
             GUILayout.EndVertical();
         }

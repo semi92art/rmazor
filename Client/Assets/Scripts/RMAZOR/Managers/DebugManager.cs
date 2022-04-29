@@ -76,7 +76,7 @@ namespace RMAZOR.Managers
             instance.VisibilityChanged += _Value =>
             {
                 CommandsProceeder.RaiseCommand(
-                    _Value ? EInputCommand.EnableDebug : EInputCommand.DisableDebug,
+                    _Value ? EInputCommand.DisableDebug : EInputCommand.EnableDebug,
                     null,
                     true);
                 VisibilityChanged?.Invoke(_Value);

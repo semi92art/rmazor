@@ -176,6 +176,8 @@ namespace RMAZOR.Views.MazeItems
             }
             if (string.IsNullOrEmpty(objectName)) 
                 return;
+            if (m_PrefabSetManager == null)
+                m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
             hint.sprite = m_PrefabSetManager.GetObject<Sprite>("prot_icons", objectName);
             hint.sortingOrder = GetShapeSortingOrder(_Type, false) + 1;
         }

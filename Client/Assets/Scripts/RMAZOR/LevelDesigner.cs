@@ -18,6 +18,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Zenject;
+using ObjectExtensions = StansAssets.Foundation.Extensions.ObjectExtensions;
 
 namespace RMAZOR
 {
@@ -74,21 +75,21 @@ namespace RMAZOR
             }
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
-            {
-                Dbg.LogError("Maze must contain start item");
-                return null;
-            }
+                Dbg.LogWarning("Maze must contain start item");
             var pathItems = maze
                 .Where(_Item => _Item.Props.IsNode && !_Item.Props.IsStartNode)
                 .Select(_Item => new PathItem{Blank = _Item.Props.Blank, Position = _Item.Props.Position})
                 .ToList();
-            pathItems.Insert(
-                0, 
-                new PathItem
-                {
-                    Blank = protItemStart.Props.Blank,
-                    Position = protItemStart.Props.Position
-                });
+            if (protItemStart.IsNotNull())
+            {
+                pathItems.Insert(
+                    0, 
+                    new PathItem
+                    {
+                        Blank = protItemStart!.Props.Blank,
+                        Position = protItemStart!.Props.Position
+                    });
+            }
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
