@@ -61,16 +61,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMobileDOF", "FastMobile
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Manifest", "SA.Android.Manifest.csproj", "{869f5012-7037-6276-2e54-a11088fbdb90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Demos", "MoreMountains.NiceVibrations.Demos.csproj", "{92416762-006e-2183-490d-86acbf2acf21}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Haptics", "MoreMountains.NiceVibrations.Haptics.csproj", "{9aab1553-c3d7-df33-4c02-5edc382b5095}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations", "MoreMountains.NiceVibrations.csproj", "{d044e99d-0d9a-740a-d68a-047fc0ed20b8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Rumble", "MoreMountains.NiceVibrations.Rumble.csproj", "{a04b0438-47ec-12ce-4652-1bdb99dbd17b}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Rumble.Editor", "MoreMountains.NiceVibrations.Rumble.Editor.csproj", "{15649502-615b-247e-36cf-22f7863a9883}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{63b2b48a-78b3-8da0-b943-c308151a6ef3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-UnitTests-Editor", "Zenject-UnitTests-Editor.csproj", "{6e1e3ec6-e18c-554f-5da4-49773c4445a0}"
@@ -112,8 +102,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-Editor", "Zenject-Editor.csproj", "{41c99686-a020-df23-0a15-667f30a831c4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Editor", "MoreMountains.NiceVibrations.Editor.csproj", "{542d7cc5-ff84-220e-82cb-600dcd89302d}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -180,16 +168,6 @@ Global
 		{a106cb3a-901e-27ce-e879-ebd0b3b75ff3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92416762-006e-2183-490d-86acbf2acf21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92416762-006e-2183-490d-86acbf2acf21}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9aab1553-c3d7-df33-4c02-5edc382b5095}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9aab1553-c3d7-df33-4c02-5edc382b5095}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{d044e99d-0d9a-740a-d68a-047fc0ed20b8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{d044e99d-0d9a-740a-d68a-047fc0ed20b8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{a04b0438-47ec-12ce-4652-1bdb99dbd17b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{a04b0438-47ec-12ce-4652-1bdb99dbd17b}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15649502-615b-247e-36cf-22f7863a9883}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15649502-615b-247e-36cf-22f7863a9883}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6e1e3ec6-e18c-554f-5da4-49773c4445a0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -232,8 +210,6 @@ Global
 		{41c99686-a020-df23-0a15-667f30a831c4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{542d7cc5-ff84-220e-82cb-600dcd89302d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{542d7cc5-ff84-220e-82cb-600dcd89302d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
