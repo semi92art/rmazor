@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - tiling: 1
+    - inUse: 1
+      tiling: 1
       direction: 0.3
       wrapScale: 0
       wrapTiling: 1
@@ -22,39 +23,35 @@ MonoBehaviour:
       ratio: 1.289
       a: 0.2
       b: 0.25
-    - tiling: 1
-      direction: 0
-      wrapScale: 0
-      wrapTiling: 1
-      size: 2.41
-      ratio: 1
-      a: 0.2
-      b: 0.25
-    - tiling: 1
+    - inUse: 1
+      tiling: 1
       direction: 1
       wrapScale: 0
       wrapTiling: 1
-      size: 2.41
-      ratio: 1
-      a: 0.2
-      b: 0.25
-    - tiling: 1
+      size: 4
+      ratio: 1.5
+      a: 0.5
+      b: 0.5
+    - inUse: 1
+      tiling: 2
       direction: 0.661
-      wrapScale: 0.056
+      wrapScale: 0
       wrapTiling: 1
-      size: 3.6
+      size: 4
       ratio: 1
       a: 0.7
       b: 0.5
-    - tiling: 1
-      direction: 0
-      wrapScale: 0.056
+    - inUse: 1
+      tiling: 1
+      direction: 1
+      wrapScale: 0
       wrapTiling: 1
-      size: 3.33
-      ratio: 1.606
-      a: 0.7
-      b: 0.1
-    - tiling: 1
+      size: 2.26
+      ratio: 1
+      a: 0.25
+      b: 0.75
+    - inUse: 1
+      tiling: 1
       direction: 0
       wrapScale: 0
       wrapTiling: 1
@@ -62,11 +59,12 @@ MonoBehaviour:
       ratio: 1.881
       a: 0.9
       b: 0.1
-    - tiling: 1
+    - inUse: 1
+      tiling: 1
       direction: 0
-      wrapScale: 0.237
+      wrapScale: 0
       wrapTiling: 1
       size: 3.54
       ratio: 1.881
-      a: 0.9
-      b: 0.5
+      a: 0.82
+      b: -1.07

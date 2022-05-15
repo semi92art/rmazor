@@ -37,5 +37,5 @@ MonoBehaviour:
   mazeItemTransitionDelayCoefficient: 0
   bazookaProjectileSpeed: 0.4
   bazookaRotationSpeed: 5
-  additionalBackTexturesCount: 5
+  additionalBackTexturesCount: 8
   filledPathAlpha: 0.884

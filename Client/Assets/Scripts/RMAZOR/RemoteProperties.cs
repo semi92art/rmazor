@@ -6,12 +6,10 @@ namespace RMAZOR
 {
     public class RemoteProperties
     {
-        public IList<MainColorsSetItem>         MainColorsSet         { get; set; } = new List<MainColorsSetItem>();
-        public IList<BackAndFrontColorsSetItem> BackAndFrontColorsSet { get; set; } = new List<BackAndFrontColorsSetItem>();
-        public IList<LinesTextureSetItem>       LinesTextureSet       { get; set; } = new List<LinesTextureSetItem>();
-        public IList<CirclesTextureSetItem>     CirclesTextureSet     { get; set; } = new List<CirclesTextureSetItem>();
-        public IList<Circles2TextureSetItem>    Circles2TextureSet    { get; set; } = new List<Circles2TextureSetItem>();
-        public IList<TrianglesTextureSetItem>   TrianglesTextureSet   { get; set; } = new List<TrianglesTextureSetItem>();
-        public IList<Triangles2TextureSetItem>  Triangles2TextureSet  { get; set; } = new List<Triangles2TextureSetItem>();
+        public IList<MainColorsProps>         MainColorsSet         { get; set; } = new List<MainColorsProps>();
+        public IList<BackAndFrontColorsProps> BackAndFrontColorsSet { get; set; } = new List<BackAndFrontColorsProps>();
+        public IList<TexturePropsBase>        LinesTextureSet       { get; set; } = new List<TexturePropsBase>();
+        public IList<TrianglesTextureProps>   TrianglesTextureSet   { get; set; } = new List<TrianglesTextureProps>();
+        public IList<Triangles2TextureProps> Tria2TextureSet { get; set; } = new List<Triangles2TextureProps>();
     }
 }

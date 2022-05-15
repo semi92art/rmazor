@@ -120,8 +120,11 @@ namespace Common.Extensions
         /// <returns>Returns <c>true</c> if object is null, <c>false</c> otherwise.</returns>
         public static bool IsNull<T>(this T _Item) where T : Object
         {
-            // ReSharper disable once RedundantCast.0
-            return (object)_Item == null;
+            if (_Item is UIBehaviour beh)
+                return beh.IsDestroyed();
+            return _Item == null;
+            // // ReSharper disable once RedundantCast.0
+            // return (object)_Item == null;
         }
 
         /// <summary>

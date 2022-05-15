@@ -194,37 +194,16 @@ namespace Editor
                     converter);
                 CommonUtils.CopyToClipboard(json);
             });
-            EditorUtilsEx.GuiButtonAction("Background Lines Texture Parameters Set", () =>
-            {
-                var set = GetPrefLoader().GetObject<LinesTexturePropertiesSetScriptableObject>
-                    (setName, "lines_texture_set");
-                string json = JsonConvert.SerializeObject(set.set);
-                CommonUtils.CopyToClipboard(json);
-            });
-            EditorUtilsEx.GuiButtonAction("Background Circles Texture Parameters Set", () =>
-            {
-                var set = GetPrefLoader().GetObject<CirclesTexturePropertiesSetScriptableObject>
-                    (setName, "circles_texture_set");
-                string json = JsonConvert.SerializeObject(set.set);
-                CommonUtils.CopyToClipboard(json);
-            });
-            EditorUtilsEx.GuiButtonAction("Background Circles2 Texture Parameters Set", () =>
-            {
-                var set = GetPrefLoader().GetObject<Circles2TexturePropertiesSetScriptableObject>
-                    (setName, "circles2_texture_set");
-                string json = JsonConvert.SerializeObject(set.set);
-                CommonUtils.CopyToClipboard(json);
-            });
             EditorUtilsEx.GuiButtonAction("Background Triangles Texture Parameters Set", () =>
             {
-                var set = GetPrefLoader().GetObject<TrianglesTexturePropertiesSetScriptableObject>
+                var set = GetPrefLoader().GetObject<TrianglesTexturePropsSetScriptableObject>
                     (setName, "triangles_texture_set");
                 string json = JsonConvert.SerializeObject(set.set);
                 CommonUtils.CopyToClipboard(json);
             });
             EditorUtilsEx.GuiButtonAction("Background Triangles 2 Texture Parameters Set", () =>
             {
-                var set = GetPrefLoader().GetObject<Triangles2TexturePropertiesSetScriptableObject>
+                var set = GetPrefLoader().GetObject<Triangles2TexturePropsSetScriptableObject>
                     (setName, "triangles2_texture_set");
                 string json = JsonConvert.SerializeObject(set.set);
                 CommonUtils.CopyToClipboard(json);

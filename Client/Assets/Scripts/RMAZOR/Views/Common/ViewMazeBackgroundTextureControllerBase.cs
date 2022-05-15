@@ -27,7 +27,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
         
-        private IList<BackAndFrontColorsSetItem> m_BackAndFrontColorsSetItemsLight;
+        private IList<BackAndFrontColorsProps> m_BackAndFrontColorsSetItemsLight;
 
         protected Color
             BackCol1Current,

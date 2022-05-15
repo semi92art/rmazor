@@ -19,12 +19,12 @@ namespace Editor
     public class ColorsEditorHelperWindow : EditorWindow
     {
         private static ColorsEditorHelperWindow _instance;
-        
+
         private IColorProvider                        m_ColorProvider;
-        private MainColorsSetScriptableObject         m_MainColorsSetScrObj;
-        private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsSetScrObj;
-        private BackAndFrontColorsSet                 m_BackAndFrontColorsSet;
-        private MainColorsItemSet                     m_MainColorsSet;
+        private MainColorsSetScriptableObject         m_MainColorsPropsSetScrObj;
+        private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsPropsSetScrObj;
+        private BackAndFrontColorsPropsSet            m_BackAndFrontColorsPropsSet;
+        private MainColorsPropsSet                    m_MainColorsPropsSet;
         private Color?                                m_UiColor;
         private Color                                 m_UiColorCheck;
         private bool                                  m_ChangeOnlyHueUi = true;
@@ -89,24 +89,24 @@ namespace Editor
         private void LoadSets()
         {
             var manager = new PrefabSetManager(new AssetBundleManagerFake());
-            m_MainColorsSetScrObj = manager.GetObject<MainColorsSetScriptableObject>(
+            m_MainColorsPropsSetScrObj = manager.GetObject<MainColorsSetScriptableObject>(
                 "views", "color_set_light");
-            m_MainColorsSet = m_MainColorsSetScrObj.set;
-            m_BackAndFrontColorsSetScrObj = manager.GetObject<BackAndFrontColorsSetScriptableObject>(
+            m_MainColorsPropsSet = m_MainColorsPropsSetScrObj.set;
+            m_BackAndFrontColorsPropsSetScrObj = manager.GetObject<BackAndFrontColorsSetScriptableObject>(
                 "configs", "back_and_front_colors_set_light");
-            m_BackAndFrontColorsSet = m_BackAndFrontColorsSetScrObj.set;
+            m_BackAndFrontColorsPropsSet = m_BackAndFrontColorsPropsSetScrObj.set;
         }
 
         private void DisplayColorSetObjectFields()
         {
-            m_MainColorsSetScrObj = EditorGUILayout.ObjectField(
+            m_MainColorsPropsSetScrObj = EditorGUILayout.ObjectField(
                 "main set", 
-                m_MainColorsSetScrObj, 
+                m_MainColorsPropsSetScrObj, 
                 typeof(MainColorsSetScriptableObject), 
                 false) as MainColorsSetScriptableObject;
-            m_BackAndFrontColorsSetScrObj = EditorGUILayout.ObjectField(
+            m_BackAndFrontColorsPropsSetScrObj = EditorGUILayout.ObjectField(
                 "back and front set",
-                m_BackAndFrontColorsSetScrObj,
+                m_BackAndFrontColorsPropsSetScrObj,
                 typeof(BackAndFrontColorsSetScriptableObject),
                 false) as BackAndFrontColorsSetScriptableObject;
         }
@@ -124,7 +124,7 @@ namespace Editor
             };
             foreach (int id in coloIds)
             {
-                var item = m_MainColorsSet.FirstOrDefault(_Item => ColorIds.GetColorIdByName(_Item.name) == id);
+                var item = m_MainColorsPropsSet.FirstOrDefault(_Item => ColorIds.GetColorIdByName(_Item.name) == id);
                 if (item == null) 
                     continue;
                 var col = item.color;
@@ -168,7 +168,7 @@ namespace Editor
                 Dbg.LogError("Color provider is null");
                 return;
             }
-            var setItem = m_BackAndFrontColorsSet[m_CurrSetIdx];
+            var setItem = m_BackAndFrontColorsPropsSet[m_CurrSetIdx];
             m_ColorProvider.SetColor(ColorIds.Main, setItem.main);
             m_ColorProvider.SetColor(ColorIds.Background1, setItem.bacground1);
             m_ColorProvider.SetColor(ColorIds.Background2, setItem.bacground2);
@@ -183,13 +183,13 @@ namespace Editor
         {
             int addict = _Previous ? -1 : 1;
             m_CurrSetIdx = MathUtils.ClampInverse(
-                m_CurrSetIdx + addict, 0, m_BackAndFrontColorsSet.Count - 1);
+                m_CurrSetIdx + addict, 0, m_BackAndFrontColorsPropsSet.Count - 1);
         }
 
         private void DisplayColors()
         {
             GUILayout.Label("Main Colors Set:");
-            foreach (var item in m_MainColorsSet)
+            foreach (var item in m_MainColorsPropsSet)
             {
                 EditorUtilsEx.HorizontalZone(() =>
                 {
@@ -211,7 +211,7 @@ namespace Editor
             GUILayout.Label("UI Color:");
             if (!m_UiColor.HasValue)
             {
-                var uiSetItem = m_MainColorsSet.FirstOrDefault(
+                var uiSetItem = m_MainColorsPropsSet.FirstOrDefault(
                     _Item => ColorIds.GetColorIdByName(_Item.name) == ColorIds.UI);
                 if (uiSetItem != null)
                 {
@@ -234,7 +234,7 @@ namespace Editor
         {
             var converter = new ColorJsonConverter();
             string json = JsonConvert.SerializeObject(
-                m_MainColorsSet,
+                m_MainColorsPropsSet,
                 converter);
             CommonUtils.CopyToClipboard(json);
         }
@@ -243,7 +243,7 @@ namespace Editor
         {
             var converter = new ColorJsonConverter();
             string json = JsonConvert.SerializeObject(
-                m_BackAndFrontColorsSet,
+                m_BackAndFrontColorsPropsSet,
                 converter);
             CommonUtils.CopyToClipboard(json);
         }

@@ -1,4 +1,4 @@
-﻿Shader "RMAZOR/Background/LinesTransition"
+﻿Shader "RMAZOR/Background/Lines Transition"
 {
     Properties {
 		_Color1 ("Color 1", Color) = (0,0,0,1)

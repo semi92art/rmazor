@@ -12,7 +12,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
     public interface IViewMazeBackgroundTrianglesTextureProvider
         : IViewMazeBackgroundTextureProvider
     {
-        void SetProperties(TrianglesTextureSetItem _Item);
+        void SetProperties(TrianglesTextureProps _Item);
     }
     
     public class ViewMazeBackgroundTrianglesTextureProvider :
@@ -51,7 +51,7 @@ namespace RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders
 
         #region api
 
-        public void SetProperties(TrianglesTextureSetItem _Item)
+        public void SetProperties(TrianglesTextureProps _Item)
         {
             Material.SetFloat(SizeId, _Item.size);
             Material.SetFloat(RatioId, _Item.ratio);

@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - size: 98.3
+    - inUse: 1
+      size: 98.3
       ratio: 55.8
       a: 0.5
       b: 0.5
@@ -27,7 +28,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.4
-    - size: 84.1
+    - inUse: 1
+      size: 84.1
       ratio: 20.4
       a: 0.98
       b: 0.122
@@ -40,7 +42,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: -0.19
-    - size: 71.7
+    - inUse: 1
+      size: 71.7
       ratio: 38.1
       a: 0.98
       b: 0.122
@@ -53,7 +56,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.33
-    - size: 15.7
+    - inUse: 1
+      size: 15.7
       ratio: 38.1
       a: 0.98
       b: 0.122
@@ -66,7 +70,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.33
-    - size: 51.1
+    - inUse: 1
+      size: 51.1
       ratio: 1
       a: 0.09
       b: 0.274
@@ -79,7 +84,8 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: 0.59
-    - size: 12.2
+    - inUse: 1
+      size: 12.2
       ratio: 11.6
       a: -0.58
       b: 0.446
@@ -92,7 +98,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.34
-    - size: 51.1
+    - inUse: 1
+      size: 51.1
       ratio: 1
       a: -1.15
       b: 0.244
@@ -105,7 +112,8 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 0
       direction: 0.86
-    - size: 100
+    - inUse: 1
+      size: 100
       ratio: 40.4
       a: 2
       b: 0.244
@@ -118,7 +126,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 1
-    - size: 94.1
+    - inUse: 1
+      size: 94.1
       ratio: 12.7
       a: -0.2
       b: 0.5
@@ -131,7 +140,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.75
-    - size: 17.5
+    - inUse: 1
+      size: 17.5
       ratio: 22.7
       a: -2
       b: 0.021
@@ -144,7 +154,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.92
-    - size: 62.8
+    - inUse: 1
+      size: 62.8
       ratio: 100
       a: -2
       b: 0.021
@@ -152,12 +163,13 @@ MonoBehaviour:
       d: 0.517
       e: 0.494
       f: 20
-      smooth: 0
-      mirror: 0
-      trunc: 0
-      truncColor2: 0
+      smooth: 1
+      mirror: 1
+      trunc: 1
+      truncColor2: 1
       direction: 0
-    - size: 100
+    - inUse: 1
+      size: 100
       ratio: 100
       a: -1.069
       b: 0.069
@@ -170,7 +182,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0
-    - size: 31
+    - inUse: 1
+      size: 31
       ratio: 6.8
       a: -0.16
       b: 0.042
@@ -183,3 +196,31 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: 0.301
+    - inUse: 1
+      size: 18.8
+      ratio: 8.7
+      a: -0.53
+      b: 0.093
+      c: -10
+      d: 0.546
+      e: 0.99
+      f: 0
+      smooth: 1
+      mirror: 1
+      trunc: 1
+      truncColor2: 1
+      direction: -1
+    - inUse: 1
+      size: 14.3
+      ratio: 8.7
+      a: -0.9
+      b: 0.404
+      c: -2.36
+      d: 0.279
+      e: 0.745
+      f: 4
+      smooth: 1
+      mirror: 1
+      trunc: 1
+      truncColor2: 1
+      direction: 0.741

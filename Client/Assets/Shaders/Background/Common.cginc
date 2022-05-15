@@ -52,3 +52,11 @@ v2f vert_default(appdata IN){
     #endif
     return OUT;
 }
+
+bool odd(int v) {
+    return v % 2 == 1;
+}
+
+bool even(int v){
+    return v % 2 == 0;
+}

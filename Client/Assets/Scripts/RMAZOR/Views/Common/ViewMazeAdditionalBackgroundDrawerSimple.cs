@@ -30,11 +30,13 @@ namespace RMAZOR.Views.Common
     {
         #region constants
 
-        private const int   BordersPoolCount      = 100;
-        private const int   CornersPoolCount      = 20;
-        private const int   MasksPoolCount        = 10;
-        private const int   TextureRenderersCount = 3;
-        private const float BorderRelativeIndent  = 0.5f;
+        private const int   BordersPoolCount       = 100;
+        private const int   CornersPoolCount       = 20;
+        private const int   MasksPoolCount         = 10;
+        private const int   TextureRenderersCount  = 3;
+        private const float BorderRelativeIndent   = 0.5f;
+        private const float BorderScaleCoefficient = 2f;
+        private const float CornerScaleCoefficient = 4f;
 
         #endregion
         
@@ -278,14 +280,10 @@ namespace RMAZOR.Views.Common
             int minY = _Group.Points.Min(_P => _P.Y);
             int maxX = _Group.Points.Max(_P => _P.X);
             int maxY = _Group.Points.Max(_P => _P.Y);
-            var pos = new V2Int(minX, minY);
-            DrawCorner(pos, false, false, true);
-            pos = new V2Int(minX, maxY);
-            DrawCorner(pos, false, true, true);
-            pos = new V2Int(maxX, maxY);
-            DrawCorner(pos, true, true, true);
-            pos = new V2Int(maxX, minY);
-            DrawCorner(pos, true, false, true);
+            DrawCorner(new V2Int(minX, minY), false, false, true);
+            DrawCorner(new V2Int(minX, maxY), false, true, true);
+            DrawCorner(new V2Int(maxX, maxY), true, true, true);
+            DrawCorner(new V2Int(maxX, minY), true, false, true);
         }
 
         private void DrawTextureForGroup(PointsGroupArgs _Group, long _LevelIndex)
@@ -315,7 +313,7 @@ namespace RMAZOR.Views.Common
             mask.SetWidth(width)
                 .SetHeight(height)
                 .SetStencilRefId(Convert.ToByte(_Group.GroupIndex))
-                .SetCornerRadius(ViewSettings.CornerRadius * scale)
+                .SetCornerRadius(ViewSettings.CornerRadius * CornerScaleCoefficient * scale)
                 .transform.SetLocalPosXY(center);
             m_TextureRendererMasks.Activate(mask);
         }
@@ -324,7 +322,7 @@ namespace RMAZOR.Views.Common
         {
             var border = m_Borders.FirstInactive;
             var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            border.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f)
+            border.SetThickness(ViewSettings.LineWidth * BorderScaleCoefficient * CoordinateConverter.Scale)
                 .transform.SetPosXY(borderPos)
                 .gameObject.name = _Side + " " + "border";
             (border.Start, border.End) = GetBorderPointsAndDashed(_Position, _Side, _StartLimit, _EndLimit);
@@ -339,12 +337,14 @@ namespace RMAZOR.Views.Common
         {
             var angles = Mathf.Deg2Rad * GetCornerAngles(_Right, _Up, _Inner);
             var corner = m_Corners.FirstInactive;
-            var cornerPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            corner.SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
-                .SetThickness(ViewSettings.CornerWidth * CoordinateConverter.Scale)
+            var position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            float radius = ViewSettings.CornerRadius * BorderScaleCoefficient
+                                                     * CoordinateConverter.Scale;
+            corner.SetRadius(radius)
+                .SetThickness(ViewSettings.CornerWidth * CornerScaleCoefficient * CoordinateConverter.Scale)
                 .SetAngRadiansStart(angles.x)
                 .SetAngRadiansEnd(angles.y)
-                .transform.SetPosXY(cornerPos)
+                .transform.SetPosXY(position)
                 .PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
             m_Corners.Activate(corner);
         }
@@ -357,12 +357,9 @@ namespace RMAZOR.Views.Common
         {
             Vector2 start, end;
             Vector2 pos = _Point;
-            float cr = ViewSettings.CornerRadius;
-            var up = Vector2.up;
-            var down = Vector2.down;
-            var left = Vector2.left;
-            var right = Vector2.right;
-            var zero = Vector2.zero;
+            float cr = ViewSettings.CornerRadius * BorderScaleCoefficient;
+            Vector2 up, down, left, right, zero;
+            (up, down, left, right, zero) = (Vector2.up, Vector2.down, Vector2.left, Vector2.right, Vector2.zero);
             const float bIndent = BorderRelativeIndent;
             switch (_Side)
             {
@@ -395,7 +392,7 @@ namespace RMAZOR.Views.Common
             bool _Right,
             bool _Up)
         {
-            float cr = ViewSettings.CornerRadius;
+            float cr = ViewSettings.CornerRadius * BorderScaleCoefficient;
             float xIndent = _Right ? -1f : 1f;
             float yIndent = _Up ? -1f : 1f;
             var crVec = cr * new Vector2(xIndent, yIndent);

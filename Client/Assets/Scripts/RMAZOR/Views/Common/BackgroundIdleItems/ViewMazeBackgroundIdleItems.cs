@@ -73,9 +73,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             m_TrianglesPool.DeactivateAll();
             m_CurrentPool = _Index switch
             {
-                0 => ToSpawnPool<IViewMazeBackgroundIdleItemDisc, IViewMazeBackgroundIdleItem>(m_DiscsPool),
-                1 => ToSpawnPool<IViewMazeBackgroundIdleItemSquare, IViewMazeBackgroundIdleItem>(m_SquaresPool),
-                2 => ToSpawnPool<IViewMazeBackgroundIdleItemTriangle, IViewMazeBackgroundIdleItem>(m_TrianglesPool),
+                0 => ToSpawnPool<IViewMazeBackgroundIdleItemSquare, IViewMazeBackgroundIdleItem>(m_SquaresPool),
+                1 => ToSpawnPool<IViewMazeBackgroundIdleItemTriangle, IViewMazeBackgroundIdleItem>(m_TrianglesPool),
                 _ => throw new SwitchCaseNotImplementedException(_Index)
             };
             m_CurrentPool.ActivateAll();

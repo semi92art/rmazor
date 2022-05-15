@@ -238,8 +238,7 @@ namespace RMAZOR.Views
                     body, 
                     dateTime,
                     _Reschedule: Application.platform == RuntimePlatform.Android,
-                    _SmallIcon: "main_icon",
-                    _LargeIcon: "main_icon_large");
+                    _SmallIcon: "main_icon");
             }
         }
         

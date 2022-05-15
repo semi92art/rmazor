@@ -4,8 +4,8 @@
 		_Color2 ("Color 2", Color) = (1,1,1,1)
         _Size ("Size", Range(1, 10)) = 1
         _Ratio("Ratio", Range(1, 2)) = 1.224744
-        _A("A", Float) = 0
-        _B("B", Float) = 0
+        _A("A", Range(0, 1)) = 0
+        _B("B", Range(0, 1)) = 0
         _Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(0, 1)) = 0
 		_WrapScale ("Wrap Scale", Range(0, 1)) = 0

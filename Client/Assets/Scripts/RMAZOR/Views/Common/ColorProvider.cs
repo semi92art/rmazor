@@ -18,7 +18,7 @@ namespace RMAZOR.Views.Common
         #region nonpublic members
 
         private readonly Dictionary<int, Color>   m_ColorsDict = new Dictionary<int, Color>();
-        private          IList<MainColorsSetItem> m_Set;
+        private          IList<MainColorsProps> m_Set;
         private readonly List<int>                m_IgnorableForThemeSwitchColorIds = new List<int>();
 
         #endregion

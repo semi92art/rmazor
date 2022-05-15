@@ -259,7 +259,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 Collect(true, true);
             }
-            SetBordersAndCorners();
+            DrawBordersAndCorners();
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -282,49 +282,47 @@ namespace RMAZOR.Views.MazeItems
             if (m_TopBorderInited)       m_TopBorder.Color    = borderCol;
         }
 
-        private void SetBordersAndCorners()
+        private void DrawBordersAndCorners()
         {
-            ClearBordersAndCorners();
-            InitBorders();
-            InitInnerCorners();
-            InitOuterCorners();
+            DrawBorders();
+            DrawCorners();
             AdjustBorders();
             EnableInitializedShapes(false);
         }
 
-        private void ClearBordersAndCorners()
+        private void DrawBorders()
         {
             if (m_LeftBorderInited)   (m_LeftBorder.enabled, m_LeftBorder.DashOffset)     = (false, 0f);
             if (m_RightBorderInited)  (m_RightBorder.enabled, m_RightBorder.DashOffset)   = (false, 0f);
             if (m_BottomBorderInited) (m_BottomBorder.enabled, m_BottomBorder.DashOffset) = (false, 0f);
             if (m_TopBorderInited)    (m_TopBorder.enabled, m_TopBorder.DashOffset)       = (false, 0f);
-            
+            m_LeftBorderInited = m_RightBorderInited = m_BottomBorderInited = m_TopBorderInited = false;
+            m_IsLeftBorderInverseOffset = m_IsRightBorderInverseOffset =
+                m_IsBottomBorderInverseOffset = m_IsTopBorderInverseOffset = false;
+            bool MustInitBorder(V2Int _Pos) => !TurretExist(_Pos) && !PathExist(_Pos);
+            var pos = Props.Position;
+            if (MustInitBorder(pos + V2Int.Left))
+                DrawBorder(EMazeMoveDirection.Left);
+            if (MustInitBorder(pos + V2Int.Right))
+                DrawBorder(EMazeMoveDirection.Right);
+            if (MustInitBorder(pos + V2Int.Up))
+                DrawBorder(EMazeMoveDirection.Up);
+            if (MustInitBorder(pos + V2Int.Down))
+                DrawBorder(EMazeMoveDirection.Down);
+        }
+
+        private void DrawCorners()
+        {
             if (BottomLeftCornerInited)  m_BottomLeftCorner .enabled = false;
             if (BottomRightCornerInited) m_BottomRightCorner.enabled = false;
             if (TopLeftCornerInited)     m_TopLeftCorner    .enabled = false;
             if (TopRightCornerInited)    m_TopRightCorner   .enabled = false;
-            
-            m_LeftBorderInited = m_RightBorderInited = m_BottomBorderInited = m_TopBorderInited = false;
             BottomLeftCornerInited = BottomRightCornerInited = TopLeftCornerInited = TopRightCornerInited = false;
-            m_IsLeftBorderInverseOffset = m_IsRightBorderInverseOffset =
-                m_IsBottomBorderInverseOffset = m_IsTopBorderInverseOffset = false;
+            DrawInnerCorners();
+            DrawOuterCorners();
         }
 
-        private void InitBorders()
-        {
-            bool MustInitBorder(V2Int _Pos) => !TurretExist(_Pos) && !PathExist(_Pos);
-            var pos = Props.Position;
-            if (MustInitBorder(pos + V2Int.Left))
-                InitBorder(EMazeMoveDirection.Left);
-            if (MustInitBorder(pos + V2Int.Right))
-                InitBorder(EMazeMoveDirection.Right);
-            if (MustInitBorder(pos + V2Int.Up))
-                InitBorder(EMazeMoveDirection.Up);
-            if (MustInitBorder(pos + V2Int.Down))
-                InitBorder(EMazeMoveDirection.Down);
-        }
-
-        private void InitInnerCorners()
+        private void DrawInnerCorners()
         {
             var pos = Props.Position;
             bool initLeftBottomCorner = !PathExist(pos + V2Int.Left)
@@ -332,38 +330,38 @@ namespace RMAZOR.Views.MazeItems
                                       || SpringboardExist(pos) 
                                       && SpringboardDirection(pos) == V2Int.Right + V2Int.Up;
             if (initLeftBottomCorner)
-                InitCorner(false, false, true);
+                DrawCorner(false, false, true);
             bool initLeftTopCorner = !PathExist(pos + V2Int.Left)
                                      && !PathExist(pos + V2Int.Up)
                                      || SpringboardExist(pos)
                                      && SpringboardDirection(pos) == V2Int.Right + V2Int.Down;
             if (initLeftTopCorner)
-                InitCorner(false, true, true);
+                DrawCorner(false, true, true);
             bool initRightBottomCorner = !PathExist(pos + V2Int.Right)
                                          && !PathExist(pos + V2Int.Down)
                                          || SpringboardExist(pos)
                                          && SpringboardDirection(pos) == V2Int.Left + V2Int.Up;
             if (initRightBottomCorner)
-                InitCorner(true, false, true);
+                DrawCorner(true, false, true);
             bool initRightTopCorner = !PathExist(pos + V2Int.Right)
                                       && !PathExist(pos + V2Int.Up)
                                       || SpringboardExist(pos)
                                       && SpringboardDirection(pos) == V2Int.Left + V2Int.Down;
             if (initRightTopCorner)
-                InitCorner(true, true, true);
+                DrawCorner(true, true, true);
         }
 
-        private void InitOuterCorners()
+        private void DrawOuterCorners()
         {
             var pos = Props.Position;
             if (MustInitOuterCorner(pos, V2Int.Down, V2Int.Left))
-                InitCorner(false, false, false);
+                DrawCorner(false, false, false);
             if (MustInitOuterCorner(pos, V2Int.Down, V2Int.Right))
-                InitCorner(true, false, false);
+                DrawCorner(true, false, false);
             if (MustInitOuterCorner(pos, V2Int.Up, V2Int.Left))
-                InitCorner(false, true, false);
+                DrawCorner(false, true, false);
             if (MustInitOuterCorner(pos, V2Int.Up, V2Int.Right))
-                InitCorner(true, true, false);
+                DrawCorner(true, true, false);
         }
 
         private bool MustInitOuterCorner(V2Int _Position, V2Int _Dir1, V2Int _Dir2)
@@ -462,7 +460,7 @@ namespace RMAZOR.Views.MazeItems
             if (TopRightCornerInited)    m_TopRightCorner.enabled    = _Enable;
         }
         
-        private void InitBorder(EMazeMoveDirection _Side)
+        private void DrawBorder(EMazeMoveDirection _Side)
         {
             Line border = _Side switch
             {
@@ -494,7 +492,7 @@ namespace RMAZOR.Views.MazeItems
             }
         }
 
-        private void InitCorner(
+        private void DrawCorner(
             bool _Right,
             bool _Up,
             bool _Inner)

@@ -26,15 +26,6 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: b23a06e09bc686841bd63aee189a2564, type: 2}
       name: trap_react_spikes_material
       bundle: 0
-    - item: {fileID: 2100000, guid: 0ce96a7319ec1aa4aaf83f44ca5220f0, type: 2}
-      name: lines_background
-      bundle: 0
-    - item: {fileID: 2100000, guid: 932381f177717d94fa9b1cce2c7c072b, type: 2}
-      name: circles_background
-      bundle: 0
-    - item: {fileID: 2100000, guid: a8c16c09af8be9740afcc17ed482e3d1, type: 2}
-      name: circles2_background
-      bundle: 0
     - item: {fileID: 2100000, guid: 43dc65d468299d1449428e04b69370cf, type: 2}
       name: triangles_background
       bundle: 0
