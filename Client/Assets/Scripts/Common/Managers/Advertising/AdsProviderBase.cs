@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Xml.Linq;
 using Common.Entities;
 using Common.Extensions;
@@ -8,20 +7,12 @@ using UnityEngine.Events;
 
 namespace Common.Managers.Advertising
 {
-    [Flags]
-    public enum EAdsProvider
-    {
-        AdMob      = 1 << 0,
-        UnityAds   = 1 << 1,
-        IronSource = 1 << 2
-    }
-    
     public interface IAdsProviderBase
     {
-        EAdsProvider Provider            { get; }
-        bool         RewardedAdReady     { get; }
-        bool         InterstitialAdReady { get; }
-        float        ShowRate            { get; }
+        string Source              { get; }
+        bool   RewardedAdReady     { get; }
+        bool   InterstitialAdReady { get; }
+        float  ShowRate            { get; }
     }
     
     public interface IAdsProvider : IAdsProviderBase
@@ -33,15 +24,26 @@ namespace Common.Managers.Advertising
     
     public abstract class AdsProviderBase : IAdsProvider
     {
+        #region nonpublic members
+
+        protected virtual   string AppId              => GetAdsNodeValue(Source, "app_id");
+        protected virtual   string InterstitialUnitId => GetAdsNodeValue(Source, "interstitial");
+        protected virtual   string RewardedUnitId     => GetAdsNodeValue(Source, "reward");
+
         protected bool        TestMode;
         protected XElement    AdsData;
         protected UnityAction OnRewardedAdShown;
         protected UnityAction OnInterstitialAdShown;
 
-        public abstract EAdsProvider Provider            { get; }
-        public abstract bool         RewardedAdReady     { get; }
-        public abstract bool         InterstitialAdReady { get; }
-        public          float        ShowRate            { get; private set; }
+        #endregion
+
+        #region api
+        
+        public abstract string Source { get; }
+
+        public abstract bool  RewardedAdReady     { get; }
+        public abstract bool  InterstitialAdReady { get; }
+        public          float ShowRate            { get; private set; }
 
         public void Init(bool _TestMode, float _ShowRate, XElement _AdsData)
         {
@@ -83,6 +85,10 @@ namespace Common.Managers.Advertising
                 }));
         }
 
+        #endregion
+
+        #region nonpublic methods
+
         protected abstract void InitConfigs(UnityAction _OnSuccess);
         protected abstract void InitRewardedAd();
         protected abstract void InitInterstitialAd();
@@ -101,7 +107,9 @@ namespace Common.Managers.Advertising
             return _S1.EqualsIgnoreCase(_S2);
         }
 
-        protected abstract void ShowRewardedAdCore(UnityAction _OnShown);
+        protected abstract void ShowRewardedAdCore(UnityAction     _OnShown);
         protected abstract void ShowInterstitialAdCore(UnityAction _OnShown);
+        
+        #endregion
     }
 }

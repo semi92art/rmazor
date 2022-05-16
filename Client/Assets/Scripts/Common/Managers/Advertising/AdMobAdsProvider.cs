@@ -12,6 +12,32 @@ namespace Common.Managers.Advertising
     
     public class AdMobAdsProvider : AdsProviderCommonBase, IAdMobAdsProvider
     {
+        #region nonpublic members
+
+        protected override string InterstitialUnitId
+        {
+            get
+            {
+                string testId = CommonUtils.Platform == RuntimePlatform.Android
+                    ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
+                    : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
+                return TestMode ? testId : base.InterstitialUnitId;
+            }
+        }
+
+        protected override string RewardedUnitId
+        {
+            get
+            {
+                string testId = CommonUtils.Platform == RuntimePlatform.Android
+                    ? "ca-app-pub-3940256099942544/8691691433"  // https://developers.google.com/admob/android/test-ads
+                    : "ca-app-pub-3940256099942544/5135589807"; // https://developers.google.com/admob/ios/test-ads
+                return TestMode ? testId : base.RewardedUnitId;
+            }
+        }
+
+        #endregion
+        
         #region inject
         
         private IAdMobInterstitialAd InterstitialAd { get; }
@@ -31,9 +57,9 @@ namespace Common.Managers.Advertising
 
         #region api
 
-        public override EAdsProvider Provider            => EAdsProvider.AdMob;
-        public override bool         RewardedAdReady     => RewardedAd.Ready;
-        public override bool         InterstitialAdReady => InterstitialAd.Ready;
+        public override string Source              => AdvertisingNetworks.Admob;
+        public override bool   RewardedAdReady     => RewardedAd.Ready;
+        public override bool   InterstitialAdReady => InterstitialAd.Ready;
 
         #endregion
 
@@ -48,10 +74,10 @@ namespace Common.Managers.Advertising
             MobileAds.Initialize(_InitStatus =>
             {
                 var map = _InitStatus.getAdapterStatusMap();
-                foreach (var kvp in map)
+                foreach ((string key, var value) in map)
                 {
-                    Dbg.Log($"Google AdMob initialization status: {kvp.Key}:" +
-                            $"{kvp.Value.Description}:{kvp.Value.InitializationState}");
+                    Dbg.Log($"Google AdMob initialization status: {key}:" +
+                            $"{value.Description}:{value.InitializationState}");
                 }
                 _OnSuccess?.Invoke();
             });
@@ -59,20 +85,12 @@ namespace Common.Managers.Advertising
 
         protected override void InitRewardedAd()
         {
-            string testId = CommonUtils.Platform == RuntimePlatform.Android
-                ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
-                : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
-            string unitId = TestMode ? testId : GetAdsNodeValue("admob", "reward");
-            RewardedAd.Init(unitId);
+            RewardedAd.Init(AppId, RewardedUnitId);
         }
 
         protected override void InitInterstitialAd()
         {
-            string testId = CommonUtils.Platform == RuntimePlatform.Android
-                ? "ca-app-pub-3940256099942544/8691691433"  // https://developers.google.com/admob/android/test-ads
-                : "ca-app-pub-3940256099942544/5135589807"; // https://developers.google.com/admob/ios/test-ads
-            string unitId = TestMode ? testId : GetAdsNodeValue("admob", "interstitial");
-            InterstitialAd.Init(unitId);
+            InterstitialAd.Init(AppId, InterstitialUnitId);
         }
 
         private List<string> GetTestDeviceIds()

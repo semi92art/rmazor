@@ -11,7 +11,6 @@ using UnityEngine;
 using System.Linq;
 using System.Runtime.Serialization;
 using Common.Extensions;
-using Common.Managers.Advertising;
 using Common.Network;
 using Common.Network.DataFieldFilters;
 using UnityEngine.Events;
@@ -100,12 +99,8 @@ namespace RMAZOR.Managers
         {
             object value;
             // Common
-            if ((value = GetField(_Fields, nameof(CommonGameSettings.adsProvider))?.GetValue()) != null)
-                CommonGameSettings.adsProvider = (EAdsProvider)value;
-            if ((value = GetField(_Fields, nameof(CommonGameSettings.admobRate))?.GetValue()) != null)
-                CommonGameSettings.admobRate = Convert.ToSingle(value);
-            if ((value = GetField(_Fields, nameof(CommonGameSettings.unityAdsRate))?.GetValue()) != null)
-                CommonGameSettings.unityAdsRate = Convert.ToSingle(value);
+            if ((value = GetField(_Fields, nameof(CommonGameSettings.adsProviders))?.GetValue()) != null)
+                CommonGameSettings.adsProviders = Convert.ToString(value);
             if ((value = GetField(_Fields, nameof(CommonGameSettings.showAdsEveryLevel))?.GetValue()) != null)
                 CommonGameSettings.showAdsEveryLevel = Convert.ToInt32(value);
             if ((value = GetField(_Fields, nameof(CommonGameSettings.firstLevelToShowAds))?.GetValue()) != null)
@@ -199,35 +194,20 @@ namespace RMAZOR.Managers
 
         private static void FetchCommonSettings()
         {
-            EAdsProvider adsProviders = 0;
-            string adsProvidersRaw = string.Empty;
-            GetConfig(ref adsProvidersRaw, "ads.providers");
-            if (adsProvidersRaw.Contains("admob"))
-                adsProviders |= EAdsProvider.AdMob;
-            if (adsProvidersRaw.Contains("unity"))
-                adsProviders |= EAdsProvider.UnityAds;
-            if (adsProvidersRaw.Contains("iron_source"))
-                adsProviders |= EAdsProvider.IronSource;
-            Instance.CommonGameSettings.adsProvider = adsProviders;
-            
-            GetConfig(ref Instance.CommonGameSettings.admobRate,                          "ads.admob.rate");
-            GetConfig(ref Instance.CommonGameSettings.unityAdsRate,                       "ads.unityads.rate");
-            GetConfig(ref Instance.CommonGameSettings.ironSourceRate,                     "ads.iron_source.rate");
-            GetConfig(ref Instance.CommonGameSettings.showAdsEveryLevel,                  "ads.show_ad_every_level");
-            GetConfig(ref Instance.CommonGameSettings.firstLevelToShowAds,                "ads.first_level_to_show_ads");
+            GetConfig(ref Instance.CommonGameSettings.adsProviders,"ads.providers_info");
+            GetConfig(ref Instance.CommonGameSettings.showAdsEveryLevel, "ads.show_ad_every_level");
+            GetConfig(ref Instance.CommonGameSettings.firstLevelToShowAds, "ads.first_level_to_show_ads");
             GetConfig(ref Instance.CommonGameSettings.ironSourceAppKeyAndroid, "ads.iron_source.app_key.android");
-            GetConfig(ref Instance.CommonGameSettings.ironSourceAppKeyIos,     "ads.iron_source.app_key.ios");
-            GetConfig(ref Instance.CommonGameSettings.payToContinueMoneyCount,           "common.pay_to_continue_money_count");
+            GetConfig(ref Instance.CommonGameSettings.ironSourceAppKeyIos, "ads.iron_source.app_key.ios");
+            GetConfig(ref Instance.CommonGameSettings.payToContinueMoneyCount, "common.pay_to_continue_money_count");
             GetConfig(ref Instance.CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause,
                 "ads.show_rewarded_instead_of_interstitial_on_unpause");
             GetConfig(ref Instance.CommonGameSettings.moneyItemCoast,"common.money_item_coast");
             var filter = GetDataFieldFilterForRemoteFieldIds();
             filter.Filter(_Fields =>
             {
-                GetField(_Fields, nameof(Instance.CommonGameSettings.adsProvider))
-                    ?.SetValue(Instance.CommonGameSettings.adsProvider);
-                GetField(_Fields, nameof(Instance.CommonGameSettings.unityAdsRate))
-                    ?.SetValue(Instance.CommonGameSettings.unityAdsRate);
+                GetField(_Fields, nameof(Instance.CommonGameSettings.adsProviders))
+                    ?.SetValue(Instance.CommonGameSettings.adsProviders);
                 GetField(_Fields, nameof(Instance.CommonGameSettings.showAdsEveryLevel))
                     ?.SetValue(Instance.CommonGameSettings.showAdsEveryLevel);
                 GetField(_Fields, nameof(Instance.CommonGameSettings.firstLevelToShowAds))
@@ -356,7 +336,7 @@ namespace RMAZOR.Managers
             Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
                 () =>
                 {
-                    bool isThisDeviceForTesting = deviceIds.Any(
+                    bool isThisDeviceForTesting = deviceIds!.Any(
                         _Idfa => _Idfa.Equals(
                             idfaEntity.Value,
                             StringComparison.InvariantCultureIgnoreCase));
@@ -389,9 +369,7 @@ namespace RMAZOR.Managers
         {
             var commonFieldIds = new[]
             {
-                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.adsProvider)),
-                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.admobRate)),
-                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.unityAdsRate)),
+                CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.adsProviders)),
                 CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.showAdsEveryLevel)),
                 CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.firstLevelToShowAds)),
                 CommonUtils.StringToHash(nameof(Instance.CommonGameSettings.ironSourceAppKeyAndroid)),

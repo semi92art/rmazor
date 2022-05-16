@@ -10,10 +10,12 @@ namespace Common.Managers.Advertising
     
     public class IronSourceAdsProvider : AdsProviderCommonBase, IIronSourceAdsProvider, IApplicationPause
     {
-        private ICommonTicker              Ticker          { get; }
-        private IIronSourceInterstitialAd  InterstitialAd  { get; }
-        private IIronSourceRewardedVideoAd RewardedAd      { get; }
-        private CommonGameSettings         Settings        { get; }
+        #region inject
+        
+        private ICommonTicker              Ticker         { get; }
+        private IIronSourceInterstitialAd  InterstitialAd { get; }
+        private IIronSourceRewardedVideoAd RewardedAd     { get; }
+        private CommonGameSettings         Settings       { get; }
 
         public IronSourceAdsProvider(
             CommonGameSettings         _Settings,
@@ -29,14 +31,12 @@ namespace Common.Managers.Advertising
             Settings       = _Settings;
         }
 
+        #endregion
 
+        #region api
         
-        public void OnApplicationPause(bool _Pause)
-        {
-            IronSource.Agent.onApplicationPause(_Pause);
-        }
-
-        public override EAdsProvider Provider => EAdsProvider.IronSource;
+        public override string Source => AdvertisingNetworks.IronSource;
+        
         public override bool RewardedAdReady
         {
             get
@@ -55,7 +55,16 @@ namespace Common.Managers.Advertising
                 return InterstitialAd != null && InterstitialAd.Ready;
             }
         }
+        
+        public void OnApplicationPause(bool _Pause)
+        {
+            IronSource.Agent.onApplicationPause(_Pause);
+        }
 
+        #endregion
+
+        #region nonpublic methods
+        
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
             Ticker.Register(this);
@@ -74,12 +83,12 @@ namespace Common.Managers.Advertising
 
         protected override void InitRewardedAd()
         {
-            RewardedAd.Init(string.Empty);
+            RewardedAd.Init(null, null);
         }
 
         protected override void InitInterstitialAd()
         {
-            InterstitialAd.Init(string.Empty);
+            InterstitialAd.Init(null, null);
         }
 
         protected override void ShowRewardedAdCore(UnityAction _OnShown)
@@ -109,5 +118,7 @@ namespace Common.Managers.Advertising
                 InterstitialAd.LoadAd();
             }
         }
+
+        #endregion
     }
 }

@@ -105,6 +105,7 @@ namespace Mono_Installers
             Container.Bind<IAdMobAdsProvider>()         .To<AdMobAdsProvider>()             .AsSingle();
             Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
             Container.Bind<IIronSourceAdsProvider>()    .To<IronSourceAdsProvider>()        .AsSingle();
+            Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
 
             Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
             Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
@@ -112,6 +113,8 @@ namespace Mono_Installers
             Container.Bind<IIronSourceRewardedVideoAd>().To<IronSourceRewardedVideoAd>()    .AsSingle();
             Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsSingle();
             Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsSingle();
+            Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
+            Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
         }

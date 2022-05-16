@@ -13,7 +13,7 @@ namespace Common.Managers.Advertising
         
         public bool Ready => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
         
-        public void Init(string _UnitId)
+        public void Init(string _AppId, string _UnitId)
         {
             m_InterstitialAd = new InterstitialAd(_UnitId);
 

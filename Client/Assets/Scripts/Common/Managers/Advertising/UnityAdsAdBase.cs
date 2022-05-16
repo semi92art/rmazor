@@ -9,11 +9,11 @@ namespace Common.Managers.Advertising
     
     public class UnityAdsAdBase : IUnityAdsAd, IUpdateTick
     {
-        protected volatile bool        m_DoInvokeOnShown;
-        protected          bool        m_DoLoadAdWithDelay;
-        protected          float       m_LoadAdDelayTimer;
-        protected          string      m_UnitId;
-        protected          UnityAction m_OnShown;
+        protected volatile bool        DoInvokeOnShown;
+        protected          string      UnitId;
+        private            bool        m_DoLoadAdWithDelay;
+        private            float       m_LoadAdDelayTimer;
+        private            UnityAction m_OnShown;
 
         private CommonGameSettings Settings   { get; }
         private ICommonTicker      CommonTicker { get; }
@@ -26,17 +26,17 @@ namespace Common.Managers.Advertising
         
         public bool Ready { get; protected set; }
         
-        public void Init(string _UnitId)
+        public void Init(string _AppId, string _UnitId)
         {
             CommonTicker.Register(this);
-            m_UnitId = _UnitId;
+            UnitId = _UnitId;
             LoadAd();
         }
 
         public virtual void ShowAd(UnityAction _OnShown)
         {
             m_OnShown = _OnShown;
-            Advertisement.Show(m_UnitId, this);
+            Advertisement.Show(UnitId, this);
         }
 
         public virtual void OnUnityAdsAdLoaded(string _PlacementId)
@@ -81,7 +81,7 @@ namespace Common.Managers.Advertising
             string message = string.Join(": ", 
                 GetType().Name, nameof(OnUnityAdsShowComplete), _PlacementId, _ShowCompletionState);
             Dbg.Log(message);
-            m_DoInvokeOnShown = true;
+            DoInvokeOnShown = true;
             Ready = false;
             LoadAd();
         }
@@ -89,15 +89,15 @@ namespace Common.Managers.Advertising
         public virtual void LoadAd()
         {
             Ready = false;
-            Advertisement.Load(m_UnitId, this);
+            Advertisement.Load(UnitId, this);
         }
 
         public void UpdateTick()
         {
-            if (m_DoInvokeOnShown)
+            if (DoInvokeOnShown)
             {
                 m_OnShown?.Invoke();
-                m_DoInvokeOnShown = false;
+                DoInvokeOnShown = false;
             }
             if (!m_DoLoadAdWithDelay)
                 return;

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
+using Common.Exceptions;
 using Common.Helpers;
-using Common.Ticker;
 using Common.Utils;
-using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 namespace Common.Managers.Advertising
 {
@@ -29,23 +29,23 @@ namespace Common.Managers.Advertising
         #region inject
 
         private CommonGameSettings     GameSettings          { get; }
-        private ICommonTicker          Ticker                { get; }
         private IAdMobAdsProvider      AdMobAdsProvider      { get; }
         private IUnityAdsProvider      UnityAdsProvider      { get; }
         private IIronSourceAdsProvider IronSourceAdsProvider { get; }
+        private IAppodealAdsProvider   AppodealAdsProvider   { get; }
 
         public CustomMediationAdsManager(
             CommonGameSettings     _GameSettings,
-            ICommonTicker          _Ticker,
             IAdMobAdsProvider      _AdMobAdsProvider,
             IUnityAdsProvider      _UnityAdsProvider,
-            IIronSourceAdsProvider _IronSourceAdsProvider)
+            IIronSourceAdsProvider _IronSourceAdsProvider,
+            IAppodealAdsProvider   _AppodealAdsProvider)
         {
             GameSettings          = _GameSettings;
-            Ticker                = _Ticker;
             AdMobAdsProvider      = _AdMobAdsProvider;
             UnityAdsProvider      = _UnityAdsProvider;
             IronSourceAdsProvider = _IronSourceAdsProvider;
+            AppodealAdsProvider   = _AppodealAdsProvider;
         }
 
         #endregion
@@ -79,7 +79,7 @@ namespace Common.Managers.Advertising
                 Dbg.LogWarning("Rewarded ad was not ready to be shown.");
                 return;
             }
-            ShowAd(readyProviders, _OnBeforeShown, _OnShown, false);
+            ShowAd(readyProviders, _OnBeforeShown, _OnShown, AdvertisingType.Rewarded);
         }
 
         public void ShowInterstitialAd(UnityAction _OnBeforeShown, UnityAction _OnShown)
@@ -92,7 +92,7 @@ namespace Common.Managers.Advertising
                 Dbg.LogWarning("Interstitial ad was not ready to be shown.");
                 return;
             }
-            ShowAd(readyProviders, _OnBeforeShown, _OnShown, true);
+            ShowAd(readyProviders, _OnBeforeShown, _OnShown, AdvertisingType.Interstitial);
         }
 
         #endregion
@@ -103,29 +103,37 @@ namespace Common.Managers.Advertising
         {
             bool testMode = GameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
-            var adsProvider = GameSettings.adsProvider;
-            if (adsProvider.HasFlag(EAdsProvider.AdMob))
+            Dictionary<string, float> providersInfo = GameSettings.adsProviders.Split(',')
+                .ToDictionary(_I => _I.Split(':')[0],
+                    _I => float.Parse(_I.Split(':')[1]));
+            
+            if (providersInfo.ContainsKey(AdvertisingNetworks.Admob))
             {
-                AdMobAdsProvider.Init(testMode, GameSettings.admobRate, adsConfig);
+                AdMobAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.Admob], adsConfig);
                 m_Providers.Add(AdMobAdsProvider);
             }
-            if (adsProvider.HasFlag(EAdsProvider.UnityAds))
+            if (providersInfo.ContainsKey(AdvertisingNetworks.UnityAds))
             {
-                UnityAdsProvider.Init(testMode, GameSettings.unityAdsRate, adsConfig);
+                UnityAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.UnityAds], adsConfig);
                 m_Providers.Add(UnityAdsProvider);
             }
-            if (adsProvider.HasFlag(EAdsProvider.IronSource))
+            if (providersInfo.ContainsKey(AdvertisingNetworks.IronSource))
             {
-                IronSourceAdsProvider.Init(testMode, GameSettings.ironSourceRate, adsConfig);
+                IronSourceAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.IronSource], adsConfig);
                 m_Providers.Add(IronSourceAdsProvider);
+            }
+            if (providersInfo.ContainsKey(AdvertisingNetworks.Appodeal))
+            {
+                AppodealAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.Appodeal], adsConfig);
+                m_Providers.Add(AppodealAdsProvider);
             }
         }
 
         private void ShowAd(
             IReadOnlyCollection<IAdsProvider> _Providers,
-            UnityAction _OnBeforeShown,
-            UnityAction _OnShown,
-            bool _Interstitial)
+            UnityAction                       _OnBeforeShown,
+            UnityAction                       _OnShown,
+            AdvertisingType                   _Type)
         {
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
@@ -150,10 +158,17 @@ namespace Common.Managers.Advertising
             }
             _OnBeforeShown?.Invoke();
             CommonData.DoNotShowAdvertisingAfterAppUnpause = true;
-            if (_Interstitial)
-                selectedProvider?.ShowInterstitialAd(_OnShown, ShowAds);
-            else
-                selectedProvider?.ShowRewardedAd(_OnShown, ShowAds);
+            switch (_Type)
+            {
+                case AdvertisingType.Interstitial:
+                    selectedProvider?.ShowInterstitialAd(_OnShown, ShowAds);
+                    break;
+                case AdvertisingType.Rewarded:
+                    selectedProvider?.ShowRewardedAd(_OnShown, ShowAds);
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Type);
+            }
         }
         
         private static BoolEntity GetShowAdsCached()

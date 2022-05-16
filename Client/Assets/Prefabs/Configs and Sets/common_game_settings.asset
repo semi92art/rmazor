@@ -12,21 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5abb6e1eb81450f917a8931519f989c, type: 3}
   m_Name: common_game_settings
   m_EditorClassIdentifier: 
-  adsProvider: -1
+  adsProviders: appodeal:50,admob:50
   adsLoadDelay: 3
-  debugEnabled: 1
-  testAds: 1
+  debugEnabled: 0
+  testAds: 0
   logLevel: 5
-  admobRate: 80
-  unityAdsRate: 20
-  ironSourceRate: 0
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
   rewriteSettingsByRemoteConfigInEditor: 1
   payToContinueMoneyCount: 100
-  showRewardedInsteadOfInterstitialOnUnpause: 0
-  ironSourceAppKeyAndroid: 
-  ironSourceAppKeyIos: 
-  moneyItemCoast: 0
+  showRewardedInsteadOfInterstitialOnUnpause: 1
+  ironSourceAppKeyAndroid: 141f21f69
+  ironSourceAppKeyIos: 141e92229
+  moneyItemCoast: 1
   gameId: 1
-  levelsPackVersion: 0

@@ -13,13 +13,13 @@ namespace Common.Managers.Advertising
         
         public override void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)
         {
-            if (!_PlacementId.Equals(m_UnitId)
+            if (!_PlacementId.Equals(UnitId)
                 || !_ShowCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED)) 
                 return;
             string message = string.Join(": ", 
                 GetType().Name, nameof(OnUnityAdsShowComplete), _PlacementId, _ShowCompletionState);
             Dbg.Log(message);
-            m_DoInvokeOnShown = true;
+            DoInvokeOnShown = true;
             Ready = false;
             LoadAd();
         }

@@ -12,7 +12,7 @@ namespace Common.Managers.Advertising
         private UnityAction m_OnShown;
         
         public bool Ready => m_RewardedAd != null && m_RewardedAd.IsLoaded();
-        public void Init(string _UnitId)
+        public void Init(string _AppId, string _UnitId)
         {
             m_RewardedAd = new RewardedAd(_UnitId);
             m_RewardedAd.OnAdLoaded              += OnRewardedAdLoaded;

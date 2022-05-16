@@ -11,6 +11,7 @@ namespace Common.Managers.Advertising
     
     public class UnityAdsProvider : AdsProviderCommonBase, IUnityAdsProvider, IUnityAdsInitializationListener
     {
+        
         private IUnityAdsInterstitialAd InterstitialAd { get; }
         private IUnityAdsRewardedAd     RewardedAd     { get; }
 
@@ -23,31 +24,18 @@ namespace Common.Managers.Advertising
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;
         }
+        
+        public override string Source => AdvertisingNetworks.UnityAds;
+        
+        public override bool RewardedAdReady => 
+            Application.isEditor || (RewardedAd != null && RewardedAd.Ready);
 
-        public override EAdsProvider Provider => EAdsProvider.UnityAds;
-
-        public override bool RewardedAdReady
-        {
-            get
-            {
-                if (Application.isEditor)
-                    return true;
-                return RewardedAd != null && RewardedAd.Ready;
-            }
-        }
-
-        public override bool InterstitialAdReady
-        {
-            get
-            {
-                if (Application.isEditor)
-                    return true;
-                return InterstitialAd != null && InterstitialAd.Ready;
-            }
-        }
+        public override bool InterstitialAdReady => 
+            Application.isEditor || (InterstitialAd != null && InterstitialAd.Ready);
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
+            
             SetMetadata();
             string gameId = GetGameId();
             Advertisement.Initialize(gameId, TestMode, this);
@@ -69,12 +57,12 @@ namespace Common.Managers.Advertising
 
         protected override void InitRewardedAd()
         {
-            RewardedAd.Init(GetAdsNodeValue("unity_ads", "reward"));
+            RewardedAd.Init(AppId, RewardedUnitId);
         }
 
         protected override void InitInterstitialAd()
         {
-            InterstitialAd.Init(GetAdsNodeValue("unity_ads", "interstitial"));
+            InterstitialAd.Init(AppId, InterstitialUnitId);
         }
 
         protected override void ShowRewardedAdCore(UnityAction _OnShown)

@@ -17,7 +17,7 @@ namespace Common.Managers.Advertising
         
         public bool Ready => IronSource.Agent.isRewardedVideoAvailable();
         
-        public void Init(string _UnitId)
+        public void Init(string _AppId, string _UnitId)
         {
             InitEvents();
             LoadAd();

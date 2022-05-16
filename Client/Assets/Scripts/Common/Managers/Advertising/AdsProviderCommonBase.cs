@@ -7,9 +7,10 @@ namespace Common.Managers.Advertising
 {
     public abstract class AdsProviderCommonBase : AdsProviderBase
     {
-        private IAdBase         m_InterstitialAd;
-        private IAdBase         m_RewardedAd;
-        private IViewGameTicker GameTicker { get; }
+        private readonly IAdBase         m_InterstitialAd;
+        private readonly IAdBase         m_RewardedAd;
+        
+        private   IViewGameTicker GameTicker { get; }
 
         protected AdsProviderCommonBase(
             IAdBase         _InterstitialAd,
