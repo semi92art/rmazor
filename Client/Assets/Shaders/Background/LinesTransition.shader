@@ -5,7 +5,7 @@
 		_Color2 ("Color 2", Color) = (0,0,0,0)
     	_Tiling ("Tiling", Range(1, 10)) = 1
 		_Direction ("Direction", Range(-5, 5)) = 0
-    	_Indent("Indent", Range(0, 1)) = 0.5
+    	_TransitionValue("Transition Value", Range(0, 1)) = 0.5
 		_WrapTiling ("Wrap Tiling", Range(0, 3)) = 1
     	_WrapScale ("Wrap Scale", Range(0, 0.1)) = 0
 	}
@@ -31,7 +31,7 @@
 
 			fixed4 _Color1,_Color2;
 			float  _Direction, _WrapScale, _WrapTiling, _Tiling;
-			float  _Indent;
+			float  _TransitionValue;
 
 			v2f vert (appdata v) {
 				return vert_default(v);
@@ -55,7 +55,7 @@
 				float2 pos = wrap_pos(i.uv, _Tiling, _Direction, _WrapScale, _WrapTiling);
 				fixed lerp_coeff_1 = frac(pos.x);
 				lerp_coeff_1 = inverse_indent(i.uv) ? lerp_coeff_1 : 1.0 - lerp_coeff_1;
-				fixed lerp_coeff_2 = floor(lerp_coeff_1 + _Indent);
+				fixed lerp_coeff_2 = floor(lerp_coeff_1 + _TransitionValue);
 				fixed4 col2 = lerp(_Color1, _Color2, lerp_coeff_1);
 				fixed4 col3 = lerp(col2, colEmpty, lerp_coeff_2);
 				return col3;

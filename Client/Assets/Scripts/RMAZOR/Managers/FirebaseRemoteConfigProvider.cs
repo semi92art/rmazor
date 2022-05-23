@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Common;
+using Firebase;
+using Firebase.Extensions;
+using Firebase.RemoteConfig;
+
+namespace RMAZOR.Managers
+{
+    public class FirebaseRemoteConfigProvider : RemoteConfigProviderBase
+    {
+        protected override async Task FetchConfigs()
+        {
+            await InitializeFirebase();
+        }
+        
+        private Task InitializeFirebase()
+        {
+            if (CommonData.FirebaseApp != null)
+            {
+                Dbg.Log("Firebase initialized successfully");
+                return FetchDataAsync();
+            }
+            return FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
+            {
+                if (_Task.Result == DependencyStatus.Available)
+                {
+                    CommonData.FirebaseApp = FirebaseApp.DefaultInstance;
+                    FetchDataAsync();
+                    Dbg.Log("Firebase initialized successfully");
+                } 
+                else
+                    Dbg.LogError($"Could not resolve all Firebase dependencies: {_Task.Result}");
+            });
+        }
+        
+        private Task FetchDataAsync() 
+        {
+            Dbg.Log("Fetching Remote Config data 1...");
+            var fetchTask = FirebaseRemoteConfig.DefaultInstance.FetchAsync(
+                TimeSpan.Zero);
+            return fetchTask.ContinueWithOnMainThread(_Task =>
+            {
+                Dbg.Log("Fetching Remote Config data 2...");
+                FirebaseRemoteConfig.DefaultInstance
+                    .ActivateAsync()
+                    .ContinueWithOnMainThread(_Task2 =>
+                    {
+                        Dbg.Log("Fetching Remote Config data 3...");
+                        OnFetchConfigsCompletedSuccessfully();
+                    });
+            });
+        }
+
+        protected override void GetRemoteConfig(RemoteConfigPropertyInfo _Info)
+        {
+            var config = FirebaseRemoteConfig.DefaultInstance;
+            if (config == null)
+                return;
+            var configValue = config.GetValue(_Info.Key);
+            var @switch = new Dictionary<Type, Func<object>>
+            {
+                {typeof(bool),   () => configValue.BooleanValue},
+                {typeof(float),  () => (float)configValue.DoubleValue},
+                {typeof(double), () => configValue.DoubleValue},
+                {typeof(string), () => configValue.StringValue},
+                {typeof(int),    () => (int)configValue.LongValue},
+                {typeof(long),   () => configValue.LongValue}
+            };
+            var remoteValue= @switch[_Info.Type]();
+            _Info.SetCachedValue(remoteValue);
+        }
+    }
+}

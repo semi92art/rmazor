@@ -1,4 +1,6 @@
-﻿using Common.Helpers;
+﻿#if UNITY_ADS_API
+
+using Common.Helpers;
 using Common.Ticker;
 
 namespace Common.Managers.Advertising
@@ -11,3 +13,5 @@ namespace Common.Managers.Advertising
             : base(_Settings, _CommonTicker) { }
     }
 }
+
+#endif

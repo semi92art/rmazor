@@ -4,23 +4,23 @@ using System.Linq;
 using Common.Extensions;
 using Common.Managers;
 using Common.SpawnPools;
+using RMAZOR.Models;
 using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
-    public interface IViewMazeBackgroundIdleItem : ISpawnPoolItem, ICloneable
+    public interface IViewMazeBackgroundIdleItem : ISpawnPoolItem, ICloneable, IOnLevelStageChanged
     {
-        void    SetParams(float _Scale,  float             _Thickness);
-        void    Init(Transform  _Parent, PhysicsMaterial2D _Material);
-        Vector2 Position { get; set; }
-        void    SetVelocity(Vector2 _Velocity, float _AngularVelocity);
-        void    SetColor(Color      _Color);
+        Vector2   Position { get; set; }
+        void      SetParams(float _Scale,  float             _Thickness);
+        void      Init(Transform  _Parent, PhysicsMaterial2D _Material);
+        void      SetVelocity(Vector2 _Velocity, float _AngularVelocity);
+        void      SetColor(Color      _Color);
     }
     
     public abstract class ViewMazeBackgroundIdleItemBase : IViewMazeBackgroundIdleItem
     {
-
         #region nonpublic members
 
         private GameObject m_Obj;
@@ -41,11 +41,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         #region inject
         
-        protected IPrefabSetManager PrefabSetManager { get; }
+        protected IPrefabSetManager        PrefabSetManager    { get; }
+        protected IMazeCoordinateConverter CoordinateConverter { get; }
 
-        protected ViewMazeBackgroundIdleItemBase(IPrefabSetManager _PrefabSetManager)
+        protected ViewMazeBackgroundIdleItemBase(
+            IPrefabSetManager        _PrefabSetManager,
+            IMazeCoordinateConverter _CoordinateConverter)
         {
-            PrefabSetManager = _PrefabSetManager;
+            PrefabSetManager    = _PrefabSetManager;
+            CoordinateConverter = _CoordinateConverter;
         }
 
         #endregion
@@ -57,18 +61,18 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             get => Shapes.First().enabled;
             set => Shapes.ForEach(_S => _S.enabled = value);
         }
-
-        public abstract          object Clone();
-        public          abstract void   SetParams(float _Scale, float _Thickness);
-
-
-        public abstract void    Init(Transform _Parent, PhysicsMaterial2D _Material);
-
+        
         public Vector2 Position
         {
             get => Obj.transform.position;
             set => Obj.transform.SetPosXY(value);
         }
+
+        public abstract          object    Clone();
+
+        public          abstract void      SetParams(float _Scale,  float             _Thickness);
+        public abstract          void      Init(Transform  _Parent, PhysicsMaterial2D _Material);
+        public abstract          void      SetColor(Color  _Color);
 
         public void SetVelocity(Vector2 _Velocity, float _AngularVelocity)
         {
@@ -76,7 +80,12 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             Rigidbody.angularVelocity = _AngularVelocity;
         }
 
-        public abstract void SetColor(Color _Color);
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.Stage != ELevelStage.Loaded)
+                return;
+            Obj.transform.SetLocalScaleXY(CoordinateConverter.Scale * Vector2.one);
+        }
 
         #endregion
     }

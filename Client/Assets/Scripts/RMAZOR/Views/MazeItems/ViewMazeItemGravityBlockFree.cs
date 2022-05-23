@@ -65,7 +65,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Shape};
+        public override Component[] Renderers => new Component[] {m_Shape};
         public override object Clone() => new ViewMazeItemGravityBlockFree(
             ViewSettings,
             Model,
@@ -132,7 +132,7 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            sets.Add(Shapes, () => ColorProvider.GetColor(ColorIds.Main));
+            sets.Add(Renderers, () => ColorProvider.GetColor(ColorIds.Main));
             return sets;
         }
 

@@ -18,7 +18,6 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private IList<TrianglesTextureProps>    m_TrianglesTextureSetItems;
         private IList<Triangles2TextureProps>   m_Triangles2TextureSetItems;
         private bool                            m_IsFirstLoad = true;
         private List<ITextureProps>             m_TextureSetItems;
@@ -27,14 +26,12 @@ namespace RMAZOR.Views.Common
         
         #region inject
         
-        // private IViewMazeBackgroundTrianglesTextureProvider  TrianglesTextureProvider  { get; }
         private IViewMazeBackgroundTriangles2TextureProvider Triangles2TextureProvider { get; }
         private IViewGameTicker                              Ticker                    { get; }
         private IViewMazeBackgroundIdleItems                 IdleItems                 { get; }
 
         public ViewMazeBackgroundTextureController(
             RemoteProperties                             _RemoteProperties,
-            // IViewMazeBackgroundTrianglesTextureProvider  _TrianglesTextureProvider,
             IViewMazeBackgroundTriangles2TextureProvider _Triangles2TextureProvider,
             IPrefabSetManager                            _PrefabSetManager,
             IColorProvider                               _ColorProvider,
@@ -47,7 +44,6 @@ namespace RMAZOR.Views.Common
         {
             Ticker                    = _Ticker;
             IdleItems                 = _IdleItems;
-            // TrianglesTextureProvider  = _TrianglesTextureProvider;
             Triangles2TextureProvider = _Triangles2TextureProvider;
         }
 
@@ -58,7 +54,6 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             Ticker.Register(this);
-            // TrianglesTextureProvider  .Init();
             Triangles2TextureProvider .Init();
             IdleItems                 .Init();
             base.Init();
@@ -67,6 +62,7 @@ namespace RMAZOR.Views.Common
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
+            IdleItems.OnLevelStageChanged(_Args);
             if (_Args.Stage == ELevelStage.Loaded)
                 OnLevelLoaded(_Args);
         }
@@ -84,13 +80,6 @@ namespace RMAZOR.Views.Common
         {
             base.LoadSets();
             const string set = "configs";
-            m_TrianglesTextureSetItems = RemoteProperties.TrianglesTextureSet;
-            if (m_TrianglesTextureSetItems.NullOrEmpty())
-            {
-                var trianglesTextureSet = PrefabSetManager.GetObject<TrianglesTexturePropsSetScriptableObject>
-                    (set, "triangles_texture_set");
-                m_TrianglesTextureSetItems = trianglesTextureSet.set;
-            }
             m_Triangles2TextureSetItems = RemoteProperties.Tria2TextureSet;
             if (m_Triangles2TextureSetItems.NullOrEmpty())
             {
@@ -110,7 +99,6 @@ namespace RMAZOR.Views.Common
             }
             m_TextureSetItems = m_Triangles2TextureSetItems
                 .Cast<ITextureProps>()
-                // .Concat(m_Triangles2TextureSetItems)
                 .OrderBy(_Item => CalculateTextureHash(
                     _Item.ToString(null, null)))
                 
@@ -140,17 +128,10 @@ namespace RMAZOR.Views.Common
         {
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int idx = group % m_TextureSetItems.Count;
-            Dbg.Log("group: " + group + ", idx: " + idx);
             var setItem = m_TextureSetItems[idx];
-            // TrianglesTextureProvider.Activate(false);
             Triangles2TextureProvider.Activate(false);
             switch (setItem)
             {
-                // case TrianglesTextureProps trianglesProps:
-                //     TrianglesTextureProvider.Activate(true);
-                //     TrianglesTextureProvider.SetProperties(trianglesProps);
-                //     _Provider = TrianglesTextureProvider;
-                //     break;
                 case Triangles2TextureProps triangles2Props:
                     Triangles2TextureProvider.Activate(true);
                     Triangles2TextureProvider.SetProperties(triangles2Props);

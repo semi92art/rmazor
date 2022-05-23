@@ -1,4 +1,6 @@
-﻿using Common.Helpers;
+﻿#if UNITY_ADS_API
+
+using Common.Helpers;
 using Common.Ticker;
 using UnityEngine.Advertisements;
 
@@ -25,3 +27,5 @@ namespace Common.Managers.Advertising
         }
     }
 }
+
+#endif

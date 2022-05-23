@@ -307,7 +307,7 @@ namespace RMAZOR.Views.Common
                 && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0)
             {
                 UnityAction<UnityAction, UnityAction> act = Managers.AdsManager.ShowRewardedAd;
-                if (GameSettings.showRewardedInsteadOfInterstitialOnUnpause)
+                if (GameSettings.showRewardedOnUnpause)
                     act = Managers.AdsManager.ShowInterstitialAd;
                 act(null, null);
             }

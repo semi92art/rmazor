@@ -32,10 +32,10 @@ MonoBehaviour:
   rateRequestsFrequency: 20
   adsRequestsFrequency: 5
   levelsCountMain: 360
-  firstLevelToRateGame: 20
+  firstLevelToRateGame: 4
   mazeItemTransitionTime: 0.6
   mazeItemTransitionDelayCoefficient: 0
   bazookaProjectileSpeed: 0.4
   bazookaRotationSpeed: 5
-  additionalBackTexturesCount: 8
+  additionalBackTexturesCount: 5
   filledPathAlpha: 0.884

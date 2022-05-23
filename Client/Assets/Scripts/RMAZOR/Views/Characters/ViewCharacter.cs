@@ -144,7 +144,7 @@ namespace RMAZOR.Views.Characters
             Effector.OnCharacterMoveFinished(_Args);
             Cor.Run(MazeShaker.HitMazeCoroutine(_Args));
             int randClipId = 1 + Mathf.FloorToInt(AudioCharacterEndMoveCount * Random.value);
-            Managers.AudioManager.PlayClip(GetCharacterEndMoveArgs(randClipId));
+            Managers.AudioManager.PlayClip(GetCharacterEndMoveAudioClipArgs(randClipId));
             Managers.HapticsManager.PlayPreset(EHapticsPresetType.RigidImpact);
         }
 
@@ -161,7 +161,7 @@ namespace RMAZOR.Views.Characters
                     m_EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
-                    Managers.AudioManager.PlayClip(GetCharacterDeadArgs());
+                    Managers.AudioManager.PlayClip(GetCharacterDeadAudioClipArgs());
                     Managers.HapticsManager.PlayPreset(EHapticsPresetType.Failure);
                     Cor.Run(MazeShaker.ShakeMazeCoroutine(1f, 0.5f));
                     break;
@@ -184,10 +184,10 @@ namespace RMAZOR.Views.Characters
         private void Init()
         {
             CommandsProceeder.Command += OnCommand;
-            Managers.AudioManager.InitClip(GetCharacterDeadArgs());
+            Managers.AudioManager.InitClip(GetCharacterDeadAudioClipArgs());
             for (int i = 1; i <= AudioCharacterEndMoveCount; i++)
             {
-                var args = GetCharacterEndMoveArgs(i);
+                var args = GetCharacterEndMoveAudioClipArgs(i);
                 Managers.AudioManager.InitClip(args);
             }
         }
@@ -197,12 +197,12 @@ namespace RMAZOR.Views.Characters
             SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.PathItems[0].Position));
         }
 
-        private static AudioClipArgs GetCharacterDeadArgs()
+        private static AudioClipArgs GetCharacterDeadAudioClipArgs()
         {
             return new AudioClipArgs("character_death", EAudioClipType.GameSound, 1f);
         }
 
-        private static AudioClipArgs GetCharacterEndMoveArgs(int _Index)
+        private static AudioClipArgs GetCharacterEndMoveAudioClipArgs(int _Index)
         {
             return new AudioClipArgs($"character_end_move_{_Index}", EAudioClipType.GameSound);
         }

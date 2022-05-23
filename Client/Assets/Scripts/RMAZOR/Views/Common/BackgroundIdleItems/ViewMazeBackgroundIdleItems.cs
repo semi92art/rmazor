@@ -2,18 +2,20 @@
 using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Models;
 using RMAZOR.Views.Helpers;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
-    public interface IViewMazeBackgroundIdleItems : IInit
+    public interface IViewMazeBackgroundIdleItems : IInit, IOnLevelStageChanged
     {
         void SetSpawnPool(int _Index);
     }
@@ -83,6 +85,16 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 item.Position = RandomPositionOnScreen(false, 3f * Vector2.one);
                 item.SetVelocity(RandomVelocity(), RandomAngularVelocity());
             }
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            foreach (var disc in m_DiscsPool.GetAllActiveItems())
+                disc.OnLevelStageChanged(_Args);
+            foreach (var square in m_SquaresPool.GetAllActiveItems())
+                square.OnLevelStageChanged(_Args);
+            foreach (var triangle in m_TrianglesPool.GetAllActiveItems())
+                triangle.OnLevelStageChanged(_Args);
         }
         
         #endregion
@@ -176,6 +188,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
     public class ViewMazeBackgroundIdleItemsFake : InitBase, IViewMazeBackgroundIdleItems
     {
-        public void SetSpawnPool(int _Index) { }
+        public void SetSpawnPool(int                   _Index) { }
+        public void OnLevelStageChanged(LevelStageArgs _Args) { }
     }
 }

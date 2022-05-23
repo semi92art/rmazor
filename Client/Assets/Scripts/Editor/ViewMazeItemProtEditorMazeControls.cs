@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Entities;
 using Common.Extensions;
 using RMAZOR;
@@ -32,125 +34,117 @@ namespace Editor
         }
 
         private static void AddOrRemoveRowOrColumn(
-            ViewMazeItemProt _ProtItem,
-            bool             _RightOrUp,
-            bool             _Remove,
-            bool             _Row)
+            IViewMazeItem _ProtItem,
+            bool          _RightOrUp,
+            bool          _Remove,
+            bool          _Row)
         {
             var protItems = LevelDesigner.Instance.maze;
-            var addict = _Row switch
-            {
-                true  => _RightOrUp ^ _Remove ? V2Int.Up : V2Int.Down,
-                false => _RightOrUp ^ _Remove ? V2Int.Right : V2Int.Left
-            };
             var pos = _ProtItem.Props.Position;
+            var mazeInfo = LevelDesigner.Instance.GetLevelInfoFromScene();
+            var mazeItemsToAdd = new List<MazeItem>();
+            if (!_Remove)
+                mazeItemsToAdd = CreateMazeItemsToAdd(mazeInfo, pos, _Row, _RightOrUp);
+            else
+                protItems = DestroyMazeItemsToRemove(protItems, mazeInfo, pos, _Row);
+
+            V2Int GetAddict()
+            {
+                if (_Remove) 
+                    return _Row ? V2Int.Down : V2Int.Left;
+                return _Row ? V2Int.Up : V2Int.Right;
+            }
+            var addict = GetAddict();
             bool MustBeShifted(V2Int _Pos)
             {
+                if (_Remove)
+                    return _Row ? _Pos.Y > pos.Y : _Pos.X > pos.X;
                 return _Row switch
                 {
-                    true  => _RightOrUp ? _Pos.Y > pos.Y : _Pos.Y < pos.Y,
-                    false => _RightOrUp ? _Pos.X > pos.X : _Pos.X < pos.X
+                    true  => _RightOrUp ? _Pos.Y > pos.Y : _Pos.Y > pos.Y - 1,
+                    false => _RightOrUp ? _Pos.X > pos.X : _Pos.X > pos.X - 1
                 };
             }
-            var mazeInfo = LevelDesigner.Instance.GetLevelInfoFromScene();
-            var protItemsToRemove = new List<ViewMazeItemProt>();
-            var mazeItemsToAdd = new List<MazeItem>();
-            if (_Remove)
-            {
-                if (_Row)
-                    for (int i = 0; i < mazeInfo.Size.X; i++)
-                    {
-                        var pos1 = new V2Int(i, pos.Y);
-                        protItemsToRemove.AddRange(protItems.Where(_I => _I.Props.Position == pos1));
-                    }
-                else
-                    for (int i = 0; i < LevelDesigner.Instance.size.Y; i++)
-                    {
-                        var pos1 = new V2Int(pos.X, i);
-                        protItemsToRemove.AddRange(protItems.Where(_I => _I.Props.Position == pos1));
-                    }
-            }
-            else
-            {
-                if (_Row)
-                    for (int i = 0; i < mazeInfo.Size.X; i++)
-                    {
-                        var mazeItem = new MazeItem
-                        {
-                            Position = new V2Int(i, pos.Y + (_RightOrUp ? 1 : -1)),
-                            Type = EMazeItemType.Block
-                        };
-                        mazeItemsToAdd.Add(mazeItem);
-                    }
-                else
-                    for (int i = 0; i < mazeInfo.Size.Y; i++)
-                    {
-                        var mazeItem = new MazeItem
-                        {
-                            Position = new V2Int(pos.X + (_RightOrUp ? 1 : -1), i),
-                            Type = EMazeItemType.Block
-                        };
-                        mazeItemsToAdd.Add(mazeItem);
-                    }
-            }
-
-            if (protItemsToRemove.Any())
-            {
-                protItems.RemoveRange(protItemsToRemove);
-                foreach (var protItem in protItemsToRemove)
-                    DestroyImmediate(protItem.gameObject);
-            }
-
             protItems
-                .Where(_P => MustBeShifted(_P.Props.Position))
                 .ToList()
                 .ForEach(_P =>
                 {
-                    _P.Props.Position += addict;
+                    if (MustBeShifted(_P.Props.Position))
+                        _P.Props.Position += addict;
                     var path = _P.Props.Path;
                     for (int i = 0; i < path.Count; i++)
                     {
                         if (MustBeShifted(path[i]))
                             path[i] += addict;
                     }
-                    if (MustBeShifted(_P.Props.Pair))
+                    if (MustBeShifted(_P.Props.Pair) && _P.Props.Type == EMazeItemType.Portal)
                         _P.Props.Pair += addict;
                 });
             
-            mazeInfo = LevelDesigner.Instance.GetLevelInfoFromScene();
+            var mazeInfo1 = LevelDesigner.Instance.GetLevelInfoFromScene();
+            if (!_Remove)
+            {
+                mazeInfo1.MazeItems.AddRange(mazeItemsToAdd);
+                mazeInfo1.Size = new V2Int(
+                    Math.Max(mazeInfo1.Size.X, mazeItemsToAdd.Max(_I => _I.Position.X) + 1),
+                    Math.Max(mazeInfo1.Size.Y, mazeItemsToAdd.Max(_I => _I.Position.Y) + 1));
+            }
+            Dbg.Log("New maze size: " + mazeInfo1.Size);
+            LevelDesignerEditor.Instance.LoadLevel(mazeInfo1);
+        }
 
-            if (_Remove)
-            {
-                mazeInfo.Size -= _Row ? V2Int.Up : V2Int.Right;
-                foreach (var mazeItem in mazeInfo.MazeItems)
+        private static List<MazeItem> CreateMazeItemsToAdd(MazeInfo _Info, V2Int _Position, bool _Row, bool _RightOrUp)
+        {
+            var mazeItemsToAdd = new List<MazeItem>();
+            if (_Row)
+                for (int i = 0; i < _Info.Size.X; i++)
                 {
-                    mazeItem.Position -= _Row ? V2Int.Up : V2Int.Right;
-                    for (int i = 0; i < mazeItem.Path.Count; i++)
-                        mazeItem.Path[i] -= _Row ? V2Int.Up : V2Int.Right;
-                    mazeItem.Pair -= _Row ? V2Int.Up : V2Int.Right;
-                }
-                foreach (var pathItem in mazeInfo.PathItems)
-                    pathItem.Position -= _Row ? V2Int.Up : V2Int.Right;
-            }
-            else
-            {
-                mazeInfo.MazeItems.AddRange(mazeItemsToAdd);
-                if (!_RightOrUp)
-                {
-                    mazeInfo.Size += _Row ? V2Int.Up : V2Int.Right;
-                    foreach (var mazeItem in mazeInfo.MazeItems)
+                    var mazeItem = new MazeItem
                     {
-                        mazeItem.Position += _Row ? V2Int.Up : V2Int.Right;
-                        for (int i = 0; i < mazeItem.Path.Count; i++)
-                            mazeItem.Path[i] += _Row ? V2Int.Up : V2Int.Right;
-                        mazeItem.Pair += _Row ? V2Int.Up : V2Int.Right;
-                    }
-                    foreach (var pathItem in mazeInfo.PathItems)
-                        pathItem.Position += _Row ? V2Int.Up : V2Int.Right;
+                        Position = new V2Int(i, _Position.Y + (_RightOrUp ? 1 : 0)),
+                        Type = EMazeItemType.Block
+                    };
+                    mazeItemsToAdd.Add(mazeItem);
                 }
+            else
+                for (int i = 0; i < _Info.Size.Y; i++)
+                {
+                    var mazeItem = new MazeItem
+                    {
+                        Position = new V2Int(_Position.X + (_RightOrUp ? 1 : 0), i),
+                        Type = EMazeItemType.Block
+                    };
+                    mazeItemsToAdd.Add(mazeItem);
+                }
+            return mazeItemsToAdd;
+        }
+
+        private static List<ViewMazeItemProt> DestroyMazeItemsToRemove(
+            List<ViewMazeItemProt> _ProtItems,
+            MazeInfo               _Info,
+            V2Int                  _Position,
+            bool                   _Row)
+        {
+            var protItemsToRemove = new List<ViewMazeItemProt>();
+            if (_Row)
+                for (int i = 0; i < _Info.Size.X; i++)
+                {
+                    var pos1 = new V2Int(i, _Position.Y);
+                    protItemsToRemove.AddRange(_ProtItems.Where(_I => _I.Props.Position == pos1));
+                }
+            else
+                for (int i = 0; i < LevelDesigner.Instance.size.Y; i++)
+                {
+                    var pos1 = new V2Int(_Position.X, i);
+                    protItemsToRemove.AddRange(_ProtItems.Where(_I => _I.Props.Position == pos1));
+                }
+            if (protItemsToRemove.Any())
+            {
+                _ProtItems.RemoveRange(protItemsToRemove);
+                foreach (var protItem in protItemsToRemove)
+                    DestroyImmediate(protItem.gameObject);
             }
-            
-            LevelDesignerEditor.Instance.LoadLevel(mazeInfo);
+            return _ProtItems;
         }
     }
 }

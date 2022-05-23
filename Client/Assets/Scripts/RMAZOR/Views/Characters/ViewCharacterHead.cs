@@ -140,6 +140,7 @@ namespace RMAZOR.Views.Characters
                     break;
                 case ELevelStage.CharacterKilled:
                     ActivateShapes(false);
+                    m_Animator.SetTrigger(AnimKeyStartJumping);
                     break;
             }
         }

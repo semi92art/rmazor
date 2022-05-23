@@ -184,7 +184,7 @@ namespace RMAZOR.Editor
                 LevelsList = new HeapReorderableList(_commonGameSettings.gameId, HeapIndex, _SelectedIndex =>
                 {
                     SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
-                }, HeapReorderableList.LevelsCached);
+                });
             }
             if (LevelsList == null)
             {
@@ -193,13 +193,11 @@ namespace RMAZOR.Editor
             else if (LevelsList.NeedToReload() || _Forced)
             {
                 LevelsList.gameId = _commonGameSettings.gameId;
-                LevelsList.Reload(
-                    HeapIndex, 
-                    HeapIndex != LevelsList.heapIndex ? null : LevelsList.levels);
+                LevelsList.Reload(HeapIndex);
             }
             else
             {
-                LevelsList.Reload(HeapIndex, LevelsList.levels);
+                LevelsList.Reload(HeapIndex);
             }
             if (LevelDesigner.Instance.loadedLevelIndex != -1)
             {

@@ -79,7 +79,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public abstract Component[]       Shapes { get; }
+        public abstract Component[]       Renderers { get; }
         public          ViewMazeItemProps Props  { get; set; }
         public abstract object            Clone();
         
@@ -89,7 +89,7 @@ namespace RMAZOR.Views.MazeItems
             set
             {
                 m_ActivatedInSpawnPool = value;
-                ActivateShapes(false);
+                ActivateRenderers(false);
             }
         }
         
@@ -178,35 +178,38 @@ namespace RMAZOR.Views.MazeItems
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
-                ActivateShapes(true);
+                ActivateRenderers(true);
         }
 
         protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {Shapes, () => ColorProvider.GetColor(ColorIds.MazeItem1)}
+                {Renderers, () => ColorProvider.GetColor(ColorIds.MazeItem1)}
             };
         }
 
         protected virtual void OnAppearFinish(bool _Appear)
         {
             if (!_Appear)
-                ActivateShapes(false);
+                ActivateRenderers(false);
             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
         }
 
-        private void ActivateShapes(bool _Activate)
+        private void ActivateRenderers(bool _Activate)
         {
-            foreach (var shape in Shapes)
+            foreach (var shape in Renderers)
+                ActivateRenderer(shape, _Activate);
+        }
+
+        protected void ActivateRenderer(Component _Renderer, bool _Activate)
+        {
+            switch (_Renderer)
             {
-                switch (shape)
-                {
-                    case ShapeRenderer shapeRenderer when !shapeRenderer.IsNull():
-                        shapeRenderer.enabled = _Activate; break;
-                    case SpriteRenderer spriteRenderer when !spriteRenderer.IsNull():
-                        spriteRenderer.enabled = _Activate; break;
-                }
+                case ShapeRenderer shapeRenderer when !shapeRenderer.IsNull():
+                    shapeRenderer.enabled = _Activate; break;
+                case SpriteRenderer spriteRenderer when !spriteRenderer.IsNull():
+                    spriteRenderer.enabled = _Activate; break;
             }
         }
 

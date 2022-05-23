@@ -158,10 +158,11 @@ namespace Mono_Installers
 
         private void BindCharacter()
         {
-            Container.Bind<IViewCharacter>()        .To<ViewCharacter>()                 .AsSingle();
-            Container.Bind<IViewCharacterHead>()    .To<ViewCharacterHead>()             .AsSingle();
-            Container.Bind<IViewCharacterEffector>().To<ViewCharacterEffectorParticles>().AsSingle();
-            Container.Bind<IViewCharacterTail>()    .To<ViewCharacterTailSimple>()       .AsSingle();
+            Container.Bind<IViewCharacter>()         .To<ViewCharacter>()                 .AsSingle();
+            Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead>()             .AsSingle();
+            Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
+            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailSimple>()       .AsSingle();
+            Container.Bind<IViewBubbleItem>()        .To<ViewBubbleItem>()                .AsSingle();
         }
 
         private void BindUiCommon()

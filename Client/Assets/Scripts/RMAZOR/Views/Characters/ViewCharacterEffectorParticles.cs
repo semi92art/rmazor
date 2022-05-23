@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
 using Common.Entities;
@@ -8,11 +9,11 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
+using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -22,6 +23,12 @@ namespace RMAZOR.Views.Characters
 {
     public class ViewCharacterEffectorParticles : IViewCharacterEffector
     {
+        #region constants
+
+        private const int BubblesPoolSize = 100;
+
+        #endregion
+        
         #region nonpublic members
 
         private bool                m_Initialized;
@@ -31,6 +38,9 @@ namespace RMAZOR.Views.Characters
         private EMazeMoveDirection? m_MoveDirection;
         private Vector2?            m_FromPos;
         private Vector2?            m_DeathPos;
+
+        private readonly SpawnPool<IViewBubbleItem> m_BubblesPool =
+            new SpawnPool<IViewBubbleItem>();
         
         #endregion
         
@@ -43,30 +53,32 @@ namespace RMAZOR.Views.Characters
         private IColorProvider              ColorProvider       { get; }
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
+        private IViewBubbleItem             BubbleItem          { get; }
 
         public ViewCharacterEffectorParticles(
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter _ContainersGetter,
-            IViewGameTicker _GameTicker,
-            IModelGame _Model,
-            IColorProvider _ColorProvider,
+            IMazeCoordinateConverter    _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IModelGame                  _Model,
+            IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IPrefabSetManager _PrefabSetManager)
+            IPrefabSetManager           _PrefabSetManager,
+            IViewBubbleItem            _BubbleItem)
         {
             CoordinateConverter = _CoordinateConverter;
-            ContainersGetter = _ContainersGetter;
-            GameTicker = _GameTicker;
-            Model = _Model;
-            ColorProvider = _ColorProvider;
-            CommandsProceeder = _CommandsProceeder;
-            PrefabSetManager = _PrefabSetManager;
+            ContainersGetter    = _ContainersGetter;
+            GameTicker          = _GameTicker;
+            Model               = _Model;
+            ColorProvider       = _ColorProvider;
+            CommandsProceeder   = _CommandsProceeder;
+            PrefabSetManager    = _PrefabSetManager;
+            BubbleItem          = _BubbleItem;
         }
         
         #endregion
 
         #region api
         
-
         public bool Activated
         {
             get => m_Activated;
@@ -77,7 +89,8 @@ namespace RMAZOR.Views.Characters
                     if (!m_Initialized)
                     {
                         CommandsProceeder.Command += OnCommand;
-                        InitPrefab();
+                        InitCharacterDeathPrefab();
+                        InitBubblesPool();
                         m_Initialized = true;
                     }
                     UpdatePrefab();    
@@ -110,6 +123,7 @@ namespace RMAZOR.Views.Characters
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
             m_MoveDirection = null;
+            ThrowBubblesOnMoveFinished(_Args.Direction);
         }
 
         public void OnAllPathProceed(V2Int _LastPos)
@@ -121,8 +135,30 @@ namespace RMAZOR.Views.Characters
         #endregion
         
         #region nonpublic methods
+        
+        private void OnCommand(EInputCommand _Command, object[] _Args)
+        {
+            if (_Command != EInputCommand.KillCharacter)
+                return;
+            if (_Args == null || !_Args.Any())
+                m_DeathPos = null;
+            else
+            {
+                var newDeathPos = (Vector2) _Args[0];
+                if (!m_DeathPos.HasValue)
+                    m_DeathPos = newDeathPos;
+                else if (m_FromPos.HasValue)
+                {
+                    if (Vector2.Distance(newDeathPos, m_FromPos.Value) <
+                        Vector2.Distance(m_DeathPos.Value, m_FromPos.Value))
+                    {
+                        m_DeathPos = newDeathPos;
+                    }
+                }
+            }
+        }
 
-        private void InitPrefab()
+        private void InitCharacterDeathPrefab()
         {
             var prefab = PrefabSetManager.InitPrefab(
                 null,
@@ -146,6 +182,16 @@ namespace RMAZOR.Views.Characters
             });
             m_DeathShapes.Shuffle();
         }
+        
+        private void InitBubblesPool()
+        {
+            for (int i = 0; i < BubblesPoolSize; i++)
+            {
+                var item = (IViewBubbleItem)BubbleItem.Clone();
+                item.Init();
+                m_BubblesPool.Add(item);
+            }
+        }
 
         private void UpdatePrefab()
         {
@@ -155,16 +201,16 @@ namespace RMAZOR.Views.Characters
         
         private IEnumerator DisappearCoroutine(bool _Death, V2Int _LastPos = default)
         {
-            Vector3 cent;
+            Vector3 center;
             if (m_MoveDirection.HasValue && _Death)
             {
-                cent = ContainersGetter.GetContainer(ContainerNames.Character).position;
-                m_DeathShapesContainer.transform.position = cent;
+                center = ContainersGetter.GetContainer(ContainerNames.Character).position;
+                m_DeathShapesContainer.transform.position = center;
             }
             else
             {
-                cent = CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
-                m_DeathShapesContainer.transform.position = cent;
+                center = CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
+                m_DeathShapesContainer.transform.position = center;
             }
             Activated = true;
             int deathShapesCount = m_DeathShapes.Count;
@@ -197,7 +243,6 @@ namespace RMAZOR.Views.Characters
                 for (int i = 0; i < deathShapesCount; i++)
                     endPositions[i] += (Vector3) startDirections[i] * Random.value * 5f;
             }
-
             var col = ColorProvider.GetColor(ColorIds.Character);
             yield return Cor.Lerp(
                 GameTicker,
@@ -215,27 +260,54 @@ namespace RMAZOR.Views.Characters
                 _OnFinish: () => Activated = false);
         }
         
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        private void ThrowBubblesOnMoveFinished(EMazeMoveDirection _MoveDirection)
         {
-            if (_Command != EInputCommand.KillCharacter)
-                return;
-            if (_Args == null || !_Args.Any())
-                m_DeathPos = null;
-            else
+            const float directSpeedCoefficient = 2f;
+            const float orthogonalSpeedCoeficient = 4f;
+
+            float GetDirectSpeedAddict(float _DirectionCoordinate)
             {
-                var newDeathPos = (Vector2) _Args[0];
-                if (!m_DeathPos.HasValue)
-                    m_DeathPos = newDeathPos;
-                else if (m_FromPos.HasValue)
+                return -_DirectionCoordinate * directSpeedCoefficient;
+            }
+            float GetOrthogonalSpeedAddict(float _DirectionCoordinate, float _OrthogonalDirection)
+            {
+                return Mathf.Abs(_DirectionCoordinate) < MathUtils.Epsilon ? 
+                    _OrthogonalDirection * Random.value * orthogonalSpeedCoeficient : 0f;
+            }
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 moveDir = RmazorUtils.GetDirectionVector(_MoveDirection, MazeOrientation.North);
+                float orthDirCoeff = i % 2 == 0 ? 1f : -1f;
+                var throwSpeed = new Vector2(
+                    GetDirectSpeedAddict(moveDir.x) +
+                    GetOrthogonalSpeedAddict(moveDir.x, orthDirCoeff),
+                    GetDirectSpeedAddict(moveDir.y) +
+                    GetOrthogonalSpeedAddict(moveDir.y, orthDirCoeff));
+                var cont = ContainersGetter.GetContainer(ContainerNames.Character);
+                var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff;
+                float orthDirCoeff2 = _MoveDirection switch
                 {
-                    if (Vector2.Distance(newDeathPos, m_FromPos.Value) <
-                        Vector2.Distance(m_DeathPos.Value, m_FromPos.Value))
-                    {
-                        m_DeathPos = newDeathPos;
-                    }
-                }
+                    EMazeMoveDirection.Left  => -1f,
+                    EMazeMoveDirection.Down  => -1f,
+                    EMazeMoveDirection.Right => 1f,
+                    EMazeMoveDirection.Up    => 1f,
+                    _ => throw new SwitchExpressionException(_MoveDirection)
+                };
+                orthDir *= orthDirCoeff2;
+                var pos = (Vector2)cont.position + moveDir * CoordinateConverter.Scale * 0.5f + orthDir;
+                ThrowBubble(pos, throwSpeed);
             }
         }
+
+        private void ThrowBubble(Vector2 _Position, Vector2 _Speed)
+        {
+            var item = m_BubblesPool.FirstInactive;
+            m_BubblesPool.Activate(item);
+            float randScale = 0.4f + 0.3f * Random.value;
+            item.Throw(_Position, _Speed, randScale);
+        }
+        
+
         
         #endregion
     }

@@ -23,11 +23,11 @@ namespace RMAZOR.Views.Helpers
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "between_level_texture_material";
+        protected override string MaterialAssetName => "between_level_texture_material_2";
 
         private static readonly int Color1Id = Shader.PropertyToID("_Color1");
         private static readonly int Color2Id = Shader.PropertyToID("_Color2");
-        private static readonly int IndentId = Shader.PropertyToID("_Indent");
+        private static readonly int TransitionValueId = Shader.PropertyToID("_TransitionValue");
         
         #endregion
 
@@ -50,7 +50,7 @@ namespace RMAZOR.Views.Helpers
 
         public void SetTransitionValue(float _Value)
         {
-            Material.SetFloat(IndentId, 1f - _Value);
+            Material.SetFloat(TransitionValueId, _Value);
         }
 
         public void SetColors(Color _Color1, Color _Color2)

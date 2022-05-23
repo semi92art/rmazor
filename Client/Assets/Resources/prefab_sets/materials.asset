@@ -41,3 +41,6 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: 9e967ce894f65c64fbeaa36bc18aa7f8, type: 2}
       name: between_level_texture_material
       bundle: 0
+    - item: {fileID: 2100000, guid: b69efb9eed7550f48b0b2b67c8e478f0, type: 2}
+      name: between_level_texture_material_2
+      bundle: 0

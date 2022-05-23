@@ -50,13 +50,15 @@ namespace Mono_Installers
 
             #region managers
 
-            Container.Bind<IRemoteConfigManager>()     .To<RemoteConfigManager>()           .AsSingle();
+            
+            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>().AsSingle();
             Container.Bind<IUnityAnalyticsProvider>()  .To<UnityAnalyticsProvider>()        .AsSingle();
             Container.Bind<IFirebaseAnalyticsProvider>().To<FirebaseAnalyticsProvider>()    .AsSingle();
             Container.Bind<IGameClient>()              .To<GameClient>()                    .AsSingle();
 
             if (Application.isEditor)
             {
+                Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
                 Container.Bind<IAnalyticsManager>()    .To<AnalyticsManagerFake>()          .AsSingle();
                 Container.Bind<IScoreManager>()        .To<ScoreManagerFake>()              .AsSingle();
                 Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
@@ -66,6 +68,8 @@ namespace Mono_Installers
             }
             else
             {
+                Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManager>()           .AsSingle();
+                Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
 #if UNITY_ANDROID
                 Container.Bind<IAnalyticsManager>()    .To<AnalyticsManager>()              .AsSingle();
                 Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>()      .AsSingle();
@@ -84,6 +88,7 @@ namespace Mono_Installers
             }
 
             Container.Bind<ILocalizationManager>()      .To<LeanLocalizationManager>()      .AsSingle();
+            
 #if NICE_VIBRATIONS_3_9
             Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_3_9>().AsSingle();
 #else
@@ -103,16 +108,16 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()        .To<MazeInfoValidator>()            .AsSingle();
 
             Container.Bind<IAdMobAdsProvider>()         .To<AdMobAdsProvider>()             .AsSingle();
-            Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
-            Container.Bind<IIronSourceAdsProvider>()    .To<IronSourceAdsProvider>()        .AsSingle();
-            Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
-
-            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
-            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
-            Container.Bind<IIronSourceInterstitialAd>() .To<IronSourceInterstitialAd>()     .AsSingle();
-            Container.Bind<IIronSourceRewardedVideoAd>().To<IronSourceRewardedVideoAd>()    .AsSingle();
             Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsSingle();
             Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsSingle();
+            
+#if UNITY_ADS_API
+            Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
+            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
+            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
+#endif
+
+            Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
             Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
             Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 

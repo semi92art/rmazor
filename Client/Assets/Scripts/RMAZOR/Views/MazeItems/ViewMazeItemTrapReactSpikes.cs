@@ -97,7 +97,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Line, m_Trap};
+        public override Component[] Renderers => new Component[] {m_Line, m_Trap};
 
         public override bool ActivatedInSpawnPool
         {

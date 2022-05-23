@@ -8,8 +8,8 @@ namespace RMAZOR
     {
         public IList<MainColorsProps>         MainColorsSet         { get; set; } = new List<MainColorsProps>();
         public IList<BackAndFrontColorsProps> BackAndFrontColorsSet { get; set; } = new List<BackAndFrontColorsProps>();
-        public IList<TexturePropsBase>        LinesTextureSet       { get; set; } = new List<TexturePropsBase>();
         public IList<TrianglesTextureProps>   TrianglesTextureSet   { get; set; } = new List<TrianglesTextureProps>();
-        public IList<Triangles2TextureProps> Tria2TextureSet { get; set; } = new List<Triangles2TextureProps>();
+        public IList<Triangles2TextureProps>  Tria2TextureSet       { get; set; } = new List<Triangles2TextureProps>();
+        public string                         TestDeviceIds;
     }
 }

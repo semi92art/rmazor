@@ -108,7 +108,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
 
-        public override Component[] Shapes => new Component[]
+        public override Component[] Renderers => new Component[]
         {
             m_PathItem,
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,

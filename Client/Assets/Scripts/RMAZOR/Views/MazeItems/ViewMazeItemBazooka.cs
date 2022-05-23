@@ -105,7 +105,7 @@ namespace RMAZOR.Views.MazeItems
 
         public System.Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
 
-        public override Component[] Shapes => new Component[0];
+        public override Component[] Renderers => new Component[0];
         
         public override object Clone() => 
             new ViewMazeItemBazooka(

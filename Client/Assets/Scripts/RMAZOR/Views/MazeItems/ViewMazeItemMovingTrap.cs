@@ -61,7 +61,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[] {m_Saw};
+        public override Component[] Renderers => new Component[] {m_Saw};
         
         public override object Clone() => new ViewMazeItemMovingTrap(
             ViewSettings,

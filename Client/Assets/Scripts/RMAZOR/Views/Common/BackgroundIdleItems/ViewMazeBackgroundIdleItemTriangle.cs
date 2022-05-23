@@ -15,12 +15,14 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private Triangle          m_Triangle;
         private Triangle          m_Border;
 
-        public ViewMazeBackgroundIdleItemTriangle(IPrefabSetManager _PrefabSetManager)
-            : base(_PrefabSetManager) { }
+        public ViewMazeBackgroundIdleItemTriangle(
+            IPrefabSetManager        _PrefabSetManager,
+            IMazeCoordinateConverter _CoordinateConverter)
+            : base(_PrefabSetManager, _CoordinateConverter) { }
         
         public override object Clone()
         {
-            return new ViewMazeBackgroundIdleItemTriangle(PrefabSetManager);
+            return new ViewMazeBackgroundIdleItemTriangle(PrefabSetManager, CoordinateConverter);
         }
 
         public override void Init(Transform  _Parent, PhysicsMaterial2D _Material)

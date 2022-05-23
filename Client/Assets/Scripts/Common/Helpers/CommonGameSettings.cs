@@ -12,9 +12,8 @@ namespace Common.Helpers
         public ELogLevel logLevel;
         public int       showAdsEveryLevel;
         public int       firstLevelToShowAds;
-        public bool      rewriteSettingsByRemoteConfigInEditor;
         public int       payToContinueMoneyCount;
-        public bool      showRewardedInsteadOfInterstitialOnUnpause;
+        public bool      showRewardedOnUnpause;
         public string    ironSourceAppKeyAndroid;
         public string    ironSourceAppKeyIos;
         public int       moneyItemCoast;

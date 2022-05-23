@@ -124,7 +124,7 @@ namespace RMAZOR
             if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
                 return;
             Cor.Run(Cor.WaitWhile(
-                () => !RemoteConfigManager.Initialized,
+                () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
                 {
                     LevelsLoader.Init();

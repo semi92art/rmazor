@@ -136,7 +136,7 @@ namespace RMAZOR.Views.Common
             const float maxDistance = 10f;
             const float transitionTime = 0.5f;
             var shapes = _MazeItems
-                .SelectMany(_Item => _Item.Shapes.Where(_Shape => _Shape.IsNotNull()))
+                .SelectMany(_Item => _Item.Renderers.Where(_Shape => _Shape.IsNotNull()))
                 .Distinct()
                 .ToList();
             var finished = shapes

@@ -75,7 +75,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes =>
+        public override Component[] Renderers =>
             new Component[] {m_ClosedBlock}
                 .Concat(m_OpenedLines)
                 .Concat(m_OpenedCorners)

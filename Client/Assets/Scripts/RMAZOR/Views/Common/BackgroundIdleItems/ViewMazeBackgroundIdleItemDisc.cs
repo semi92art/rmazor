@@ -13,12 +13,14 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private Disc             m_Disc;
         private Disc             m_Border;
 
-        public ViewMazeBackgroundIdleItemDisc(IPrefabSetManager _PrefabSetManager) 
-            : base(_PrefabSetManager) { }
+        public ViewMazeBackgroundIdleItemDisc(
+            IPrefabSetManager        _PrefabSetManager,
+            IMazeCoordinateConverter _CoordinateConverter) 
+            : base(_PrefabSetManager, _CoordinateConverter) { }
         
         public override object Clone()
         {
-            return new ViewMazeBackgroundIdleItemDisc(PrefabSetManager);
+            return new ViewMazeBackgroundIdleItemDisc(PrefabSetManager, CoordinateConverter);
         }
 
         public override void Init(Transform _Parent, PhysicsMaterial2D _Material)

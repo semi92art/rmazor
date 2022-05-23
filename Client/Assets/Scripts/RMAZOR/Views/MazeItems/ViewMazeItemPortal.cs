@@ -94,7 +94,7 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder);
         
-        public override Component[] Shapes => new Component[] {m_Center}.Concat(m_Orbits).ToArray();
+        public override Component[] Renderers => new Component[] {m_Center}.Concat(m_Orbits).ToArray();
 
         public override bool ActivatedInSpawnPool
         {

@@ -78,7 +78,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
         
-        public override Component[] Shapes => new Component[] {Springboard, Pillar};
+        public override Component[] Renderers => new Component[] {Springboard, Pillar};
         
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, 
@@ -171,7 +171,7 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var col = ColorProvider.GetColor(ColorIds.Main);
-            return new Dictionary<IEnumerable<Component>, Func<Color>> {{Shapes, () => col}};
+            return new Dictionary<IEnumerable<Component>, Func<Color>> {{Renderers, () => col}};
         }
         
         #endregion

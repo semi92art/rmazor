@@ -102,7 +102,7 @@ namespace RMAZOR.Views.MazeItems
         
         public Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
         
-        public override Component[] Shapes => m_MainShapes.Cast<Component>().ToArray();
+        public override Component[] Renderers => m_MainShapes.Cast<Component>().ToArray();
         
         public void OnHammerShot(HammerShotEventArgs _Args)
         {
@@ -244,6 +244,15 @@ namespace RMAZOR.Views.MazeItems
             m_HammerContainer.localRotation = Quaternion.Euler(Vector3.forward * _Angle);
         }
 
+        protected override void OnAppearStart(bool _Appear)
+        {
+            base.OnAppearStart(_Appear);
+            if (!_Appear) 
+                return;
+            foreach (var shape in m_AdditionalShapes)
+                ActivateRenderer(shape, true);
+        }
+
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
@@ -251,7 +260,16 @@ namespace RMAZOR.Views.MazeItems
             sets.Add(m_AdditionalShapes, () => additCol);
             return sets;
         }
-        
+
+        protected override void OnAppearFinish(bool _Appear)
+        {
+            base.OnAppearFinish(_Appear);
+            if (_Appear) 
+                return;
+            foreach (var shape in m_AdditionalShapes)
+                ActivateRenderer(shape, false);
+        }
+
         private AudioClipArgs GetAudioClipInfoHammerShot()
         {
             return new AudioClipArgs("hammer_shot", EAudioClipType.GameSound, 0.3f, _Id: m_ShotAngle.ToString());

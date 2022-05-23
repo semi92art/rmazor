@@ -13,17 +13,19 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private Rectangle     m_Rectangle;
         private Rectangle     m_Border;
 
-        public ViewMazeBackgroundIdleItemSquare(IPrefabSetManager _PrefabSetManager)
-            : base(_PrefabSetManager) { }
+        public ViewMazeBackgroundIdleItemSquare(
+            IPrefabSetManager        _PrefabSetManager,
+            IMazeCoordinateConverter _CoordinateConverter)
+            : base(_PrefabSetManager, _CoordinateConverter) { }
         
         public override object Clone()
         {
-            return new ViewMazeBackgroundIdleItemSquare(PrefabSetManager);
+            return new ViewMazeBackgroundIdleItemSquare(PrefabSetManager, CoordinateConverter);
         }
 
         public override void Init(Transform  _Parent, PhysicsMaterial2D _Material)
         {
-            Obj =PrefabSetManager.InitPrefab(_Parent, "background", "idle_item_square");
+            Obj = PrefabSetManager.InitPrefab(_Parent, "background", "idle_item_square");
             m_Rectangle = Obj.GetCompItem<Rectangle>("rectangle")
                 .SetType(Rectangle.RectangleType.RoundedSolid)
                 .SetSortingOrder(SortingOrders.BackgroundItem);

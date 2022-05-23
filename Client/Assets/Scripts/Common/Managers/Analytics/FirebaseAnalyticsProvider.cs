@@ -10,12 +10,6 @@ namespace Common.Managers.Analytics
 
     public class FirebaseAnalyticsProvider : InitBase, IFirebaseAnalyticsProvider
     {
-        #region nonpublic members
-        
-        private FirebaseApp m_Instance;
-
-        #endregion
-
         #region api
         
         public override void Init()
@@ -28,7 +22,7 @@ namespace Common.Managers.Analytics
             string                      _AnalyticId, 
             IDictionary<string, object> _EventData = null)
         {
-            if (m_Instance == null)
+            if (CommonData.FirebaseApp == null)
                 return;
             if (_EventData == null)
             {
@@ -57,13 +51,19 @@ namespace Common.Managers.Analytics
 
         #region nonpublic methods
         
-        private void InitializeFirebase()
+        private static void InitializeFirebase()
         {
+            if (CommonData.FirebaseApp != null)
+            {
+                InitializeAnalytics();
+                Dbg.Log("Firebase initialized successfully");
+                return;
+            }
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
             {
                 if (_Task.Result == DependencyStatus.Available)
                 {
-                    m_Instance = FirebaseApp.DefaultInstance;
+                    CommonData.FirebaseApp = FirebaseApp.DefaultInstance;
                     InitializeAnalytics();
                     Dbg.Log("Firebase initialized successfully");
                 } 

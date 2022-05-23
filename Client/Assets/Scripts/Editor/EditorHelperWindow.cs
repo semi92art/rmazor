@@ -30,8 +30,6 @@ namespace Editor
         private int                m_TestUsersCount = 3;
         private string             m_DebugServerUrl;
         private string             m_TestUrlCheck;
-        private int                m_Quality = -1;
-        private int                m_QualityCheck;
         private int                m_TabPage;
         private int                m_TabPageSettings;
         private Vector2            m_CommonScrollPos;
@@ -84,28 +82,23 @@ namespace Editor
             {
                 if (Application.isPlaying)
                     GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
-                    GUILayout.Label("count:", GUILayout.Width(40));
-                    m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-                });
-                EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    GUILayout.Label("Debug Server Url:");
-                    m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-                    if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
-                        m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
-                });
-                EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
-                EditorUtilsEx.HorizontalZone(() =>
-                {
-                    GUILayout.Label("Quality:");
-                    m_Quality = EditorGUILayout.Popup(
-                        m_Quality, new[] { "Normal", "Good" });
-                });
-                EditorUtilsEx.HorizontalLine(Color.gray);
+                // TODO пока не актуально
+                // EditorUtilsEx.HorizontalZone(() =>
+                // {
+                //     EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
+                //     GUILayout.Label("count:", GUILayout.Width(40));
+                //     m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
+                // });
+                // EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
+                // EditorUtilsEx.HorizontalZone(() =>
+                // {
+                //     GUILayout.Label("Debug Server Url:");
+                //     m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
+                //     if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
+                //         m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
+                // });
+                // EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
+                // EditorUtilsEx.HorizontalLine(Color.gray);
                 var headerStyle = new GUIStyle
                 {
                     fontSize = 15,

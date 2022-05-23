@@ -81,7 +81,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => new Component[]{m_Center, m_Center2}
+        public override Component[] Renderers => new Component[]{m_Center, m_Center2}
             .Concat(m_Blades)
             .Concat(m_BladeContainers)
             .ToArray();

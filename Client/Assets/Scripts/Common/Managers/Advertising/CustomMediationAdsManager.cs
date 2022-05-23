@@ -30,21 +30,18 @@ namespace Common.Managers.Advertising
 
         private CommonGameSettings     GameSettings          { get; }
         private IAdMobAdsProvider      AdMobAdsProvider      { get; }
-        private IUnityAdsProvider      UnityAdsProvider      { get; }
-        private IIronSourceAdsProvider IronSourceAdsProvider { get; }
+#if UNITY_ADS_API
+        [Zenject.Inject] private IUnityAdsProvider      UnityAdsProvider      { get; }
+#endif
         private IAppodealAdsProvider   AppodealAdsProvider   { get; }
 
         public CustomMediationAdsManager(
             CommonGameSettings     _GameSettings,
             IAdMobAdsProvider      _AdMobAdsProvider,
-            IUnityAdsProvider      _UnityAdsProvider,
-            IIronSourceAdsProvider _IronSourceAdsProvider,
             IAppodealAdsProvider   _AppodealAdsProvider)
         {
             GameSettings          = _GameSettings;
             AdMobAdsProvider      = _AdMobAdsProvider;
-            UnityAdsProvider      = _UnityAdsProvider;
-            IronSourceAdsProvider = _IronSourceAdsProvider;
             AppodealAdsProvider   = _AppodealAdsProvider;
         }
 
@@ -112,16 +109,13 @@ namespace Common.Managers.Advertising
                 AdMobAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.Admob], adsConfig);
                 m_Providers.Add(AdMobAdsProvider);
             }
+#if UNITY_ADS_API
             if (providersInfo.ContainsKey(AdvertisingNetworks.UnityAds))
             {
                 UnityAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.UnityAds], adsConfig);
                 m_Providers.Add(UnityAdsProvider);
             }
-            if (providersInfo.ContainsKey(AdvertisingNetworks.IronSource))
-            {
-                IronSourceAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.IronSource], adsConfig);
-                m_Providers.Add(IronSourceAdsProvider);
-            }
+#endif
             if (providersInfo.ContainsKey(AdvertisingNetworks.Appodeal))
             {
                 AppodealAdsProvider.Init(testMode, providersInfo[AdvertisingNetworks.Appodeal], adsConfig);

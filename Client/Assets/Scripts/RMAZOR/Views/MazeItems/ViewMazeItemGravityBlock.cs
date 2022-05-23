@@ -56,7 +56,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Shapes => base.Shapes.Concat(new [] {m_FilledShape}).ToArray();
+        public override Component[] Renderers => base.Renderers.Concat(new [] {m_FilledShape}).ToArray();
         
         public override object Clone() => new ViewMazeItemGravityBlock(
             ViewSettings,

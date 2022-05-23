@@ -12,55 +12,55 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"34e311fd-22d6-44a1-9825-f37c0484cf73\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2f3e6295-b596-47e5-839c-fd67bc1adb8b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"9e8cfd84-2eab-4d97-b873-af76a1f32198\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"de30772a-dbf5-4705-bf3c-137ee711936d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"91374b87-a1ad-4be8-bfb6-8e414ea41f16\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"22c6776a-c7db-4a63-8947-e55e686dac2f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"bdf0e5a4-1aec-4744-80d9-aa4604c43191\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"bd699239-6817-4f96-92a3-a31e77afa811\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"8665652c-39f3-485e-848b-5d390d3af462\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"be245913-f9d1-4d84-99ab-63d431cb1a29\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5563e966-ca1f-4960-828a-012bb03061cd\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"ab9c2957-6914-48d4-a955-9e0264a6005e\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1601083190\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"c07f85f6-2f99-40e4-9ad7-d099bfc07614\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"78d957f6-331e-4ff5-b6be-e29536aa3060\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
     \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
     \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n       
     \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n        \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n       
     \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n        \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"96ca774f-25dc-4081-874d-47b0b69d8d70\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4477885b-bf94-4c14-9c42-fe7020ee097f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 99.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"4d7d7077-c892-4e19-9dd4-e17fa17d5598\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"4553ac83-7f96-4498-856f-d828ce0ff507\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"63542b48-2314-40de-b5c2-f0f8b10641d2\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"12a58874-025e-4fdd-be7c-7ff6971200b2\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2415711a-32af-41ed-b9a6-5f8aab0ea10f\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"61a6476a-1423-4cf6-89a6-28c10a2deb07\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"20d26bf2-0a72-433e-86af-d65c397b61a8\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"35be266a-45e0-4ab6-b057-fac6f5104633\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"23693c70-c0b9-4388-bafe-ea9f46407c2e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"230aa64d-38ff-44ea-bef3-5fbc81904765\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"c43cd187-fe0f-487f-a278-449d069b1328\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f9d89765-9bee-4c61-9681-a1a94aea8622\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"bac138d1-5d5d-4676-98bc-edb187b5b292\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"df490ec3-3c3f-4657-ab19-59377f59e126\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_coefficient\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"ca0c6e64-0a90-45ff-a3cd-b7d23016ecd4\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b6999ca5-8e54-46c6-8155-d38595396fdc\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.back_and_front_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"main\":
     \"{\\\"Hex\\\":\\\"1D0505FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"A43737FF\\\"}\",\r\n         
@@ -119,7 +119,7 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"5EA8DBFF\\\"}\",\r\n          \"inUse\": false,\r\n         
     \"F1\": 0,\r\n          \"F2\": 1,\r\n          \"F3\": 0,\r\n          \"F4\":
     0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"134576f8-2a62-4622-8f41-0140e7f10208\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"38babfca-6d27-4a82-83d6-aaabd20d2c04\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.main_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"name\":
     \"Main\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"463A4AFF\\\"}\"\r\n       
@@ -143,7 +143,7 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"FFFFFF12\\\"}\"\r\n        },\r\n        {\r\n          \"name\":
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"284ee085-541e-4e79-a83d-1697f7e23ba7\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"e8991c03-a95f-4298-8a61-1cd162c02b14\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.background_texture_lines_props_set\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"L1\": 6,\r\n         
     \"L2\": 0.59,\r\n          \"L3\": 0.012,\r\n          \"L4\": 5.74\r\n       
@@ -151,7 +151,7 @@ MonoBehaviour:
     \"L3\": 0.065,\r\n          \"L4\": 3.22\r\n        },\r\n        {\r\n         
     \"L1\": 7,\r\n          \"L2\": 0.42,\r\n          \"L3\": 0.078,\r\n         
     \"L4\": 2.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"b91e9bd7-8af4-40d1-98f5-65a9a932c456\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"9b2739d3-06ce-4b91-be3b-479fd29b546c\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.background_texture_circles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C1\": 0.0506,\r\n          \"C2\": 2,\r\n          \"C3\": 1.0,\r\n         
@@ -171,7 +171,7 @@ MonoBehaviour:
     \"C1\": 0.1,\r\n          \"C2\": 20,\r\n          \"C3\": 0.3,\r\n         
     \"C4\": 2,\r\n          \"L1\": 4,\r\n          \"L2\": 0.4,\r\n          \"L3\":
     0.2,\r\n          \"L4\": 4.8\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"9f663cbe-d9cd-46f1-8e81-7de0f93c194d\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"07ff56c5-4bbf-450f-b530-1e6b12a00580\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_circles2_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C2_1\": 0.095,\r\n          \"C2_2\": 0.14,\r\n          \"C2_3\":
@@ -192,7 +192,7 @@ MonoBehaviour:
     {\r\n          \"C2_1\": 0.119,\r\n          \"C2_2\": 0.147,\r\n          \"C2_3\":
     0.095,\r\n          \"C2_4\": false,\r\n          \"L1\": 1,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 0.042,\r\n          \"L4\": 10.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a2d55046-45f7-4d68-bedb-9b3c1b67509b\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9db8a707-4fcf-4f81-a6de-905d83444281\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_triangles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"T1\": 3.57,\r\n          \"T2\": 1.289,\r\n          \"T3\":
@@ -215,140 +215,157 @@ MonoBehaviour:
     \"T3\": 0.82,\r\n          \"T4\": -1.07,\r\n          \"U\": true,\r\n         
     \"L1\": 1,\r\n          \"L2\": 0.0,\r\n          \"L3\": 0.237,\r\n         
     \"L4\": 1.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7b2402b4-88ee-4c4d-aefc-ae2726d47275\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"92e47e38-b7e1-4971-8c54-29afab6547e1\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.pay_to_continue_money_count\",\r\n     
     \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d2d91a9c-db71-4087-8940-7d167ef89bb9\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5624ddd3-115b-42f6-be86-62728f29ee35\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.iron_source.rate\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"470cc243-c0ec-478b-8e3a-a038a691d545\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"956b94f0-c9b2-42b7-92de-22efe8e47ed4\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.providers\",\r\n      \"type\": \"string\",\r\n      \"value\":
     \"admob, unity\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"64449337-27dc-4147-a5aa-b8c4e1bf41e0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b1894760-fe80-4eab-b99a-65089f082712\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.iron_source.app_key.android\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"141f21f69\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a46fcd62-6aec-46af-8eb8-f19838a22e7c\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"0930b9d1-be62-4dc7-b041-73abb9b360f5\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.iron_source.app_key.ios\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"141e92229\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"451fae4f-525d-4e3b-b331-eb7ce0c81a23\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"4dcff6d3-9d8c-4144-9007-fc3f2c6077c1\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.show_rewarded_instead_of_interstitial_on_unpause\",\r\n     
-    \"type\": \"bool\",\r\n      \"value\": false\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"42eb5552-7872-4aa0-930b-06aab4774fc5\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"common.money_item_coast\",\r\n      \"type\":
-    \"int\",\r\n      \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a1c22a31-32db-453a-bfaa-8b5d5b2ff9ea\"\r\n    },\r\n    \"rs\":
-    {\r\n      \"key\": \"common.background_texture_triangles2_props_set\",\r\n     
-    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
-    {\r\n          \"T1\": 98.3,\r\n          \"T2\": 55.8,\r\n          \"T3\":
-    0.5,\r\n          \"T4\": 0.5,\r\n          \"T5\": 0.0,\r\n          \"T6\":
-    0.494,\r\n          \"T7\": 0.815,\r\n          \"T8\": 11,\r\n          \"T9\":
-    true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n          \"T12\":
-    false,\r\n          \"T13\": 0.4\r\n        },\r\n        {\r\n          \"T1\":
-    84.1,\r\n          \"T2\": 20.4,\r\n          \"T3\": 0.98,\r\n          \"T4\":
-    0.122,\r\n          \"T5\": -0.4,\r\n          \"T6\": 0.226,\r\n          \"T7\":
-    0.439,\r\n          \"T8\": 11,\r\n          \"T9\": true,\r\n          \"T10\":
-    true,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": -0.19\r\n        },\r\n        {\r\n          \"T1\": 71.7,\r\n         
-    \"T2\": 38.1,\r\n          \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n         
-    \"T5\": -0.4,\r\n          \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n         
-    \"T8\": 9,\r\n          \"T9\": true,\r\n          \"T10\": true,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.33\r\n       
-    },\r\n        {\r\n          \"T1\": 15.7,\r\n          \"T2\": 38.1,\r\n         
+    \"type\": \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"d5351225-bff2-48f0-b3cc-e5e0a9562c9d\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.money_item_coast\",\r\n      \"type\": \"int\",\r\n     
+    \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"60c33e47-8064-4d74-9f24-f80b597f60a8\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"common.background_texture_triangles2_props_set\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 98.3,\r\n          \"T2\": 55.8,\r\n         
+    \"T3\": 0.5,\r\n          \"T4\": 0.5,\r\n          \"T5\": 0.0,\r\n         
+    \"T6\": 0.494,\r\n          \"T7\": 0.815,\r\n          \"T8\": 11,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.4\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 84.1,\r\n          \"T2\": 20.4,\r\n         
+    \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
+    \"T6\": 0.226,\r\n          \"T7\": 0.439,\r\n          \"T8\": 11,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": -0.19\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 71.7,\r\n          \"T2\": 38.1,\r\n         
+    \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
+    \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.33\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 15.7,\r\n          \"T2\": 38.1,\r\n         
     \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
     \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n          \"T8\": 9,\r\n         
     \"T9\": false,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.33\r\n        },\r\n        {\r\n         
-    \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n          \"T3\": 0.09,\r\n         
-    \"T4\": 0.274,\r\n          \"T5\": 0.1,\r\n          \"T6\": 0.542,\r\n         
-    \"T7\": 0.345,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
-    \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\": false,\r\n         
-    \"T13\": 0.59\r\n        },\r\n        {\r\n          \"T1\": 3.33,\r\n         
-    \"T2\": 1.606,\r\n          \"T3\": 0.7,\r\n          \"T4\": 0.1,\r\n         
-    \"T5\": 0.0,\r\n          \"T6\": 0.0,\r\n          \"T7\": 0.0,\r\n         
-    \"T8\": 0,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.0\r\n       
-    },\r\n        {\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
+    \"U\": true,\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
+    \"T3\": 0.09,\r\n          \"T4\": 0.274,\r\n          \"T5\": 0.1,\r\n         
+    \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
+    \"T12\": true,\r\n          \"T13\": 0.59\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 12.2,\r\n          \"T2\": 11.6,\r\n         
+    \"T3\": -0.58,\r\n          \"T4\": 0.446,\r\n          \"T5\": -5.2,\r\n         
+    \"T6\": 0.702,\r\n          \"T7\": 0.167,\r\n          \"T8\": 0,\r\n         
+    \"T9\": true,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.34\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
     \"T3\": -1.15,\r\n          \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n         
     \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
     \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.86\r\n        },\r\n        {\r\n         
-    \"T1\": 100.0,\r\n          \"T2\": 40.4,\r\n          \"T3\": 2.0,\r\n         
-    \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n          \"T6\": 0.542,\r\n         
-    \"T7\": 0.345,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
-    \"T10\": true,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": 1.0\r\n        },\r\n        {\r\n          \"T1\": 94.1,\r\n         
-    \"T2\": 12.7,\r\n          \"T3\": -0.2,\r\n          \"T4\": 0.5,\r\n         
-    \"T5\": 3.2,\r\n          \"T6\": 1.0,\r\n          \"T7\": 0.852,\r\n         
-    \"T8\": 10,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.75\r\n       
-    },\r\n        {\r\n          \"T1\": 17.5,\r\n          \"T2\": 22.7,\r\n         
+    \"U\": true,\r\n          \"T1\": 100.0,\r\n          \"T2\": 40.4,\r\n         
+    \"T3\": 2.0,\r\n          \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n         
+    \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 1.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 94.1,\r\n          \"T2\": 12.7,\r\n         
+    \"T3\": -0.2,\r\n          \"T4\": 0.5,\r\n          \"T5\": 3.2,\r\n         
+    \"T6\": 1.0,\r\n          \"T7\": 0.852,\r\n          \"T8\": 10,\r\n         
+    \"T9\": false,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.75\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 17.5,\r\n          \"T2\": 22.7,\r\n         
     \"T3\": -2.0,\r\n          \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n         
     \"T6\": 0.517,\r\n          \"T7\": 0.422,\r\n          \"T8\": 7,\r\n         
     \"T9\": true,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.92\r\n        },\r\n        {\r\n         
-    \"T1\": 62.8,\r\n          \"T2\": 100.0,\r\n          \"T3\": -2.0,\r\n         
-    \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n          \"T6\": 0.517,\r\n         
-    \"T7\": 0.494,\r\n          \"T8\": 20,\r\n          \"T9\": false,\r\n         
-    \"T10\": false,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": 0.0\r\n        },\r\n        {\r\n          \"T1\": 100.0,\r\n         
-    \"T2\": 100.0,\r\n          \"T3\": -1.069,\r\n          \"T4\": 0.069,\r\n         
-    \"T5\": 8.4,\r\n          \"T6\": 1.0,\r\n          \"T7\": 0.631,\r\n         
-    \"T8\": 20,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.0\r\n       
-    },\r\n        {\r\n          \"T1\": 31.0,\r\n          \"T2\": 6.8,\r\n         
+    \"U\": true,\r\n          \"T1\": 62.8,\r\n          \"T2\": 100.0,\r\n         
+    \"T3\": -2.0,\r\n          \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n         
+    \"T6\": 0.517,\r\n          \"T7\": 0.494,\r\n          \"T8\": 20,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
+    \"T12\": true,\r\n          \"T13\": 0.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 100.0,\r\n          \"T2\": 100.0,\r\n         
+    \"T3\": -1.069,\r\n          \"T4\": 0.069,\r\n          \"T5\": 8.4,\r\n         
+    \"T6\": 1.0,\r\n          \"T7\": 0.631,\r\n          \"T8\": 20,\r\n         
+    \"T9\": false,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 31.0,\r\n          \"T2\": 6.8,\r\n         
     \"T3\": -0.16,\r\n          \"T4\": 0.042,\r\n          \"T5\": 0.9,\r\n         
     \"T6\": 1.0,\r\n          \"T7\": 0.5,\r\n          \"T8\": 4,\r\n          \"T9\":
     true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
-    true,\r\n          \"T13\": 0.301\r\n        }\r\n      ]\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"34e311fd-22d6-44a1-9825-f37c0484cf73\"\r\n   
+    true,\r\n          \"T13\": 0.301\r\n        },\r\n        {\r\n          \"U\":
+    true,\r\n          \"T1\": 18.8,\r\n          \"T2\": 8.7,\r\n          \"T3\":
+    -0.53,\r\n          \"T4\": 0.093,\r\n          \"T5\": -10.0,\r\n          \"T6\":
+    0.546,\r\n          \"T7\": 0.99,\r\n          \"T8\": 0,\r\n          \"T9\":
+    true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
+    true,\r\n          \"T13\": -1.0\r\n        },\r\n        {\r\n          \"U\":
+    true,\r\n          \"T1\": 14.3,\r\n          \"T2\": 8.7,\r\n          \"T3\":
+    -0.9,\r\n          \"T4\": 0.404,\r\n          \"T5\": -2.36,\r\n          \"T6\":
+    0.279,\r\n          \"T7\": 0.745,\r\n          \"T8\": 4,\r\n          \"T9\":
+    true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
+    true,\r\n          \"T13\": 0.741\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"7d678d5a-1758-4eac-80d6-68a61b403026\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.providers_info\",\r\n      \"type\":
+    \"string\",\r\n      \"value\": \"appodeal:100\"\r\n    }\r\n  }\r\n]"
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2f3e6295-b596-47e5-839c-fd67bc1adb8b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"character.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 40.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"9e8cfd84-2eab-4d97-b873-af76a1f32198\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"de30772a-dbf5-4705-bf3c-137ee711936d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.movingtrap.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"91374b87-a1ad-4be8-bfb6-8e414ea41f16\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"22c6776a-c7db-4a63-8947-e55e686dac2f\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"mazeitems.gravityblock.speed\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"bdf0e5a4-1aec-4744-80d9-aa4604c43191\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"bd699239-6817-4f96-92a3-a31e77afa811\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.raterequestsfrequency\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"8665652c-39f3-485e-848b-5d390d3af462\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"be245913-f9d1-4d84-99ab-63d431cb1a29\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.adsrequestsfrequency\",\r\n      \"type\":
     \"string\",\r\n      \"value\": \"5\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5563e966-ca1f-4960-828a-012bb03061cd\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"ab9c2957-6914-48d4-a955-9e0264a6005e\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.iosgameid\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1601083190\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"c07f85f6-2f99-40e4-9ad7-d099bfc07614\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"78d957f6-331e-4ff5-b6be-e29536aa3060\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.test_device_ids\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
     \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
     \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n       
     \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n        \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n       
     \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n        \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"96ca774f-25dc-4081-874d-47b0b69d8d70\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"4477885b-bf94-4c14-9c42-fe7020ee097f\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.admob.rate\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 99.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"4d7d7077-c892-4e19-9dd4-e17fa17d5598\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"4553ac83-7f96-4498-856f-d828ce0ff507\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.unityads.rate\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"1\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"63542b48-2314-40de-b5c2-f0f8b10641d2\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"12a58874-025e-4fdd-be7c-7ff6971200b2\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.levels_count_main\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2415711a-32af-41ed-b9a6-5f8aab0ea10f\"\r\n   
+    360\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"61a6476a-1423-4cf6-89a6-28c10a2deb07\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads.show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"20d26bf2-0a72-433e-86af-d65c397b61a8\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"35be266a-45e0-4ab6-b057-fac6f5104633\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"23693c70-c0b9-4388-bafe-ea9f46407c2e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"230aa64d-38ff-44ea-bef3-5fbc81904765\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 20\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"c43cd187-fe0f-487f-a278-449d069b1328\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f9d89765-9bee-4c61-9681-a1a94aea8622\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"bac138d1-5d5d-4676-98bc-edb187b5b292\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"df490ec3-3c3f-4657-ab19-59377f59e126\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.maze_item_transition_coefficient\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"ca0c6e64-0a90-45ff-a3cd-b7d23016ecd4\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b6999ca5-8e54-46c6-8155-d38595396fdc\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.back_and_front_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"main\":
     \"{\\\"Hex\\\":\\\"1D0505FF\\\"}\",\r\n          \"bacground1\": \"{\\\"Hex\\\":\\\"A43737FF\\\"}\",\r\n         
@@ -407,7 +424,7 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"5EA8DBFF\\\"}\",\r\n          \"inUse\": false,\r\n         
     \"F1\": 0,\r\n          \"F2\": 1,\r\n          \"F3\": 0,\r\n          \"F4\":
     0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"134576f8-2a62-4622-8f41-0140e7f10208\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"38babfca-6d27-4a82-83d6-aaabd20d2c04\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"common.main_color_sets\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"name\":
     \"Main\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"463A4AFF\\\"}\"\r\n       
@@ -431,7 +448,7 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"FFFFFF12\\\"}\"\r\n        },\r\n        {\r\n          \"name\":
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"284ee085-541e-4e79-a83d-1697f7e23ba7\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"e8991c03-a95f-4298-8a61-1cd162c02b14\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"common.background_texture_lines_props_set\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"L1\": 6,\r\n         
     \"L2\": 0.59,\r\n          \"L3\": 0.012,\r\n          \"L4\": 5.74\r\n       
@@ -439,7 +456,7 @@ MonoBehaviour:
     \"L3\": 0.065,\r\n          \"L4\": 3.22\r\n        },\r\n        {\r\n         
     \"L1\": 7,\r\n          \"L2\": 0.42,\r\n          \"L3\": 0.078,\r\n         
     \"L4\": 2.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"b91e9bd7-8af4-40d1-98f5-65a9a932c456\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"9b2739d3-06ce-4b91-be3b-479fd29b546c\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.background_texture_circles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C1\": 0.0506,\r\n          \"C2\": 2,\r\n          \"C3\": 1.0,\r\n         
@@ -459,7 +476,7 @@ MonoBehaviour:
     \"C1\": 0.1,\r\n          \"C2\": 20,\r\n          \"C3\": 0.3,\r\n         
     \"C4\": 2,\r\n          \"L1\": 4,\r\n          \"L2\": 0.4,\r\n          \"L3\":
     0.2,\r\n          \"L4\": 4.8\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"9f663cbe-d9cd-46f1-8e81-7de0f93c194d\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"07ff56c5-4bbf-450f-b530-1e6b12a00580\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_circles2_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"C2_1\": 0.095,\r\n          \"C2_2\": 0.14,\r\n          \"C2_3\":
@@ -480,7 +497,7 @@ MonoBehaviour:
     {\r\n          \"C2_1\": 0.119,\r\n          \"C2_2\": 0.147,\r\n          \"C2_3\":
     0.095,\r\n          \"C2_4\": false,\r\n          \"L1\": 1,\r\n          \"L2\":
     1.0,\r\n          \"L3\": 0.042,\r\n          \"L4\": 10.0\r\n        }\r\n     
-    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"a2d55046-45f7-4d68-bedb-9b3c1b67509b\"\r\n   
+    ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"9db8a707-4fcf-4f81-a6de-905d83444281\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"common.background_texture_triangles_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"T1\": 3.57,\r\n          \"T2\": 1.289,\r\n          \"T3\":
@@ -503,92 +520,113 @@ MonoBehaviour:
     \"T3\": 0.82,\r\n          \"T4\": -1.07,\r\n          \"U\": true,\r\n         
     \"L1\": 1,\r\n          \"L2\": 0.0,\r\n          \"L3\": 0.237,\r\n         
     \"L4\": 1.0\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"7b2402b4-88ee-4c4d-aefc-ae2726d47275\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"92e47e38-b7e1-4971-8c54-29afab6547e1\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"common.pay_to_continue_money_count\",\r\n     
     \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d2d91a9c-db71-4087-8940-7d167ef89bb9\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5624ddd3-115b-42f6-be86-62728f29ee35\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"ads.iron_source.rate\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"470cc243-c0ec-478b-8e3a-a038a691d545\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"956b94f0-c9b2-42b7-92de-22efe8e47ed4\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.providers\",\r\n      \"type\": \"string\",\r\n      \"value\":
     \"admob, unity\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"64449337-27dc-4147-a5aa-b8c4e1bf41e0\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b1894760-fe80-4eab-b99a-65089f082712\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads.iron_source.app_key.android\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"141f21f69\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a46fcd62-6aec-46af-8eb8-f19838a22e7c\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"0930b9d1-be62-4dc7-b041-73abb9b360f5\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.iron_source.app_key.ios\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"141e92229\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"451fae4f-525d-4e3b-b331-eb7ce0c81a23\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"4dcff6d3-9d8c-4144-9007-fc3f2c6077c1\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads.show_rewarded_instead_of_interstitial_on_unpause\",\r\n     
-    \"type\": \"bool\",\r\n      \"value\": false\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"42eb5552-7872-4aa0-930b-06aab4774fc5\"\r\n   
-    },\r\n    \"rs\": {\r\n      \"key\": \"common.money_item_coast\",\r\n      \"type\":
-    \"int\",\r\n      \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"a1c22a31-32db-453a-bfaa-8b5d5b2ff9ea\"\r\n    },\r\n    \"rs\":
-    {\r\n      \"key\": \"common.background_texture_triangles2_props_set\",\r\n     
-    \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
-    {\r\n          \"T1\": 98.3,\r\n          \"T2\": 55.8,\r\n          \"T3\":
-    0.5,\r\n          \"T4\": 0.5,\r\n          \"T5\": 0.0,\r\n          \"T6\":
-    0.494,\r\n          \"T7\": 0.815,\r\n          \"T8\": 11,\r\n          \"T9\":
-    true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n          \"T12\":
-    false,\r\n          \"T13\": 0.4\r\n        },\r\n        {\r\n          \"T1\":
-    84.1,\r\n          \"T2\": 20.4,\r\n          \"T3\": 0.98,\r\n          \"T4\":
-    0.122,\r\n          \"T5\": -0.4,\r\n          \"T6\": 0.226,\r\n          \"T7\":
-    0.439,\r\n          \"T8\": 11,\r\n          \"T9\": true,\r\n          \"T10\":
-    true,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": -0.19\r\n        },\r\n        {\r\n          \"T1\": 71.7,\r\n         
-    \"T2\": 38.1,\r\n          \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n         
-    \"T5\": -0.4,\r\n          \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n         
-    \"T8\": 9,\r\n          \"T9\": true,\r\n          \"T10\": true,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.33\r\n       
-    },\r\n        {\r\n          \"T1\": 15.7,\r\n          \"T2\": 38.1,\r\n         
+    \"type\": \"bool\",\r\n      \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
+    {\r\n      \"entityId\": \"d5351225-bff2-48f0-b3cc-e5e0a9562c9d\"\r\n    },\r\n   
+    \"rs\": {\r\n      \"key\": \"common.money_item_coast\",\r\n      \"type\": \"int\",\r\n     
+    \"value\": 1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"60c33e47-8064-4d74-9f24-f80b597f60a8\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"key\": \"common.background_texture_triangles2_props_set\",\r\n      \"type\":
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 98.3,\r\n          \"T2\": 55.8,\r\n         
+    \"T3\": 0.5,\r\n          \"T4\": 0.5,\r\n          \"T5\": 0.0,\r\n         
+    \"T6\": 0.494,\r\n          \"T7\": 0.815,\r\n          \"T8\": 11,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.4\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 84.1,\r\n          \"T2\": 20.4,\r\n         
+    \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
+    \"T6\": 0.226,\r\n          \"T7\": 0.439,\r\n          \"T8\": 11,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": -0.19\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 71.7,\r\n          \"T2\": 38.1,\r\n         
+    \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
+    \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.33\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 15.7,\r\n          \"T2\": 38.1,\r\n         
     \"T3\": 0.98,\r\n          \"T4\": 0.122,\r\n          \"T5\": -0.4,\r\n         
     \"T6\": 0.226,\r\n          \"T7\": 0.356,\r\n          \"T8\": 9,\r\n         
     \"T9\": false,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.33\r\n        },\r\n        {\r\n         
-    \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n          \"T3\": 0.09,\r\n         
-    \"T4\": 0.274,\r\n          \"T5\": 0.1,\r\n          \"T6\": 0.542,\r\n         
-    \"T7\": 0.345,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
-    \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\": false,\r\n         
-    \"T13\": 0.59\r\n        },\r\n        {\r\n          \"T1\": 3.33,\r\n         
-    \"T2\": 1.606,\r\n          \"T3\": 0.7,\r\n          \"T4\": 0.1,\r\n         
-    \"T5\": 0.0,\r\n          \"T6\": 0.0,\r\n          \"T7\": 0.0,\r\n         
-    \"T8\": 0,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.0\r\n       
-    },\r\n        {\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
+    \"U\": true,\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
+    \"T3\": 0.09,\r\n          \"T4\": 0.274,\r\n          \"T5\": 0.1,\r\n         
+    \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
+    \"T12\": true,\r\n          \"T13\": 0.59\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 12.2,\r\n          \"T2\": 11.6,\r\n         
+    \"T3\": -0.58,\r\n          \"T4\": 0.446,\r\n          \"T5\": -5.2,\r\n         
+    \"T6\": 0.702,\r\n          \"T7\": 0.167,\r\n          \"T8\": 0,\r\n         
+    \"T9\": true,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.34\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 51.1,\r\n          \"T2\": 1.0,\r\n         
     \"T3\": -1.15,\r\n          \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n         
     \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
     \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.86\r\n        },\r\n        {\r\n         
-    \"T1\": 100.0,\r\n          \"T2\": 40.4,\r\n          \"T3\": 2.0,\r\n         
-    \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n          \"T6\": 0.542,\r\n         
-    \"T7\": 0.345,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
-    \"T10\": true,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": 1.0\r\n        },\r\n        {\r\n          \"T1\": 94.1,\r\n         
-    \"T2\": 12.7,\r\n          \"T3\": -0.2,\r\n          \"T4\": 0.5,\r\n         
-    \"T5\": 3.2,\r\n          \"T6\": 1.0,\r\n          \"T7\": 0.852,\r\n         
-    \"T8\": 10,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.75\r\n       
-    },\r\n        {\r\n          \"T1\": 17.5,\r\n          \"T2\": 22.7,\r\n         
+    \"U\": true,\r\n          \"T1\": 100.0,\r\n          \"T2\": 40.4,\r\n         
+    \"T3\": 2.0,\r\n          \"T4\": 0.244,\r\n          \"T5\": 0.1,\r\n         
+    \"T6\": 0.542,\r\n          \"T7\": 0.345,\r\n          \"T8\": 9,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 1.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 94.1,\r\n          \"T2\": 12.7,\r\n         
+    \"T3\": -0.2,\r\n          \"T4\": 0.5,\r\n          \"T5\": 3.2,\r\n         
+    \"T6\": 1.0,\r\n          \"T7\": 0.852,\r\n          \"T8\": 10,\r\n         
+    \"T9\": false,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.75\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 17.5,\r\n          \"T2\": 22.7,\r\n         
     \"T3\": -2.0,\r\n          \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n         
     \"T6\": 0.517,\r\n          \"T7\": 0.422,\r\n          \"T8\": 7,\r\n         
     \"T9\": true,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
     \"T12\": false,\r\n          \"T13\": 0.92\r\n        },\r\n        {\r\n         
-    \"T1\": 62.8,\r\n          \"T2\": 100.0,\r\n          \"T3\": -2.0,\r\n         
-    \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n          \"T6\": 0.517,\r\n         
-    \"T7\": 0.494,\r\n          \"T8\": 20,\r\n          \"T9\": false,\r\n         
-    \"T10\": false,\r\n          \"T11\": false,\r\n          \"T12\": false,\r\n         
-    \"T13\": 0.0\r\n        },\r\n        {\r\n          \"T1\": 100.0,\r\n         
-    \"T2\": 100.0,\r\n          \"T3\": -1.069,\r\n          \"T4\": 0.069,\r\n         
-    \"T5\": 8.4,\r\n          \"T6\": 1.0,\r\n          \"T7\": 0.631,\r\n         
-    \"T8\": 20,\r\n          \"T9\": false,\r\n          \"T10\": false,\r\n         
-    \"T11\": false,\r\n          \"T12\": false,\r\n          \"T13\": 0.0\r\n       
-    },\r\n        {\r\n          \"T1\": 31.0,\r\n          \"T2\": 6.8,\r\n         
+    \"U\": true,\r\n          \"T1\": 62.8,\r\n          \"T2\": 100.0,\r\n         
+    \"T3\": -2.0,\r\n          \"T4\": 0.021,\r\n          \"T5\": 0.6,\r\n         
+    \"T6\": 0.517,\r\n          \"T7\": 0.494,\r\n          \"T8\": 20,\r\n         
+    \"T9\": true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n         
+    \"T12\": true,\r\n          \"T13\": 0.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 100.0,\r\n          \"T2\": 100.0,\r\n         
+    \"T3\": -1.069,\r\n          \"T4\": 0.069,\r\n          \"T5\": 8.4,\r\n         
+    \"T6\": 1.0,\r\n          \"T7\": 0.631,\r\n          \"T8\": 20,\r\n         
+    \"T9\": false,\r\n          \"T10\": false,\r\n          \"T11\": false,\r\n         
+    \"T12\": false,\r\n          \"T13\": 0.0\r\n        },\r\n        {\r\n         
+    \"U\": true,\r\n          \"T1\": 31.0,\r\n          \"T2\": 6.8,\r\n         
     \"T3\": -0.16,\r\n          \"T4\": 0.042,\r\n          \"T5\": 0.9,\r\n         
     \"T6\": 1.0,\r\n          \"T7\": 0.5,\r\n          \"T8\": 4,\r\n          \"T9\":
     true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
-    true,\r\n          \"T13\": 0.301\r\n        }\r\n      ]\r\n    }\r\n  }\r\n]"
+    true,\r\n          \"T13\": 0.301\r\n        },\r\n        {\r\n          \"U\":
+    true,\r\n          \"T1\": 18.8,\r\n          \"T2\": 8.7,\r\n          \"T3\":
+    -0.53,\r\n          \"T4\": 0.093,\r\n          \"T5\": -10.0,\r\n          \"T6\":
+    0.546,\r\n          \"T7\": 0.99,\r\n          \"T8\": 0,\r\n          \"T9\":
+    true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
+    true,\r\n          \"T13\": -1.0\r\n        },\r\n        {\r\n          \"U\":
+    true,\r\n          \"T1\": 14.3,\r\n          \"T2\": 8.7,\r\n          \"T3\":
+    -0.9,\r\n          \"T4\": 0.404,\r\n          \"T5\": -2.36,\r\n          \"T6\":
+    0.279,\r\n          \"T7\": 0.745,\r\n          \"T8\": 4,\r\n          \"T9\":
+    true,\r\n          \"T10\": true,\r\n          \"T11\": true,\r\n          \"T12\":
+    true,\r\n          \"T13\": 0.741\r\n        }\r\n      ]\r\n    }\r\n  },\r\n 
+    {\r\n    \"metadata\": {\r\n      \"entityId\": \"7d678d5a-1758-4eac-80d6-68a61b403026\"\r\n   
+    },\r\n    \"rs\": {\r\n      \"key\": \"ads.providers_info\",\r\n      \"type\":
+    \"string\",\r\n      \"value\": \"appodeal:100\"\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
-    \"name\": \"production\",\r\n    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n   
-    \"isDefault\": true,\r\n    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\":
-    \"2021-08-16T21:54:30Z\"\r\n  }\r\n]"
+    \"name\": \"development\",\r\n    \"id\": \"9b09469f-7e65-47c3-8c6f-0114f498ff8e\",\r\n   
+    \"isDefault\": false,\r\n    \"createdAt\": \"2022-05-16T06:48:48Z\",\r\n   
+    \"updatedAt\": \"2022-05-16T06:48:48Z\"\r\n  },\r\n  {\r\n    \"projectId\":
+    \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n    \"name\": \"production\",\r\n   
+    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n    \"isDefault\": true,\r\n   
+    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\": \"2021-08-16T21:54:30Z\"\r\n 
+    }\r\n]"

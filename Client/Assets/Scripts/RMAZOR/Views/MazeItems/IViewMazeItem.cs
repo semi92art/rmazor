@@ -11,7 +11,7 @@ namespace RMAZOR.Views.MazeItems
     public interface IViewMazeItem : ICloneable, ISpawnPoolItem, IOnLevelStageChanged, IAppear
     {
         GameObject        Object          { get; }
-        Component[]       Shapes          { get; }
+        Component[]       Renderers          { get; }
         EProceedingStage  ProceedingStage { get; set; }
         ViewMazeItemProps Props           { get; set; }
         void              Init(ViewMazeItemProps     _Props);

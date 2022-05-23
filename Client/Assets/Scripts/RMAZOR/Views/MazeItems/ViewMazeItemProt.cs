@@ -217,7 +217,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region unused api
         
-        public Component[]      Shapes               => null;
+        public Component[]      Renderers               => null;
         public EAppearingState  AppearingState       { get; set; }
         public EProceedingStage ProceedingStage      { get; set; }
         public bool             ActivatedInSpawnPool { get; set; }

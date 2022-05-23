@@ -140,7 +140,7 @@ namespace RMAZOR.Views.UI
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             else if (MustShowAdvertising())
             {
-                if (CommonGameSettings.showRewardedInsteadOfInterstitialOnUnpause)
+                if (CommonGameSettings.showRewardedOnUnpause)
                     Managers.AdsManager.ShowRewardedAd(null, null);
                 else
                     Managers.AdsManager.ShowInterstitialAd(null, null);
