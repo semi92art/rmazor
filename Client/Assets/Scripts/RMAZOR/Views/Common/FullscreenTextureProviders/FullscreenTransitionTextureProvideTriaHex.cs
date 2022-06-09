@@ -9,8 +9,12 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
+    public interface IFullscreenTransitionTextureProviderTriaHex 
+        : IFullscreenTransitionTextureProvider { }
+    
     public class FullscreenTransitionTextureProvideTriaHex
-        : FullscreenTransitionTextureProviderBase
+        : FullscreenTransitionTextureProviderBase, 
+          IFullscreenTransitionTextureProviderTriaHex
     {
         #region nonpublic members
 

@@ -9,6 +9,11 @@ namespace Common.Helpers
         
         public virtual void Init()
         {
+            RaiseInitialization();
+        }
+
+        protected void RaiseInitialization()
+        {
             Initialize?.Invoke();
             Initialized = true;
         }

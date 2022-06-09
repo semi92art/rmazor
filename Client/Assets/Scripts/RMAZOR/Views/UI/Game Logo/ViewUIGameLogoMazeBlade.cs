@@ -53,9 +53,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         };
 
         private GameObject                   m_GameLogoObj;
-        private bool                         m_LogoShowingAnimationPassed;
         private bool                         m_GameLogoAppeared;
-        private bool                         m_GameLogoDisappeared;
         private Dictionary<string, Animator> m_GameLogoCharAnims;
         private float                        m_TopOffset;
         private bool                         m_OnStart = true;
@@ -110,7 +108,6 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             if (m_GameLogoAppeared)
                 return;
-            m_GameLogoDisappeared = false;
             Cor.Run(ShowGameLogoCoroutine());
         }
 
@@ -138,7 +135,6 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void InitGameLogo()
         {
-            // string prefabName = "start_logo_maze_blade" + (IsLowAspect() ? string.Empty : "_2");
             const string prefabName = "start_logo_maze_blade_2";
             var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
@@ -151,14 +147,7 @@ namespace RMAZOR.Views.UI.Game_Logo
                     _C => go.GetCompItem<Animator>(_C));
             LogoTextureProvider.Init();
             var trigerrer = go.GetCompItem<AnimationTriggerer>("trigerrer");
-            trigerrer.Trigger1 += () =>
-            {
-                m_LogoShowingAnimationPassed = true;
-                Cor.Run(Cor.Delay(0.5f, () =>
-                {
-                    Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine());
-                }));
-            };
+            trigerrer.Trigger1 += () => Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine(1.0f));
             var rotator = go.GetCompItem<SimpleRotator>("rotator");
             rotator.Init(GameTicker, -2f);
             m_GameLogoObj = go;
@@ -248,8 +237,9 @@ namespace RMAZOR.Views.UI.Game_Logo
             yield return Cor.Delay(ShowTime, () => m_GameLogoAppeared = true);
         }
 
-        private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine()
+        private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine(float _Delay)
         {
+            yield return Cor.Delay(_Delay);
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
             Cor.Run(Cor.Lerp(
@@ -264,16 +254,10 @@ namespace RMAZOR.Views.UI.Game_Logo
             yield return Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
-                _OnProgress: _P =>
-                {
-                    // if (_P > 0.8f)
-                    //     WasShown = true;
-                    LogoTextureProvider.SetTransitionValue(_P);
-                }, 
+                _OnProgress: _P => LogoTextureProvider.SetTransitionValue(_P), 
                 _OnFinish: () =>
                 {
                     LockGameplayAndUiCommands(false);
-                    m_GameLogoDisappeared = true;
                     LogoTextureProvider.Activate(false);
                     Shown?.Invoke();
                     WasShown = true;
@@ -317,11 +301,6 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             m_GameLogoObj.transform.SetLocalPosXY(_Position);
             m_GameLogoObj.transform.localScale = Vector3.one * _Scale;
-        }
-
-        private static bool IsLowAspect()
-        {
-            return GraphicUtils.AspectRatio < 0.6f;
         }
 
         #endregion

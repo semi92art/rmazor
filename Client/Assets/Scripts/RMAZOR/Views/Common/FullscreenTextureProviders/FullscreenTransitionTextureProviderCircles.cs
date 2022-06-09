@@ -7,8 +7,11 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
+    public interface IFullscreenTransitionTextureProviderCircles
+        : IFullscreenTransitionTextureProvider { }
+    
     public class FullscreenTransitionTextureProviderCircles 
-        : FullscreenTransitionTextureProviderSimpleBase
+        : FullscreenTransitionTextureProviderSimpleBase, IFullscreenTransitionTextureProviderCircles
     {
         #region nonpublic members
 
