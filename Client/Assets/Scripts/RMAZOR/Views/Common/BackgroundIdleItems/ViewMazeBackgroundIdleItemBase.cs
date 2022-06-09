@@ -35,6 +35,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         }
         
         protected readonly List<ShapeRenderer> Shapes = new List<ShapeRenderer>();
+        protected          Collider2D          Coll;
         protected          Rigidbody2D         Rigidbody { get; set; }
 
         #endregion
@@ -59,20 +60,23 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         public bool ActivatedInSpawnPool
         {
             get => Shapes.First().enabled;
-            set => Shapes.ForEach(_S => _S.enabled = value);
+            set
+            {
+                Coll.enabled = value;
+                Shapes.ForEach(_S => _S.enabled = value);
+            }
         }
-        
+
         public Vector2 Position
         {
             get => Obj.transform.position;
             set => Obj.transform.SetPosXY(value);
         }
 
-        public abstract          object    Clone();
-
-        public          abstract void      SetParams(float _Scale,  float             _Thickness);
-        public abstract          void      Init(Transform  _Parent, PhysicsMaterial2D _Material);
-        public abstract          void      SetColor(Color  _Color);
+        public abstract          object Clone();
+        public          abstract void   SetParams(float _Scale,  float             _Thickness);
+        public abstract          void   Init(Transform  _Parent, PhysicsMaterial2D _Material);
+        public abstract          void   SetColor(Color  _Color);
 
         public void SetVelocity(Vector2 _Velocity, float _AngularVelocity)
         {
@@ -82,7 +86,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded)
+            if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
             Obj.transform.SetLocalScaleXY(CoordinateConverter.Scale * Vector2.one);
         }

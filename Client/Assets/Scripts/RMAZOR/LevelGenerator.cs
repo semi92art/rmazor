@@ -50,8 +50,8 @@ namespace RMAZOR
                 }).ToList(),
                 AdditionalInfo = new AdditionalInfo
                 {
-                    Comment1 = "[Empty]",
-                    Comment2 = "[Empty]"
+                    Arguments = "[Empty]",
+                    Comment = "[Empty]"
                 }
             };
         }

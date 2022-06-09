@@ -22,8 +22,8 @@ namespace Editor
 
         private IColorProvider                        m_ColorProvider;
         private MainColorsSetScriptableObject         m_MainColorsPropsSetScrObj;
-        private BackAndFrontColorsSetScriptableObject m_BackAndFrontColorsPropsSetScrObj;
-        private BackAndFrontColorsPropsSet            m_BackAndFrontColorsPropsSet;
+        private AdditionalColorsSetScriptableObject m_AdditionalColorsPropsSetScrObj;
+        private AdditionalColorsPropsSet            m_AdditionalColorsPropsSet;
         private MainColorsPropsSet                    m_MainColorsPropsSet;
         private Color?                                m_UiColor;
         private Color                                 m_UiColorCheck;
@@ -64,11 +64,11 @@ namespace Editor
             LoadColorsProvider(false);
             DisplayColorSetObjectFields();
             EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
-            EditorUtilsEx.GuiButtonAction(CopyBackAndFrontColorsToClipboard);
+            EditorUtilsEx.GuiButtonAction(CopyAdditionalColorsToClipboard);
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousBackAndFrontColorSet);
-                EditorUtilsEx.GuiButtonAction("Next color set", SetNextBackAndFrontColorSet);
+                EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousAdditionalColorSet);
+                EditorUtilsEx.GuiButtonAction("Next color set", SetNextAdditionalColorSet);
             });
             DisplayColors();
             EditorUtilsEx.HorizontalLine(Color.gray);
@@ -92,9 +92,9 @@ namespace Editor
             m_MainColorsPropsSetScrObj = manager.GetObject<MainColorsSetScriptableObject>(
                 "views", "color_set_light");
             m_MainColorsPropsSet = m_MainColorsPropsSetScrObj.set;
-            m_BackAndFrontColorsPropsSetScrObj = manager.GetObject<BackAndFrontColorsSetScriptableObject>(
-                "configs", "back_and_front_colors_set_light");
-            m_BackAndFrontColorsPropsSet = m_BackAndFrontColorsPropsSetScrObj.set;
+            m_AdditionalColorsPropsSetScrObj = manager.GetObject<AdditionalColorsSetScriptableObject>(
+                "configs", "additional_colors_set");
+            m_AdditionalColorsPropsSet = m_AdditionalColorsPropsSetScrObj.set;
         }
 
         private void DisplayColorSetObjectFields()
@@ -104,11 +104,11 @@ namespace Editor
                 m_MainColorsPropsSetScrObj, 
                 typeof(MainColorsSetScriptableObject), 
                 false) as MainColorsSetScriptableObject;
-            m_BackAndFrontColorsPropsSetScrObj = EditorGUILayout.ObjectField(
+            m_AdditionalColorsPropsSetScrObj = EditorGUILayout.ObjectField(
                 "back and front set",
-                m_BackAndFrontColorsPropsSetScrObj,
-                typeof(BackAndFrontColorsSetScriptableObject),
-                false) as BackAndFrontColorsSetScriptableObject;
+                m_AdditionalColorsPropsSetScrObj,
+                typeof(AdditionalColorsSetScriptableObject),
+                false) as AdditionalColorsSetScriptableObject;
         }
 
         private void SetUiColors(Color _Color)
@@ -144,19 +144,19 @@ namespace Editor
             }
         }
 
-        private void SetNextBackAndFrontColorSet()
+        private void SetNextAdditionalColorSet()
         {
-            SetNextOrPreviousBackAndFrontColorSet(false);
-            SetBackAndFrontColorSetColors();
+            SetNextOrPreviousAdditionalColorSet(false);
+            SetAdditionalColorSetColors();
         }
         
-        private void SetPreviousBackAndFrontColorSet()
+        private void SetPreviousAdditionalColorSet()
         {
-            SetNextOrPreviousBackAndFrontColorSet(true);
-            SetBackAndFrontColorSetColors();
+            SetNextOrPreviousAdditionalColorSet(true);
+            SetAdditionalColorSetColors();
         }
 
-        private void SetBackAndFrontColorSetColors()
+        private void SetAdditionalColorSetColors()
         {
             if (!Application.isPlaying)
             {
@@ -168,7 +168,7 @@ namespace Editor
                 Dbg.LogError("Color provider is null");
                 return;
             }
-            var setItem = m_BackAndFrontColorsPropsSet[m_CurrSetIdx];
+            var setItem = m_AdditionalColorsPropsSet[m_CurrSetIdx];
             m_ColorProvider.SetColor(ColorIds.Main, setItem.main);
             m_ColorProvider.SetColor(ColorIds.Background1, setItem.bacground1);
             m_ColorProvider.SetColor(ColorIds.Background2, setItem.bacground2);
@@ -179,11 +179,17 @@ namespace Editor
             Dbg.Log("Color set index: " + m_CurrSetIdx);
         }
 
-        private void SetNextOrPreviousBackAndFrontColorSet(bool _Previous)
+        private void SetNextOrPreviousAdditionalColorSet(bool _Previous)
         {
             int addict = _Previous ? -1 : 1;
-            m_CurrSetIdx = MathUtils.ClampInverse(
-                m_CurrSetIdx + addict, 0, m_BackAndFrontColorsPropsSet.Count - 1);
+            void AddAddict()
+            {
+                m_CurrSetIdx = MathUtils.ClampInverse(
+                    m_CurrSetIdx + addict, 0, m_AdditionalColorsPropsSet.Count - 1);
+            }
+            AddAddict();
+            while (!m_AdditionalColorsPropsSet[m_CurrSetIdx].inUse)
+                AddAddict();
         }
 
         private void DisplayColors()
@@ -239,11 +245,11 @@ namespace Editor
             CommonUtils.CopyToClipboard(json);
         }
 
-        private void CopyBackAndFrontColorsToClipboard()
+        private void CopyAdditionalColorsToClipboard()
         {
             var converter = new ColorJsonConverter();
             string json = JsonConvert.SerializeObject(
-                m_BackAndFrontColorsPropsSet,
+                m_AdditionalColorsPropsSet,
                 converter);
             CommonUtils.CopyToClipboard(json);
         }

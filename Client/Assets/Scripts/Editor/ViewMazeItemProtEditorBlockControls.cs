@@ -81,7 +81,8 @@ namespace Editor
                 {EMazeItemType.Turret,           '\u260F'},
                 {EMazeItemType.GravityTrap,      '\u2622'},
                 {EMazeItemType.Hammer,           '\u2692'},
-                {EMazeItemType.Bazooka,          '\u22c8'}
+                {EMazeItemType.Spear,            '\u22c8'},
+                {EMazeItemType.Diode,            '\u22c9'}
             };
 
             var keys = itemSymbolsDict.Keys.ToList();
@@ -98,14 +99,14 @@ namespace Editor
             switch (_Items[0].Props.Type)
             {
                 case EMazeItemType.TrapMoving:   DrawControlsMovingTraps(_Items);   break;
-                
                 case EMazeItemType.GravityBlock: DrawControlsGravityBlocks(_Items); break;
-                case EMazeItemType.Turret:       DrawControlsTurrets(_Items);       break;
+                case EMazeItemType.Portal:       DrawControlsPortals(_Items);       break;
                 case EMazeItemType.TrapReact:    DrawControlsTrapsReact(_Items);    break;
+                case EMazeItemType.Turret:       DrawControlsTurrets(_Items);       break;
+                case EMazeItemType.Diode:        DrawControlsDiode(_Items);         break;
                 case EMazeItemType.Springboard:  DrawControlsSpringboards(_Items);  break;
                 case EMazeItemType.Hammer:       DrawControlsHammers(_Items);       break;
-                case EMazeItemType.Portal:       DrawControlsPortals(_Items);       break;
-                case EMazeItemType.Bazooka:
+                case EMazeItemType.Spear:
                 case EMazeItemType.Block:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.TrapIncreasing:
@@ -143,6 +144,12 @@ namespace Editor
         }
         
         private static void DrawControlsTurrets(IEnumerable<ViewMazeItemProt> _Items)
+        {
+            var propsArray = _Items.Select(_Item => _Item.Props).ToArray();
+            DrawControlsDirectedBlock(propsArray);
+        }
+        
+        private static void DrawControlsDiode(IEnumerable<ViewMazeItemProt> _Items)
         {
             var propsArray = _Items.Select(_Item => _Item.Props).ToArray();
             DrawControlsDirectedBlock(propsArray);
@@ -187,7 +194,7 @@ namespace Editor
         {
             GUILayout.Label("Direction:", GetHeader1Style());
             var propsFirst = _PropsList.First();
-            if (propsFirst.Type == EMazeItemType.Turret)
+            if (propsFirst.Type == EMazeItemType.Turret || propsFirst.Type == EMazeItemType.Diode)
                 DrawControlsDirectedBlockSingle(_PropsList);
             else DrawControlsDirectedBlockMultiple(_PropsList);
         }

@@ -88,7 +88,7 @@ namespace RMAZOR.Views.MazeItems
         {
             base.OnLevelStageChanged(_Args);
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:

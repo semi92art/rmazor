@@ -9,6 +9,7 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
+using Common.Managers.Achievements;
 using Common.Managers.Advertising;
 using Common.Managers.IAP;
 using Common.Managers.Scores;
@@ -42,7 +43,7 @@ namespace RMAZOR
         private IAssetBundleManager   AssetBundleManager   { get; set; }
 
         [Inject] 
-        public void Inject(
+        private void Inject(
             CommonGameSettings    _Settings,
             IGameClient           _GameClient,
             IAdsManager           _AdsManager,
@@ -69,8 +70,7 @@ namespace RMAZOR
             RemoteConfigManager  = _RemoteConfigManager;
             PermissionsRequester = _PermissionsRequester;
         }
-
-
+        
         #endregion
     
         #region engine methods
@@ -79,7 +79,7 @@ namespace RMAZOR
         {
             CommonData.GameId = 1;
             LogAppInfo();
-            yield return Cor.Delay(0.5f, null); // для более плавной загрузки логотипа компании
+            yield return Cor.Delay(0.5f); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
                 yield return new WaitForEndOfFrame();
@@ -113,28 +113,33 @@ namespace RMAZOR
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
             var @params = new LoadSceneParameters(LoadSceneMode.Single);
-            var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+            var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
                 yield return null;
-        }
-    
-        private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-            if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
-                return;
-            Cor.Run(Cor.WaitWhile(
-                () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
-                () =>
-                {
-                    LevelsLoader.Init();
-                    InitGameController();
-                }));
         }
 
         #endregion
     
         #region nonpublic methods
+        
+        private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
+                return;
+            Cor.Run(InitGameControllerCoroutine());
+        }
+
+        private IEnumerator InitGameControllerCoroutine()
+        {
+            yield return Cor.WaitWhile(
+                () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
+                () =>
+                {
+                    LevelsLoader.Initialize += InitGameController;
+                    LevelsLoader.Init();
+                });
+        }
     
         private void InitGameManagers()
         {
@@ -146,7 +151,8 @@ namespace RMAZOR
             AssetBundleManager .Init();
             ShopManager.RegisterProductInfos(GetProductInfos());
             ShopManager        .Init();
-            ScoreManager.RegisterLeaderboards(GetLeaderBoardIdKeyPairs());
+            ScoreManager.RegisterLeaderboardsMap(GetLeaderboardsMap());
+            ScoreManager.RegisterAchievementsMap(GetAchievementsMap());
             ScoreManager       .Initialize += OnScoreManagerInitialize;
             ScoreManager       .Init();
             GameClient         .Init();
@@ -284,17 +290,35 @@ namespace RMAZOR
                 new ProductInfo(PurchaseKeys.Money2,    $"medium_pack_of_coins{suffix}",          ptCons),
                 new ProductInfo(PurchaseKeys.Money3,    $"big_pack_of_coins{suffix}",             ptCons),
                 new ProductInfo(PurchaseKeys.NoAds,     $"disable_mandatory_advertising{suffix}", ptNonCons),
-                // new ProductInfo(PurchaseKeys.DarkTheme, $"dark_theme{suffix}",                    ptNonCons)
             };
         }
 
-        private static List<LeaderBoardIdKeyPair> GetLeaderBoardIdKeyPairs()
+        private static Dictionary<ushort, string> GetLeaderboardsMap()
         {
-            string levelLbKey = CommonUtils.Platform == RuntimePlatform.Android ?
-                "CgkI1IvonNkDEAIQBg" : "level";
-            return new List<LeaderBoardIdKeyPair>
+            bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
+            return new Dictionary<ushort, string>
             {
-                new LeaderBoardIdKeyPair(DataFieldIds.Level, levelLbKey)
+                { DataFieldIds.Level, ios ? "level" : "CgkI1IvonNkDEAIQBg"}
+            };
+        }
+
+        private static Dictionary<ushort, string> GetAchievementsMap()
+        {
+            bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
+            return new Dictionary<ushort, string>
+            {
+                {AchievementKeys.Level10Finished, ios ? "level_0010_finished" : "CgkI1IvonNkDEAIQBQ"},
+                {AchievementKeys.Level50Finished, ios ? "level_0050_finished" : "CgkI1IvonNkDEAIQCA"},
+                {AchievementKeys.Level100Finished, ios ? "level_0100_finished" : "CgkI1IvonNkDEAIQBw"},
+                {AchievementKeys.Level200Finished, ios ? "level_0200_finished" : "CgkI1IvonNkDEAIQCQ"},
+                {AchievementKeys.Level300Finished, ios ? "level_0300_finished" : "CgkI1IvonNkDEAIQCg"},
+                {AchievementKeys.Level400Finished, ios ? "level_0400_finished" : "CgkI1IvonNkDEAIQCw"},
+                {AchievementKeys.Level500Finished, ios ? "level_0500_finished" : "CgkI1IvonNkDEAIQDA"},
+                {AchievementKeys.Level600Finished, ios ? "level_0600_finished" : "CgkI1IvonNkDEAIQDQ"},
+                {AchievementKeys.Level700Finished, ios ? "level_0700_finished" : "CgkI1IvonNkDEAIQDg"},
+                {AchievementKeys.Level800Finished, ios ? "level_0800_finished" : "CgkI1IvonNkDEAIQDw"},
+                {AchievementKeys.Level900Finished, ios ? "level_0900_finished" : "CgkI1IvonNkDEAIQEA"},
+                {AchievementKeys.Level1000Finished, ios ? "level_1000_finished" : "CgkI1IvonNkDEAIQEQ"},
             };
         }
 

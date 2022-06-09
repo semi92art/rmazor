@@ -41,16 +41,21 @@ namespace RMAZOR.UI.Panels.ShopPanels
         private IShopHeadsDialogPanel ShopHeadsPanel { get; }
         private IShopTailsDialogPanel ShopTailsPanel { get; }
 
-        public ShopPanel(
-            IManagersGetter _Managers,
-            IUITicker _UITicker,
-            IBigDialogViewer _DialogViewer,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider,
+        private ShopPanel(
+            IManagersGetter       _Managers,
+            IUITicker             _UITicker,
+            IBigDialogViewer      _DialogViewer,
+            ICameraProvider       _CameraProvider,
+            IColorProvider        _ColorProvider,
             IShopMoneyDialogPanel _ShopMoneyPanel,
             IShopHeadsDialogPanel _ShopHeadsPanel,
             IShopTailsDialogPanel _ShopTailsPanel)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base(
+                _Managers, 
+                _UITicker,
+                _DialogViewer,
+                _CameraProvider,
+                _ColorProvider)
         {
             ShopMoneyPanel = _ShopMoneyPanel;
             ShopHeadsPanel = _ShopHeadsPanel;

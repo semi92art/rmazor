@@ -28,7 +28,7 @@ namespace RMAZOR.Views.Rotation
         private IViewCharacter              Character           { get; }
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
 
-        public ViewMazeRotation(
+        private ViewMazeRotation(
             ViewSettings                _ViewSettings,
             IContainersGetter           _ContainersGetter, 
             IViewGameTicker             _GameTicker,

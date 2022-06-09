@@ -43,11 +43,12 @@ namespace Common.Managers.Advertising
         private IAdMobInterstitialAd InterstitialAd { get; }
         private IAdMobRewardedAd     RewardedAd     { get; }
 
-        public AdMobAdsProvider(
+        private AdMobAdsProvider(
             IAdMobInterstitialAd _InterstitialAd,
             IAdMobRewardedAd     _RewardedAd,
-            IViewGameTicker      _ViewGameTicker) 
-            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker)
+            IViewGameTicker      _ViewGameTicker,
+            IModelGameTicker     _ModelGameTicker) 
+            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker, _ModelGameTicker)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;

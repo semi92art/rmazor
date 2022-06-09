@@ -38,7 +38,7 @@ namespace RMAZOR.Models.InputSchedulers
         private IModelCharacter Character { get; }
         private IModelMazeRotation MazeRotation { get; }
         
-        public InputSchedulerGameProceeder(
+        private InputSchedulerGameProceeder(
             IModelGameTicker _GameTicker,
             IModelCharacter _Character,
             IModelMazeRotation _MazeRotation)
@@ -159,7 +159,7 @@ namespace RMAZOR.Models.InputSchedulers
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.StartedOrContinued)
+            if (_Args.LevelStage == ELevelStage.StartedOrContinued)
                 return;
             for (int i = 0; i < MaxCommandsCount; i++)
             {

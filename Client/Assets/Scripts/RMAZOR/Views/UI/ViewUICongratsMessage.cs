@@ -48,20 +48,20 @@ namespace RMAZOR.Views.UI
         private IManagersGetter   Managers         { get; }
         private IColorProvider    ColorProvider    { get; }
 
-        public ViewUICongratsMessage(
-            ViewSettings _ViewSettings,
-            IModelGame _Model,
-            ICameraProvider _CameraProvider,
+        private ViewUICongratsMessage(
+            ViewSettings      _ViewSettings,
+            IModelGame        _Model,
+            ICameraProvider   _CameraProvider,
             IContainersGetter _ContainersGetter,
-            IManagersGetter _Managers,
-            IColorProvider _ColorProvider)
+            IManagersGetter   _Managers,
+            IColorProvider    _ColorProvider)
         {
-            ViewSettings = _ViewSettings;
-            Model = _Model;
-            CameraProvider = _CameraProvider;
+            ViewSettings     = _ViewSettings;
+            Model            = _Model;
+            CameraProvider   = _CameraProvider;
             ContainersGetter = _ContainersGetter;
-            Managers = _Managers;
-            ColorProvider = _ColorProvider;
+            Managers         = _Managers;
+            ColorProvider    = _ColorProvider;
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace RMAZOR.Views.UI
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     ConsiderCongratsPanelWhileAppearing(false);

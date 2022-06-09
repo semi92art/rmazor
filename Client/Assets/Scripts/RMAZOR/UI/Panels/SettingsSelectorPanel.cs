@@ -36,13 +36,18 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        public SettingsSelectorPanel(
+        private SettingsSelectorPanel(
             IBigDialogViewer _DialogViewer,
             IManagersGetter  _Managers,
             IUITicker        _UITicker,
             ICameraProvider  _CameraProvider,
             IColorProvider   _ColorProvider) 
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider) { }
+            : base(
+                _Managers, 
+                _UITicker,
+                _DialogViewer,
+                _CameraProvider,
+                _ColorProvider) { }
         
         #endregion
 

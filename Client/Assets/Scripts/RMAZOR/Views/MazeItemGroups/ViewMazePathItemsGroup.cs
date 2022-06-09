@@ -38,7 +38,7 @@ namespace RMAZOR.Views.MazeItemGroups
         private IModelGame         Model              { get; }
         private IMazeItemsCreator  MazeItemsCreator   { get; }
 
-        public ViewMazePathItemsGroup(
+        private ViewMazePathItemsGroup(
             CommonGameSettings _CommonGameSettings,
             ViewSettings      _ViewSettings,
             IModelGame        _Model,
@@ -73,7 +73,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                 {

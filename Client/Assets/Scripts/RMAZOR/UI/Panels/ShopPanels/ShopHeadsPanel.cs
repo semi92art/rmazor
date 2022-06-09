@@ -20,9 +20,9 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #endregion
         
         #region nonpublic members
-        
-        protected override string ItemSetName => ItemsSet;
-        protected override string PanelPrefabName => "shop_heads_panel";
+
+        protected override string ItemSetName         => ItemsSet;
+        protected override string PanelPrefabName     => "shop_heads_panel";
         protected override string PanelItemPrefabName => "shop_head_item";
 
         protected override RectTransformLite ShopItemRectLite => new RectTransformLite
@@ -37,14 +37,18 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         #region inject
 
-        public ShopHeadsPanel(
-            IManagersGetter _Managers, 
-            IUITicker _Ticker, 
-            IBigDialogViewer _DialogViewer, 
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
-            : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
-        { }
+        private ShopHeadsPanel(
+            IManagersGetter  _Managers,
+            IUITicker        _Ticker,
+            IBigDialogViewer _DialogViewer,
+            ICameraProvider  _CameraProvider,
+            IColorProvider   _ColorProvider)
+            : base(
+                _Managers,
+                _Ticker,
+                _DialogViewer,
+                _CameraProvider,
+                _ColorProvider) { }
         
         #endregion
 

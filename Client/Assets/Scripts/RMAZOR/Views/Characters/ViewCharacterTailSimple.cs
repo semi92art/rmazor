@@ -87,8 +87,8 @@ namespace RMAZOR.Views.Characters
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            m_ShowTail = _Args.Stage == ELevelStage.StartedOrContinued;
-            switch (_Args.Stage)
+            m_ShowTail = _Args.LevelStage == ELevelStage.StartedOrContinued;
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     HideTail();

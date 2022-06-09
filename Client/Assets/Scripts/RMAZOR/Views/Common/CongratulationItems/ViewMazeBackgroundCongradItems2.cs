@@ -35,14 +35,14 @@ namespace RMAZOR.Views.Common.CongratulationItems
         private IPrefabSetManager PrefabSetManager { get; }
         private IAudioManager     AudioManager     { get; }
 
-        public ViewMazeBackgroundCongradItems2(
-            IColorProvider          _ColorProvider,
+        private ViewMazeBackgroundCongradItems2(
+            IColorProvider                _ColorProvider,
             IViewBetweenLevelTransitioner _Transitioner,
-            IContainersGetter       _ContainersGetter,
-            IViewGameTicker         _GameTicker,
-            ICameraProvider         _CameraProvider,
-            IPrefabSetManager       _PrefabSetManager,
-            IAudioManager           _AudioManager)
+            IContainersGetter             _ContainersGetter,
+            IViewGameTicker               _GameTicker,
+            ICameraProvider               _CameraProvider,
+            IPrefabSetManager             _PrefabSetManager,
+            IAudioManager                 _AudioManager)
             : base(
                 _ColorProvider,
                 _Transitioner,
@@ -61,7 +61,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             m_DoAnimateCongrats = false;
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Finished:
                     m_DoAnimateCongrats = true;

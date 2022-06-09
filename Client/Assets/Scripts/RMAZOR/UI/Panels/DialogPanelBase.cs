@@ -19,17 +19,17 @@ namespace RMAZOR.UI.Panels
         protected IColorProvider    ColorProvider    { get; }
 
         protected DialogPanelBase(
-            IManagersGetter _Managers, 
-            IUITicker _Ticker, 
+            IManagersGetter  _Managers,
+            IUITicker        _Ticker,
             IBigDialogViewer _DialogViewer,
-            ICameraProvider _CameraProvider,
-            IColorProvider _ColorProvider)
+            ICameraProvider  _CameraProvider,
+            IColorProvider   _ColorProvider)
         {
-            Managers = _Managers;
-            Ticker = _Ticker;
-            DialogViewer = _DialogViewer;
+            Managers       = _Managers;
+            Ticker         = _Ticker;
+            DialogViewer   = _DialogViewer;
             CameraProvider = _CameraProvider;
-            ColorProvider = _ColorProvider;
+            ColorProvider  = _ColorProvider;
         }
 
         #endregion

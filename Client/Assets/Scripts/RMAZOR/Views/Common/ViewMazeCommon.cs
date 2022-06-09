@@ -82,7 +82,7 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded) 
+            if (_Args.LevelStage != ELevelStage.Loaded) 
                 return;
             DeactivateAllBlocks();
             MazeItemsCreator.InitAndActivateBlockItems(ModelData.Info, m_ItemPools);
@@ -100,7 +100,7 @@ namespace RMAZOR.Views.Common
             var itemTypes = Enum
                 .GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
-                .Except(new[] {EMazeItemType.Block, EMazeItemType.Bazooka})
+                .Except(new[] {EMazeItemType.Block, EMazeItemType.Spear})
                 .ToList();
             foreach (var type in itemTypes)
             {

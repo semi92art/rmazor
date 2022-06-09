@@ -20,7 +20,7 @@ namespace RMAZOR.Views.UI
         private ICameraProvider               CameraProvider { get; }
         private IViewUITutorial               Tutorial       { get; }
 
-        public ViewUIRotationControlsDisplayRotationIndicator(
+        private ViewUIRotationControlsDisplayRotationIndicator(
             IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             IRotatingPossibilityIndicator _Indicator,
@@ -51,13 +51,13 @@ namespace RMAZOR.Views.UI
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             Indicator.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when
                     _Args.PreviousStage != ELevelStage.Paused
                     && RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
                 {
-                    var tutType = Tutorial.IsCurrentLevelTutorial();
+                    var tutType = Tutorial.IsCurrentLevelTutorial(out _);
                     if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
                         return;
                     Indicator.Animator.enabled = true;
@@ -70,7 +70,7 @@ namespace RMAZOR.Views.UI
                     _Args.PreviousStage != ELevelStage.CharacterKilled
                     && RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
                 {
-                    var tutType = Tutorial.IsCurrentLevelTutorial();
+                    var tutType = Tutorial.IsCurrentLevelTutorial(out _);
                     if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
                         return;
                     Indicator.Animator.SetTrigger(AnimKeys.Stop);

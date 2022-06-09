@@ -33,10 +33,10 @@ namespace RMAZOR.Models.ItemProceeders
     {
         #region inject
         
-        public TrapsReactProceeder(
-            ModelSettings _Settings,
-            IModelData _Data,
-            IModelCharacter _Character,
+        private TrapsReactProceeder(
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _GameTicker) { }
 

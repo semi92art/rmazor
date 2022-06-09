@@ -69,7 +69,7 @@ namespace RMAZOR.Views
         private IBigDialogViewer              BigDialogViewer          { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
 
-        public ViewGame(
+        private ViewGame(
             ViewSettings                  _Settings,
             IContainersGetter             _ContainersGetter,
             IViewUI                       _UI,

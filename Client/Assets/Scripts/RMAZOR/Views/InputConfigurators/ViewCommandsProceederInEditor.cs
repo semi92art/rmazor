@@ -19,7 +19,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         private IUITicker Ticker { get; }
 
-        public ViewCommandsProceederInEditor(IUITicker _UITicker)
+        private ViewCommandsProceederInEditor(IUITicker _UITicker)
         {
             Ticker = _UITicker;
         }

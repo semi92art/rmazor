@@ -27,7 +27,7 @@ namespace RMAZOR.Managers
         private IAdsManager                 AdsManager        { get; }
         private IScoreManager               ScoreManager      { get; }
 
-        public DebugManager(
+        private DebugManager(
             CommonGameSettings          _Settings,
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,

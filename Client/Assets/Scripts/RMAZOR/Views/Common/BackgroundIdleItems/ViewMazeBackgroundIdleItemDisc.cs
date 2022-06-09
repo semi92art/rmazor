@@ -8,15 +8,27 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
     public interface IViewMazeBackgroundIdleItemDisc : IViewMazeBackgroundIdleItem { }
     
-    public class ViewMazeBackgroundIdleItemDisc : ViewMazeBackgroundIdleItemBase, IViewMazeBackgroundIdleItemDisc
+    public class ViewMazeBackgroundIdleItemDisc :
+        ViewMazeBackgroundIdleItemBase, 
+        IViewMazeBackgroundIdleItemDisc
     {
-        private Disc             m_Disc;
-        private Disc             m_Border;
+        #region nonpublic members
+        
+        private Disc m_Disc;
+        private Disc m_Border;
 
-        public ViewMazeBackgroundIdleItemDisc(
+        #endregion
+
+        #region inject
+        
+        private ViewMazeBackgroundIdleItemDisc(
             IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter) 
             : base(_PrefabSetManager, _CoordinateConverter) { }
+
+        #endregion
+
+        #region api
         
         public override object Clone()
         {
@@ -40,8 +52,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             rb.angularDrag = 0f;
             rb.sharedMaterial = _Material;
             Rigidbody = rb;
-            var coll = Obj.GetCompItem<Collider2D>("collider");
-            coll.sharedMaterial = _Material;
+            Coll = Obj.GetCompItem<Collider2D>("collider");
+            Coll.sharedMaterial = _Material;
         }
 
         public override void SetColor(Color _Color)
@@ -56,5 +68,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             m_Border.SetThickness(_Thickness);
             Rigidbody.mass = _Scale;
         }
+
+        #endregion
     }
 }

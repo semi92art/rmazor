@@ -49,7 +49,7 @@ namespace Common.Managers.Scores
         
         private IViewGameTicker Ticker { get; }
 
-        public GooglePlayGamesRemoteSavedGameProvider(IViewGameTicker _Ticker)
+        private GooglePlayGamesRemoteSavedGameProvider(IViewGameTicker _Ticker)
         {
             Ticker = _Ticker;
         }

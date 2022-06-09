@@ -34,7 +34,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         #region inject
         
-        public HammersProceeder(
+        private HammersProceeder(
             ModelSettings    _Settings,
             IModelData       _Data,
             IModelCharacter  _Character,

@@ -46,7 +46,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         private IPathItemsProceeder PathItemsProceeder { get; }
         
-        public TurretsProceeder(
+        private TurretsProceeder(
             ModelSettings       _Settings,
             IModelData          _Data,
             IModelCharacter     _Character,

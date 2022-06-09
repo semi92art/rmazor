@@ -14,7 +14,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private IList<BackAndFrontColorsProps> m_BackAndFrontColorsSetItemsLight;
+        private IList<AdditionalColorsProps> m_BackAndFrontColorsSetItemsLight;
 
         #endregion
         
@@ -23,7 +23,7 @@ namespace RMAZOR.Views.Common
         private RemoteProperties  RemoteProperties { get; }
         private IPrefabSetManager PrefabSetManager { get; }
 
-        public ViewMazeForeground(
+        private ViewMazeForeground(
             RemoteProperties _RemoteProperties,
             IColorProvider    _ColorProvider,
             IPrefabSetManager _PrefabSetManager)
@@ -55,8 +55,8 @@ namespace RMAZOR.Views.Common
                 .ToList();
             if (!m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
                 return;
-            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                ("configs", "back_and_front_colors_set_light");
+            var backgroundColorsSetLight = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>
+                ("configs", "additional_colors_set");
             m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set
                 .Where(_Item => _Item.inUse)
                 .ToList();

@@ -57,13 +57,12 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region inject
-
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
+        
         private CommonGameSettings          GameSettings   { get; }
         private ISettingSelectorDialogPanel SelectorPanel  { get; }
         private ISettingsGetter             SettingsGetter { get; }
 
-        public SettingsDialogPanel(
+        private SettingsDialogPanel(
             CommonGameSettings          _GameSettings,
             ISettingSelectorDialogPanel _SelectorPanel,
             IBigDialogViewer            _DialogViewer,
@@ -79,7 +78,7 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
-            GameSettings = _GameSettings;
+            GameSettings   = _GameSettings;
             SelectorPanel  = _SelectorPanel;
             SettingsGetter = _SettingsGetter;
         }

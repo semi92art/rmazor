@@ -27,7 +27,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
         
-        private IList<BackAndFrontColorsProps> m_BackAndFrontColorsSetItemsLight;
+        private IList<AdditionalColorsProps> m_BackAndFrontColorsSetItemsLight;
 
         protected Color
             BackCol1Current,
@@ -67,7 +67,7 @@ namespace RMAZOR.Views.Common
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded)
+            if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
             if (_Args.Args.Contains("set_back_editor"))
                 return;
@@ -101,8 +101,8 @@ namespace RMAZOR.Views.Common
                 .ToList();
             if (!m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
                 return;
-            var backgroundColorsSetLight = PrefabSetManager.GetObject<BackAndFrontColorsSetScriptableObject>
-                ("configs", "back_and_front_colors_set_light");
+            var backgroundColorsSetLight = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>
+                ("configs", "additional_colors_set");
             m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set
                 .Where(_Item => _Item.inUse)
                     .ToList();

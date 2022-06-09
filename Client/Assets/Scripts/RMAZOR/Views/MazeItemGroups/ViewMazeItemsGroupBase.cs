@@ -57,10 +57,10 @@ namespace RMAZOR.Views.MazeItemGroups
 
         #region nonpublic methods
 
-        protected List<IViewMazeItem> GetItems()
+        protected List<IViewMazeItem> GetItems(bool _OnlyActive = false)
         {
             var result = new List<IViewMazeItem>();
-            var items = Common.GetItems(false);
+            var items = Common.GetItems(_OnlyActive);
             for (int i = 0; i < items.Count; i++)
             {
                 var item = items[i];

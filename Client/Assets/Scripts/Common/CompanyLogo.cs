@@ -1,4 +1,5 @@
-﻿using Common.CameraProviders;
+﻿using System;
+using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
@@ -21,6 +22,7 @@ namespace Common
         #region nonpublic members
     
         private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private static readonly int TimeId = Shader.PropertyToID("_TimeAlt");
 
         #endregion
 
@@ -44,21 +46,28 @@ namespace Common
     
         private void Start()
         {
-            Dbg.Log("Logo Start");
             if (SceneManager.GetActiveScene().name != SceneNames.Preload)
             {
                 background.enabled = false;
                 logoRend.enabled = false;
                 return;
             }
+
+            logoRend.transform.localScale = Vector3.one;
             background.enabled = true;
             logoRend.enabled = true;
             background.material = PrefabSetManager.InitObject<Material>(
                 "materials", "solid_background");
             background.sharedMaterial.SetColor(ColorId, CommonData.CompanyLogoBackgroundColor);
             ScaleTextureToViewport(background.transform);
+            logoRend.transform.SetLocalScaleXY(GraphicUtils.AspectRatio * Vector2.one);
         }
-    
+
+        private void Update()
+        {
+            background.sharedMaterial.SetFloat(TimeId, Time.realtimeSinceStartup);
+        }
+
         public void HideLogo()
         {
             background.enabled = false;

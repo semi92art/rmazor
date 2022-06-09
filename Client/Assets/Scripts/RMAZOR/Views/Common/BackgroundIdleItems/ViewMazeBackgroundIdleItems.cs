@@ -24,7 +24,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
     {
         #region nonpublic members
 
-        protected override int                                            PoolSize => 15;
+        protected override int PoolSize => 15;
+        
         private            Color                                          m_BackItemsColor;
         private            SpawnPool<IViewMazeBackgroundIdleItemDisc>     m_DiscsPool;
         private            SpawnPool<IViewMazeBackgroundIdleItemSquare>   m_SquaresPool;
@@ -41,7 +42,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private IViewMazeBackgroundIdleItemSquare   BackgroundIdleItemSquare   { get; }
         private IViewMazeBackgroundIdleItemTriangle BackgroundIdleItemTriangle { get; }
 
-        public ViewMazeBackgroundIdleItems(
+        private ViewMazeBackgroundIdleItems(
             IColorProvider                      _ColorProvider,
             IViewBetweenLevelTransitioner       _Transitioner,
             IContainersGetter                   _ContainersGetter,

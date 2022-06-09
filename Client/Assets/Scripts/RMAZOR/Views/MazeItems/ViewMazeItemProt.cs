@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Common.Entities;
 using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -156,28 +155,27 @@ namespace RMAZOR.Views.MazeItems
             hintGo.transform.SetLocalScaleXY(GetScale() * Vector2.one);
             hint = hintGo.AddComponent<SpriteRenderer>();
             hintGo.layer = 31;
-            string objectName = null;
-            switch (_Type)
+            string objectName = _Type switch
             {
-                case EMazeItemType.Block:                                               break;
-                case EMazeItemType.Springboard:      objectName = "springboard";        break;
-                case EMazeItemType.ShredingerBlock:  objectName = "shredinger";         break;
-                case EMazeItemType.Portal:           objectName = "portal";             break;
-                case EMazeItemType.Turret:           objectName = "turret";             break;
-                case EMazeItemType.TrapMoving:       objectName = "trap-moving";        break;
-                case EMazeItemType.GravityBlock:     objectName = "block-gravity";      break;
-                case EMazeItemType.GravityTrap:      objectName = "trap-gravity";       break;
-                case EMazeItemType.TrapIncreasing:   objectName = "trap-increase";      break;
-                case EMazeItemType.GravityBlockFree: objectName = "gravity-block-free"; break;
-                case EMazeItemType.TrapReact:        objectName = "trap-react";         break;
-                case EMazeItemType.Hammer:           objectName = "hammer";             break;
-                case EMazeItemType.Bazooka:          objectName = "bazooka";            break;
-                default:                             throw new SwitchCaseNotImplementedException(_Type);
-            }
+                EMazeItemType.Block            => null,
+                EMazeItemType.Springboard      => "springboard",
+                EMazeItemType.ShredingerBlock  => "shredinger",
+                EMazeItemType.Portal           => "portal",
+                EMazeItemType.Turret           => "turret",
+                EMazeItemType.TrapMoving       => "trap-moving",
+                EMazeItemType.GravityBlock     => "block-gravity",
+                EMazeItemType.GravityTrap      => "trap-gravity",
+                EMazeItemType.TrapIncreasing   => "trap-increase",
+                EMazeItemType.GravityBlockFree => "gravity-block-free",
+                EMazeItemType.TrapReact        => "trap-react",
+                EMazeItemType.Hammer           => "hammer",
+                EMazeItemType.Spear            => "spear",
+                EMazeItemType.Diode            => "diode",
+                _                              => throw new SwitchExpressionException(_Type)
+            };
             if (string.IsNullOrEmpty(objectName)) 
                 return;
-            if (m_PrefabSetManager == null)
-                m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
+            m_PrefabSetManager ??= new PrefabSetManager(new AssetBundleManagerFake());
             hint.sprite = m_PrefabSetManager.GetObject<Sprite>("prot_icons", objectName);
             hint.sortingOrder = GetShapeSortingOrder(_Type, false) + 1;
         }
@@ -208,7 +206,8 @@ namespace RMAZOR.Views.MazeItems
                 EMazeItemType.Turret           => new Color(0.99f, 0.14f, 0.7f),
                 EMazeItemType.Springboard      => new Color(0.41f, 1f, 0.79f),
                 EMazeItemType.Hammer           => new Color(0.66f, 0.43f, 0.12f),
-                EMazeItemType.Bazooka         => new Color(0.7f, 0.67f, 1f),
+                EMazeItemType.Spear            => new Color(0.7f, 0.67f, 1f),
+                EMazeItemType.Diode            => new Color(0.63f, 1f, 0.7f),
                 _                              => throw new SwitchExpressionException(_Type)
             };
         }

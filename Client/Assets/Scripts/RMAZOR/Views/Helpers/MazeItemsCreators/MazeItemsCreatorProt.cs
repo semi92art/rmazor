@@ -18,7 +18,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         protected MazeItemsCreatorProt() : base(
             null, null, null, null, null,
             null, null, null, null, null, 
-            null, null, null) { }
+            null, null, null, null) { }
         
         #endregion
         

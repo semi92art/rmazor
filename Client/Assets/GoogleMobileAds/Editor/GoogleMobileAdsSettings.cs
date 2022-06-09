@@ -24,16 +24,18 @@ namespace GoogleMobileAds.Editor
         [SerializeField]
         private bool delayAppMeasurementInit = false;
 
+        //FIXME тупой плагин обнуляет айдишники после каждого билда
         public string GoogleMobileAdsAndroidAppId
         {
-            get { return Instance.adMobAndroidAppId; }
+            get { return "ca-app-pub-5357184552698168~9131218519"; }
 
             set { Instance.adMobAndroidAppId = value; }
         }
 
+        //FIXME тупой плагин обнуляет айдишники после каждого билда
         public string GoogleMobileAdsIOSAppId
         {
-            get { return Instance.adMobIOSAppId; }
+            get { return "ca-app-pub-5357184552698168~8964338187"; }
 
             set { Instance.adMobIOSAppId = value; }
         }

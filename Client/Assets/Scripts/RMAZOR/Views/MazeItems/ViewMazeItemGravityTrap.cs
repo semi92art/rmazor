@@ -57,7 +57,7 @@ namespace RMAZOR.Views.MazeItems
         
         private IMazeShaker MazeShaker { get; }
 
-        public ViewMazeItemGravityTrap(
+        private ViewMazeItemGravityTrap(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,
@@ -113,7 +113,7 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:

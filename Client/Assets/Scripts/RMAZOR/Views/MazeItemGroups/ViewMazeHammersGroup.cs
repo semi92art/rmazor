@@ -22,7 +22,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private IViewCharacter Character { get; }
         
-        public ViewMazeHammersGroup(IViewMazeCommon _Common, IViewCharacter _Character) 
+        private ViewMazeHammersGroup(IViewMazeCommon _Common, IViewCharacter _Character) 
             : base(_Common)
         {
             Character = _Character;

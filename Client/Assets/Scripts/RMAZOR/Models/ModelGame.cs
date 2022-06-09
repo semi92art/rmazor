@@ -34,32 +34,32 @@ namespace RMAZOR.Models
 
         #region inject
 
-        public ModelSettings       Settings           { get; }
-        public IModelData          Data               { get; }
-        public IModelMazeRotation  MazeRotation       { get; }
-        public IPathItemsProceeder PathItemsProceeder { get; }
+        public ModelSettings            Settings                { get; }
+        public IModelData               Data                    { get; }
+        public IModelMazeRotation       MazeRotation            { get; }
+        public IPathItemsProceeder      PathItemsProceeder      { get; }
         public IModelItemsProceedersSet ModelItemsProceedersSet { get; }
-        public IModelCharacter     Character          { get; }
-        public IModelLevelStaging  LevelStaging       { get; }
-        public IInputScheduler     InputScheduler     { get; }
+        public IModelCharacter          Character               { get; }
+        public IModelLevelStaging       LevelStaging            { get; }
+        public IInputScheduler          InputScheduler          { get; }
 
-        public ModelGame(
-            ModelSettings       _Settings,
-            IModelData          _Data,
-            IModelMazeRotation  _MazeRotation,
-            IPathItemsProceeder _PathItemsProceeder,
+        private ModelGame(
+            ModelSettings            _Settings,
+            IModelData               _Data,
+            IModelMazeRotation       _MazeRotation,
+            IPathItemsProceeder      _PathItemsProceeder,
             IModelItemsProceedersSet _ModelItemsProceedersSet,
-            IModelCharacter     _CharacterModel,
-            IModelLevelStaging  _Staging,
-            IInputScheduler     _InputScheduler)
+            IModelCharacter          _CharacterModel,
+            IModelLevelStaging       _Staging,
+            IInputScheduler          _InputScheduler)
         {
-            Settings            = _Settings;
-            Data                = _Data;
-            MazeRotation        = _MazeRotation;
-            PathItemsProceeder  = _PathItemsProceeder;
-            Character           = _CharacterModel;
-            LevelStaging        = _Staging;
-            InputScheduler      = _InputScheduler;
+            Settings                 = _Settings;
+            Data                     = _Data;
+            MazeRotation             = _MazeRotation;
+            PathItemsProceeder       = _PathItemsProceeder;
+            Character                = _CharacterModel;
+            LevelStaging             = _Staging;
+            InputScheduler           = _InputScheduler;
             ModelItemsProceedersSet  = _ModelItemsProceedersSet;
         }
 
@@ -112,7 +112,7 @@ namespace RMAZOR.Models
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            if (_Args.LevelStage == ELevelStage.Loaded)
                 m_AllProceedInfosCached = null;
             var proceeders =
                 GetInterfaceOfProceeders<IOnLevelStageChanged>();

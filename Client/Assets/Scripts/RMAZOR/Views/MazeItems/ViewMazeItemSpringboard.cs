@@ -53,7 +53,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
 
-        public ViewMazeItemSpringboard(
+        private ViewMazeItemSpringboard(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,

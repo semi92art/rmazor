@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Common;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Utils;
+using Firebase.Extensions;
 using Newtonsoft.Json;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
@@ -25,6 +28,8 @@ namespace RMAZOR.Helpers
         private readonly Dictionary<int, string[]> m_SerializedLevelsFromCacheDict = new Dictionary<int, string[]>();
         private readonly Dictionary<int, string[]> m_SerializedLevelsFromRemoteDict = new Dictionary<int, string[]>();
 
+        private volatile bool m_CachedLoaded, m_RemoteLoaded;
+
         #endregion
 
         #region inject
@@ -32,7 +37,7 @@ namespace RMAZOR.Helpers
         protected IPrefabSetManager  PrefabSetManager  { get; }
         private   IMazeInfoValidator MazeInfoValidator { get; }
 
-        public LevelsLoader(
+        protected LevelsLoader(
             IPrefabSetManager  _PrefabSetManager,
             IMazeInfoValidator _MazeInfoValidator)
         {
@@ -46,9 +51,13 @@ namespace RMAZOR.Helpers
 
         public override void Init()
         {
+            var sw = new Stopwatch();
+            sw.Start();
             PreloadLevels(CommonData.GameId, true);
             PreloadLevels(CommonData.GameId, false);
-            base.Init();
+            Cor.Run(Cor.WaitWhile(
+                () => !m_CachedLoaded || !m_RemoteLoaded,
+                () => base.Init()));
         }
 
         public MazeInfo LoadLevel(int _GameId, long _Index)
@@ -83,21 +92,33 @@ namespace RMAZOR.Helpers
             int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
                 LevelsAssetName(heapIndex), _Main ? EPrefabSource.Bundle : EPrefabSource.Asset);
+            string[] serializedLevels;
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
             string levelsText = asset.text;
-            levelsText = levelsText.Remove(levelsText.Length - 2, 2);
-            string splitter = "{" + "\"" + firstProp.Name + "\"";
-            var serializedLevels = levelsText.Split(new []{splitter, "," + splitter}, StringSplitOptions.None);
-            serializedLevels = serializedLevels
-                .RemoveRange(new[] {serializedLevels[0]})
-                .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-            if (_Main)
-                m_SerializedLevelsFromRemoteDict.SetSafe(_GameId, serializedLevels);
-            else
-                m_SerializedLevelsFromCacheDict.SetSafe(_GameId, serializedLevels);
+            Task.Run(() =>
+            {
+                levelsText = levelsText.Remove(levelsText.Length - 2, 2);
+                string splitter = "{" + "\"" + firstProp.Name + "\"";
+                serializedLevels = levelsText.Split(new[] {splitter, "," + splitter}, StringSplitOptions.None);
+                serializedLevels = serializedLevels
+                    .RemoveRange(new[] {serializedLevels[0]})
+                    .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
+                if (_Main)
+                {
+                    m_SerializedLevelsFromRemoteDict.SetSafe(_GameId, serializedLevels);
+                    m_RemoteLoaded = true;
+                    Dbg.Log("Remote levels loaded");
+                }
+                else
+                {
+                    m_SerializedLevelsFromCacheDict.SetSafe(_GameId, serializedLevels);
+                    m_CachedLoaded = true;
+                    Dbg.Log("Cached levels loaded");
+                }
+            });
         }
-        
+
         protected static string PrefabSetName(int _GameId)
         {
             return $"game_{_GameId}_levels";

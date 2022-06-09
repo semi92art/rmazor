@@ -9,73 +9,9 @@ using Common.Network.DataFieldFilters;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
-using UnityEngine.Events;
 
 namespace RMAZOR.Managers
 {
-    public class RemoteConfigPropertyInfo
-    {
-        public string Key   { get; }
-        public Type   Type   { get; } 
-        public bool   IsJson { get; }
-
-        private readonly GameDataFieldFilter m_Filter;
-
-        public Entity<object> GetCachedValue
-        {
-            get
-            {
-                var entity = new Entity<object>();
-                m_Filter.Filter(_Fields =>
-                {
-                    var field = GetField(_Fields, Key);
-                    if (field?.GetValue() == null)
-                    {
-                        entity.Result = EEntityResult.Fail;
-                        return;
-                    }
-
-                    entity.Value = field.GetValue();
-                    entity.Result = EEntityResult.Success;
-                });
-                return entity;
-            }
-        }
-
-        public void SetCachedValue(object _Value)
-        {
-            m_Filter.Filter(_Fields =>
-            {
-                var field = GetField(_Fields, Key);
-                if (field == null)
-                    return;
-                field.SetValue(_Value).Save(true);
-            });
-        }
-
-        public UnityAction<object> SetPropertyValue { get; }
-
-        public RemoteConfigPropertyInfo(
-            string              _Key,
-            Type                _Type,
-            GameDataFieldFilter _Filter,
-            UnityAction<object> _SetProperty,
-            bool                _IsJson = false)
-        {
-            Key              = _Key;
-            Type             = _Type;
-            IsJson           = _IsJson;
-            m_Filter         = _Filter;
-            SetPropertyValue = _SetProperty;
-        }
-        
-        private static GameDataField GetField(IEnumerable<GameDataField> _Fields, string _FieldName)
-        {
-            ushort id = (ushort)CommonUtils.StringToHash(_FieldName);
-            return _Fields.FirstOrDefault(_F => _F.FieldId == id);
-        }
-    }
-
     public interface IRemotePropertiesInfoProvider : IInit
     {
         GameDataFieldFilter      GetFilter();
@@ -110,7 +46,6 @@ namespace RMAZOR.Managers
             {
                 CommonUtils.StringToHash("ads_first_level_to_show_ads"),
                 CommonUtils.StringToHash("ads_providers_info"),
-                CommonUtils.StringToHash("ads_requests_frequency"),
                 CommonUtils.StringToHash("ads_show_ad_every_level"),
                 CommonUtils.StringToHash("ads_show_rewarded_instead_of_interstitial_on_unpause"),
                 CommonUtils.StringToHash("character_speed"),
@@ -122,7 +57,6 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("maze_item_transition_time"),
                 CommonUtils.StringToHash("money_item_coast"),
                 CommonUtils.StringToHash("pay_to_continue_money_count"),
-                CommonUtils.StringToHash("rate_requests_frequency"),
                 CommonUtils.StringToHash("mazeitems_gravityblock_speed"),
                 CommonUtils.StringToHash("mazeitems_movingtrap_speed"),
                 CommonUtils.StringToHash("test_device_ids"),
@@ -151,20 +85,16 @@ namespace RMAZOR.Managers
                     typeof(string), 
                     filter,
                     _Value => CommonGameSettings.adsProviders = Convert.ToString(_Value)),
-                new RemoteConfigPropertyInfo("ads_requests_frequency",
-                    typeof(int),
-                    filter,
-                    _Value => ViewSettings.adsRequestsFrequency = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(
                     "ads_show_ad_every_level",  
                     typeof(int), 
                     filter,
                     _Value => CommonGameSettings.showAdsEveryLevel = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(
-                    "ads_show_rewarded_instead_of_interstitial_on_unpause",
+                    "ads_show_rewarded_on_level_pass",
                     typeof(bool),
                     filter,
-                    _Value => CommonGameSettings.showRewardedOnUnpause = Convert.ToBoolean(_Value)),
+                    _Value => CommonGameSettings.showRewardedOnLevelPass = Convert.ToBoolean(_Value)),
                 new RemoteConfigPropertyInfo(
                     "character_speed", 
                     typeof(float),
@@ -177,7 +107,7 @@ namespace RMAZOR.Managers
                     _Value =>
                     {
                         var converter = new ColorJsonConverter();
-                        RemoteProperties.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<BackAndFrontColorsProps>>(
+                        RemoteProperties.BackAndFrontColorsSet = JsonConvert.DeserializeObject<IList<AdditionalColorsProps>>(
                             Convert.ToString(_Value), converter);
                     },
                     true),
@@ -227,11 +157,6 @@ namespace RMAZOR.Managers
                     typeof(long), 
                     filter,
                     _Value => CommonGameSettings.payToContinueMoneyCount = Convert.ToInt32(_Value)),
-                new RemoteConfigPropertyInfo(
-                    "rate_requests_frequency",    
-                    typeof(float), 
-                    filter,
-                    _Value => ViewSettings.rateRequestsFrequency = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(
                     "mazeitems_gravityblock_speed", 
                     typeof(float),

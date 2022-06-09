@@ -110,3 +110,9 @@ MonoBehaviour:
     - item: {fileID: 8300000, guid: 0365083097a526b439a167642de82c90, type: 3}
       name: hammer_shot
       bundle: 0
+    - item: {fileID: 8300000, guid: 3f4e17df7ccbda04b801c1324e954e62, type: 3}
+      name: spear_shot
+      bundle: 0
+    - item: {fileID: 8300000, guid: 171e1392371c8d84cb2e19daf3c0422d, type: 3}
+      name: spear_open
+      bundle: 0

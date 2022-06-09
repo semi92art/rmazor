@@ -39,7 +39,7 @@ namespace RMAZOR.Views.Characters
         private IMazeShaker                 MazeShaker        { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
 
-        public ViewCharacter(
+        private ViewCharacter(
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
             IViewCharacterEffector      _Effector,
@@ -129,6 +129,7 @@ namespace RMAZOR.Views.Characters
                 return;
             var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
             SetPosition(pos);
+            Head.OnCharacterMoveContinued(_Args);
             Tail.OnCharacterMoveContinued(_Args);
         }
 
@@ -150,7 +151,7 @@ namespace RMAZOR.Views.Characters
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     SetDefaultPosition();

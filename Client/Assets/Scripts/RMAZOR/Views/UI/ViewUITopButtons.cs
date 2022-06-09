@@ -44,21 +44,21 @@ namespace RMAZOR.Views.UI
         private IViewInputCommandsProceeder CommandsProceeder       { get; }
         private IViewInputTouchProceeder    ViewInputTouchProceeder { get; }
 
-        public ViewUITopButtons(
-            IModelGame _Model,
-            IContainersGetter _ContainersGetter,
-            ICameraProvider _CameraProvider,
-            IManagersGetter _Managers,
-            IBigDialogViewer _BigDialogViewer,
+        private ViewUITopButtons(
+            IModelGame                  _Model,
+            IContainersGetter           _ContainersGetter,
+            ICameraProvider             _CameraProvider,
+            IManagersGetter             _Managers,
+            IBigDialogViewer            _BigDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewInputTouchProceeder _ViewInputTouchProceeder)
+            IViewInputTouchProceeder    _ViewInputTouchProceeder)
         {
-            Model = _Model;
-            ContainersGetter = _ContainersGetter;
-            CameraProvider = _CameraProvider;
-            Managers = _Managers;
-            BigDialogViewer = _BigDialogViewer;
-            CommandsProceeder = _CommandsProceeder;
+            Model                   = _Model;
+            ContainersGetter        = _ContainersGetter;
+            CameraProvider          = _CameraProvider;
+            Managers                = _Managers;
+            BigDialogViewer         = _BigDialogViewer;
+            CommandsProceeder       = _CommandsProceeder;
             ViewInputTouchProceeder = _ViewInputTouchProceeder;
         }
 

@@ -40,7 +40,8 @@ namespace RMAZOR.Managers
             };
             RemotePropertiesInfoProvider.Initialize += () =>
             {
-                RemoteConfigProvider.SetRemoteCachedPropertyInfos(RemotePropertiesInfoProvider.GetInfos());
+                var infos = RemotePropertiesInfoProvider.GetInfos();
+                RemoteConfigProvider.SetRemoteCachedPropertyInfos(infos);
                 RemoteConfigProvider.Init();
             };
             RemotePropertiesInfoProvider.Init();
@@ -53,8 +54,8 @@ namespace RMAZOR.Managers
         
         private void LoadPropertiesFromCache(UnityAction _OnFinish)
         {
-            var infos = RemotePropertiesInfoProvider.GetInfos();
-            var entity = GetPropertiesFromCachedDataFields(infos);
+            var infos = RemoteConfigProvider.GetFetchedInfos();
+            var entity = SetValuesOfPropertyInfos(infos);
             Cor.Run(Cor.WaitWhile(
                 () => entity.Result == EEntityResult.Pending,
                 () =>
@@ -69,14 +70,14 @@ namespace RMAZOR.Managers
             Cor.Run(Cor.WaitWhile(
                 () => !m_FetchCompletedActionDone,
                 SignalInit));
-            var infos = RemoteConfigProvider.GetFetchedInfos();
-            var entity = GetPropertiesFromCachedDataFields(infos);
+            var infos = RemoteConfigProvider.GetFetchedInfos().ToList();
+            var entity = SetValuesOfPropertyInfos(infos);
             Cor.Run(Cor.WaitWhile(
                 () => entity.Result == EEntityResult.Pending,
                 FetchTestDevices));
         }
 
-        private Entity<bool> GetPropertiesFromCachedDataFields(IEnumerable<RemoteConfigPropertyInfo> _Infos)
+        private static Entity<bool> SetValuesOfPropertyInfos(IEnumerable<RemoteConfigPropertyInfo> _Infos)
         {
             var finalEntity = new Entity<bool>();
             if (_Infos == null)
@@ -89,7 +90,7 @@ namespace RMAZOR.Managers
             for (int i = 0; i < infos.Length; i++)
             {
                 var info = infos[i];
-                var entity = info.GetCachedValue;
+                var entity = info.GetCachedValueEntity;
                 var info1 = info;
                 Cor.Run(Cor.WaitWhile(() => entity.Result == EEntityResult.Pending,
                     () =>
@@ -113,7 +114,7 @@ namespace RMAZOR.Managers
         {
             var infos = RemoteConfigProvider.GetFetchedInfos();
             var info = infos.First(_I => _I.Key == "test_device_ids");
-            var entity = info.GetCachedValue;
+            var entity = info.GetCachedValueEntity;
             Cor.Run(Cor.WaitWhile(
                 () => entity.Result == EEntityResult.Pending,
                 () =>

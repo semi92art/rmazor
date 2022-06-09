@@ -6,14 +6,14 @@ using RMAZOR.Views.MazeItems;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
-    public interface IViewMazeSpringboardItemsGroup : IViewMazeItemGroup
+    public interface IViewMazeSpringboardsGroup : IViewMazeItemGroup
     {
         void OnSpringboardEvent(SpringboardEventArgs _Args);
     }
     
-    public sealed class ViewMazeSpringboardItemsGroup : ViewMazeItemsGroupBase, IViewMazeSpringboardItemsGroup
+    public sealed class ViewMazeSpringboardsGroup : ViewMazeItemsGroupBase, IViewMazeSpringboardsGroup
     {
-        public ViewMazeSpringboardItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
+        public ViewMazeSpringboardsGroup(IViewMazeCommon _Common) : base(_Common) { }
         
         public override IEnumerable<EMazeItemType> Types => new[] {EMazeItemType.Springboard};
         

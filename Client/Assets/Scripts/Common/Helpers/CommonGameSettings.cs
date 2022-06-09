@@ -13,7 +13,7 @@ namespace Common.Helpers
         public int       showAdsEveryLevel;
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;
-        public bool      showRewardedOnUnpause;
+        public bool      showRewardedOnLevelPass;
         public string    ironSourceAppKeyAndroid;
         public string    ironSourceAppKeyIos;
         public int       moneyItemCoast;

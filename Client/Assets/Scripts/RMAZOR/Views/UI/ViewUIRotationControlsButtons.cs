@@ -49,7 +49,7 @@ namespace RMAZOR.Views.UI
         private IViewInputTouchProceeder      TouchProceeder    { get; }
         private IViewGameTicker               GameTicker        { get; }
 
-        public ViewUIRotationControlsButtons(
+        private ViewUIRotationControlsButtons(
             IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
@@ -87,8 +87,8 @@ namespace RMAZOR.Views.UI
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             ShowRotatingButtons(_Args);
-            if (_Args.Stage != ELevelStage.ReadyToStart 
-                && _Args.Stage != ELevelStage.StartedOrContinued)
+            if (_Args.LevelStage != ELevelStage.ReadyToStart 
+                && _Args.LevelStage != ELevelStage.StartedOrContinued)
                 return;
             bool enableRotation = Model.GetAllProceedInfos()
                 .Any(_Info => RmazorUtils.GravityItemTypes.Contains(_Info.Type));
@@ -230,7 +230,7 @@ namespace RMAZOR.Views.UI
                 return Model.GetAllProceedInfos()
                     .Any(_Info => RmazorUtils.GravityItemTypes.Contains(_Info.Type));
             }
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded when MazeContainsGravityItems():
                     ShowRotatingButtons(true, false);

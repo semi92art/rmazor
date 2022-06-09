@@ -34,7 +34,7 @@ Shader "RMAZOR/Background/Additional Background" {
 			#pragma vertex   vert
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
-			#include "../Common.cginc"
+			#include "../../Common.cginc"
 		
 			v2f vert(appdata v) {
 				return vert_default(v);

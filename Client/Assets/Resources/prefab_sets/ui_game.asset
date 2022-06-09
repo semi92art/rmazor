@@ -85,3 +85,7 @@ MonoBehaviour:
     - item: {fileID: 564728429285595071, guid: e7a45bc2bcac80c4787595f721ffc2f7, type: 3}
       name: rotating_possibility_indicator
       bundle: 0
+    - item: {fileID: 7773209149359177075, guid: 502607507a9ca7342babe9c018a17bea,
+        type: 3}
+      name: skip_level_button
+      bundle: 0

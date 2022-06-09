@@ -12,25 +12,28 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
+using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RMAZOR.Views.UI.Game_Logo
 {
     public interface IViewUIGameLogo : IInitViewUIItem
     {
-        void Show();
-        bool Shown { get; }
+        void              Show();
+        bool              WasShown { get; }
+        event UnityAction Shown;
     }
     
     public class ViewUIGameLogoMazeBlade : IViewUIGameLogo
     {
         #region constants
 
-        private const float ShowTime    = 1.5f;
+        private const float ShowTime           = 1.5f;
         private const float HideBackgroundTime = 1.5f;
 
         #endregion
@@ -43,8 +46,10 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private static Dictionary<string, float> KeysAndDelays => new Dictionary<string, float>
         {
-            {"M", 0}, {"A1", 0.1f}, {"Z", 0.2f}, {"E1", 0.3f},
-            {"B", 0}, {"L", 0.1f}, {"A2", 0.2f}, {"D", 0.3f}, {"E2", 0.4f}
+            {"M", 0f}, {"A1", 0f}, {"Z", 0f}, {"E1", 0f},
+            {"B", 0f}, {"L", 0f}, {"A2", 0f}, {"D", 0f}, {"E2", 0f},
+            {"bottom_line_animator", 1f},
+            {"bottom_text_animator", 1f}
         };
 
         private GameObject                   m_GameLogoObj;
@@ -67,7 +72,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private IPrefabSetManager                PrefabSetManager    { get; }
         private IViewMazeGameLogoTextureProvider LogoTextureProvider { get; }
 
-        public ViewUIGameLogoMazeBlade(
+        private ViewUIGameLogoMazeBlade(
             ICameraProvider                  _CameraProvider,
             IContainersGetter                _ContainersGetter,
             IViewInputCommandsProceeder      _CommandsProceeder,
@@ -89,8 +94,9 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         #region api
 
-        public bool Shown { get; private set; }
-        
+        public bool              WasShown { get; private set; }
+        public event UnityAction Shown;
+
         public void Init(Vector4 _Offsets)
         {
             CommandsProceeder.Command  += OnCommand;
@@ -132,7 +138,8 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void InitGameLogo()
         {
-            string prefabName = "start_logo_maze_blade" + (IsLowAspect() ? string.Empty : "_2");
+            // string prefabName = "start_logo_maze_blade" + (IsLowAspect() ? string.Empty : "_2");
+            const string prefabName = "start_logo_maze_blade_2";
             var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
                 "ui_game",
@@ -161,7 +168,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             _Position = screenBounds.center;
-            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 10f : 6.5f);
+            _Scale = GraphicUtils.AspectRatio * 6.5f;
         }
         
         private void GetFinalGameLogoTransform(out Vector2 _Position, out float _Scale)
@@ -170,20 +177,29 @@ namespace RMAZOR.Views.UI.Game_Logo
             const float additionalOffset = 3f;
             float yPos = screenBounds.max.y - m_TopOffset - additionalOffset;
             _Position = new Vector3(screenBounds.center.x, yPos);
-            _Scale = GraphicUtils.AspectRatio * (IsLowAspect() ? 7f : 4.5f);
+            _Scale = GraphicUtils.AspectRatio * 5.5f;
         }
 
         private void SetColors(Color _Color)
         {
-            var shapeTypes = new [] {typeof(Line), typeof(Disc)};
+            var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(TextMeshPro)};
             shapeTypes.SelectMany(_Type => m_GameLogoObj
                     .GetComponentsInChildren(_Type, true))
-                .Cast<ShapeRenderer>()
                 .ToList()
                 .ForEach(_Shape =>
                 {
-                    _Shape.SetSortingOrder(SortingOrders.GameLogoForeground)
-                        .SetColor(_Color.SetA(_Shape.Color.a));
+                    switch (_Shape)
+                    {
+                        case TextMeshPro textMeshPro:
+                            textMeshPro.sortingOrder = SortingOrders.GameLogoForeground;
+                            textMeshPro.color = _Color.SetA(textMeshPro.color.a);
+                            break;
+                        case ShapeRenderer shapeRenderer:
+                            shapeRenderer.SetSortingOrder(SortingOrders.GameLogoForeground)
+                                .SetColor(_Color.SetA(shapeRenderer.Color.a));
+                            break;
+                    }
+
                 });
             static IEnumerable<string> GetItems(string _Prefix, int _Count)
             {
@@ -250,8 +266,8 @@ namespace RMAZOR.Views.UI.Game_Logo
                 HideBackgroundTime,
                 _OnProgress: _P =>
                 {
-                    if (_P > 0.5f)
-                        Shown = true;
+                    // if (_P > 0.8f)
+                    //     WasShown = true;
                     LogoTextureProvider.SetTransitionValue(_P);
                 }, 
                 _OnFinish: () =>
@@ -259,6 +275,8 @@ namespace RMAZOR.Views.UI.Game_Logo
                     LockGameplayAndUiCommands(false);
                     m_GameLogoDisappeared = true;
                     LogoTextureProvider.Activate(false);
+                    Shown?.Invoke();
+                    WasShown = true;
                 });
         }
 

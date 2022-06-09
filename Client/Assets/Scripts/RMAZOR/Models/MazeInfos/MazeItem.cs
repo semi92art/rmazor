@@ -20,7 +20,8 @@ namespace RMAZOR.Models.MazeInfos
         GravityBlockFree,
         Springboard,
         Hammer,
-        Bazooka
+        Spear,
+        Diode
     }
     
     [Serializable]

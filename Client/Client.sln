@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Foundation", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-IntegrationTests-Editor", "Zenject-IntegrationTests-Editor.csproj", "{1c424744-957a-26f4-d8e0-db4a715d0533}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathfsAsmdef", "MathfsAsmdef.csproj", "{ec80512d-605a-e0b8-1d1e-d2c492387686}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooglePlayGames", "GooglePlayGames.csproj", "{8d2fc42c-d69a-95f0-d471-742e20b1ff39}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8441f412-22a4-275f-22e6-507969043f15}"
@@ -140,6 +142,8 @@ Global
 		{3ffcb80e-567a-2c91-0b86-7c366c8047e2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1c424744-957a-26f4-d8e0-db4a715d0533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1c424744-957a-26f4-d8e0-db4a715d0533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ec80512d-605a-e0b8-1d1e-d2c492387686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ec80512d-605a-e0b8-1d1e-d2c492387686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8d2fc42c-d69a-95f0-d471-742e20b1ff39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8d2fc42c-d69a-95f0-d471-742e20b1ff39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

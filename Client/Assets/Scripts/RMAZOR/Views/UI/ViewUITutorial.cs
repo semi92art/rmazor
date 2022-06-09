@@ -1,16 +1,23 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
+using Common.UI;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
+using RMAZOR.Models.MazeInfos;
+using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.UI.Game_Logo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -21,16 +28,16 @@ namespace RMAZOR.Views.UI
     {
         Movement,
         Rotation,
-        Setting
+        MazeItem
     }
-    
+
     public interface IViewUITutorial : IOnLevelStageChanged, IInitViewUIItem
     {
         event UnityAction<ETutorialType> TutorialStarted;
         event UnityAction<ETutorialType> TutorialFinished;
-        ETutorialType?                   IsCurrentLevelTutorial();
+        ETutorialType?                   IsCurrentLevelTutorial(out EMazeItemType? _MazeItemType);
     }
-    
+
     public class ViewUITutorial : IViewUITutorial
     {
         #region nonpublic members
@@ -45,33 +52,36 @@ namespace RMAZOR.Views.UI
         private bool m_ReadyToFinishMovementTutorial;
         private bool m_ReadyToSecondRotationStep;
         private bool m_ReadyToFinishRotationTutorial;
-        
+
         private Vector4           m_Offsets;
         private HandSwipeMovement m_Hsm;
         private HandSwipeRotation m_Hsr;
         private TextMeshPro       m_RotPossText;
         private Animator          m_RotPossTextAnim;
         private int               m_LastTutorialLevelIndex = -1;
+        private bool              m_GameLogoWasShown;
 
         #endregion
 
         #region inject
 
-        private CommonGameSettings            Settings            { get; }
-        private IModelGame                    Model               { get; }
-        private IPrefabSetManager             PrefabSetManager    { get; }
-        private IContainersGetter             ContainersGetter    { get; }
-        private IMazeCoordinateConverter      CoordinateConverter { get; }
-        private IViewInputCommandsProceeder   CommandsProceeder   { get; }
-        private ICameraProvider               CameraProvider      { get; }
-        private IColorProvider                ColorProvider       { get; }
-        private ILocalizationManager          LocalizationManager { get; }
-        private IViewGameTicker               Ticker              { get; }
-        private IRotatingPossibilityIndicator RotationIndicator   { get; }
-        private ILevelsLoader                 LevelsLoader        { get; }
-        private IViewUISubtitles              Subtitles           { get; }
+        private CommonGameSettings            Settings             { get; }
+        private IModelGame                    Model                { get; }
+        private IPrefabSetManager             PrefabSetManager     { get; }
+        private IContainersGetter             ContainersGetter     { get; }
+        private IMazeCoordinateConverter      CoordinateConverter  { get; }
+        private IViewInputCommandsProceeder   CommandsProceeder    { get; }
+        private ICameraProvider               CameraProvider       { get; }
+        private IColorProvider                ColorProvider        { get; }
+        private ILocalizationManager          LocalizationManager  { get; }
+        private IViewGameTicker               Ticker               { get; }
+        private IRotatingPossibilityIndicator RotationIndicator    { get; }
+        private ILevelsLoader                 LevelsLoader         { get; }
+        private IProposalDialogViewer         ProposalDialogViewer { get; }
+        private ITutorialDialogPanel          TutorialDialogPanel  { get; }
+        private IViewUIGameLogo               GameLogo             { get; }
 
-        public ViewUITutorial(
+        private ViewUITutorial(
             CommonGameSettings            _Settings,
             IModelGame                    _Model,
             IPrefabSetManager             _PrefabSetManager,
@@ -84,30 +94,34 @@ namespace RMAZOR.Views.UI
             IViewGameTicker               _Ticker,
             IRotatingPossibilityIndicator _RotationIndicator,
             ILevelsLoader                 _LevelsLoader,
-            IViewUISubtitles              _Subtitles)
+            IProposalDialogViewer         _ProposalDialogViewer,
+            ITutorialDialogPanel          _TutorialDialogPanel,
+            IViewUIGameLogo               _GameLogo)
         {
-            Settings            = _Settings;
-            Model               = _Model;
-            PrefabSetManager    = _PrefabSetManager;
-            ContainersGetter    = _ContainersGetter;
+            Settings = _Settings;
+            Model = _Model;
+            PrefabSetManager = _PrefabSetManager;
+            ContainersGetter = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
-            CommandsProceeder   = _CommandsProceeder;
-            CameraProvider      = _CameraProvider;
-            ColorProvider       = _ColorProvider;
+            CommandsProceeder = _CommandsProceeder;
+            CameraProvider = _CameraProvider;
+            ColorProvider = _ColorProvider;
             LocalizationManager = _LocalizationManager;
-            Ticker              = _Ticker;
-            RotationIndicator   = _RotationIndicator;
-            LevelsLoader        = _LevelsLoader;
-            Subtitles           = _Subtitles;
+            Ticker = _Ticker;
+            RotationIndicator = _RotationIndicator;
+            LevelsLoader = _LevelsLoader;
+            ProposalDialogViewer = _ProposalDialogViewer;
+            TutorialDialogPanel = _TutorialDialogPanel;
+            GameLogo = _GameLogo;
         }
 
         #endregion
 
         #region api
-        
+
         public event UnityAction<ETutorialType> TutorialStarted;
         public event UnityAction<ETutorialType> TutorialFinished;
-        
+
         public void Init(Vector4 _Offsets)
         {
             GetLastTutorialLevelIndex();
@@ -115,38 +129,71 @@ namespace RMAZOR.Views.UI
             m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
             m_RotationTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.RotationTutorialFinished);
             CommandsProceeder.Command += OnCommand;
+            GameLogo.Shown += OnGameLogoShown;
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded)
+            if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
             AdditionalCheckForTutorialFinishing(_Args);
-            var tutType = IsCurrentLevelTutorial();
+            var tutType = IsCurrentLevelTutorial(out var mazeItemType);
             if (!tutType.HasValue)
                 return;
             switch (tutType.Value)
             {
-                case ETutorialType.Movement: StartMovementTutorial(); break;
-                // case ETutorialType.Rotation: StartRotationTutorial(); break;
-                case ETutorialType.Setting:  StartSettingTutorial(); break;
+                case ETutorialType.Movement:
+                    StartMovementTutorial();
+                    break;
+                case ETutorialType.Rotation:
+                    StartRotationTutorial();
+                    break;
+                case ETutorialType.MazeItem:
+                    if (GameLogo.WasShown)
+                    {
+                        Cor.Run(Cor.WaitWhile(
+                            () => Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart,
+                            () => StartMazeItemTutorial(mazeItemType!.Value)));
+                    }
+                    break;
+                default: throw new SwitchCaseNotImplementedException(tutType.Value);
             }
         }
-        
-        public ETutorialType? IsCurrentLevelTutorial()
+
+        public ETutorialType? IsCurrentLevelTutorial(out EMazeItemType? _MazeItemType)
         {
-            return Model.Data.Info.AdditionalInfo.Comment1 switch
+            _MazeItemType = null;
+            var args = Model.Data.Info.AdditionalInfo.Arguments.Split(';');
+            foreach (string arg in args)
             {
-                "movement tutorial" => ETutorialType.Movement,
-                "rotation tutorial" => ETutorialType.Rotation,
-                "setting tutorial"  => ETutorialType.Setting,
-                _ => null
-            };
+                if (!arg.Contains("tutorial"))
+                    continue;
+                string tutorialTypeRaw = arg.Split(':')[1];
+                ETutorialType? tutorialType = tutorialTypeRaw switch
+                {
+                    "movement" => ETutorialType.Movement,
+                    "rotation" => ETutorialType.Rotation,
+                    _          => ETutorialType.MazeItem
+                };
+                if (tutorialType != ETutorialType.MazeItem)
+                    return tutorialType;
+                var dict = GetMazeItemPrefabSubstringsDict();
+                _MazeItemType = dict.First(
+                    _Kvp => _Kvp.Value == tutorialTypeRaw).Key;
+                return tutorialType;
+            }
+
+            return null;
         }
 
         #endregion
 
         #region nonpublic methods
+        
+        private void OnGameLogoShown()
+        {
+            m_GameLogoWasShown = true;
+        }
 
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
@@ -160,10 +207,18 @@ namespace RMAZOR.Views.UI
         {
             switch (_Command)
             {
-                case EInputCommand.MoveRight: m_ReadyToSecondMovementStep     = true; break;
-                case EInputCommand.MoveUp:    m_ReadyToThirdMovementStep      = true; break;
-                case EInputCommand.MoveLeft:  m_ReadyToFourthMovementStep     = true; break;
-                case EInputCommand.MoveDown:  m_ReadyToFinishMovementTutorial = true; break;
+                case EInputCommand.MoveRight:
+                    m_ReadyToSecondMovementStep = true;
+                    break;
+                case EInputCommand.MoveUp:
+                    m_ReadyToThirdMovementStep = true;
+                    break;
+                case EInputCommand.MoveLeft:
+                    m_ReadyToFourthMovementStep = true;
+                    break;
+                case EInputCommand.MoveDown:
+                    m_ReadyToFinishMovementTutorial = true;
+                    break;
             }
         }
 
@@ -171,11 +226,15 @@ namespace RMAZOR.Views.UI
         {
             switch (_Command)
             {
-                case EInputCommand.RotateCounterClockwise: m_ReadyToSecondRotationStep     = true; break;
-                case EInputCommand.RotateClockwise:        m_ReadyToFinishRotationTutorial = true; break;
-            }   
+                case EInputCommand.RotateCounterClockwise:
+                    m_ReadyToSecondRotationStep = true;
+                    break;
+                case EInputCommand.RotateClockwise:
+                    m_ReadyToFinishRotationTutorial = true;
+                    break;
+            }
         }
-        
+
         private void GetLastTutorialLevelIndex()
         {
             int? lastIdx = SaveUtils.GetValue(SaveKeysRmazor.LastTutorialLevelIndex);
@@ -189,11 +248,12 @@ namespace RMAZOR.Views.UI
             for (int i = 0; i < levelsCount; i++)
             {
                 var info = LevelsLoader.LoadLevel(Settings.gameId, i);
-                if (info.AdditionalInfo.Comment1 != "rotation tutorial")
+                if (info.AdditionalInfo.Arguments != "rotation tutorial")
                     continue;
                 lastIdx = i;
                 break;
             }
+
             if (lastIdx.HasValue)
                 m_LastTutorialLevelIndex = lastIdx.Value;
         }
@@ -224,49 +284,39 @@ namespace RMAZOR.Views.UI
 
         private void StartRotationTutorial()
         {
-            if (m_RotationTutorialStarted || m_RotationTutorialFinished)
-                return;
-            TutorialStarted?.Invoke(ETutorialType.Rotation);
-            var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
-            var goRotPrompt = PrefabSetManager.InitPrefab(
-                cont, "tutorials", "hand_swipe_rotation");
-            goRotPrompt.transform.localScale = Vector3.one * 6f;
-            m_Hsr = goRotPrompt.GetCompItem<HandSwipeRotation>("hsr");
-            m_Hsr.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
-            CommandsProceeder.LockCommands(RmazorUtils.MoveCommands, GetGroupName());
-            Cor.Run(RotationTutorialFirstStepCoroutine());
-            m_RotationTutorialStarted = true;
+            // TODO
+            // if (m_RotationTutorialStarted || m_RotationTutorialFinished)
+            //     return;
+            // TutorialStarted?.Invoke(ETutorialType.Rotation);
+            // var cont = ContainersGetter.GetContainer(ContainerNames.Tutorial);
+            // var goRotPrompt = PrefabSetManager.InitPrefab(
+            //     cont, "tutorials", "hand_swipe_rotation");
+            // goRotPrompt.transform.localScale = Vector3.one * 6f;
+            // m_Hsr = goRotPrompt.GetCompItem<HandSwipeRotation>("hsr");
+            // m_Hsr.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
+            // CommandsProceeder.LockCommands(RmazorUtils.MoveCommands, GetGroupName());
+            // Cor.Run(RotationTutorialFirstStepCoroutine());
+            // m_RotationTutorialStarted = true;
         }
 
-        private void StartSettingTutorial()
+        private void StartMazeItemTutorial(EMazeItemType _MazeItemType)
         {
-            if (m_SettingTutorialStarted || m_SettingTutorialFinished)
-                return;
-            TutorialStarted?.Invoke(ETutorialType.Setting);
-            Cor.Run(ShowSubtitleCoroutine(1, 6, () =>
-            {
-                Subtitles.HideSubtitle();
-                m_SettingTutorialFinished = true;
-            }));
-            m_SettingTutorialStarted = true;
+            var dict = GetMazeItemPrefabSubstringsDict();
+            string mazeItemAssetSubstring = dict[_MazeItemType];
+            var info = new TutorialDialogPanelInfo(
+                "tut_descr_" + mazeItemAssetSubstring,
+                "tutorial_clip_" + mazeItemAssetSubstring
+            );
+            TutorialDialogPanel.SetPanelInfo(info);
+            TutorialDialogPanel.PrepareVideo();
+            Cor.Run(Cor.WaitWhile(() => TutorialDialogPanel.IsVideoReady,
+                () =>
+                {
+                    TutorialDialogPanel.LoadPanel();
+                    ProposalDialogViewer.Show(TutorialDialogPanel, 3f);
+                }));
         }
 
-        private IEnumerator ShowSubtitleCoroutine(int _ReplicaIndex, int _ReplicasCount, UnityAction _OnFinish)
-        {
-            while (!Subtitles.CanShowSubtitle)
-                yield return null;
-            string replic = LocalizationManager.GetTranslation($"char_replica_{_ReplicaIndex}");
-            float showDuration = replic.Length * 0.3f;
-            Subtitles.ShowSubtitle(replic, showDuration, "character");
-            if (_ReplicaIndex >= _ReplicasCount)
-            {
-                _OnFinish?.Invoke();
-                yield break;
-            }
-            yield return ShowSubtitleCoroutine(_ReplicaIndex + 1, _ReplicasCount, _OnFinish);
-        }
-
-        
         private IEnumerator MovementTutorialFirstStepCoroutine()
         {
             m_Hsm.ShowMoveRightPrompt();
@@ -276,7 +326,7 @@ namespace RMAZOR.Views.UI
                 yield return null;
             yield return MovementTutorialSecondStepCoroutine();
         }
-        
+
         private IEnumerator MovementTutorialSecondStepCoroutine()
         {
             m_Hsm.ShowMoveUpPrompt();
@@ -315,7 +365,7 @@ namespace RMAZOR.Views.UI
             SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Movement);
         }
-        
+
         private IEnumerator RotationTutorialFirstStepCoroutine()
         {
             m_Hsr.ShowRotateCounterClockwisePrompt();
@@ -382,6 +432,27 @@ namespace RMAZOR.Views.UI
         private static string GetGroupName()
         {
             return nameof(IViewUITutorial);
+        }
+
+        private static Dictionary<EMazeItemType, string> GetMazeItemPrefabSubstringsDict()
+        {
+            return new Dictionary<EMazeItemType, string>
+            {
+                {EMazeItemType.Block,            null},
+                {EMazeItemType.GravityBlock,     "gravity_block"},
+                {EMazeItemType.ShredingerBlock,  "shredinger"},
+                {EMazeItemType.Portal,           "portal"},
+                {EMazeItemType.TrapReact,        "trap_react"},
+                {EMazeItemType.TrapIncreasing,   "trap_increasing"},
+                {EMazeItemType.TrapMoving,       "trap_moving"},
+                {EMazeItemType.GravityTrap,      "gravity_trap"},
+                {EMazeItemType.Turret,           "turret"},
+                {EMazeItemType.GravityBlockFree, "gravity_block_free"},
+                {EMazeItemType.Springboard,      "springboard"},
+                {EMazeItemType.Hammer,           "hammer"},
+                {EMazeItemType.Spear,            "spear"},
+                {EMazeItemType.Diode,            "diode"},
+            };
         }
 
         #endregion

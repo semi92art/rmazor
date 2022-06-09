@@ -65,7 +65,7 @@ namespace RMAZOR.Views.MazeItems
         private IViewTurretProjectile         Projectile           { get; }
         private IViewTurretProjectile         ProjectileFake       { get; }
 
-        public ViewMazeItemTurret(
+        private ViewMazeItemTurret(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,
@@ -144,7 +144,7 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
+            if (_Args.LevelStage == ELevelStage.Finished && _Args.PreviousStage != ELevelStage.Paused)
                 StopProceedingTurret();
         }
 
@@ -188,12 +188,12 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             int sortingOrder = GetSortingOrder();
-            m_Body = Object.gameObject.AddComponentOnNewChild<Disc>("Turret", out _)
+            m_Body = Object.AddComponentOnNewChild<Disc>("Turret", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(sortingOrder)
                 .SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round);
-            m_HolderBorder = Object.gameObject.AddComponentOnNewChild<Disc>("Border", out _)
+            m_HolderBorder = Object.AddComponentOnNewChild<Disc>("Border", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
                 .SetSortingOrder(sortingOrder + 1)
                 .SetType(DiscType.Ring)

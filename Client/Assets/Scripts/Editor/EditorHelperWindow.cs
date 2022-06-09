@@ -176,22 +176,15 @@ namespace Editor
                     converter);
                 CommonUtils.CopyToClipboard(json);
             });
-            EditorUtilsEx.GuiButtonAction("Back and Front Colors Set", () =>
+            EditorUtilsEx.GuiButtonAction("Additional Colors Set", () =>
             {
-                var backAndFrontColorsSetScrObj = GetPrefLoader().GetObject<BackAndFrontColorsSetScriptableObject>(
-                    "configs", "back_and_front_colors_set_light");
+                var backAndFrontColorsSetScrObj = GetPrefLoader().GetObject<AdditionalColorsSetScriptableObject>(
+                    "configs", "additional_colors_set");
                 var converter = new ColorJsonConverter();
                 string json = JsonConvert.SerializeObject(
                     backAndFrontColorsSetScrObj.set,
                     Formatting.None,
                     converter);
-                CommonUtils.CopyToClipboard(json);
-            });
-            EditorUtilsEx.GuiButtonAction("Background Triangles Texture Parameters Set", () =>
-            {
-                var set = GetPrefLoader().GetObject<TrianglesTexturePropsSetScriptableObject>
-                    (setName, "triangles_texture_set");
-                string json = JsonConvert.SerializeObject(set.set);
                 CommonUtils.CopyToClipboard(json);
             });
             EditorUtilsEx.GuiButtonAction("Background Triangles 2 Texture Parameters Set", () =>

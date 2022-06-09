@@ -29,7 +29,7 @@ namespace RMAZOR.Views.Common
         private IPrefabSetManager PrefabSetManager { get; set; }
 
         [Inject]
-        public void Inject(
+        private void Inject(
             RemoteProperties  _RemoteProperties,
             IPrefabSetManager _PrefabSetManager)
         {

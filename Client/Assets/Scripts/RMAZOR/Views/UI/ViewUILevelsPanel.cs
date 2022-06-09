@@ -58,7 +58,7 @@ namespace RMAZOR.Views.UI
         private IViewGameTicker             GameTicker        { get; }
         private IManagersGetter             Managers          { get; }
 
-        public ViewUILevelsPanel(
+        private ViewUILevelsPanel(
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IContainersGetter           _ContainersGetter,
@@ -88,7 +88,7 @@ namespace RMAZOR.Views.UI
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     UpdateCheckMarks();
@@ -215,6 +215,5 @@ namespace RMAZOR.Views.UI
         }
 
         #endregion
-        
     }
 }

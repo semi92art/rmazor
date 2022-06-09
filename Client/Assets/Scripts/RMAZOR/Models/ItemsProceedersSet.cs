@@ -22,7 +22,8 @@ namespace RMAZOR.Models
         IShredingerBlocksProceeder ShredingerBlocksProceeder { get; }
         ISpringboardProceeder      SpringboardProceeder      { get; }
         IHammersProceeder          HammersProceeder          { get; }
-        IBazookasProceeder        BazookasProceeder        { get; }
+        ISpearsProceeder           SpearsProceeder           { get; }
+        IDiodesProceeder           DiodesProceeder           { get; }
         
         IItemsProceeder[] GetProceeders();
     }
@@ -46,10 +47,10 @@ namespace RMAZOR.Models
         public IShredingerBlocksProceeder ShredingerBlocksProceeder { get; }
         public ISpringboardProceeder      SpringboardProceeder      { get; }
         public IHammersProceeder          HammersProceeder          { get; }
-        public IBazookasProceeder        BazookasProceeder        { get; }
-
-
-        public ModelItemsProceedersSet(
+        public ISpearsProceeder           SpearsProceeder           { get; }
+        public IDiodesProceeder           DiodesProceeder           { get; }
+        
+        private ModelItemsProceedersSet(
             ITrapsMovingProceeder      _TrapsMovingProceeder,
             IGravityItemsProceeder     _GravityItemsProceeder,
             ITrapsReactProceeder       _TrapsReactProceeder,
@@ -59,7 +60,8 @@ namespace RMAZOR.Models
             IShredingerBlocksProceeder _ShredingerBlocksProceeder,
             ISpringboardProceeder      _SpringboardProceeder,
             IHammersProceeder          _HammersProceeder,
-            IBazookasProceeder        _BazookasProceeder)
+            ISpearsProceeder           _SpearsProceeder,
+            IDiodesProceeder           _DiodesProceeder)
         {
             TrapsMovingProceeder      = _TrapsMovingProceeder;
             GravityItemsProceeder     = _GravityItemsProceeder;
@@ -70,7 +72,8 @@ namespace RMAZOR.Models
             ShredingerBlocksProceeder = _ShredingerBlocksProceeder;
             SpringboardProceeder      = _SpringboardProceeder;
             HammersProceeder          = _HammersProceeder;
-            BazookasProceeder        = _BazookasProceeder;
+            SpearsProceeder           = _SpearsProceeder;
+            DiodesProceeder           = _DiodesProceeder;
         }
 
         #endregion
@@ -104,7 +107,8 @@ namespace RMAZOR.Models
                 ShredingerBlocksProceeder,
                 SpringboardProceeder,
                 HammersProceeder,
-                BazookasProceeder,
+                SpearsProceeder,
+                DiodesProceeder,
             };
             return m_ProceedersCached;
         }

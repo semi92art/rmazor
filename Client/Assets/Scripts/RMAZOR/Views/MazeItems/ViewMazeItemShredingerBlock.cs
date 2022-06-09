@@ -50,7 +50,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
 
-        public ViewMazeItemShredingerBlock(
+        private ViewMazeItemShredingerBlock(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,
@@ -109,9 +109,9 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.Loaded)
+            if (_Args.LevelStage == ELevelStage.Loaded)
                 m_IsBlockClosed = false;
-            if (_Args.Stage == ELevelStage.ReadyToStart)
+            if (_Args.LevelStage == ELevelStage.ReadyToStart)
                 Cor.Run(CloseBlockCoroutine(false, true));
         }
 

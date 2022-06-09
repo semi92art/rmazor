@@ -33,7 +33,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private IManagersGetter Managers { get; }
         
-        public ViewMazeTurretsGroup(
+        private ViewMazeTurretsGroup(
             IViewMazeCommon _Common,
             IManagersGetter _Managers)
             : base(_Common)
@@ -58,7 +58,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage != ELevelStage.Loaded)
+            if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
             m_BulletCounter = 0;
             foreach (var item in GetItems().Cast<IViewMazeItemTurret>())

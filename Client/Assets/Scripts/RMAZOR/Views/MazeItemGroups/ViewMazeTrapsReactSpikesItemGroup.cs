@@ -18,7 +18,7 @@ namespace RMAZOR.Views.MazeItemGroups
     {
         #region inject
         
-        public ViewMazeTrapsReactSpikesItemGroup(IViewMazeCommon _Common) : base (_Common) { }
+        private ViewMazeTrapsReactSpikesItemGroup(IViewMazeCommon _Common) : base (_Common) { }
         
         #endregion
         
@@ -28,7 +28,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public void OnMazeTrapReactStageChanged(MazeItemTrapReactEventArgs _Args)
         {
-            Common.GetItem<IViewMazeItemTrapReact>(_Args.Info).OnTrapReact(_Args);
+            Common.GetItem<IViewMazeItemTrapReact>(_Args.Info)?.OnTrapReact(_Args);
         }
         
         #endregion

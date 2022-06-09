@@ -7,33 +7,32 @@ namespace RMAZOR
     [CreateAssetMenu(fileName = "view_settings", menuName = "Configs and Sets/View Settings", order = 1)]
     public class ViewSettings : ScriptableObject
     {
-        public float lineWidth;
-        public float cornerWidth;
-        public float cornerRadius;
-        public float movingTrapRotationSpeed;
-        public float shredingerLineOffsetSpeed;
-        public float turretProjectileRotationSpeed;
-        public int   blockItemsCount;
-        public int   pathItemsCount;
-        public bool  collectStartPathItemOnLevelLoaded;
-        public float mazeRotationSpeed;
-        public float finishTimeExcellent;
-        public float finishTimeGood;
-        public float gravityTrapRotationSpeed;
-        public float bottomScreenOffset;
-        public float topScreenOffset;
-        public float moveSwipeThreshold;
-        public float afterRotationEnableMoveDelay;
-        public int   rateRequestsFrequency;
-        public int   adsRequestsFrequency;
-        public int   levelsCountMain;
-        public int   firstLevelToRateGame;
-        public float mazeItemTransitionTime;
-        public float mazeItemTransitionDelayCoefficient;
-        public float bazookaProjectileSpeed;
-        public float bazookaRotationSpeed;
-        public int   additionalBackTexturesCount;
-        public float filledPathAlpha;
+        public float  lineWidth;
+        public float  cornerWidth;
+        public float  cornerRadius;
+        public float  movingTrapRotationSpeed;
+        public float  shredingerLineOffsetSpeed;
+        public float  turretProjectileRotationSpeed;
+        public int    blockItemsCount;
+        public int    pathItemsCount;
+        public bool   collectStartPathItemOnLevelLoaded;
+        public float  mazeRotationSpeed;
+        public float  finishTimeExcellent;
+        public float  finishTimeGood;
+        public float  gravityTrapRotationSpeed;
+        public float  bottomScreenOffset;
+        public float  topScreenOffset;
+        public float  moveSwipeThreshold;
+        public float  afterRotationEnableMoveDelay;
+        public int    levelsCountMain;
+        public int    firstLevelToRateGame;
+        public float  mazeItemTransitionTime;
+        public float  mazeItemTransitionDelayCoefficient;
+        public float  spearProjectileSpeed;
+        public float  spearRotationSpeed;
+        public string additionalBackTexturesInUse;
+        public float  filledPathAlpha;
+        public float  skipLevelSeconds;
 
         public float LineWidth
         {

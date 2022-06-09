@@ -13,6 +13,7 @@ namespace RMAZOR.UI.Panels
     public class CharacterDiedDialogPanel2 : CharacterDiedDialogPanelBase
     {
         #region nonpublic members
+        
         protected override string             PrefabName => "character_died_panel_2";
         
         #endregion

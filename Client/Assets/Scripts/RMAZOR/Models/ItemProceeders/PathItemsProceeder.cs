@@ -29,7 +29,7 @@ namespace RMAZOR.Models.ItemProceeders
         #region nonpublic members
 
         private V2Int[] m_CurrentFullPath;
-        private bool        m_AllPathItemsNotInPathProceeded;
+        private bool    m_AllPathItemsNotInPathProceeded;
 
         #endregion
         
@@ -38,9 +38,9 @@ namespace RMAZOR.Models.ItemProceeders
         private IModelData      Data      { get; }
         private IModelCharacter Character { get; }
 
-        public PathItemsProceeder(IModelData _Data, IModelCharacter _Character)
+        private PathItemsProceeder(IModelData _Data, IModelCharacter _Character)
         {
-            Data = _Data;
+            Data      = _Data;
             Character = _Character;
         }
         
@@ -83,7 +83,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            if (_Args.LevelStage == ELevelStage.Loaded)
                 CollectPathProceeds();
         }
 

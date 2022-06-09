@@ -137,7 +137,7 @@ namespace Common.Managers.Notifications
         private ICommonTicker        Ticker  { get; }
         private INotificationSetting Setting { get; }
 
-        public NotificationsManagerUnity(
+        private NotificationsManagerUnity(
             ICommonTicker        _Ticker,
             INotificationSetting _Setting)
         {

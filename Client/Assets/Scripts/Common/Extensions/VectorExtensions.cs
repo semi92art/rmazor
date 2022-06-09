@@ -59,5 +59,10 @@ namespace Common.Extensions
         {
             return _V1.x * _V2.y - _V1.y * _V2.x;
         }
+
+        public static Vector2 AddRandom(this Vector2 _V, float _Xcoeff = 1f, float _Ycoeff = 1f)
+        {
+            return _V + new Vector2(Random.value * _Xcoeff, Random.value + _Ycoeff);
+        }
     }
 }

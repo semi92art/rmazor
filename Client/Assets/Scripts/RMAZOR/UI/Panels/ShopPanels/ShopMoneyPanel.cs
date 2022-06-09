@@ -48,14 +48,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private IModelGame Model { get; }
 
-        public ShopMoneyPanel(
+        private ShopMoneyPanel(
             IModelGame       _Model,
             IManagersGetter  _Managers,
             IUITicker        _UITicker,
             IBigDialogViewer _DialogViewer,
             ICameraProvider  _CameraProvider,
             IColorProvider   _ColorProvider)
-            : base(_Managers, _UITicker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base(
+                _Managers, 
+                _UITicker,
+                _DialogViewer,
+                _CameraProvider,
+                _ColorProvider)
         {
             Model = _Model;
         }

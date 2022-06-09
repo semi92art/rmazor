@@ -29,13 +29,12 @@ MonoBehaviour:
   topScreenOffset: 10
   moveSwipeThreshold: 0.1
   afterRotationEnableMoveDelay: 0.1
-  rateRequestsFrequency: 20
-  adsRequestsFrequency: 5
   levelsCountMain: 360
   firstLevelToRateGame: 4
-  mazeItemTransitionTime: 0.6
+  mazeItemTransitionTime: 1
   mazeItemTransitionDelayCoefficient: 0
-  bazookaProjectileSpeed: 0.4
-  bazookaRotationSpeed: 5
-  additionalBackTexturesCount: 5
+  spearProjectileSpeed: 0.4
+  spearRotationSpeed: 5
+  additionalBackTexturesInUse: 1
   filledPathAlpha: 0.884
+  skipLevelSeconds: 10

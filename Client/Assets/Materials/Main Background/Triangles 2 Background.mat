@@ -62,6 +62,8 @@ Material:
     m_Ints: []
     m_Floats:
     - _A: 0.32
+    - _AnimationRange: 0.2
+    - _AnimationSpeed: 3
     - _B: 0.281
     - _BumpScale: 1
     - _C: -9.09

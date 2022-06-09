@@ -42,9 +42,9 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private IMazeCoordinateConverter CoordinateConverter { get; }
 
-        public ViewMazeMovingItemsGroup(
+        protected ViewMazeMovingItemsGroup(
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewMazeCommon _Common)
+            IViewMazeCommon          _Common)
             : base(_Common)
         {
             CoordinateConverter = _CoordinateConverter;

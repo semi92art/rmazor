@@ -16,7 +16,7 @@ namespace RMAZOR.Models.InputSchedulers
         private IInputSchedulerGameProceeder InputSchedulerGameProceeder { get; }
         private IInputSchedulerUiProceeder InputSchedulerUiProceeder { get; }
 
-        public InputScheduler(
+        private InputScheduler(
             IInputSchedulerGameProceeder _InputSchedulerGameProceeder,
             IInputSchedulerUiProceeder _InputSchedulerUiProceeder)
         {
@@ -50,8 +50,8 @@ namespace RMAZOR.Models.InputSchedulers
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool @lock = _Args.Stage != ELevelStage.StartedOrContinued 
-                        && _Args.Stage != ELevelStage.ReadyToStart;
+            bool @lock = _Args.LevelStage != ELevelStage.StartedOrContinued 
+                        && _Args.LevelStage != ELevelStage.ReadyToStart;
             LockMovement(@lock);
             LockRotation(@lock);
             InputSchedulerGameProceeder.OnLevelStageChanged(_Args);

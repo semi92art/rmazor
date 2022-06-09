@@ -66,7 +66,7 @@ namespace RMAZOR.Views.MazeItems
         private ModelSettings                 ModelSettings        { get; }
         private IViewMazeAdditionalBackground AdditionalBackground { get; }
 
-        public ViewMazeItemTrapReactSpikes(
+        private ViewMazeItemTrapReactSpikes(
             ViewSettings                  _ViewSettings,
             ModelSettings                 _ModelSettings,
             IModelGame                    _Model,

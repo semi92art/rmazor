@@ -25,6 +25,7 @@ namespace RMAZOR.Views.Characters
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
+        ICharacterMoveContinued,
         ICharacterMoveFinished,
         IAppear
     {
@@ -43,9 +44,9 @@ namespace RMAZOR.Views.Characters
         #endregion
 
         #region nonpublic members
-        
+
         private static int AnimKeyStartMove    => AnimKeys.Anim;
-        private static int AnimKeyStartMove2    => AnimKeys.Anim4;
+        private static int AnimKeyStartMove2   => AnimKeys.Anim4;
         private static int AnimKeyBump         => AnimKeys.Anim2;
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
 
@@ -72,7 +73,7 @@ namespace RMAZOR.Views.Characters
         private IMazeCoordinateConverter      CoordinateConverter      { get; }
         private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
 
-        public ViewCharacterHead(
+        private ViewCharacterHead(
             IColorProvider                _ColorProvider,
             IContainersGetter             _ContainersGetter,
             IPrefabSetManager             _PrefabSetManager,
@@ -128,8 +129,8 @@ namespace RMAZOR.Views.Characters
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (m_Animator.IsNotNull())
-                m_Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
-            switch (_Args.Stage)
+                m_Animator.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     m_MazeOrientation = MazeOrientation.North;
@@ -157,6 +158,8 @@ namespace RMAZOR.Views.Characters
             m_Animator.SetTrigger(animKey);
         }
         
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args) { }
+        
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
             m_Animator.SetTrigger(AnimKeyBump);
@@ -173,12 +176,13 @@ namespace RMAZOR.Views.Characters
             if (_Appear)
                 m_Animator.SetTrigger(AnimKeyStartJumping);
             var charCol = ColorProvider.GetColor(ColorIds.Character);
+            var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
             BetweenLevelTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {new Component[] {m_HeadShape}, () => charCol},
-                    {new Component[] {m_BorderShape, m_Eye1Shape, m_Eye2Shape}, () => Color.black},
+                    {new Component[] {m_BorderShape, m_Eye1Shape, m_Eye2Shape}, () => charCol2},
                 },
                 () =>
                 {
@@ -198,9 +202,9 @@ namespace RMAZOR.Views.Characters
                     m_HeadShape.SetColor(_Color);
                     break;
                 case ColorIds.Character2:
-                    m_BorderShape.SetColor(Color.black);
-                    m_Eye1Shape  .SetColor(Color.black);
-                    m_Eye2Shape  .SetColor(Color.black);
+                    m_BorderShape.SetColor(_Color);
+                    m_Eye1Shape  .SetColor(_Color);
+                    m_Eye2Shape  .SetColor(_Color);
                     break;
             }
         }
@@ -217,23 +221,20 @@ namespace RMAZOR.Views.Characters
             m_Border = go.GetContentItem("border");
             m_Animator = go.GetCompItem<Animator>("animator");
             m_HeadCollider = go.GetCompItem<CircleCollider2D>("collider");
-            m_HeadShape = go.GetCompItem<Rectangle>("head shape");
-            m_Eye1Shape = go.GetCompItem<Rectangle>("eye_1");
-            m_Eye2Shape = go.GetCompItem<Rectangle>("eye_2");
-            m_BorderShape = go.GetCompItem<Rectangle>("border");
-            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
-            m_HeadShape.SetColor(ColorProvider.GetColor(ColorIds.Character))
+            m_HeadShape = go.GetCompItem<Rectangle>("head shape")
+                .SetColor(ColorProvider.GetColor(ColorIds.Character))
                 .SetSortingOrder(SortingOrders.Character);
-            m_Eye1Shape.SetSortingOrder(SortingOrders.Character + 1);
-            m_Eye2Shape.SetSortingOrder(SortingOrders.Character + 1);
-            m_BorderShape.SetSortingOrder(SortingOrders.Character - 1);
+            m_Eye1Shape = go.GetCompItem<Rectangle>("eye_1").SetSortingOrder(SortingOrders.Character + 1);
+            m_Eye2Shape = go.GetCompItem<Rectangle>("eye_2").SetSortingOrder(SortingOrders.Character + 1);
+            m_BorderShape = go.GetCompItem<Rectangle>("border").SetSortingOrder(SortingOrders.Character - 1);
+            m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
         }
         
         private void UpdatePrefab()
         {
-            var localScale = Vector3.one * CoordinateConverter.Scale * RelativeLocalScale;
-            m_Head.transform.localScale = localScale;
-            m_Border.transform.localScale = localScale;
+            var localScale = Vector2.one * CoordinateConverter.Scale * RelativeLocalScale;
+            m_Head.transform.SetLocalScaleXY(localScale);
+            m_Border.transform.SetLocalScaleXY(localScale);
         }
         
         private void SetOrientation(EMazeMoveDirection _Direction)

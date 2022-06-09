@@ -12,20 +12,30 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         ViewMazeBackgroundIdleItemBase, 
         IViewMazeBackgroundIdleItemTriangle
     {
-        private Triangle          m_Triangle;
-        private Triangle          m_Border;
+        #region nonpublic members
+        
+        private Triangle m_Triangle;
+        private Triangle m_Border;
 
-        public ViewMazeBackgroundIdleItemTriangle(
+        #endregion
+
+        #region inject
+        
+        private ViewMazeBackgroundIdleItemTriangle(
             IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter)
             : base(_PrefabSetManager, _CoordinateConverter) { }
+
+        #endregion
+
+        #region api
         
         public override object Clone()
         {
             return new ViewMazeBackgroundIdleItemTriangle(PrefabSetManager, CoordinateConverter);
         }
 
-        public override void Init(Transform  _Parent, PhysicsMaterial2D _Material)
+        public override void Init(Transform _Parent, PhysicsMaterial2D _Material)
         {
             Obj =PrefabSetManager.InitPrefab(_Parent, "background", "idle_item_triangle");
             m_Triangle = Obj.GetCompItem<Triangle>("triangle")
@@ -42,11 +52,11 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             rb.angularDrag = 0f;
             rb.sharedMaterial = _Material;
             Rigidbody = rb;
-            var coll = Obj.GetCompItem<Collider2D>("collider");
-            coll.sharedMaterial = _Material;
+            Coll = Obj.GetCompItem<Collider2D>("collider");
+            Coll.sharedMaterial = _Material;
         }
 
-        public override void SetColor(Color  _Color)
+        public override void SetColor(Color _Color)
         {
             m_Triangle.Color = _Color.SetA(0.2f);
             m_Border.Color = _Color.SetA(0.5f);
@@ -60,6 +70,10 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             Obj.transform.rotation = Quaternion.Euler(0f, 0f, Random.value * 360f);
         }
 
+        #endregion
+
+        #region nonpublic methods
+
         private static float GetTriangleArea(Vector2 _A, Vector2 _B, Vector2 _C)
         {
             float ab = Vector2.Distance(_A, _B);
@@ -68,5 +82,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             float p = (ab + bc + ca) * 0.5f;
             return Mathf.Sqrt(p * (p - ab) * (p - bc) * (p - ca));
         }
+
+        #endregion
     }
 }

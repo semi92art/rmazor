@@ -58,7 +58,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
 
-        public ViewMazeItemPortal(
+        private ViewMazeItemPortal(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,

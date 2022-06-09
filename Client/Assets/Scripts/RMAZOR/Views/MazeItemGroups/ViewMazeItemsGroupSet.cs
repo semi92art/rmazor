@@ -20,10 +20,11 @@ namespace RMAZOR.Views.MazeItemGroups
         IViewMazeTurretsGroup          TurretsGroup          { get; }
         IViewMazePortalsGroup          PortalsGroup          { get; }
         IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
-        IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        IViewMazeSpringboardsGroup     SpringboardsGroup     { get; }
         IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         IViewMazeHammersGroup          HammersGroup          { get; }
-        IViewMazeBazookasGroup        BazookasGroup        { get; }
+        IViewMazeSpearsGroup           SpearsGroup           { get; }
+        IViewMazeDiodesGroup      DiodesGroup           { get; }
         
         
         IViewMazeItemGroup[] GetGroups();
@@ -45,22 +46,24 @@ namespace RMAZOR.Views.MazeItemGroups
         public IViewMazeTurretsGroup          TurretsGroup          { get; }
         public IViewMazePortalsGroup          PortalsGroup          { get; }
         public IViewMazeShredingerBlocksGroup ShredingerBlocksGroup { get; }
-        public IViewMazeSpringboardItemsGroup SpringboardItemsGroup { get; }
+        public IViewMazeSpringboardsGroup     SpringboardsGroup     { get; }
         public IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         public IViewMazeHammersGroup          HammersGroup          { get; }
-        public IViewMazeBazookasGroup        BazookasGroup        { get; }
+        public IViewMazeSpearsGroup           SpearsGroup           { get; }
+        public IViewMazeDiodesGroup           DiodesGroup           { get; }
 
-        public ViewMazeItemsGroupSet(
+        private ViewMazeItemsGroupSet(
             IViewMazeMovingItemsGroup      _MovingItemsGroup,
             IViewMazeTrapsReactItemsGroup  _TrapsReactItemsGroup,
             IViewMazeTrapsIncItemsGroup    _TrapsIncItemsGroup,
             IViewMazeTurretsGroup          _TurretsGroup,
             IViewMazePortalsGroup          _PortalsGroup,
             IViewMazeShredingerBlocksGroup _ShredingerBlocksGroup,
-            IViewMazeSpringboardItemsGroup _SpringboardItemsGroup,
+            IViewMazeSpringboardsGroup     _SpringboardsGroup,
             IViewMazeGravityItemsGroup     _GravityItemsGroup,
             IViewMazeHammersGroup          _HammersGroup,
-            IViewMazeBazookasGroup        _BazookasGroup)
+            IViewMazeSpearsGroup           _SpearsGroup,
+            IViewMazeDiodesGroup           _DiodesGroup)
         {
             MovingItemsGroup      = _MovingItemsGroup;
             TrapsReactItemsGroup  = _TrapsReactItemsGroup;
@@ -68,10 +71,11 @@ namespace RMAZOR.Views.MazeItemGroups
             TurretsGroup          = _TurretsGroup;
             PortalsGroup          = _PortalsGroup;
             ShredingerBlocksGroup = _ShredingerBlocksGroup;
-            SpringboardItemsGroup = _SpringboardItemsGroup;
+            SpringboardsGroup     = _SpringboardsGroup;
             GravityItemsGroup     = _GravityItemsGroup;
             HammersGroup          = _HammersGroup;
-            BazookasGroup        = _BazookasGroup;
+            SpearsGroup           = _SpearsGroup;
+            DiodesGroup           = _DiodesGroup;
         }
 
         #endregion
@@ -90,10 +94,11 @@ namespace RMAZOR.Views.MazeItemGroups
                 TurretsGroup,
                 PortalsGroup,
                 ShredingerBlocksGroup,
-                SpringboardItemsGroup,
+                SpringboardsGroup,
                 GravityItemsGroup,
                 HammersGroup,
-                BazookasGroup
+                SpearsGroup,
+                DiodesGroup,
             };
             return m_GroupsCached;
         }

@@ -19,7 +19,7 @@ namespace RMAZOR.Views.MazeItemGroups
     {
         #region inject
         
-        public ViewMazeTrapsIncItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
+        private ViewMazeTrapsIncItemsGroup(IViewMazeCommon _Common) : base(_Common) { }
         
         #endregion
 

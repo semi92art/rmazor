@@ -17,9 +17,10 @@ namespace Common.Managers.Advertising
     
     public interface IAdsProvider : IAdsProviderBase
     {
-        void Init(bool                      _TestMode, float      _ShowRate, XElement _AdsData);
-        void ShowRewardedAd(UnityAction     _OnShown,  BoolEntity _ShowAds);
-        void ShowInterstitialAd(UnityAction _OnShown,  BoolEntity _ShowAds);
+        void Init(bool                      _TestMode, float _ShowRate, XElement _AdsData);
+        void LoadAd(AdvertisingType         _AdvertisingType);
+        void ShowRewardedAd(UnityAction     _OnShown, BoolEntity _ShowAds, bool _Forced);
+        void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds, bool _Forced);
     }
     
     public abstract class AdsProviderBase : IAdsProvider
@@ -57,8 +58,15 @@ namespace Common.Managers.Advertising
             });
         }
 
-        public void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds)
+        public abstract void LoadAd(AdvertisingType _AdvertisingType);
+
+        public void ShowRewardedAd(UnityAction _OnShown, BoolEntity _ShowAds, bool _Forced)
         {
+            if (_Forced)
+            {
+                ShowRewardedAdCore(_OnShown);
+                return;
+            }
             Cor.Run(Cor.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
@@ -71,8 +79,13 @@ namespace Common.Managers.Advertising
                 }));
         }
 
-        public void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds)
+        public void ShowInterstitialAd(UnityAction _OnShown, BoolEntity _ShowAds, bool _Forced)
         {
+            if (_Forced)
+            {
+                ShowInterstitialAdCore(_OnShown);
+                return;
+            }
             Cor.Run(Cor.WaitWhile(
                 () => _ShowAds.Result == EEntityResult.Pending,
                 () =>
@@ -92,14 +105,19 @@ namespace Common.Managers.Advertising
         protected abstract void InitConfigs(UnityAction _OnSuccess);
         protected abstract void InitRewardedAd();
         protected abstract void InitInterstitialAd();
-        
-        protected string GetAdsNodeValue(string _Source, string _Type)
+
+        private string GetAdsNodeValue(string _Source, string _Type)
         {
             return AdsData.Elements("ad")
                 .First(_El =>
-                    Compare(_El.Attribute("source")?.Value, _Source)
-                    && Compare(_El.Attribute("os")?.Value, CommonUtils.GetOsName().ToLower())
-                    && Compare(_El.Attribute("type")?.Value, _Type)).Value;
+                {
+                    string source = _El.Attribute("source")?.Value;
+                    string os = _El.Attribute("os")?.Value;
+                    string type = _El.Attribute("type")?.Value;
+                    return source.EqualsIgnoreCase(_Source)
+                           && os.EqualsIgnoreCase(CommonUtils.GetOsName().ToLower())
+                           && type.EqualsIgnoreCase(_Type);
+                }).Value;
         }
         
         private static bool Compare(string _S1, string _S2)

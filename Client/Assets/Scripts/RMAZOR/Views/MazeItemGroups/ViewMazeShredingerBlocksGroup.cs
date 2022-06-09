@@ -32,10 +32,10 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             if (_Args.BlockWhoStopped == null || _Args.BlockWhoStopped.Type != EMazeItemType.ShredingerBlock)
                 return;
-            GetItems()
+            GetItems(true)
                 .Cast<IViewMazeItemShredingerBlock>()
-                .SingleOrDefault(_Item => _Item.Props.Position == _Args.BlockWhoStopped.StartPosition)
-                ?.OnCharacterMoveFinished(_Args);
+                .Single(_Item => _Item.Props.Position == _Args.BlockWhoStopped.StartPosition)
+                .OnCharacterMoveFinished(_Args);
         }
     }
 }

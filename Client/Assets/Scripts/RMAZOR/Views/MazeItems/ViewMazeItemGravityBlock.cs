@@ -23,14 +23,14 @@ namespace RMAZOR.Views.MazeItems
     {
         #region shapes
 
-        protected override string ObjectName => "Gravity Block";
-        private Rectangle m_FilledShape;
+        protected override string    ObjectName => "Gravity Block";
+        private            Rectangle m_FilledShape;
         
         #endregion
         
         #region inject
 
-        public ViewMazeItemGravityBlock(
+        private ViewMazeItemGravityBlock(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,

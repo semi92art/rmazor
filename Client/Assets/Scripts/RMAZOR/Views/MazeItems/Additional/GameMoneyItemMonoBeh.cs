@@ -1,19 +1,20 @@
 ﻿using Common.Constants;
 using Common.Exceptions;
 using RMAZOR.Models;
+using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
     public class GameMoneyItemMonoBeh : MonoBehaviour, IOnLevelStageChanged
     {
-        public                   SpriteRenderer icon;
+        public                   Disc icon;
         [SerializeField] private Animator       anim;
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            anim.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
-            switch (_Args.Stage)
+            anim.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart:
                     anim.SetTrigger(AnimKeys.Anim);
@@ -29,7 +30,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 case ELevelStage.CharacterKilled:
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         

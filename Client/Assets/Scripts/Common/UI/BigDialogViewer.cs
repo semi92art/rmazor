@@ -84,7 +84,7 @@ namespace Common.UI
         private IAudioManager  AudioManager  { get; }
         private IColorProvider ColorProvider { get; }
 
-        public BigDialogViewer(
+        private BigDialogViewer(
             IAudioManager               _AudioManager,
             IUITicker                   _Ticker,
             IColorProvider              _ColorProvider,

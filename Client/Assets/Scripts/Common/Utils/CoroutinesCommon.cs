@@ -23,7 +23,7 @@ namespace Common.Utils
 
         public static IEnumerator Delay(
             float  _Delay,
-            UnityAction _OnDelay,
+            UnityAction _OnDelay = null,
             Func<bool> _OnBreak = null
         )
         {
@@ -36,12 +36,12 @@ namespace Common.Utils
 
         public static IEnumerator WaitWhile(
             Func<bool> _Predicate,
-            UnityAction _Action,
+            UnityAction _Action = null,
             Func<bool> _OnBreak = null,
             float? _Seconds = null,
             ITicker _Ticker = null)
         {
-            if (_Action == null || _Predicate == null)
+            if (_Predicate == null)
                 yield break;
             float time = _Ticker?.Time ?? Time.time;
             bool IsTimeValid()
@@ -58,7 +58,7 @@ namespace Common.Utils
                 if (_OnBreak != null && _OnBreak())
                     yield break;
             }
-            _Action();
+            _Action?.Invoke();
         }
         
         public static IEnumerator DoWhile(

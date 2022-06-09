@@ -9,8 +9,8 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.BackgroundIdleItems;
+using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
-using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
 
 namespace RMAZOR.Views.Common
 {
@@ -26,13 +26,13 @@ namespace RMAZOR.Views.Common
         
         #region inject
         
-        private IViewMazeBackgroundTriangles2TextureProvider Triangles2TextureProvider { get; }
+        private IFullscreenTextureProviderTriangles2 Triangles2TextureProvider { get; }
         private IViewGameTicker                              Ticker                    { get; }
         private IViewMazeBackgroundIdleItems                 IdleItems                 { get; }
 
-        public ViewMazeBackgroundTextureController(
+        private ViewMazeBackgroundTextureController(
             RemoteProperties                             _RemoteProperties,
-            IViewMazeBackgroundTriangles2TextureProvider _Triangles2TextureProvider,
+            IFullscreenTextureProviderTriangles2 _Triangles2TextureProvider,
             IPrefabSetManager                            _PrefabSetManager,
             IColorProvider                               _ColorProvider,
             IViewGameTicker                              _Ticker,
@@ -63,7 +63,7 @@ namespace RMAZOR.Views.Common
         {
             base.OnLevelStageChanged(_Args);
             IdleItems.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.Loaded)
+            if (_Args.LevelStage == ELevelStage.Loaded)
                 OnLevelLoaded(_Args);
         }
 
@@ -124,7 +124,7 @@ namespace RMAZOR.Views.Common
                 BackCol2Current);
         }
 
-        private void ActivateTexturePropertiesSet(long _LevelIndex, out IViewMazeBackgroundTextureProvider _Provider)
+        private void ActivateTexturePropertiesSet(long _LevelIndex, out IFullscreenTextureProvider _Provider)
         {
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int idx = group % m_TextureSetItems.Count;
@@ -141,12 +141,11 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private static int GetProviderIndex(IViewMazeBackgroundTextureProvider _Provider)
+        private static int GetProviderIndex(IFullscreenTextureProvider _Provider)
         {
             return _Provider switch
             {
-                IViewMazeBackgroundTrianglesTextureProvider =>  0,
-                IViewMazeBackgroundTriangles2TextureProvider => 1,
+                IFullscreenTextureProviderTriangles2 => 1,
                 _ => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }

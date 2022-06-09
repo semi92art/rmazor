@@ -40,7 +40,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
 
-        public ViewMazeItemGravityBlockFree(
+        protected ViewMazeItemGravityBlockFree(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,

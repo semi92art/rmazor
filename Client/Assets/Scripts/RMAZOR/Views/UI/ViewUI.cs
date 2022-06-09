@@ -3,7 +3,6 @@ using Common;
 using Common.Constants;
 using Common.Enums;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
@@ -11,7 +10,6 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.UI
@@ -20,36 +18,33 @@ namespace RMAZOR.Views.UI
     {
         #region inject
 
-        private CommonGameSettings          CommonGameSettings   { get; }
         private ViewSettings                ViewSettings         { get; }
         private IModelGame                  Model                { get; }
         private IUITicker                   Ticker               { get; }
         private IBigDialogViewer            BigDialogViewer      { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
-        private IDialogPanels               DialogPanels         { get; }
+        private IDialogPanelsSet            DialogPanelsSet      { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
         private IManagersGetter             Managers             { get; }
 
-        public ViewUI(
-            CommonGameSettings          _CommonGameSettings,
+        private ViewUI(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IUITicker                   _UITicker,
             IBigDialogViewer            _BigDialogViewer,
             IProposalDialogViewer       _ProposalDialogViewer,
-            IDialogPanels               _DialogPanels,
+            IDialogPanelsSet            _DialogPanelsSet,
             IViewUIGameControls         _GameControls,
             IViewInputCommandsProceeder _CommandsProceeder,
             IManagersGetter             _Managers)
             : base(_GameControls)
         {
-            CommonGameSettings   = _CommonGameSettings;
             ViewSettings         = _ViewSettings;
             Model                = _Model;
             Ticker               = _UITicker;
             BigDialogViewer      = _BigDialogViewer;
             ProposalDialogViewer = _ProposalDialogViewer;
-            DialogPanels         = _DialogPanels;
+            DialogPanelsSet      = _DialogPanelsSet;
             CommandsProceeder    = _CommandsProceeder;
             Managers             = _Managers;
         }
@@ -79,7 +74,7 @@ namespace RMAZOR.Views.UI
                        panel.AppearingState != EAppearingState.Dissapeared;
             };
             GameControls.Init();
-            DialogPanels.Init();
+            DialogPanelsSet.Init();
             base.Init();
         }
         
@@ -89,14 +84,14 @@ namespace RMAZOR.Views.UI
             {
                 case EInputCommand.SettingsMenu:
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
-                    DialogPanels.SettingDialogPanel.LoadPanel();
-                    BigDialogViewer.Show(DialogPanels.SettingDialogPanel);
+                    DialogPanelsSet.SettingDialogPanel.LoadPanel();
+                    BigDialogViewer.Show(DialogPanelsSet.SettingDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.ShopMenu:
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
-                    DialogPanels.ShopMoneyDialogPanel.LoadPanel();
-                    BigDialogViewer.Show(DialogPanels.ShopMoneyDialogPanel);
+                    DialogPanelsSet.ShopMoneyDialogPanel.LoadPanel();
+                    BigDialogViewer.Show(DialogPanelsSet.ShopMoneyDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
@@ -109,8 +104,8 @@ namespace RMAZOR.Views.UI
                     }
                     else
                     {
-                        DialogPanels.RateGameDialogPanel.LoadPanel();
-                        ProposalDialogViewer.Show(DialogPanels.RateGameDialogPanel, 3f);
+                        DialogPanelsSet.RateGameDialogPanel.LoadPanel();
+                        ProposalDialogViewer.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
                     }
                     int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
                     SaveUtils.PutValue(SaveKeysRmazor.RatePanelShowsCount, ratePanelShowsCount + 1);
@@ -120,7 +115,7 @@ namespace RMAZOR.Views.UI
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Finished && _Args.LevelIndex == ViewSettings.firstLevelToRateGame)
+            if (_Args.LevelStage == ELevelStage.Finished && _Args.LevelIndex == ViewSettings.firstLevelToRateGame)
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             GameControls.OnLevelStageChanged(_Args);
         }
@@ -131,39 +126,21 @@ namespace RMAZOR.Views.UI
                 return;
             if (CommonData.PurchasingSomething)
                 return;
-            if (CommonData.DoNotShowAdvertisingAfterAppUnpause)
-            {
-                CommonData.DoNotShowAdvertisingAfterAppUnpause = false;
-                return;
-            }
-            if (MustShowRateGamePanel())
+            if (MustShowRateGamePanelOnUnPause())
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
-            else if (MustShowAdvertising())
-            {
-                if (CommonGameSettings.showRewardedOnUnpause)
-                    Managers.AdsManager.ShowRewardedAd(null, null);
-                else
-                    Managers.AdsManager.ShowInterstitialAd(null, null);
-            }
         }
         
         #endregion
 
         #region nonpublic methods
         
-        private bool MustShowRateGamePanel()
+        private bool MustShowRateGamePanelOnUnPause()
         {
             int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
             return !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
                    && ratePanelShowsCount < 10
                    && Random.value < 0.5f
                    && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
-        }
-
-        private bool MustShowAdvertising()
-        {
-            return Model.LevelStaging.LevelIndex > CommonGameSettings.firstLevelToShowAds
-                   && !Application.isEditor;
         }
 
         #endregion

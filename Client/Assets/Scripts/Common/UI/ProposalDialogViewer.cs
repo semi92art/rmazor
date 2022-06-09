@@ -34,9 +34,8 @@ namespace Common.UI
         #endregion
 
         #region inject
-
-
-        public ProposalDialogViewer(
+        
+        private ProposalDialogViewer(
             IUITicker         _Ticker,
             ICameraProvider   _CameraProvider,
             IPrefabSetManager _PrefabSetManager)
@@ -92,8 +91,6 @@ namespace Common.UI
             CurrentPanel.OnDialogShow();
             CurrentPanel.AppearingState = EAppearingState.Appearing;
         }
-
-        
 
         public void Back(UnityAction _OnFinish = null)
         {

@@ -15,7 +15,7 @@ namespace Common.Managers.Scores
     {
         #region inject
         
-        public AndroidScoreManager(
+        private AndroidScoreManager(
             CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             ILocalizationManager     _LocalizationManager,
@@ -32,25 +32,25 @@ namespace Common.Managers.Scores
 
         #region api
         
-        public override ScoresEntity GetScoreFromLeaderboard(ushort _Id, bool _FromCache)
+        public override ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
         {
-            var entity = base.GetScoreFromLeaderboard(_Id, _FromCache);
-            return entity ?? GetScoreAndroid(_Id);
+            var entity = base.GetScoreFromLeaderboard(_Key, _FromCache);
+            return entity ?? GetScoreAndroid(_Key);
         }
 
-        public override bool SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache)
+        public override bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
         {
-            base.SetScoreToLeaderboard(_Id, _Value, _OnlyToCache);
+            base.SetScoreToLeaderboard(_Key, _Value, _OnlyToCache);
             if (!_OnlyToCache)
-                SetScoreAndroid(_Id, _Value);
+                SetScoreAndroid(_Key, _Value);
             return true;
         }
 
-        public override bool ShowLeaderboard(ushort _Id)
+        public override bool ShowLeaderboard(ushort _Key)
         {
-            if (!base.ShowLeaderboard(_Id))
+            if (!base.ShowLeaderboard(_Key))
                 return false;
-            ShowLeaderboardAndroid(_Id);
+            ShowLeaderboardAndroid(_Key);
             return true;
         }
 
@@ -117,11 +117,11 @@ namespace Common.Managers.Scores
                 });
         }
 
-        private ScoresEntity GetScoreAndroid(ushort _Id)
+        private ScoresEntity GetScoreAndroid(ushort _Key)
         {
             var scoreEntity = new ScoresEntity();
             PlayGamesPlatform.Instance.LoadScores(
-                GetScoreKey(_Id),
+                GetScoreId(_Key),
                 LeaderboardStart.PlayerCentered,
                 1,
                 LeaderboardCollection.Public,
@@ -134,31 +134,31 @@ namespace Common.Managers.Scores
                         {
                             if (_Data.PlayerScore != null)
                             {
-                                scoreEntity.Value.Add(_Id, _Data.PlayerScore.value);
+                                scoreEntity.Value.Add(_Key, _Data.PlayerScore.value);
                                 scoreEntity.Result = EEntityResult.Success;
                             }
                             else
                             {
                                 Dbg.LogWarning("Remote score data PlayerScore is null");
-                                scoreEntity = GetScoreCached(_Id, scoreEntity);
+                                scoreEntity = GetScoreCached(_Key, scoreEntity);
                             }
                         }
                         else
                         {
                             Dbg.LogWarning($"Remote score data status: {_Data.Status}");
-                            scoreEntity = GetScoreCached(_Id, scoreEntity);
+                            scoreEntity = GetScoreCached(_Key, scoreEntity);
                         }
                     }
                     else
                     {
                         Dbg.LogWarning("Remote score data is not valid.");
-                        scoreEntity = GetScoreCached(_Id, scoreEntity);
+                        scoreEntity = GetScoreCached(_Key, scoreEntity);
                     }
                 });
             return scoreEntity;
         }
         
-        private void SetScoreAndroid(ushort _Id, long _Value)
+        private void SetScoreAndroid(ushort _Key, long _Value)
         {
             if (!IsAuthenticatedInPlatformGameService())
             {
@@ -168,19 +168,19 @@ namespace Common.Managers.Scores
             Dbg.Log(nameof(SetScoreAndroid));
             PlayGamesPlatform.Instance.ReportScore(
                 _Value,
-                GetScoreKey(_Id),
+                GetScoreId(_Key),
                 _Success =>
                 {
                     if (!_Success)
                         Dbg.LogWarning("Failed to post leaderboard score");
-                    else Dbg.Log($"Successfully put score {_Value} to leaderboard {DataFieldIds.GetDataFieldName(_Id)}");
+                    else Dbg.Log($"Successfully put score {_Value} to leaderboard {DataFieldIds.GetDataFieldName(_Key)}");
                 });
         }
         
-        private void ShowLeaderboardAndroid(ushort _Id)
+        private void ShowLeaderboardAndroid(ushort _Key)
         {
-            string key = GetScoreKey(_Id);
-            PlayGamesPlatform.Instance.ShowLeaderboardUI(key);
+            string id = GetScoreId(_Key);
+            PlayGamesPlatform.Instance.ShowLeaderboardUI(id);
         }
         
         #endregion

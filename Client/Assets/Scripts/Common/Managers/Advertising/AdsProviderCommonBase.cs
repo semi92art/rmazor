@@ -1,4 +1,5 @@
-﻿using Common.Ticker;
+﻿using Common.Exceptions;
+using Common.Ticker;
 using Common.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -10,34 +11,49 @@ namespace Common.Managers.Advertising
         private readonly IAdBase         m_InterstitialAd;
         private readonly IAdBase         m_RewardedAd;
         
-        private   IViewGameTicker GameTicker { get; }
+        private IViewGameTicker  ViewGameTicker  { get; }
+        private IModelGameTicker ModelGameTicker { get; }
 
         protected AdsProviderCommonBase(
-            IAdBase         _InterstitialAd,
-            IAdBase         _RewardedAd,
-            IViewGameTicker _GameTicker)
+            IAdBase          _InterstitialAd,
+            IAdBase          _RewardedAd,
+            IViewGameTicker  _ViewGameTicker,
+            IModelGameTicker _ModelGameTicker)
         {
             m_InterstitialAd = _InterstitialAd;
             m_RewardedAd     = _RewardedAd;
-            GameTicker       = _GameTicker;
+            ViewGameTicker   = _ViewGameTicker;
+            ModelGameTicker  = _ModelGameTicker;
+        }
+
+        public override void LoadAd(AdvertisingType _AdvertisingType)
+        {
+            switch (_AdvertisingType)
+            {
+                case AdvertisingType.Interstitial: m_InterstitialAd.LoadAd(); break;
+                case AdvertisingType.Rewarded:     m_RewardedAd.LoadAd();     break;
+                default:                           throw new SwitchCaseNotImplementedException(_AdvertisingType);
+            }
         }
 
         protected override void ShowRewardedAdCore(UnityAction _OnShown)
         {
             if (RewardedAdReady)
             {
-                if (GameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
+                if (ModelGameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
                     OnRewardedAdShown = _OnShown;
                 else
                 {
-                    GameTicker.Pause = true;
+                    ModelGameTicker.Pause = true;
+                    ViewGameTicker.Pause = true;
                     OnRewardedAdShown = () =>
                     {
                         _OnShown?.Invoke();
-                        GameTicker.Pause = false;
+                        ModelGameTicker.Pause = false;
+                        ViewGameTicker.Pause = false;
                     };
                 }
-                m_RewardedAd.ShowAd(_OnShown);
+                m_RewardedAd.ShowAd(OnRewardedAdShown);
             }
             else
             {
@@ -50,18 +66,20 @@ namespace Common.Managers.Advertising
         {
             if (InterstitialAdReady)
             {
-                if (GameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
+                if (ModelGameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
                     OnInterstitialAdShown = _OnShown;
                 else
                 {
-                    GameTicker.Pause = true;
+                    ModelGameTicker.Pause = true;
+                    ViewGameTicker.Pause = true;
                     OnInterstitialAdShown = () =>
                     {
                         _OnShown?.Invoke();
-                        GameTicker.Pause = false;
+                        ModelGameTicker.Pause = false;
+                        ViewGameTicker.Pause = false;
                     };
                 }
-                m_InterstitialAd.ShowAd(_OnShown);
+                m_InterstitialAd.ShowAd(OnInterstitialAdShown);
             }
             else
             {

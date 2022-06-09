@@ -71,7 +71,7 @@ namespace Common.Managers
         private ILanguageSetting LanguageSetting { get; }
         private IFontProvider    FontProvider    { get; }
 
-        public LeanLocalizationManager(
+        private LeanLocalizationManager(
             ILanguageSetting _LanguageSetting,
             IFontProvider    _FontProvider)
         {

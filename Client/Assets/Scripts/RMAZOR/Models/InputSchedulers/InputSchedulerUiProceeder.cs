@@ -23,7 +23,7 @@ namespace RMAZOR.Models.InputSchedulers
         private IModelData         Data         { get; }
         private ILevelsLoader      LevelsLoader { get; }
 
-        public InputSchedulerUiProceeder(
+        private InputSchedulerUiProceeder(
             CommonGameSettings _Settings,
             IModelLevelStaging _LevelStaging,
             IModelData         _Data,

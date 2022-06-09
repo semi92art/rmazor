@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Exceptions;
 using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
@@ -22,26 +21,28 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         private IViewMazeItemTrapIncreasing   TrapIncreasing   { get; }
         private IViewMazeItemGravityBlockFree GravityBlockFree { get; }
         private IViewMazeItemHammer           Hammer           { get; }
-        private IViewMazeItemBazooka         Bazooka         { get; }
+        private IViewMazeItemSpear            Spear            { get; }
+        private IViewMazeItemDiode            Diode            { get; }
 
         #endregion
 
         #region protected constructor
 
         protected MazeItemsCreatorBase(
-            IViewMazeItemPath             _ItemPath        ,
-            IViewMazeItemGravityBlock     _GravityBlock    ,
-            IViewMazeItemMovingTrap       _MovingTrap      ,
-            IViewMazeItemShredingerBlock  _ShredingerBlock ,
-            IViewMazeItemTurret           _Turret          ,
-            IViewMazeItemSpringboard      _Springboard     ,
-            IViewMazeItemPortal           _Portal          ,
-            IViewMazeItemGravityTrap      _GravityTrap     ,
-            IViewMazeItemTrapReact        _TrapReact       ,
-            IViewMazeItemTrapIncreasing   _TrapIncreasing  ,
+            IViewMazeItemPath             _ItemPath,
+            IViewMazeItemGravityBlock     _GravityBlock,
+            IViewMazeItemMovingTrap       _MovingTrap,
+            IViewMazeItemShredingerBlock  _ShredingerBlock,
+            IViewMazeItemTurret           _Turret,
+            IViewMazeItemSpringboard      _Springboard,
+            IViewMazeItemPortal           _Portal,
+            IViewMazeItemGravityTrap      _GravityTrap,
+            IViewMazeItemTrapReact        _TrapReact,
+            IViewMazeItemTrapIncreasing   _TrapIncreasing,
             IViewMazeItemGravityBlockFree _GravityBlockFree,
-            IViewMazeItemHammer           _Hammer          ,
-            IViewMazeItemBazooka         _Bazooka        )
+            IViewMazeItemHammer           _Hammer,
+            IViewMazeItemSpear            _Spear,
+            IViewMazeItemDiode            _Diode)
         {
             ItemPath         = _ItemPath;
             GravityBlock     = _GravityBlock;
@@ -55,7 +56,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             TrapIncreasing   = _TrapIncreasing;
             GravityBlockFree = _GravityBlockFree;
             Hammer           = _Hammer;
-            Bazooka         = _Bazooka;
+            Spear            = _Spear;
+            Diode            = _Diode;
         }
 
         #endregion
@@ -77,26 +79,24 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
 
         public IViewMazeItem CloneDefaultBlock(EMazeItemType _Type)
         {
-            IViewMazeItem item;
-            switch (_Type)
+            IViewMazeItem item = _Type switch
             {
-                case EMazeItemType.GravityBlock:     item = GravityBlock;    break;
-                case EMazeItemType.ShredingerBlock:  item = ShredingerBlock; break;
-                case EMazeItemType.Portal:           item = Portal;          break;
-                case EMazeItemType.TrapReact:        item = TrapReact;       break;
-                case EMazeItemType.TrapIncreasing:   item = TrapIncreasing;  break;
-                case EMazeItemType.TrapMoving:       item = MovingTrap;      break;
-                case EMazeItemType.GravityTrap:      item = GravityTrap;     break;
-                case EMazeItemType.Turret:           item = Turret;          break;
-                case EMazeItemType.GravityBlockFree: item = GravityBlockFree;break;
-                case EMazeItemType.Springboard:      item = Springboard;     break;
-                case EMazeItemType.Hammer:           item = Hammer;          break;
-                case EMazeItemType.Bazooka:         item = Bazooka;          break;
-                case EMazeItemType.Block:                       
-                    item = null; break;
-                default:
-                    item = null; break;
-            }
+                EMazeItemType.GravityBlock     => GravityBlock,
+                EMazeItemType.ShredingerBlock  => ShredingerBlock,
+                EMazeItemType.Portal           => Portal,
+                EMazeItemType.TrapReact        => TrapReact,
+                EMazeItemType.TrapIncreasing   => TrapIncreasing,
+                EMazeItemType.TrapMoving       => MovingTrap,
+                EMazeItemType.GravityTrap      => GravityTrap,
+                EMazeItemType.Turret           => Turret,
+                EMazeItemType.GravityBlockFree => GravityBlockFree,
+                EMazeItemType.Springboard      => Springboard,
+                EMazeItemType.Hammer           => Hammer,
+                EMazeItemType.Spear            => Spear,
+                EMazeItemType.Diode            => Diode,
+                EMazeItemType.Block            => null,
+                _                              => null
+            };
             return (IViewMazeItem)item?.Clone();
         }
 

@@ -15,7 +15,7 @@ namespace RMAZOR.Views.Common
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded)
+            if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
             SetColorsOnNewLevel(_Args.LevelIndex);
         }

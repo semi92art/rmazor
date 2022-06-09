@@ -65,7 +65,7 @@ namespace RMAZOR.Views.Common
         private IPrefabSetManager             PrefabSetManager    { get; }
         private IViewBetweenLevelTransitioner Transitioner        { get; }
         
-        public ViewMazeAdditionalBackgroundDrawerSimple(
+        private ViewMazeAdditionalBackgroundDrawerSimple(
             ViewSettings                  _ViewSettings,
             IColorProvider                _ColorProvider,
             IContainersGetter             _ContainersGetter,
@@ -116,7 +116,7 @@ namespace RMAZOR.Views.Common
                 {m_Borders.GetAllActiveItems(), () => mainCol},
                 {m_Corners.GetAllActiveItems(), () => mainCol},
                 {new[] {m_TextureRendererBack}, () => back1Col},
-                {m_TextureRenderers.GetAllActiveItems(), () => mainCol.SetA(0.8f)}
+                {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
             Transitioner.DoAppearTransition(_Appear, dict, () =>
             {
@@ -206,11 +206,15 @@ namespace RMAZOR.Views.Common
             if (ratio > 0.7f)       prefabNameSuffix = "high_ratio";
             else if (ratio > 0.54f) prefabNameSuffix = "middle_ratio";
             else                    prefabNameSuffix = "low_ratio";
-            for (int i = 1; i <= ViewSettings.additionalBackTexturesCount; i++)
+            var idxs = ViewSettings.additionalBackTexturesInUse
+                .Split(',')
+                .Select(int.Parse)
+                .ToArray();
+            foreach (int idx in idxs)
             {
                 var textureSprite = PrefabSetManager.GetObject<Sprite>(
                     "background", 
-                    $"additional_background_texture_{i}_{prefabNameSuffix}");
+                    $"additional_background_texture_{idx}_{prefabNameSuffix}");
                 m_TextureSprites.Add(textureSprite);
             }
             for (int i = 1; i <= MasksPoolCount; i++)
@@ -296,7 +300,7 @@ namespace RMAZOR.Views.Common
             float width = scale * (maxX - minX + 2f * (0.5f + BorderRelativeIndent));
             float height = scale * (maxY - minY + 2f * (0.5f + BorderRelativeIndent));
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int textureTypeIdx = group % ViewSettings.additionalBackTexturesCount;
+            int textureTypeIdx = group % m_TextureSprites.Count;
             var renderer = m_TextureRenderers.FirstInactive;
             m_TextureRenderers.Activate(renderer);
             renderer.sprite = m_TextureSprites[textureTypeIdx];
@@ -308,7 +312,7 @@ namespace RMAZOR.Views.Common
             renderer.size = new Vector2(width, height);
             m_TextureRendererBack.transform.SetLocalPosXY(center)
                 .SetLocalScaleXY(new Vector2(width, height));
-            m_TextureRendererBack.color = ColorProvider.GetColor(ColorIds.Background1);
+            m_TextureRendererBack.color = ColorProvider.GetColor(ColorIds.Background2);
             var mask = m_TextureRendererMasks.FirstInactive;
             mask.SetWidth(width)
                 .SetHeight(height)

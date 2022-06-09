@@ -172,8 +172,8 @@ namespace RMAZOR
         public void Save(MazeInfo _Info, int _Index)
         {
             var lvls = LevelsCached;
-            _Info.AdditionalInfo.Comment1 = lvls[_Index]?.AdditionalInfo.Comment1;
-            _Info.AdditionalInfo.Comment2 = lvls[_Index]?.AdditionalInfo.Comment2;
+            _Info.AdditionalInfo.Arguments = lvls[_Index]?.AdditionalInfo.Arguments;
+            _Info.AdditionalInfo.Comment = lvls[_Index]?.AdditionalInfo.Comment;
             lvls[_Index] = _Info;
             ReloadList();
             Save();
@@ -272,10 +272,14 @@ namespace RMAZOR
             EditorGUI.LabelField(GetRect(), $"S: {info.Size.X}x{info.Size.Y}");
             if (fastMode)
                 return;
-            (x, w) = (x + w, _Rect.width * 0.5f - 2f * 40f);
-            info.AdditionalInfo.Comment1 = EditorGUI.TextField(GetRect(), info.AdditionalInfo.Comment1);
-            (x, w) = (x + w + 10f, _Rect.width * 0.5f - 2f * 40f - 10f);
-            info.AdditionalInfo.Comment2 = EditorGUI.TextField(GetRect(), info.AdditionalInfo.Comment2);
+            (x, w) = (x + w, 30f);
+            EditorGUI.LabelField(GetRect(), "Args:");
+            (x, w) = (x + w, _Rect.width * 0.5f - 2f * 40f - 30f);
+            info.AdditionalInfo.Arguments = EditorGUI.TextField(GetRect(), info.AdditionalInfo.Arguments);
+            (x, w) = (x + w, 15f);
+            EditorGUI.LabelField(GetRect(), "C:");
+            (x, w) = (x + w, _Rect.width * 0.5f - 2f * 40f - 15f);
+            info.AdditionalInfo.Comment = EditorGUI.TextField(GetRect(), info.AdditionalInfo.Comment);
             var selectedFilters = filters
                 .Where(_Kvp => _Kvp.Value)
                 .Select(_Kvp => _Kvp.Key)
@@ -326,7 +330,8 @@ namespace RMAZOR
             {EMazeItemType.GravityBlockFree, new Color(0.94f, 1f, 0.96f)},
             {EMazeItemType.Springboard,      Color.black},
             {EMazeItemType.Hammer,           new Color(1f, 0.54f, 0.55f)},
-            {EMazeItemType.Bazooka,          new Color(0.05f, 0.05f, 0.37f)},
+            {EMazeItemType.Spear,            new Color(0.05f, 0.05f, 0.37f)},
+            {EMazeItemType.Diode,            new Color(0.71f, 0.46f, 0.51f)},
         };
         
         private static LevelsSaver GetLevelsSaver()

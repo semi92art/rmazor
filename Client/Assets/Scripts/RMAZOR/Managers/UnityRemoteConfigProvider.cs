@@ -63,7 +63,7 @@ namespace RMAZOR.Managers
         protected override void GetRemoteConfig(RemoteConfigPropertyInfo _Info)
         {
             var config = ConfigManager.appConfig;
-            var entity = _Info.GetCachedValue;
+            var entity = _Info.GetCachedValueEntity;
             Cor.Run(Cor.WaitWhile(
                 () => entity.Result == EEntityResult.Pending,
                 () =>

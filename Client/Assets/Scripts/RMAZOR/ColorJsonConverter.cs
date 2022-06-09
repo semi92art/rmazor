@@ -27,7 +27,7 @@ namespace RMAZOR
         {
             string serialized = (string) _Reader.Value!;
             var hexCol = JsonConvert.DeserializeObject<ColorHex>(serialized);
-            return ColorHex.FromHexToUnityColor(hexCol);
+            return ColorHex.FromHexToUnityColor(hexCol!);
         }
     }
 }

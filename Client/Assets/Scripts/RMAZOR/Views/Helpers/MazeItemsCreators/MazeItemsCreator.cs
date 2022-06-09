@@ -14,7 +14,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         #region inject
         
         [Inject]
-        public MazeItemsCreator(
+        private MazeItemsCreator(
             IViewMazeItemPath             _ItemPath,
             IViewMazeItemGravityBlock     _GravityBlock,
             IViewMazeItemMovingTrap       _MovingTrap,
@@ -27,7 +27,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             IViewMazeItemTrapIncreasing   _TrapIncreasing,
             IViewMazeItemGravityBlockFree _GravityBlockFree,
             IViewMazeItemHammer           _Hammer,
-            IViewMazeItemBazooka         _Bazooka) 
+            IViewMazeItemSpear            _Spear,
+            IViewMazeItemDiode            _Diode) 
             : base(
             _ItemPath,
             _GravityBlock, 
@@ -41,7 +42,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             _TrapIncreasing,
             _GravityBlockFree,
             _Hammer,
-            _Bazooka) { }
+            _Spear,
+            _Diode) { }
         
         #endregion
         
@@ -88,7 +90,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => 
-                !new [] {EMazeItemType.Block, EMazeItemType.Bazooka}.Contains(_Item.Type)))
+                !new [] {EMazeItemType.Block, EMazeItemType.Spear}.Contains(_Item.Type)))
             {
                 var props = new ViewMazeItemProps
                 {

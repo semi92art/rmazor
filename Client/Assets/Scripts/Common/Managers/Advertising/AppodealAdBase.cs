@@ -12,27 +12,35 @@ namespace Common.Managers.Advertising
         protected abstract int AdType { get; }
         
         protected          bool        DoLoadAdWithDelay;
-        protected volatile bool        m_DoInvokeOnShown;
+        protected volatile bool        DoInvokeOnShown;
         private            float       m_LoadAdDelayTimer;
         private            UnityAction m_OnShown;
         
         private CommonGameSettings Settings     { get; }
         private ICommonTicker      CommonTicker { get; }
 
-        protected AppodealAdBase(CommonGameSettings _Settings, ICommonTicker _CommonTicker)
+        protected AppodealAdBase(
+            CommonGameSettings _Settings,
+            ICommonTicker      _CommonTicker)
         {
-            Settings = _Settings;
+            Settings     = _Settings;
             CommonTicker = _CommonTicker;
         }
         
-        public bool Ready => Appodeal.isLoaded(AdType)
-                             && Appodeal.canShow(AdType, DefaultPlacement);
-        
+        public bool Ready
+        {
+            get
+            {
+                Dbg.Log($"Appodeal ad ready status: loaded: {Appodeal.isLoaded(AdType)}, canShow: {Appodeal.canShow(AdType, DefaultPlacement)}");
+                return Appodeal.isLoaded(AdType)
+                       && Appodeal.canShow(AdType, DefaultPlacement);
+            }
+        }
+
         public virtual void Init(string _AppId, string _UnitId)
         {
             CommonTicker.Register(this);
             Appodeal.setAutoCache(AdType, false);
-            Appodeal.initialize(_AppId, AdType);
         }
 
         public void LoadAd()
@@ -49,10 +57,10 @@ namespace Common.Managers.Advertising
 
         public void UpdateTick()
         {
-            if (m_DoInvokeOnShown)
+            if (DoInvokeOnShown)
             {
                 m_OnShown?.Invoke();
-                m_DoInvokeOnShown = false;
+                DoInvokeOnShown = false;
             }
             if (!DoLoadAdWithDelay)
                 return;

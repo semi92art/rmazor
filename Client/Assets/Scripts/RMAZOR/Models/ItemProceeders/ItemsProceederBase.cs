@@ -83,7 +83,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     CollectItems(Data.Info);
@@ -109,7 +109,7 @@ namespace RMAZOR.Models.ItemProceeders
                 case ELevelStage.CharacterKilled:
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         

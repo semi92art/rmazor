@@ -13,7 +13,7 @@ namespace Common.Managers.Analytics
         private IUnityAnalyticsProvider    UnityAnalyticsProvider    { get; }
         private IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
 
-        public AnalyticsManager(
+        private AnalyticsManager(
             CommonGameSettings         _GameSettings,
             IUnityAnalyticsProvider    _UnityAnalyticsProvider,
             IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider)

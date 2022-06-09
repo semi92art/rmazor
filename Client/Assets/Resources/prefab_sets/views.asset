@@ -57,5 +57,5 @@ MonoBehaviour:
       bundle: 0
     - item: {fileID: 6249100031341951073, guid: 6480efb53c273a04da4c3f4cb61d399d,
         type: 3}
-      name: bazooka
+      name: spear
       bundle: 0

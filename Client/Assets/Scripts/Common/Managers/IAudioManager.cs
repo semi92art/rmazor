@@ -26,7 +26,7 @@ namespace Common.Managers
         void UnmuteAudio(EAudioClipType _Type);
     }
 
-    public class AudioManagerCommon : InitBase, IAudioManager
+    public abstract class AudioManagerCommon : InitBase, IAudioManager
     {
          #region nonpublic members
 
@@ -46,7 +46,7 @@ namespace Common.Managers
         private ISoundSetting     SoundSetting     { get; }
         private IPrefabSetManager PrefabSetManager { get; }
 
-        public AudioManagerCommon(
+        protected AudioManagerCommon(
             IContainersGetter _ContainersGetter,
             IViewGameTicker   _GameTicker,
             IUITicker         _UITicker,

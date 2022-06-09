@@ -13,8 +13,10 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -56,7 +58,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
 
-        public ViewMazeItemTrapIncreasing(
+        private ViewMazeItemTrapIncreasing(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,
@@ -109,9 +111,9 @@ namespace RMAZOR.Views.MazeItems
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            m_Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
+            m_Animator.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
             base.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                     m_LevelsLoadCount++;
@@ -187,12 +189,17 @@ namespace RMAZOR.Views.MazeItems
             }
             foreach (var bladeContainer in m_BladeContainers)
             {
+                bladeContainer.SortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing) - 1;
                 bladeContainer.Thickness = 0.07f;
                 bladeContainer.EndCaps = LineEndCap.Round;
                 bladeContainer.enabled = false;
             }
+
             foreach (var blade in m_Blades)
+            {
+                blade.sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
                 blade.enabled = false;
+            }
         }
 
         protected override void UpdateShape()

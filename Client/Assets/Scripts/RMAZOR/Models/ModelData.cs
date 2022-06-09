@@ -29,7 +29,7 @@ namespace RMAZOR.Models
         
         private IModelMazeInfoCorrector MazeInfoCorrector { get; }
 
-        public ModelData(IModelMazeInfoCorrector _MazeInfoCorrector)
+        private ModelData(IModelMazeInfoCorrector _MazeInfoCorrector)
         {
             MazeInfoCorrector = _MazeInfoCorrector;
         }

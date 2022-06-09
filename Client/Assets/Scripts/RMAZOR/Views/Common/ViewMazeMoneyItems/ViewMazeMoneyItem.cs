@@ -25,7 +25,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         IEnumerable<Component> Renderers { get; }
     }
 
-    public class ViewMazeMoneyItemCrypto : IViewMazeMoneyItem
+    public class ViewMazeMoneyItemDisc : IViewMazeMoneyItem
     {
         #region nonpublic members
 
@@ -45,7 +45,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private IMazeCoordinateConverter CoordinateConverter { get; }
         private IAudioManager            AudioManager        { get; }
 
-        public ViewMazeMoneyItemCrypto(
+        private ViewMazeMoneyItemDisc(
             ViewSettings             _ViewSettings,
             IPrefabSetManager        _PrefabSetManager,
             IColorProvider           _ColorProvider,
@@ -64,7 +64,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         #region api
         
         public object Clone() => 
-            new ViewMazeMoneyItemCrypto(
+            new ViewMazeMoneyItemDisc(
                 ViewSettings, 
                 PrefabSetManager,
                 ColorProvider, 
@@ -128,10 +128,9 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             var go = PrefabSetManager.InitPrefab(
                 _Parent, "views", "money_item");
             m_Beh = go.GetCompItem<GameMoneyItemMonoBeh>("beh");
-            m_Beh.icon.sprite = PrefabSetManager.GetObject<Sprite>("icons", "icon_coin");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
-            m_Beh.icon.color = col;
-            m_Beh.icon.sortingOrder = SortingOrders.MoneyItem;
+            m_Beh.icon.SetColor(col);
+            m_Beh.icon.SetSortingOrder(SortingOrders.MoneyItem);
             go.transform.SetLocalPosXY(Vector2.zero);
             UpdateShape();
         }
@@ -140,7 +139,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (_ColorId != ColorIds.MoneyItem || !Active || IsCollected)
                 return;
-            m_Beh.icon.color = _Color;
+            m_Beh.icon.SetColor(_Color);
         }
 
         #endregion

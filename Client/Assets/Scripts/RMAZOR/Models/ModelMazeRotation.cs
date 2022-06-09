@@ -71,7 +71,7 @@ namespace RMAZOR.Models
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.CharacterKilled:
                     if (Data.Orientation == MazeOrientation.North)

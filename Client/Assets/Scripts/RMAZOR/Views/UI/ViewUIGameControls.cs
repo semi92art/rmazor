@@ -6,6 +6,7 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Providers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
@@ -27,6 +28,7 @@ namespace RMAZOR.Views.UI
         #region nonpublic members
 
         private object[] m_ProceedersCached;
+        private bool     m_ControlsShownFirstTime;
 
         #endregion
         
@@ -41,6 +43,7 @@ namespace RMAZOR.Views.UI
         private IViewUIRotationControls       RotationControls         { get; }
         private IViewUITopButtons             TopButtons               { get; }
         private IViewUITutorial               Tutorial                 { get; }
+        private IViewUILevelSkipper           LevelSkipper             { get; }
 
         public ViewUIGameControls(
             IModelGame                    _Model,
@@ -49,11 +52,12 @@ namespace RMAZOR.Views.UI
             IColorProvider                _ColorProvider,
             IViewUIPrompt                 _Prompt,
             IViewUICongratsMessage        _CongratsMessage,
-            IViewUIGameLogo              _GameLogo,
+            IViewUIGameLogo               _GameLogo,
             IViewUILevelsPanel            _LevelsPanel,
             IViewUIRotationControls       _RotationControls,
             IViewUITopButtons             _TopButtons,
-            IViewUITutorial               _Tutorial)
+            IViewUITutorial               _Tutorial,
+            IViewUILevelSkipper           _LevelSkipper)
             : base(_Model, _CommandsProceeder)
         {
             BetweenLevelTransitioner = _BetweenLevelTransitioner;
@@ -65,6 +69,7 @@ namespace RMAZOR.Views.UI
             RotationControls         = _RotationControls;
             TopButtons               = _TopButtons;
             Tutorial                 = _Tutorial;
+            LevelSkipper             = _LevelSkipper;
         }
 
         #endregion
@@ -81,7 +86,8 @@ namespace RMAZOR.Views.UI
                 Prompt,
                 TopButtons,
                 LevelsPanel,
-                Tutorial
+                Tutorial,
+                LevelSkipper
             };
             InitGameUI();
             base.Init();
@@ -93,10 +99,23 @@ namespace RMAZOR.Views.UI
             var allOnLevelStageChangedItems = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var uiItem in allOnLevelStageChangedItems)
                 uiItem?.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
-                case ELevelStage.Loaded:             ShowControls(true, false);  break;
-                case ELevelStage.ReadyToUnloadLevel: ShowControls(false, false); break;
+                case ELevelStage.Loaded:
+                    ShowControls(m_ControlsShownFirstTime, !m_ControlsShownFirstTime);
+                    break;
+                case ELevelStage.StartedOrContinued 
+                    when _Args.PreviousStage == ELevelStage.ReadyToStart
+                    && _Args.PrePreviousStage == ELevelStage.Loaded:
+                    if (!m_ControlsShownFirstTime)
+                    {
+                        ShowControls(true, true);
+                        m_ControlsShownFirstTime = true;
+                    }
+                    break;
+                case ELevelStage.ReadyToUnloadLevel: 
+                    ShowControls(false, false); 
+                    break;
             }
         }
 
@@ -107,8 +126,9 @@ namespace RMAZOR.Views.UI
         private void InitGameUI()
         {
             var allInitItems = GetInterfaceOfProceeders<IInitViewUIItem>();
+            var offsets = new Vector4(0, 0, BottomOffset, TopOffset);
             foreach (var uiItem in allInitItems)
-                uiItem?.Init(new Vector4(0, 0, BottomOffset, TopOffset));
+                uiItem?.Init(offsets);
             ColorProvider.ColorChanged += OnColorChanged;
             Tutorial.TutorialStarted   += OnTutorialStarted;
             Tutorial.TutorialFinished  += OnTutorialFinished;
@@ -166,7 +186,7 @@ namespace RMAZOR.Views.UI
         private void LockCommands(LevelStageArgs _Args)
         {
             const string group = nameof(IViewUIGameControls);
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.Paused:
@@ -199,7 +219,7 @@ namespace RMAZOR.Views.UI
                         CommandsProceeder.LockCommands(RmazorUtils.RotateCommands, group);
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         

@@ -40,7 +40,7 @@ namespace RMAZOR.Views.MazeItems
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.GravityTrap:
-                case EMazeItemType.Bazooka:
+                case EMazeItemType.Spear:
                     break;
                 case EMazeItemType.TrapIncreasing:
                     DrawGizmosTrapIncreasing();
@@ -51,6 +51,7 @@ namespace RMAZOR.Views.MazeItems
                     break;
                 case EMazeItemType.TrapReact:
                 case EMazeItemType.Turret:
+                case EMazeItemType.Diode:
                     DrawGizmosDirections();
                     break;
                 case EMazeItemType.Portal:

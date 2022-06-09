@@ -15,7 +15,7 @@ namespace Common.Managers
     public interface IAssetBundleManager : IInit
     {
         bool         BundlesLoaded { get; }
-        T            GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object;
+        T            GetAsset<T>(string _AssetName, string _BundleName) where T : Object;
     }
 
     public class BundleAssetPathInfo
@@ -78,23 +78,30 @@ namespace Common.Managers
             Cor.Run(LoadBundles());
         }
 
-        public T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
+        public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
             if (!BundlesLoaded)
             {
                 Dbg.LogError("Bundles were not initialized");
                 return default;
             }
+            var objectInfos = m_BundleAssetObjectInfos.GetSafe(
+                _BundleName, out bool containsKey);
+            if (!containsKey)
+            {
+                Dbg.LogError($"Bundle with key \"{_BundleName}\" was not found in asset bundles dictionary");
+                return default;
+            }
             var pathInfo = m_BundleAssetPathInfos.FirstOrDefault(
-                _I => _I.BundleName == _PrefabSetName && _I.AssetName == _AssetName);
+                _I => _I.BundleName == _BundleName && _I.AssetName == _AssetName);
             if (pathInfo == null)
             {
-                Dbg.LogError($"Bundle key \"{_AssetName}\" was not found in bundles names dictionary");
+                Dbg.LogError($"Asset name \"{_AssetName}\" was not found in asset names dictionary");
                 return default;
             }
             string path = pathInfo.AssetPath;
-            var objectInfo = m_BundleAssetObjectInfos[_PrefabSetName]
-                .FirstOrDefault(_I => _I.Path.EqualsIgnoreCase(path));
+            var objectInfo = objectInfos.FirstOrDefault(
+                _I => _I.Path.EqualsIgnoreCase(path));
             if (objectInfo != null) 
                 return objectInfo.Asset as T;
             Dbg.LogError($"Bundle path \"{path}\" was not found in bundles");
@@ -196,11 +203,11 @@ namespace Common.Managers
 
     public class AssetBundleManagerFake : InitBase, IAssetBundleManager
     {
-        public bool              BundlesLoaded => false;
+        public bool BundlesLoaded => true;
 
-        public T GetAsset<T>(string _AssetName, string _PrefabSetName) where T : Object
+        public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
-            throw new NotSupportedException();
+            return null;
         }
     }
 }

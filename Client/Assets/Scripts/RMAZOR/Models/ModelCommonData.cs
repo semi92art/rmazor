@@ -13,7 +13,7 @@
         public const int TrapIncreasingStageIncreased = 1;
         public const int ShredingerStageClosed        = 1;
         public const int GravityItemStageDrop         = 1;
-        public const int BazookaStageAppear           = 1;
-        public const int BazookaStageShoot            = 2;
+        public const int SpearStageAppear             = 1;
+        public const int SpearStageShoot              = 2;
     }
 }

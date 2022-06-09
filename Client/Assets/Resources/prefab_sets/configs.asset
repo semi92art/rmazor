@@ -23,15 +23,6 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
       name: common_game_settings
       bundle: 0
-    - item: {fileID: 11400000, guid: 89c941049acc92743a16fdbbed6b35a3, type: 2}
-      name: lines_texture_set
-      bundle: 0
-    - item: {fileID: 11400000, guid: 49c0476fabd0de94d8857888fe8b4ec0, type: 2}
-      name: circles_texture_set
-      bundle: 0
-    - item: {fileID: 11400000, guid: 11f57dde74a677f41a82337d2189bb22, type: 2}
-      name: circles2_texture_set
-      bundle: 0
     - item: {fileID: 11400000, guid: 1bc0e589c0093c44aa6a7fd8a7e759b1, type: 2}
       name: triangles_texture_set
       bundle: 0
@@ -39,5 +30,5 @@ MonoBehaviour:
       name: triangles2_texture_set
       bundle: 0
     - item: {fileID: 11400000, guid: 8f61b1750b52d734dabc81c3db819e86, type: 2}
-      name: back_and_front_colors_set_light
+      name: additional_colors_set
       bundle: 0

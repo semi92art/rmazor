@@ -37,9 +37,8 @@ namespace RMAZOR.Views.Common
         private IModelGame                                       Model               { get; }
         private IViewMazeAdditionalBackgroundGeometryInitializer GeometryInitializer { get; }
         private IViewMazeAdditionalBackgroundDrawer              Drawer              { get; }
-
-
-        public ViewMazeAdditionalBackground(
+        
+        private ViewMazeAdditionalBackground(
             IModelGame                                       _Model,
             IViewMazeAdditionalBackgroundGeometryInitializer _GeometryInitializer,
             IViewMazeAdditionalBackgroundDrawer              _Drawer)
@@ -65,7 +64,7 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:             OnLevelLoaded(_Args);   break;
                 case ELevelStage.ReadyToUnloadLevel: OnLevelReadyToUnload(); break;

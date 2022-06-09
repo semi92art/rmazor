@@ -21,21 +21,19 @@ namespace RMAZOR.Models.ItemProceeders
         protected override EMazeItemType[] Types => new[] {EMazeItemType.TrapMoving};
 
         #endregion
-        
 
         #region inject
 
-        public TrapsMovingProceeder(
-            ModelSettings _Settings, 
-            IModelData _Data,
-            IModelCharacter _Character,
+        private TrapsMovingProceeder(
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker)
             : base(_Settings, _Data, _Character, _GameTicker) { }
         
         #endregion
         
         #region api
-
 
         public void UpdateTick()
         {

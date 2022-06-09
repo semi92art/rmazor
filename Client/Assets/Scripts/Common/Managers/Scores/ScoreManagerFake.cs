@@ -22,17 +22,17 @@ namespace Common.Managers.Scores
                 _Ticker,
                 _RemoteSavedGameProvider) { }
 
-        public override ScoresEntity GetScoreFromLeaderboard(ushort _Id, bool _FromCache)
+        public override ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
         {
-            return base.GetScoreFromLeaderboard(_Id, true);
+            return base.GetScoreFromLeaderboard(_Key, true);
         }
 
-        public override bool SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache)
+        public override bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
         {
-            return base.SetScoreToLeaderboard(_Id, _Value, true);
+            return base.SetScoreToLeaderboard(_Key, _Value, true);
         }
 
-        public override bool ShowLeaderboard(ushort _Id)
+        public override bool ShowLeaderboard(ushort _Key)
         {
             Dbg.Log("Available only on device");
             return false;

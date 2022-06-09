@@ -17,7 +17,7 @@
 			#pragma vertex vert
 			#pragma fragment frag
 			#pragma multi_compile _ PIXELSNAP_ON
-			#include "Common.cginc"
+			#include "../Common.cginc"
 		
 			fixed4 _Color;
 

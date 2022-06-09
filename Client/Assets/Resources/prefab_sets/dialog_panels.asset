@@ -44,3 +44,7 @@ MonoBehaviour:
         type: 3}
       name: rate_game_panel
       bundle: 0
+    - item: {fileID: 8219298684319459333, guid: 68b1fe354cf0479498d1d94b5f781770,
+        type: 3}
+      name: tutorial_panel
+      bundle: 0

@@ -14,7 +14,7 @@ namespace RMAZOR.Views.Common
         private IViewMazeBackgroundCongradItems      FireworkItems     { get; }
         private IViewMazeBackgroundTextureController TextureController { get; }
 
-        public ViewBackground(
+        private ViewBackground(
             IColorProvider                       _ColorProvider,
             IViewMazeBackgroundCongradItems      _FireworkItems,
             IViewMazeBackgroundTextureController _TextureController) 

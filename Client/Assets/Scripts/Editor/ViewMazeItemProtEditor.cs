@@ -13,21 +13,21 @@ namespace Editor
         private const float AreaWidth  = 400f;
         private const float AreaHeight = 500f;
         
-        private ViewMazeItemProt   m_TargetCopy;
         private ViewMazeItemProt[] m_TargetsCopy;
         private EMazeItemType m_Type;
 
         private static GUIStyle GetHeader1Style()
         {
-            var style = new GUIStyle("label");
-            style.fontStyle = FontStyle.Bold;
-            style.fontSize = 14;
+            var style = new GUIStyle("label")
+            {
+                fontStyle = FontStyle.Bold,
+                fontSize = 14
+            };
             return style;
         } 
         
         private void OnEnable()
         {
-            m_TargetCopy = target as ViewMazeItemProt;
             m_TargetsCopy = targets.Cast<ViewMazeItemProt>().ToArray();
         }
 
@@ -66,7 +66,6 @@ namespace Editor
                 GUI.color = m_TargetsCopy[0].Props.IsStartNode ? Color.green : Color.white;
                 EditorUtilsEx.GuiButtonAction("Start", SetAsPathItemStart, m_TargetsCopy[0]);
             });
-
             GUI.color = Color.white;
             var props = m_TargetsCopy[0].Props;
             var popupRect = new Rect(0, 20, 200, 20);
@@ -83,19 +82,15 @@ namespace Editor
                 {
                     m_Type = MazeItemsPopup(popupRect, m_Type);
                     GUILayout.Space(20);
-
                     void SetType()
                     {
                         foreach (var t in m_TargetsCopy)
                             t.SetType(m_Type, false, false);
                     }
-
                     EditorUtilsEx.GuiButtonAction("Set type", SetType);
                 }
             }
-
             GUILayout.Space(20);
-
             var firstType = m_TargetsCopy.First().Props.Type;
             if (m_TargetsCopy.All(_I => _I.Props.Type == firstType))
                 DrawControlsForBlocksCollection(m_TargetsCopy);

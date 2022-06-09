@@ -20,7 +20,7 @@ namespace RMAZOR.Managers
         
         #region inject
 
-        public AudioManagerRmazor(
+        private AudioManagerRmazor(
             IContainersGetter _ContainersGetter,
             IViewGameTicker   _GameTicker,
             IUITicker         _UITicker,
@@ -41,7 +41,7 @@ namespace RMAZOR.Managers
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded) 
+            if (_Args.LevelStage != ELevelStage.Loaded) 
                 return;
             for (int i = 0; i < m_ClipInfos.Length; i++)
             {

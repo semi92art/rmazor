@@ -4,7 +4,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Common;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
@@ -45,10 +44,10 @@ namespace RMAZOR.Models
 
         #region inject
 
-        private ModelSettings Settings { get; }
-        private IModelData Data { get; }
+        private ModelSettings      Settings     { get; }
+        private IModelData         Data         { get; }
         private IModelLevelStaging LevelStaging { get; }
-        private IModelGameTicker GameTicker { get; }
+        private IModelGameTicker   GameTicker   { get; }
 
         public ModelCharacter(
             ModelSettings      _Settings,
@@ -70,7 +69,6 @@ namespace RMAZOR.Models
         public V2Int                             Position   { get; private set; }
         public bool                              IsMoving   { get; private set; }
         public CharacterMovingContinuedEventArgs MovingInfo { get; private set; }
-
         
         public Func<V2Int>                           GetStartPosition   { get;         set; }
         public Func<IMazeItemProceedInfo[]>          GetAllProceedInfos { private get; set; }
@@ -88,16 +86,16 @@ namespace RMAZOR.Models
                 LevelStaging.StartOrContinueLevel();
             
             var from = Position;
-            var to = GetNewPosition(from, _Direction, out var shredingerBlockPosWhoStopped);
+            var to = GetNewPosition(from, _Direction, out var blockPositionWhoStopped);
             var args = new CharacterMovingStartedEventArgs(_Direction, from, to);
             IsMoving = true;
             CharacterMoveStarted?.Invoke(args);
-            Cor.Run(MoveCharacterCore(_Direction, from, to, shredingerBlockPosWhoStopped));
+            Cor.Run(MoveCharacterCore(_Direction, from, to, blockPositionWhoStopped));
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:          Position = GetStartPosition(); break;
                 case ELevelStage.ReadyToStart:    Revive(false);      break;
@@ -121,7 +119,7 @@ namespace RMAZOR.Models
         
         #region nonpublic methods
 
-        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction, out V2Int? _ShredingerBlockPosWhoStopped)
+        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction, out V2Int? _BlockPositionWhoStopped)
         {
             var nextPos = Position;
             var infos = GetAllProceedInfos();
@@ -132,7 +130,7 @@ namespace RMAZOR.Models
                 _From,
                 nextPos,
                 nextPos + dirVector,
-                out _ShredingerBlockPosWhoStopped))
+                out _BlockPositionWhoStopped))
             {
                 nextPos += dirVector;
             }
@@ -145,9 +143,9 @@ namespace RMAZOR.Models
             V2Int                               _From,
             V2Int                               _CurrentPosition,
             V2Int                               _NextPosition,
-            out V2Int?                          _ShredingerBlockPosWhoStopped)
+            out V2Int?                          _BlockPositionWhoStopped)
         {
-            _ShredingerBlockPosWhoStopped = null;
+            _BlockPositionWhoStopped = null;
             bool isNode = false;
             for (int i = 0; i < _PathItems.Count; i++)
             {
@@ -182,8 +180,25 @@ namespace RMAZOR.Models
             }
             if (shredinger != null)
             {
-                _ShredingerBlockPosWhoStopped = _NextPosition;
+                _BlockPositionWhoStopped = _NextPosition;
                 return shredinger.ProceedingStage == ModelCommonData.StageIdle;
+            }
+            IMazeItemProceedInfo diode = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.Diode)
+                    continue;
+                if (info.CurrentPosition != _NextPosition)
+                    continue;
+                diode = info;
+                break;
+            }
+            if (diode != null)
+            {
+                _BlockPositionWhoStopped = _NextPosition;
+                bool nextPosIsInvalid = diode.Direction == -_NextPosition + _CurrentPosition;
+                return !nextPosIsInvalid;
             }
             bool isMazeItem = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
@@ -266,7 +281,7 @@ namespace RMAZOR.Models
             EMazeMoveDirection _Direction,
             V2Int _From,
             V2Int _To,
-            V2Int? _ShredingerBlockPosWhoStopped)
+            V2Int? _BlockPositionWhoStopped)
         {
             int thisCount = ++m_Counter;
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
@@ -299,12 +314,12 @@ namespace RMAZOR.Models
                         break;
                     }
                     IMazeItemProceedInfo blockWhoStopped = null;
-                    if (_ShredingerBlockPosWhoStopped.HasValue)
+                    if (_BlockPositionWhoStopped.HasValue)
                     {
                         for (int i = 0; i < infos.Length; i++)
                         {
                             var info = infos[i];
-                            if (info.StartPosition != _ShredingerBlockPosWhoStopped.Value)
+                            if (info.StartPosition != _BlockPositionWhoStopped.Value)
                                 continue;
                             blockWhoStopped = info;
                             break;

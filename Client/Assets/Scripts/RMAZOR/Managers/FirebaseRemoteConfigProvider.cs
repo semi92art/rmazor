@@ -19,7 +19,7 @@ namespace RMAZOR.Managers
         {
             if (CommonData.FirebaseApp != null)
             {
-                Dbg.Log("Firebase initialized successfully");
+                Dbg.Log("Firebase was initialized successfully before.");
                 return FetchDataAsync();
             }
             return FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
@@ -37,17 +37,14 @@ namespace RMAZOR.Managers
         
         private Task FetchDataAsync() 
         {
-            Dbg.Log("Fetching Remote Config data 1...");
             var fetchTask = FirebaseRemoteConfig.DefaultInstance.FetchAsync(
                 TimeSpan.Zero);
             return fetchTask.ContinueWithOnMainThread(_Task =>
             {
-                Dbg.Log("Fetching Remote Config data 2...");
                 FirebaseRemoteConfig.DefaultInstance
                     .ActivateAsync()
                     .ContinueWithOnMainThread(_Task2 =>
                     {
-                        Dbg.Log("Fetching Remote Config data 3...");
                         OnFetchConfigsCompletedSuccessfully();
                     });
             });

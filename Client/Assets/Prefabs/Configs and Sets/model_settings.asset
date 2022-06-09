@@ -26,7 +26,7 @@ MonoBehaviour:
   turretShootInterval: 0.5
   turretProjectileSpeed: 20
   shredingerBlockProceedTime: 3
-  hammerShotPause: 1
-  bazookaAppearPause: 2
-  bazookaShotsPerUnit: 1
-  bazookaShotPause: 1
+  hammerShotPause: 1.5
+  spearAppearPause: 2
+  spearShotsPerUnit: 1
+  spearShotPause: 1

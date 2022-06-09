@@ -92,11 +92,11 @@ namespace RMAZOR.Views.InputConfigurators
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Paused)
+            if (_Args.LevelStage == ELevelStage.Paused)
                 m_LeanFingerTap.OnFinger.RemoveListener(MoveNext);
             else if (_Args.PreviousStage == ELevelStage.Paused)
                 m_LeanFingerTap.OnFinger.AddListener(MoveNext);
-            if (_Args.Stage != ELevelStage.ReadyToStart || _Args.PreviousStage != ELevelStage.Loaded) 
+            if (_Args.LevelStage != ELevelStage.ReadyToStart || _Args.PreviousStage != ELevelStage.Loaded) 
                 return;
             if (RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
             {

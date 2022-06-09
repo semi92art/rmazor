@@ -44,7 +44,7 @@ namespace Common.Managers.Advertising
         public void onInterstitialShown() 
         { 
             Dbg.Log("Appodeal: Interstitial opened");
-            m_DoInvokeOnShown = true;
+            DoInvokeOnShown = true;
         } 
 
         // Called when interstitial is closed

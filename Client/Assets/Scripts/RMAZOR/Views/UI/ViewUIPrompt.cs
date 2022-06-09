@@ -51,8 +51,7 @@ namespace RMAZOR.Views.UI
         private bool        m_InTutorial;
         private GameObject  m_PromptObject;
         private TextMeshPro m_PromptText;
-
-
+        
         #endregion
 
         #region inject
@@ -66,7 +65,7 @@ namespace RMAZOR.Views.UI
         private IPrefabSetManager       PrefabSetManager    { get; }
         private IViewUIRotationControls RotationControls    { get; }
 
-        public ViewUIPrompt(
+        private ViewUIPrompt(
             IModelGame              _Model,
             IViewGameTicker         _GameTicker,
             IContainersGetter       _ContainersGetter,
@@ -92,13 +91,19 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
-            m_BottomOffset = _Offsets.z;
             GameTicker.Register(this);
+            m_BottomOffset = _Offsets.z;
+            
+            m_PromptObject = PrefabSetManager.InitPrefab(
+                null, "ui_game", "prompt");
+            m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
+            m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
+            m_PromptText.fontSize = 18f;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused && !m_InTutorial:
                     ShowPromptSwipeToStart(); 
@@ -123,7 +128,7 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.CharacterKilled:
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         
@@ -179,14 +184,14 @@ namespace RMAZOR.Views.UI
             }
             if (m_CurrentPromptInfo?.Key == _Key)
                 return;
-            if (m_CurrentPromptInfo == null || m_CurrentPromptInfo.PromptGo.IsNull())
-            {
-                m_PromptObject = PrefabSetManager.InitPrefab(
-                    null, "ui_game", "prompt");
-                m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
-                m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
-                m_PromptText.fontSize = 18f;
-            }
+            // if (m_CurrentPromptInfo == null || m_CurrentPromptInfo.PromptGo.IsNull())
+            // {
+            //     m_PromptObject = PrefabSetManager.InitPrefab(
+            //         null, "ui_game", "prompt");
+            //     m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
+            //     m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
+            //     m_PromptText.fontSize = 18f;
+            // }
             m_PromptObject.transform.position = _Position;
             var info = new LocalizableTextObjectInfo(m_PromptText, ETextType.GameUI, _Key);
             LocalizationManager.AddTextObject(info);

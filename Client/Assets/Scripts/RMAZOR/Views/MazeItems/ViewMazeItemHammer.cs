@@ -33,7 +33,9 @@ namespace RMAZOR.Views.MazeItems
     {
         #region constants
 
-        private const float Shot90DegTime = 0.1f;
+        private const float Shot90DegTime        = 0.1f;
+        private const float TailAlpha            = 0.3f;
+        private const int   ParticlesThrowerSize = 20;
 
         #endregion
 
@@ -43,6 +45,11 @@ namespace RMAZOR.Views.MazeItems
         
         private List<ShapeRenderer> m_MainShapes;
         private List<ShapeRenderer> m_AdditionalShapes;
+        private List<ShapeRenderer> m_AdditionalShapes2;
+        private List<ShapeRenderer> m_AdditionalShapes3;
+        private Disc                m_Tail;
+        private Transform           m_Side1, m_Side2;
+        private Collider2D          m_Collider;
 
         private          Transform           m_HammerContainer;
         private          bool                m_ProceedShots;
@@ -52,10 +59,12 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region inject
-        private IPrefabSetManager PrefabSetManager { get; }
-        private IMazeShaker       Shaker           { get; }
+        
+        private IPrefabSetManager     PrefabSetManager { get; }
+        private IMazeShaker           Shaker           { get; }
+        private IViewParticlesThrower ParticlesThrower { get; }
 
-        public ViewMazeItemHammer(
+        private ViewMazeItemHammer(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,
@@ -66,7 +75,8 @@ namespace RMAZOR.Views.MazeItems
             IColorProvider                _ColorProvider,
             IViewInputCommandsProceeder   _CommandsProceeder,
             IPrefabSetManager             _PrefabSetManager,
-            IMazeShaker                   _Shaker) 
+            IMazeShaker                   _Shaker,
+            IViewParticlesThrower         _ParticlesThrower) 
             : base(
                 _ViewSettings,
                 _Model,
@@ -80,6 +90,7 @@ namespace RMAZOR.Views.MazeItems
         {
             PrefabSetManager = _PrefabSetManager;
             Shaker           = _Shaker;
+            ParticlesThrower = _ParticlesThrower;
         }
 
         #endregion
@@ -98,7 +109,8 @@ namespace RMAZOR.Views.MazeItems
                 ColorProvider,
                 CommandsProceeder,
                 PrefabSetManager,
-                Shaker);
+                Shaker,
+                ParticlesThrower);
         
         public Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
         
@@ -114,17 +126,12 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            switch (_Args.Stage)
+            m_ProceedShots = _Args.LevelStage switch
             {
-                case ELevelStage.Loaded:
-                    
-
-                    m_ProceedShots = true;
-                    break;
-                case ELevelStage.Finished:
-                    m_ProceedShots = false;
-                    break;
-            }
+                ELevelStage.Loaded   => true,
+                ELevelStage.Finished => false,
+                _                    => m_ProceedShots
+            };
         }
 
         #endregion
@@ -148,6 +155,28 @@ namespace RMAZOR.Views.MazeItems
                 .GetComponentsInChildren<ShapeRenderer>()
                 .Select(_Shape => _Shape.SetSortingOrder(sortingOrder + 1))
                 .ToList();
+            m_AdditionalShapes2 = go.GetCompItem<Transform>("additional_shapes_2")
+                .GetComponentsInChildren<ShapeRenderer>()
+                .Select(_Shape => _Shape.SetSortingOrder(sortingOrder))
+                .ToList();
+            m_AdditionalShapes3 = go.GetCompItem<Transform>("additional_shapes_3")
+                .GetComponentsInChildren<ShapeRenderer>()
+                .Select(_Shape => _Shape.SetSortingOrder(sortingOrder + 1))
+                .ToList();
+            m_Tail = go.GetCompItem<Disc>("tail").SetSortingOrder(sortingOrder - 1);
+            m_Side1 = go.GetCompItem<Transform>("side_1");
+            m_Side2 = go.GetCompItem<Transform>("side_2");
+            m_Collider = go.GetCompItem<Collider2D>("collider");
+            InitParticlesThrower();
+        }
+
+        private void InitParticlesThrower()
+        {
+            int sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
+            ParticlesThrower.ParticleType = EParticleType.Bubbles;
+            ParticlesThrower.SetPoolSize(ParticlesThrowerSize);
+            ParticlesThrower.Init();
+            ParticlesThrower.SetSortingOrder(sortingOrder + 3);
         }
 
         protected override void UpdateShape()
@@ -158,6 +187,9 @@ namespace RMAZOR.Views.MazeItems
             Object.transform.localRotation = GetHammerLocalRotation();
             m_ShotAngle = int.Parse(Props.Args[0].Split(':')[1]);
             m_Clockwise = Props.Args[1].Split(':')[1] == "true";
+            m_Tail.Color = ColorProvider.GetColor(ColorIds.MazeItem1).SetA(TailAlpha);
+            SetHammerTailAngles(0f, 0f, false);
+            SetHammerAngle(0f);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -167,9 +199,16 @@ namespace RMAZOR.Views.MazeItems
                 case ColorIds.MazeItem1:
                     foreach (var shape in m_MainShapes)
                         shape.SetColor(_Color);
+                    m_Tail.SetColor(_Color.SetA(TailAlpha));
                     break;
                 case ColorIds.Background2:
                     foreach (var shape in m_AdditionalShapes)
+                        shape.SetColor(_Color);
+                    break;
+                case ColorIds.Main:
+                    foreach (var shape in m_AdditionalShapes2)
+                        shape.SetColor(_Color);
+                    foreach (var shape in m_AdditionalShapes3)
                         shape.SetColor(_Color);
                     break;
             }
@@ -210,31 +249,39 @@ namespace RMAZOR.Views.MazeItems
             float startAngle = _Back ? m_ShotAngle * coeff : 0f;
             float endAngle   = !_Back ? m_ShotAngle * coeff : 0f;
             yield return Cor.Lerp(
+                    GameTicker,
+                    Shot90DegTime * m_ShotAngle / 90f,
+                    _OnProgress: _P =>
+                    {
+                        float angle = Mathf.Lerp(startAngle, endAngle, _P);
+                        SetHammerAngle(angle);
+                        SetHammerTailAngles(startAngle, angle, _Back);
+                    });
+            var audioClipArgs = GetAudioClipInfoHammerShot();
+            Managers.AudioManager.PlayClip(audioClipArgs);
+            Cor.Run(Shaker.ShakeMazeCoroutine(0.05f, 0.1f));
+            ThrowParticlesOnShot(_Back);
+            Cor.Run(ShotFinishCoroutine(startAngle, endAngle));
+            yield return Cor.Lerp(
                 GameTicker,
-                Shot90DegTime * m_ShotAngle / 90f,
+                0.7f * Shot90DegTime * m_ShotAngle / 90f,
                 _OnProgress: _P =>
                 {
                     float angle = Mathf.Lerp(startAngle, endAngle, _P);
-                    SetHammerAngle(angle);
-                },
-                _OnFinish: () =>
-                {
-                    Managers.AudioManager.PlayClip( GetAudioClipInfoHammerShot());
-                    Cor.Run(Shaker.ShakeMazeCoroutine(0.05f, 0.1f));
-                    Cor.Run(ShotFinishCoroutine(startAngle, endAngle));
+                    SetHammerTailAngles(angle, endAngle, _Back);
                 });
         }
 
         private IEnumerator ShotFinishCoroutine(float _StartAngle, float _EndAngle)
         {
-            float addichAngle = _EndAngle > _StartAngle ? -5f : 5f; 
+            float addictAngle = _EndAngle > _StartAngle ? -5f : 5f;
             yield return Cor.Lerp(
                 GameTicker,
                 0.03f,
                 _OnProgress: _P =>
                 {
-                    float angle = Mathf.Lerp(_EndAngle, _EndAngle + addichAngle, _P);
-                    SetHammerAngle(angle);     
+                    float angle = Mathf.Lerp(_EndAngle, _EndAngle + addictAngle, _P);
+                    SetHammerAngle(angle);
                 },
                 _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P));
         }
@@ -244,6 +291,25 @@ namespace RMAZOR.Views.MazeItems
             m_HammerContainer.localRotation = Quaternion.Euler(Vector3.forward * _Angle);
         }
 
+        private void SetHammerTailAngles(float _StartAngle, float _EndAngle, bool _Back)
+        {
+            _StartAngle += 90f;
+            _EndAngle += 90f;
+            m_Tail.AngRadiansStart = (!_Back ? _StartAngle : _EndAngle) * Mathf.Deg2Rad;
+            m_Tail.AngRadiansEnd = (_Back ? _StartAngle : _EndAngle) * Mathf.Deg2Rad;
+        }
+        
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var sets = base.GetAppearSets(_Appear);
+            var additCol = ColorProvider.GetColor(ColorIds.Background2);
+            var additCol2 = ColorProvider.GetColor(ColorIds.Main);
+            sets.Add(m_AdditionalShapes, () => additCol);
+            sets.Add(m_AdditionalShapes2, () => additCol2);
+            sets.Add(m_AdditionalShapes3, () => additCol2);
+            return sets;
+        }
+        
         protected override void OnAppearStart(bool _Appear)
         {
             base.OnAppearStart(_Appear);
@@ -251,14 +317,12 @@ namespace RMAZOR.Views.MazeItems
                 return;
             foreach (var shape in m_AdditionalShapes)
                 ActivateRenderer(shape, true);
-        }
-
-        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
-        {
-            var sets = base.GetAppearSets(_Appear);
-            var additCol = ColorProvider.GetColor(ColorIds.Background2);
-            sets.Add(m_AdditionalShapes, () => additCol);
-            return sets;
+            foreach (var shape in m_AdditionalShapes2)
+                ActivateRenderer(shape, true);
+            foreach (var shape in m_AdditionalShapes3)
+                ActivateRenderer(shape, true);
+            ActivateRenderer(m_Tail, true);
+            m_Collider.enabled = true;
         }
 
         protected override void OnAppearFinish(bool _Appear)
@@ -268,11 +332,42 @@ namespace RMAZOR.Views.MazeItems
                 return;
             foreach (var shape in m_AdditionalShapes)
                 ActivateRenderer(shape, false);
+            foreach (var shape in m_AdditionalShapes2)
+                ActivateRenderer(shape, false);
+            foreach (var shape in m_AdditionalShapes3)
+                ActivateRenderer(shape, false);
+            ActivateRenderer(m_Tail, false);
+            m_Collider.enabled = false;
         }
 
         private AudioClipArgs GetAudioClipInfoHammerShot()
         {
             return new AudioClipArgs("hammer_shot", EAudioClipType.GameSound, 0.3f, _Id: m_ShotAngle.ToString());
+        }
+        
+        private void ThrowParticlesOnShot(bool _Back)
+        {
+            const float directSpeedCoefficient = 4f;
+            float GetDirectSpeedAddict(float _DirectionCoordinate)
+            {
+                return -_DirectionCoordinate * directSpeedCoefficient;
+            }
+            var sideTr = _Back ^ !m_Clockwise ? m_Side1 : m_Side2;
+            Vector2 moveDir = sideTr.TransformDirection(sideTr.up);
+            for (int i = 0; i < ParticlesThrowerSize; i++)
+            {
+                float orthDirCoeff = i % 2 == 0 ? 1f : -1f;
+                var throwSpeed = new Vector2(
+                    GetDirectSpeedAddict(moveDir.x),
+                    GetDirectSpeedAddict(moveDir.y)) 
+                + new Vector2((UnityEngine.Random.value - 0.5f),
+                    (UnityEngine.Random.value - 0.5f)) * 3f;
+                float orthCoeff2 = m_Clockwise ? 1f : -1f;
+                var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff * orthCoeff2;
+                var pos = (Vector2)sideTr.position + orthDir * (UnityEngine.Random.value * 0.8f);
+                float randScale = 0.2f + 0.15f * UnityEngine.Random.value;
+                ParticlesThrower.ThrowParticle(pos, throwSpeed, randScale, 0.15f);
+            }
         }
 
         #endregion

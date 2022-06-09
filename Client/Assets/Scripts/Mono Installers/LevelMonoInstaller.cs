@@ -16,7 +16,7 @@ using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.CongratulationItems;
-using RMAZOR.Views.Common.ViewMazeBackgroundTextureProviders;
+using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Helpers;
@@ -65,9 +65,9 @@ namespace Mono_Installers
             Container.Bind<IShredingerBlocksProceeder>()  .To<ShredingerBlocksProceeder>()  .AsSingle();
             Container.Bind<ISpringboardProceeder>()       .To<SpringboardProceeder>()       .AsSingle();
             Container.Bind<IHammersProceeder>()           .To<HammersProceeder>()           .AsSingle();
-            Container.Bind<IBazookasProceeder>()         .To<BazookasProceeder>()         .AsSingle();
+            Container.Bind<ISpearsProceeder>()            .To<SpearsProceeder>()            .AsSingle();
+            Container.Bind<IDiodesProceeder>()            .To<DiodesProceeder>()            .AsSingle();
             Container.Bind<IModelItemsProceedersSet>()    .To<ModelItemsProceedersSet>()    .AsSingle();
-            
             
             Container.Bind<IModelMazeInfoCorrector>()     .To<ModelMazeInfoCorrectorWithWallSurrounding>().AsSingle();
         }
@@ -120,13 +120,11 @@ namespace Mono_Installers
             Container.Bind<IViewInputCommandsProceeder>().To(inputControllerType) .AsSingle();
 
             Container.Bind<IColorProvider>()       .FromComponentInNewPrefab(colorProvider).AsSingle();
-            Container.Bind<ViewUISubtitleWithCharacterMonoBeh>().FromComponentInNewPrefab(subtitle).AsSingle();
-            Container.Bind<IViewUISubtitles>()     .To<ViewUISubtitles>()                  .AsSingle();
         }
 
         private void BindMazeItemBlocksAndGroups()
         {
-            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemCrypto>()          .AsSingle();
+            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()          .AsSingle();
             Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPathFilled>()           .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
@@ -139,19 +137,21 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemTrapIncreasing>()    .To<ViewMazeItemTrapIncreasing>()       .AsSingle();
             Container.Bind<IViewMazeItemGravityBlockFree>()  .To<ViewMazeItemGravityBlockFree>()     .AsSingle();
             Container.Bind<IViewMazeItemHammer>()            .To<ViewMazeItemHammer>()               .AsSingle();
-            Container.Bind<IViewMazeItemBazooka>()          .To<ViewMazeItemBazooka>()             .AsSingle();
+            Container.Bind<IViewMazeItemSpear>()             .To<ViewMazeItemSpear>()                .AsSingle();
+            Container.Bind<IViewMazeItemDiode>()             .To<ViewMazeItemDiode>()                .AsSingle();
             
             Container.Bind<IViewMazePathItemsGroup>()        .To<ViewMazePathItemsGroup>()           .AsSingle();
             Container.Bind<IViewMazeMovingItemsGroup>()      .To<ViewMazeMovingItemsGroup>()         .AsSingle();
             Container.Bind<IViewMazeShredingerBlocksGroup>() .To<ViewMazeShredingerBlocksGroup>()    .AsSingle();
             Container.Bind<IViewMazeTurretsGroup>()          .To<ViewMazeTurretsGroup>()             .AsSingle();
-            Container.Bind<IViewMazeSpringboardItemsGroup>() .To<ViewMazeSpringboardItemsGroup>()    .AsSingle();
+            Container.Bind<IViewMazeSpringboardsGroup>()     .To<ViewMazeSpringboardsGroup>()        .AsSingle();
             Container.Bind<IViewMazePortalsGroup>()          .To<ViewMazePortalsGroup>()             .AsSingle();
             Container.Bind<IViewMazeTrapsReactItemsGroup>()  .To<ViewMazeTrapsReactSpikesItemGroup>().AsSingle();
             Container.Bind<IViewMazeTrapsIncItemsGroup>()    .To<ViewMazeTrapsIncItemsGroup>()       .AsSingle();
             Container.Bind<IViewMazeGravityItemsGroup>()     .To<ViewMazeGravityItemsGroup>()        .AsSingle();
             Container.Bind<IViewMazeHammersGroup>()          .To<ViewMazeHammersGroup>()             .AsSingle();
-            Container.Bind<IViewMazeBazookasGroup>()        .To<ViewMazeBazookasGroup>()           .AsSingle();
+            Container.Bind<IViewMazeSpearsGroup>()           .To<ViewMazeSpearsGroup>()              .AsSingle();
+            Container.Bind<IViewMazeDiodesGroup>()           .To<ViewMazeDiodesGroup>()              .AsSingle();
             
             Container.Bind<IViewMazeItemsGroupSet>()         .To<ViewMazeItemsGroupSet>()            .AsSingle();
         }
@@ -162,7 +162,8 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
             Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailSimple>()       .AsSingle();
-            Container.Bind<IViewBubbleItem>()        .To<ViewBubbleItem>()                .AsSingle();
+            Container.Bind<IViewParticleBubble>()    .To<ViewParticleBubble>()            .AsSingle();
+            Container.Bind<IViewParticlesThrower>()  .To<ViewParticlesThrower>()          .AsTransient();
         }
 
         private void BindUiCommon()
@@ -172,6 +173,7 @@ namespace Mono_Installers
                 Container.Bind<IViewUI>()                .To<ViewUIProt>()             .AsSingle();
                 Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControlsProt>() .AsSingle();
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoFake>()     .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>().AsSingle();
             }
             else
             {
@@ -184,6 +186,7 @@ namespace Mono_Installers
                 Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()       .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()         .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>().AsSingle();
             }
         }
 
@@ -193,15 +196,17 @@ namespace Mono_Installers
             {
                 Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewerFake>().AsSingle();
                 Container.Bind<IBigDialogViewer>()           .To<BigDialogViewerFake>()     .AsSingle();
-                Container.Bind<IDialogPanels>()              .To<DialogPanelsFake>()        .AsSingle();
+                Container.Bind<IDialogPanelsSet>()           .To<DialogPanelsSetFake>()     .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanelFake>() .AsSingle();
             }
             else
             {
-                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()     .AsSingle();
                 Container.Bind<IBigDialogViewer>()           .To<BigDialogViewer>()         .AsSingle();
                 Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewer>()    .AsSingle();
-                Container.Bind<IDialogPanels>()              .To<DialogPanels>()            .AsSingle();
+                Container.Bind<IDialogPanelsSet>()           .To<DialogPanelsSet>()         .AsSingle();
+                
+                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()     .AsSingle();
+                Container.Bind<ITutorialDialogPanel>()       .To<TutorialDialogPanel>()     .AsSingle();
                 Container.Bind<ISettingSelectorDialogPanel>().To<SettingsSelectorPanel>()   .AsSingle();
                 Container.Bind<IShopDialogPanel>()           .To<ShopPanel>()               .AsSingle();
                 Container.Bind<IShopMoneyDialogPanel>()      .To<ShopMoneyPanel>()          .AsSingle();
@@ -214,11 +219,10 @@ namespace Mono_Installers
 
         private void BindTextureProviders()
         {
-            Container.Bind<IViewMazeBackgroundTextureController>()        .To<ViewMazeBackgroundTextureController>()         .AsSingle();
-            Container.Bind<IViewMazeBackgroundTrianglesTextureProvider>() .To<ViewMazeBackgroundTrianglesTextureProvider>()  .AsSingle();
-            Container.Bind<IViewMazeBackgroundTriangles2TextureProvider>().To<ViewMazeBackgroundTriangles2TextureProvider>() .AsSingle();
-            Container.Bind<IViewMazeGameLogoTextureProvider>()            .To<ViewMazeGameLogoSingleCircleTextureProvider>() .AsSingle();
-            Container.Bind<IBetweenLevelTextureProvider>()                .To<BetweenLevelLinesTextureProvider>()            .AsSingle();
+            Container.Bind<IViewMazeBackgroundTextureController>().To<ViewMazeBackgroundTextureController>()        .AsSingle();
+            Container.Bind<IFullscreenTextureProviderTriangles2>().To<FullscreenTriangles2TextureProvider>()        .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProviderCircles>() .AsSingle();
+            Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
         }
 
         private void BindOther()

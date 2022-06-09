@@ -41,7 +41,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private IContainersGetter        ContainersGetter    { get; }
         private IColorProvider           ColorProvider       { get; }
 
-        public ViewTurretProjectileTail(
+        private ViewTurretProjectileTail(
             IMazeCoordinateConverter _CoordinateConverter,
             IContainersGetter        _ContainersGetter,
             IColorProvider           _ColorProvider)

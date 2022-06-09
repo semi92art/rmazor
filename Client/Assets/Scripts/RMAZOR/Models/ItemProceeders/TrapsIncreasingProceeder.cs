@@ -36,7 +36,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         #region inject
         
-        public TrapsIncreasingProceeder(
+        private TrapsIncreasingProceeder(
             ModelSettings    _Settings,
             IModelData       _Data,
             IModelCharacter  _Character,

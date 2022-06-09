@@ -10,20 +10,30 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
     
     public class ViewMazeBackgroundIdleItemSquare : ViewMazeBackgroundIdleItemBase, IViewMazeBackgroundIdleItemSquare
     {
-        private Rectangle     m_Rectangle;
-        private Rectangle     m_Border;
+        #region nonpublic members
+        
+        private Rectangle m_Rectangle;
+        private Rectangle m_Border;
 
-        public ViewMazeBackgroundIdleItemSquare(
+        #endregion
+
+        #region inject
+        
+        private ViewMazeBackgroundIdleItemSquare(
             IPrefabSetManager        _PrefabSetManager,
             IMazeCoordinateConverter _CoordinateConverter)
             : base(_PrefabSetManager, _CoordinateConverter) { }
+
+        #endregion
+
+        #region api
         
         public override object Clone()
         {
             return new ViewMazeBackgroundIdleItemSquare(PrefabSetManager, CoordinateConverter);
         }
 
-        public override void Init(Transform  _Parent, PhysicsMaterial2D _Material)
+        public override void Init(Transform _Parent, PhysicsMaterial2D _Material)
         {
             Obj = PrefabSetManager.InitPrefab(_Parent, "background", "idle_item_square");
             m_Rectangle = Obj.GetCompItem<Rectangle>("rectangle")
@@ -40,8 +50,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             rb.angularDrag = 0f;
             rb.sharedMaterial = _Material;
             Rigidbody = rb;
-            var coll = Obj.GetCompItem<Collider2D>("collider");
-            coll.sharedMaterial = _Material;
+            Coll = Obj.GetCompItem<Collider2D>("collider");
+            Coll.sharedMaterial = _Material;
         }
 
         public override void SetColor(Color _Color)
@@ -57,5 +67,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             Rigidbody.mass = _Scale * _Scale;
             Obj.transform.rotation = Quaternion.Euler(0f, 0f, Random.value * 360f);
         }
+
+        #endregion
     }
 }

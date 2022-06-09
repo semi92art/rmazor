@@ -94,9 +94,10 @@ namespace Mono_Installers
 #else
             Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_4_1>().AsSingle();
 #endif
-            Container.Bind<IAdsManager>()               .To<CustomMediationAdsManager>()    .AsSingle();
+            Container.Bind<IAdsManager>()               .To<AdsManager>()    .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
             Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
 
             #endregion
             

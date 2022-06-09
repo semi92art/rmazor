@@ -29,7 +29,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
         
-        public ViewMazeItemPathFilled(
+        private ViewMazeItemPathFilled(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
             IMazeCoordinateConverter      _CoordinateConverter,

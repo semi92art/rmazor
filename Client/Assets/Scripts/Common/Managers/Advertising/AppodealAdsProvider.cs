@@ -22,11 +22,12 @@ namespace Common.Managers.Advertising
         private IAppodealInterstitialAd InterstitialAd { get; }
         private IAppodealRewardedAd     RewardedAd     { get; }
 
-        public AppodealAdsProvider(
+        private AppodealAdsProvider(
             IAppodealInterstitialAd _InterstitialAd,
             IAppodealRewardedAd     _RewardedAd,
-            IViewGameTicker         _ViewGameTicker) 
-            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker)
+            IViewGameTicker         _ViewGameTicker,
+            IModelGameTicker        _ModelGameTicker) 
+            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker, _ModelGameTicker)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;
@@ -39,30 +40,7 @@ namespace Common.Managers.Advertising
         public override string Source              => AdvertisingNetworks.Appodeal;
         public override bool   RewardedAdReady     => RewardedAd.Ready;
         public override bool   InterstitialAdReady => InterstitialAd.Ready;
-
-        #endregion
-
-        #region nonpublic methods
-
-        protected override void InitConfigs(UnityAction _OnSuccess)
-        {
-            Appodeal.setTesting(TestMode);
-            Appodeal.setLogLevel(Appodeal.LogLevel.Verbose);
-            Appodeal.setChildDirectedTreatment(true);
-        }
-
-        protected override void InitRewardedAd()
-        {
-            RewardedAd.Init(AppId, RewardedUnitId);
-        }
-
-        protected override void InitInterstitialAd()
-        {
-            InterstitialAd.Init(AppId, InterstitialUnitId);
-        }
-
-        #endregion
-
+        
         // User's consent status successfully updated.
         public void onConsentInfoUpdated(Consent _Consent)
         {
@@ -76,5 +54,67 @@ namespace Common.Managers.Advertising
         {
             Dbg.Log($"onFailedToUpdateConsentInfo Reason: {_Error.getReason()}");
         }
+
+        #endregion
+
+        #region nonpublic methods
+
+        protected override void InitConfigs(UnityAction _OnSuccess)
+        {
+            Appodeal.setTesting(TestMode);
+            Appodeal.setLogLevel(TestMode ? Appodeal.LogLevel.Debug : Appodeal.LogLevel.None);
+            Appodeal.setChildDirectedTreatment(true);
+            Appodeal.initialize(AppId, Appodeal.INTERSTITIAL | Appodeal.REWARDED_VIDEO);
+            DisableUnusedNetworks();
+        }
+
+        protected override void InitRewardedAd()
+        {
+            RewardedAd.Init(AppId, RewardedUnitId);
+        }
+
+        protected override void InitInterstitialAd()
+        {
+            InterstitialAd.Init(AppId, InterstitialUnitId);
+        }
+
+        private static void DisableUnusedNetworks()
+        {
+            var unusedNetworks = new[]
+            {
+                AppodealNetworks.A4G,
+                AppodealNetworks.NAST,
+                AppodealNetworks.VAST,
+                AppodealNetworks.FYBER,
+                AppodealNetworks.MOPUB,
+                AppodealNetworks.MRAID,
+                AppodealNetworks.OGURY,
+                AppodealNetworks.FLURRY,
+                AppodealNetworks.INMOBI,
+                AppodealNetworks.SMAATO,
+                AppodealNetworks.TAPJOY,
+                AppodealNetworks.VUNGLE,
+                AppodealNetworks.ADCOLONY,
+                AppodealNetworks.APPLOVIN,
+                AppodealNetworks.APPODEAL,
+                AppodealNetworks.FACEBOOK,
+                AppodealNetworks.STARTAPP,
+                AppodealNetworks.AMAZON_ADS,
+                AppodealNetworks.MINTEGRAL,
+                AppodealNetworks.CHARTBOOST,
+                AppodealNetworks.IRONSOURCE,
+                // AppodealNetworks.YANDEX,
+                // AppodealNetworks.MY_TARGET,
+                // AppodealNetworks.BIDMACHINE,
+                // AppodealNetworks.ADMOB,
+                // AppodealNetworks.UNITY_ADS,
+            };
+            foreach (string network in unusedNetworks)
+                Appodeal.disableNetwork(network);
+        }
+
+        #endregion
+
+
     }
 }

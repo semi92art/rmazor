@@ -42,7 +42,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private IPrefabSetManager PrefabSetManager { get; }
         private IColorProvider    ColorProvider    { get; }
 
-        public ViewTurretProjectileShuriken(
+        private ViewTurretProjectileShuriken(
             IViewTurretProjectileTail _Tail,
             IContainersGetter         _ContainersGetter,
             IPrefabSetManager         _PrefabSetManager,

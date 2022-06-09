@@ -33,7 +33,7 @@ namespace RMAZOR.Views.UI
         private IManagersGetter   Managers         { get; }
         private IColorProvider    ColorProvider    { get; }
 
-        public RotatingPossibilityIndicator(
+        private RotatingPossibilityIndicator(
             IContainersGetter _ContainersGetter,
             IManagersGetter   _Managers,
             IColorProvider    _ColorProvider)
@@ -65,7 +65,7 @@ namespace RMAZOR.Views.UI
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            Animator.speed = _Args.Stage == ELevelStage.Paused ? 0f : 1f;
+            Animator.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
         }
 
         #endregion

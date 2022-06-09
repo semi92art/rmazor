@@ -32,15 +32,15 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
       name: triangles2_background
       bundle: 0
-    - item: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
+    - item: {fileID: 2100000, guid: 257d6236a55738249aded0c5e51e3814, type: 2}
       name: solid_background
       bundle: 0
     - item: {fileID: 2100000, guid: c0a423367bef21246963430fe0e63562, type: 2}
       name: single_circle_background
       bundle: 0
-    - item: {fileID: 2100000, guid: 9e967ce894f65c64fbeaa36bc18aa7f8, type: 2}
-      name: between_level_texture_material
+    - item: {fileID: 2100000, guid: afb34e80db91395458d229f0ae343723, type: 2}
+      name: between_level_texture_material_circles
       bundle: 0
-    - item: {fileID: 2100000, guid: b69efb9eed7550f48b0b2b67c8e478f0, type: 2}
-      name: between_level_texture_material_2
+    - item: {fileID: 2100000, guid: fa08a47d2377063498fff8f9dd14e0ec, type: 2}
+      name: between_level_texture_material_tria_hex
       bundle: 0

@@ -34,17 +34,12 @@ namespace RMAZOR.Models.ItemProceeders
 
     public class ShredingerBlocksProceeder : ItemsProceederBase, IShredingerBlocksProceeder
     {
-        #region constants
-        
-        
-        #endregion
-
         #region inject
         
-        public ShredingerBlocksProceeder(
-            ModelSettings _Settings,
-            IModelData _Data,
-            IModelCharacter _Character,
+        private ShredingerBlocksProceeder(
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker) 
             : base(_Settings, _Data, _Character, _GameTicker) { }
         

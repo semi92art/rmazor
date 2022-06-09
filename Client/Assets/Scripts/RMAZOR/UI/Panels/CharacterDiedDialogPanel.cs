@@ -20,7 +20,7 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        public CharacterDiedDialogPanel(
+        private CharacterDiedDialogPanel(
             CommonGameSettings          _CommonGameSettings,
             IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,

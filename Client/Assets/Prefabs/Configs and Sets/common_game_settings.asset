@@ -19,9 +19,8 @@ MonoBehaviour:
   logLevel: 5
   showAdsEveryLevel: 3
   firstLevelToShowAds: 10
-  rewriteSettingsByRemoteConfigInEditor: 1
   payToContinueMoneyCount: 100
-  showRewardedInsteadOfInterstitialOnUnpause: 1
+  showRewardedOnLevelPass: 1
   ironSourceAppKeyAndroid: 141f21f69
   ironSourceAppKeyIos: 141e92229
   moneyItemCoast: 1

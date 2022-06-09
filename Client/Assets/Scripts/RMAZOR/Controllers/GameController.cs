@@ -35,7 +35,7 @@ namespace RMAZOR.Controllers
         private CommonGameSettings Settings { get; set; }
 
         [Inject]
-        public void Inject(
+        private void Inject(
             IModelGame           _Model,
             IViewGame            _View,
             CommonGameSettings   _Settings)
@@ -87,11 +87,14 @@ namespace RMAZOR.Controllers
             mItemProcs.TurretsProceeder.TurretShoot                        += vItemGrps.TurretsGroup.OnTurretShoot;
             mItemProcs.PortalsProceeder.PortalEvent                        += vItemGrps.PortalsGroup.OnPortalEvent;
             mItemProcs.ShredingerBlocksProceeder.ShredingerBlockEvent      += vItemGrps.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            mItemProcs.SpringboardProceeder.SpringboardEvent               += vItemGrps.SpringboardItemsGroup.OnSpringboardEvent;
+            mItemProcs.SpringboardProceeder.SpringboardEvent               += vItemGrps.SpringboardsGroup.OnSpringboardEvent;
 
-            mItemProcs.HammersProceeder.HammerShot       += vItemGrps.HammersGroup.OnHammerShot;
-            mItemProcs.BazookasProceeder.BazookaAppear += vItemGrps.BazookasGroup.OnBazookaAppear;
-            mItemProcs.BazookasProceeder.BazookaShot   += vItemGrps.BazookasGroup.OnBazookaShot;
+            mItemProcs.HammersProceeder.HammerShot += vItemGrps.HammersGroup.OnHammerShot;
+            mItemProcs.SpearsProceeder.SpearAppear += vItemGrps.SpearsGroup.OnSpearAppear;
+            mItemProcs.SpearsProceeder.SpearShot   += vItemGrps.SpearsGroup.OnSpearShot;
+            mItemProcs.DiodesProceeder.DiodeBlock  += vItemGrps.DiodesGroup.OnDiodeBlock;
+            mItemProcs.DiodesProceeder.DiodePass   += vItemGrps.DiodesGroup.OnDiodePass;
+            
             
             Model.Character.CharacterMoveStarted   += View.OnCharacterMoveStarted;
             Model.Character.CharacterMoveContinued += View.OnCharacterMoveContinued;
@@ -161,11 +164,13 @@ namespace RMAZOR.Controllers
             mItemProcs.TurretsProceeder.TurretShoot                        -= vItemGrps.TurretsGroup.OnTurretShoot;
             mItemProcs.PortalsProceeder.PortalEvent                        -= vItemGrps.PortalsGroup.OnPortalEvent;
             mItemProcs.ShredingerBlocksProceeder.ShredingerBlockEvent      -= vItemGrps.ShredingerBlocksGroup.OnShredingerBlockEvent;
-            mItemProcs.SpringboardProceeder.SpringboardEvent               -= vItemGrps.SpringboardItemsGroup.OnSpringboardEvent;
+            mItemProcs.SpringboardProceeder.SpringboardEvent               -= vItemGrps.SpringboardsGroup.OnSpringboardEvent;
             
             mItemProcs.HammersProceeder.HammerShot       -= vItemGrps.HammersGroup.OnHammerShot;
-            mItemProcs.BazookasProceeder.BazookaAppear -= vItemGrps.BazookasGroup.OnBazookaAppear;
-            mItemProcs.BazookasProceeder.BazookaShot   -= vItemGrps.BazookasGroup.OnBazookaShot;
+            mItemProcs.SpearsProceeder.SpearAppear -= vItemGrps.SpearsGroup.OnSpearAppear;
+            mItemProcs.SpearsProceeder.SpearShot   -= vItemGrps.SpearsGroup.OnSpearShot;
+            mItemProcs.DiodesProceeder.DiodeBlock  -= vItemGrps.DiodesGroup.OnDiodeBlock;
+            mItemProcs.DiodesProceeder.DiodePass   -= vItemGrps.DiodesGroup.OnDiodePass;
             
             Model.Character.CharacterMoveStarted   -= View.OnCharacterMoveStarted;
             Model.Character.CharacterMoveContinued -= View.OnCharacterMoveContinued;

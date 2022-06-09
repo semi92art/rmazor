@@ -15,7 +15,7 @@ namespace Common.Managers.Scores
     {
         #region inject
 
-        public IosScoreManager(
+        private IosScoreManager(
             CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             ILocalizationManager     _LocalizationManager,
@@ -40,24 +40,24 @@ namespace Common.Managers.Scores
             base.Init();
         }
 
-        public override ScoresEntity GetScoreFromLeaderboard(ushort _Id, bool _FromCache)
+        public override ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
         {
-            var entity = base.GetScoreFromLeaderboard(_Id, _FromCache);
-            return entity ?? GetScoreIos(_Id);
+            var entity = base.GetScoreFromLeaderboard(_Key, _FromCache);
+            return entity ?? GetScoreIos(_Key);
         }
 
-        public override bool SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache)
+        public override bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
         {
-            base.SetScoreToLeaderboard(_Id, _Value, _OnlyToCache);
-            SetScoreIos(_Id, _Value);
+            base.SetScoreToLeaderboard(_Key, _Value, _OnlyToCache);
+            SetScoreIos(_Key, _Value);
             return true;
         }
 
-        public override bool ShowLeaderboard(ushort _Id)
+        public override bool ShowLeaderboard(ushort _Key)
         {
-            if (!base.ShowLeaderboard(_Id))
+            if (!base.ShowLeaderboard(_Key))
                 return false;
-            ShowLeaderboardIos(_Id);
+            ShowLeaderboardIos(_Key);
             return true;
         }
 
@@ -145,7 +145,7 @@ namespace Common.Managers.Scores
                 Dbg.LogWarning("User is not authenticated to Game Center");
                 return;
             }
-            var scoreReporter = new ISN_GKScore(GetScoreKey(_Id))
+            var scoreReporter = new ISN_GKScore(GetScoreId(_Id))
             {
                 Value = _Value
             };
@@ -166,7 +166,7 @@ namespace Common.Managers.Scores
             var scoreEntity = new ScoresEntity();
             var leaderboardRequest = new ISN_GKLeaderboard
             {
-                Identifier = GetScoreKey(_Id),
+                Identifier = GetScoreId(_Id),
                 PlayerScope = ISN_GKLeaderboardPlayerScope.Global,
                 TimeScope = ISN_GKLeaderboardTimeScope.AllTime,
                 Range = new ISN_NSRange(1, 25)
@@ -193,7 +193,7 @@ namespace Common.Managers.Scores
             var viewController = new ISN_GKGameCenterViewController
             {
                 ViewState = ISN_GKGameCenterViewControllerState.Leaderboards,
-                LeaderboardIdentifier = GetScoreKey(_Id)
+                LeaderboardIdentifier = GetScoreId(_Id)
             };
             viewController.Show();
         }

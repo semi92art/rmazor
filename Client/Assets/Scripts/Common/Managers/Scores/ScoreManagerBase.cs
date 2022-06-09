@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Network;
 using Common.Network.DataFieldFilters;
 using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SocialPlatforms;
 
 namespace Common.Managers.Scores
 {
@@ -34,37 +37,29 @@ namespace Common.Managers.Scores
 
     public delegate void ScoresEventHandler(ScoresEventArgs _Args);
 
-    public class LeaderBoardIdKeyPair
-    {
-        public ushort Id  { get; }
-        public string Key { get; }
-
-        public LeaderBoardIdKeyPair(ushort _Id, string _Key)
-        {
-            Id = _Id;
-            Key = _Key;
-        }
-    }
-
     public interface IScoreManager: IInit
     {
-        event ScoresEventHandler ScoresChanged;
+        event ScoresEventHandler              ScoresChanged;
         event UnityAction<SavedGameEventArgs> GameSaved;
-        void                     RegisterLeaderboards(List<LeaderBoardIdKeyPair> _Args);
-        ScoresEntity             GetScoreFromLeaderboard(ushort _Id, bool _FromCache);
-        bool                     SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache);
-        bool                     ShowLeaderboard(ushort _Id);
-        Entity<object>           GetSavedGameProgress(string _FileName, bool _FromCache);
-        void                     SaveGameProgress<T>(T _Data, bool _OnlyToCache) where T : FileNameArgs;
-        void DeleteSavedGame(string _FileName);
+        void                                  RegisterLeaderboardsMap(Dictionary<ushort, string> _Map);
+        ScoresEntity                          GetScoreFromLeaderboard(ushort        _Key, bool _FromCache);
+        bool                                  SetScoreToLeaderboard(ushort          _Key, long _Value, bool _OnlyToCache);
+        bool                                  ShowLeaderboard(ushort                _Key);
+        Entity<object>                        GetSavedGameProgress(string           _FileName, bool _FromCache);
+        void                                  SaveGameProgress<T>(T                 _Data,     bool _OnlyToCache) where T : FileNameArgs;
+        void                                  DeleteSavedGame(string                _FileName);
+        void                 RegisterAchievementsMap(Dictionary<ushort, string> _Map);
+        Entity<IAchievement> UnlockAchievement(ushort                           _Key);
     }
     
     public abstract class ScoreManagerBase : InitBase, IScoreManager
     {
         #region nonpublic members
 
-        protected IRemoteSavedGameProvider            RemoteSavedGameProvider { get; }
-        private   IReadOnlyList<LeaderBoardIdKeyPair> m_ScoreArgsList = new List<LeaderBoardIdKeyPair>();
+        protected IRemoteSavedGameProvider   RemoteSavedGameProvider { get; }
+        private   Dictionary<ushort, string> m_LeaderboardsMap;
+        private   Dictionary<ushort, string> m_AchievementsMap;
+        private   IAchievement[]             m_Achievements;
 
         #endregion
         
@@ -101,33 +96,37 @@ namespace Common.Managers.Scores
             if (Initialized)
                 return;
             Ticker.Register(this);
-            AuthenticatePlatformGameService(() => base.Init());
+            AuthenticatePlatformGameService(() =>
+            {
+                Social.LoadAchievements(_Achievements => m_Achievements = _Achievements);
+                base.Init();
+            });
         }
 
-        public void RegisterLeaderboards(List<LeaderBoardIdKeyPair> _Args)
+        public void RegisterLeaderboardsMap(Dictionary<ushort, string> _Map)
         {
-            m_ScoreArgsList = _Args;
+            m_LeaderboardsMap = _Map;
         }
 
-        public virtual ScoresEntity GetScoreFromLeaderboard(ushort _Id, bool _FromCache)
+        public virtual ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
         {
             if (_FromCache)
-                return GetScoreCached(_Id);
+                return GetScoreCached(_Key);
             var scoreEntity = new ScoresEntity();
             if (IsAuthenticatedInPlatformGameService())
                 return null;
             Dbg.LogWarning($"{nameof(GetScoreFromLeaderboard)}: User is not authenticated");
-            scoreEntity = GetScoreCached(_Id, scoreEntity);
+            scoreEntity = GetScoreCached(_Key, scoreEntity);
             return scoreEntity;
         }
 
-        public virtual bool SetScoreToLeaderboard(ushort _Id, long _Value, bool _OnlyToCache)
+        public virtual bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
         {
-            SetScoreCache(_Id, _Value);
+            SetScoreCached(_Key, _Value);
             return true;
         }
 
-        public virtual bool ShowLeaderboard(ushort _Id)
+        public virtual bool ShowLeaderboard(ushort _Key)
         {
             string oopsText = LocalizationManager.GetTranslation("oops");
             if (!NetworkUtils.IsInternetConnectionAvailable())
@@ -144,11 +143,46 @@ namespace Common.Managers.Scores
             CommonUtils.ShowAlertDialog(oopsText, failedToLoadLeadText);
             return false;
         }
+        
+        public void RegisterAchievementsMap(Dictionary<ushort, string> _Map)
+        {
+            m_AchievementsMap = _Map;
+        }
+
+        public Entity<IAchievement> UnlockAchievement(ushort _Key)
+        {
+            var entity = new Entity<IAchievement>();
+            Entity<IAchievement> Failed(string _Message)
+            {
+                Dbg.LogError(_Message);
+                entity.Result = EEntityResult.Fail;
+                return entity;
+            }
+            if (m_AchievementsMap == null)
+                return Failed("Achievements map was not registered.");
+            if (m_Achievements == null)
+                return Failed("Achievements were not loaded from server.");
+            string id = m_AchievementsMap.GetSafe(_Key, out bool containsKey);
+            if (!containsKey)
+                return Failed("Achievement with this key was not found in key-id map.");
+            var achievement = m_Achievements.FirstOrDefault(_Ach => _Ach.id == id);
+            if (achievement == null)
+                return Failed("Achievement with this key was not found in loaded achievements.");
+            achievement.percentCompleted = 100d;
+            achievement.ReportProgress(_Success =>
+            {
+                if (!_Success)
+                    Dbg.LogWarning($"Failed to unlock achievement with key {_Key}");
+                entity.Result = _Success ? EEntityResult.Success : EEntityResult.Fail;
+            });
+            entity.Value = achievement;
+            return entity;
+        }
 
 
-        public abstract void           SaveGameProgress<T>(T       _Data, bool _OnlyToCache) where T : FileNameArgs;
-        public abstract void           DeleteSavedGame(string      _FileName);
-        public abstract Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache);
+        public abstract void                 SaveGameProgress<T>(T                              _Data, bool _OnlyToCache) where T : FileNameArgs;
+        public abstract void                 DeleteSavedGame(string                             _FileName);
+        public abstract Entity<object>       GetSavedGameProgress(string                        _FileName, bool _FromCache);
 
         #endregion
 
@@ -182,7 +216,7 @@ namespace Common.Managers.Scores
             return entity;
         }
 
-        private void SetScoreCache(ushort _Id, long _Value)
+        private void SetScoreCached(ushort _Id, long _Value)
         {
             var gdff = new GameDataFieldFilter(
                 GameClient, GameClientUtils.AccountId, 
@@ -205,12 +239,12 @@ namespace Common.Managers.Scores
             });
         }
         
-        protected string GetScoreKey(ushort _Id)
+        protected string GetScoreId(ushort _Key)
         {
-            var args = m_ScoreArgsList.FirstOrDefault(_Args => _Args.Id == _Id);
-            if (args != null) 
-                return m_ScoreArgsList.FirstOrDefault(_Args => _Args.Id == _Id)?.Key;
-            Dbg.LogError($"Score with id {_Id} does not exist.");
+            string id = m_LeaderboardsMap.GetSafe(_Key, out bool containsKey);
+            if (containsKey) 
+                return id;
+            Dbg.LogError($"Score with id {_Key} does not exist.");
             return null;
         }
 

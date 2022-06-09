@@ -21,19 +21,19 @@ namespace RMAZOR.Models
     public class LevelStageArgs : EventArgsEx
     {
         public long        LevelIndex       { get; }
-        public ELevelStage Stage            { get; }
+        public ELevelStage LevelStage       { get; }
         public ELevelStage PreviousStage    { get; }
         public ELevelStage PrePreviousStage { get; }
 
         public LevelStageArgs(
             long        _LevelIndex,
-            ELevelStage _LevelStage,
+            ELevelStage _LevelLevelStage,
             ELevelStage _PreviousStage,
             ELevelStage _PrePreviousStage)
         {
-            LevelIndex = _LevelIndex;
-            Stage = _LevelStage;
-            PreviousStage = _PreviousStage;
+            LevelIndex       = _LevelIndex;
+            LevelStage       = _LevelLevelStage;
+            PreviousStage    = _PreviousStage;
             PrePreviousStage = _PrePreviousStage;
         }
     }
@@ -60,7 +60,7 @@ namespace RMAZOR.Models
         void                    UnloadLevel();
     }
 
-    public class ModelLevelStaging : InitBase, IModelLevelStaging,IUpdateTick
+    public class ModelLevelStaging : InitBase, IModelLevelStaging, IUpdateTick
     {
         #region nonpublic members
 
@@ -75,22 +75,27 @@ namespace RMAZOR.Models
 
         public ModelLevelStaging(IModelData _Data, IModelGameTicker _GameTicker)
         {
-            Data = _Data;
+            Data       = _Data;
             GameTicker = _GameTicker;
-            _GameTicker.Register(this);
         }
     
         #endregion
     
         #region api
 
-        public long                     LevelIndex         { get; set; }
+        public long                    LevelIndex         { get; set; }
         public float                   LevelTime          { get; private set; }
         public int                     DiesCount          { get; private set; }
         public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
         public ELevelStage             PrevLevelStage     { get; private set; } = ELevelStage.Unloaded;
         public ELevelStage             PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
         public event LevelStageHandler LevelStageChanged;
+
+        public override void Init()
+        {
+            GameTicker.Register(this);
+            base.Init();
+        }
 
         public void UpdateTick()
         {

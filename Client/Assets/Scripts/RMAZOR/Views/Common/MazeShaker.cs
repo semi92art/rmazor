@@ -30,26 +30,25 @@ namespace RMAZOR.Views.Common
         #region nonpublic members
 
         private Transform m_MazeContainer;
-        private Vector3 m_StartPosition;
-        private bool m_ShakeMaze;
+        private Vector3   m_StartPosition;
+        private bool      m_ShakeMaze;
 
         #endregion
         
         #region inject
 
-        private IContainersGetter ContainersGetter { get; }
+        private IContainersGetter        ContainersGetter    { get; }
         private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewGameTicker GameTicker { get; }
+        private IViewGameTicker          GameTicker          { get; }
 
-        public MazeShaker(
-            IContainersGetter _ContainersGetter, 
+        private MazeShaker(
+            IContainersGetter        _ContainersGetter,
             IMazeCoordinateConverter _CoordinateConverter,
-            IViewGameTicker _GameTicker)
+            IViewGameTicker          _GameTicker)
         {
-            ContainersGetter = _ContainersGetter;
+            ContainersGetter    = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
-            GameTicker = _GameTicker;
-            _GameTicker.Register(this);
+            GameTicker          = _GameTicker;
         }
 
         #endregion
@@ -70,12 +69,13 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             m_MazeContainer = ContainersGetter.GetContainer(ContainerNames.Maze);
+            GameTicker.Register(this);
             base.Init();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage == ELevelStage.Loaded)
+            if (_Args.LevelStage == ELevelStage.Loaded)
                 m_StartPosition = CoordinateConverter.GetMazeCenter();
         }
 

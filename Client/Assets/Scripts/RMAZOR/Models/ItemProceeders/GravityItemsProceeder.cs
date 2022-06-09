@@ -34,7 +34,7 @@ namespace RMAZOR.Models.ItemProceeders
         
         private IPathItemsProceeder PathItemsProceeder { get; }
 
-        public GravityItemsProceeder(
+        private GravityItemsProceeder(
             ModelSettings       _Settings,
             IModelData          _Data,
             IModelCharacter     _Character,
@@ -55,7 +55,7 @@ namespace RMAZOR.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.Stage == ELevelStage.ReadyToStart && Data.Orientation == MazeOrientation.North)
+            if (_Args.LevelStage == ELevelStage.ReadyToStart && Data.Orientation == MazeOrientation.North)
                 MoveMazeItemsGravity(Data.Orientation, Character.Position);
         }
 

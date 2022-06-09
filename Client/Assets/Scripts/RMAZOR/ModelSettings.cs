@@ -20,8 +20,8 @@ namespace RMAZOR
         public float turretProjectileSpeed;
         public float shredingerBlockProceedTime;
         public float hammerShotPause;
-        public float bazookaAppearPause;
-        public int   bazookaShotsPerUnit;
-        public float bazookaShotPause;
+        public float spearAppearPause;
+        public int   spearShotsPerUnit;
+        public float spearShotPause;
     }
 }

@@ -51,8 +51,7 @@ namespace RMAZOR.Views.MazeItems
         protected IManagersGetter               Managers            { get; }
         protected IColorProvider                ColorProvider       { get; }
         protected IViewInputCommandsProceeder   CommandsProceeder   { get; }
-
-
+        
         protected ViewMazeItemBase(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
@@ -100,7 +99,7 @@ namespace RMAZOR.Views.MazeItems
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.Stage)
+            switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
                 case ELevelStage.Finished:
@@ -117,7 +116,7 @@ namespace RMAZOR.Views.MazeItems
                     ProceedingStage = EProceedingStage.Inactive;
                     break;
                 default:
-                    throw new SwitchCaseNotImplementedException(_Args.Stage);
+                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         

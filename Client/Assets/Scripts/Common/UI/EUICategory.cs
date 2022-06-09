@@ -6,7 +6,7 @@ namespace Common.UI
     public enum EUiCategory
     {
         Fake = 1,
-        DailyBonus = 2,
+        Tutorial = 2,
         WheelOfFortune = 4,
         Shop = 8,
         Settings = 16,

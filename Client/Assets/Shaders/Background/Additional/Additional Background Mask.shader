@@ -19,7 +19,7 @@
 
 			CGPROGRAM
 			#include "UnityCG.cginc"
-			#include "../Common.cginc"
+			#include "../../Common.cginc"
 
 			#pragma vertex vert
 			#pragma fragment frag

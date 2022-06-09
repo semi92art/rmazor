@@ -25,3 +25,7 @@ MonoBehaviour:
         type: 3}
       name: rotation_possibility_text
       bundle: 0
+    - item: {fileID: 6580961263009631255, guid: 45971ee3bc02cdb44b3238133fb9c608,
+        type: 3}
+      name: tutorial_video_player
+      bundle: 0

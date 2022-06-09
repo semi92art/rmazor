@@ -53,6 +53,9 @@ MonoBehaviour:
     - item: {fileID: 21300000, guid: 7a96ae8cd7e38ca4d8cf4b6f1b4ccdb0, type: 3}
       name: crossbow
       bundle: 0
-    - item: {fileID: 21300000, guid: c6224ffbb0be1f343bb18d76a9f44101, type: 3}
-      name: bazooka
+    - item: {fileID: 21300000, guid: fbb5fce6d8b32d649abb115f5f339e33, type: 3}
+      name: spear
+      bundle: 0
+    - item: {fileID: 21300000, guid: 553629ab23854514e8f2ee41a3506873, type: 3}
+      name: diode
       bundle: 0

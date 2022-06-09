@@ -48,11 +48,11 @@ namespace RMAZOR.Views.Common
             IViewGameTicker               _GameTicker,
             ICameraProvider               _CameraProvider)
         {
-            ColorProvider = _ColorProvider;
-            Transitioner = _Transitioner;
+            ColorProvider    = _ColorProvider;
+            Transitioner     = _Transitioner;
             ContainersGetter = _ContainersGetter;
-            GameTicker = _GameTicker;
-            CameraProvider = _CameraProvider;
+            GameTicker       = _GameTicker;
+            CameraProvider   = _CameraProvider;
         }
         
         #endregion

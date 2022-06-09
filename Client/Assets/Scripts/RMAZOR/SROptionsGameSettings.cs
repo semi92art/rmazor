@@ -9,11 +9,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using AppodealAds.Unity.Api;
 using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
+using Common.Managers.Advertising;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -32,6 +34,8 @@ namespace RMAZOR
         private const string CategoryHaptics    = "Haptics";
         private const string CategoryAds        = "Ads";
         private const string CategoryMonitor    = "Monitor";
+
+        private static int _adsNetworkIdx;
 
         private static ModelSettings               _modelSettings;
         private static ViewSettings                _viewSettings;
@@ -277,45 +281,10 @@ namespace RMAZOR
         }
 
         [Category(CategoryAds)]
-        public bool Show_Ads
+        public int AdsProviderIndex
         {
-            get
-            {
-                var res = SaveUtils.GetValue(SaveKeysCommon.DisableAds);
-                if (res.HasValue) return 
-                    res.Value;
-                SaveUtils.PutValue(SaveKeysCommon.DisableAds, false);
-                return false;
-            }
-            set
-            {
-                SaveUtils.PutValue(SaveKeysCommon.DisableAds, !value);
-                Dbg.Log($"Ads enabled: {value}.");
-            }
-        }
-
-        [Category(CategoryAds)]
-        public bool Rewarded_Ad_Ready_State
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                Dbg.Log($"Rewarded ad ready state: {_managers.AdsManager.RewardedAdReady}.");
-            }
-        }
-
-        [Category(CategoryAds)]
-        public bool Interstitial_Ad_Ready_State
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                Dbg.Log($"Interstitial ad ready state: {_managers.AdsManager.InterstitialAdReady}.");
-            }
+            get => _adsNetworkIdx;
+            set => _adsNetworkIdx = value;
         }
 
         [Category(CategoryAds)]
@@ -326,9 +295,12 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
+                string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowRewardedAd(
                     null,
-                    () => Dbg.Log("Rewarded ad was shown."));
+                    () => Dbg.Log("Rewarded ad was shown."),
+                    adsNetworkName,
+                    true);
             }
         }
 
@@ -340,14 +312,41 @@ namespace RMAZOR
             {
                 if (!value)
                     return;
+                string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowInterstitialAd(
                     null,
-                    () => Dbg.Log("Interstitial ad was shown."));
+                    () => Dbg.Log("Interstitial ad was shown."),
+                    adsNetworkName,
+                    true);
+            }
+        }
+        
+        [Category(CategoryAds)]
+        public bool Show_Appodeal_Test_Screen
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Appodeal.showTestScreen();
             }
         }
 
+        private static string GetAdsNetworkProviderName(int _ProviderIndex)
+        {
+            Dbg.Log("Reference: 1 => Admob, 2 => Appodeal, 3 => Unity, other => auto");
+            return _ProviderIndex switch
+            {
+                1 => AdvertisingNetworks.Admob,
+                2 => AdvertisingNetworks.Appodeal,
+                3 => AdvertisingNetworks.UnityAds,
+                _ => null
+            };
+        }
+
         [Category(CategoryCommon)]
-        public bool Show_Rate_Dilalog
+        public bool Show_Rate_Dialog
         {
             get => false;
             set
@@ -593,6 +592,19 @@ namespace RMAZOR
                         _SmallIcon: "main_icon",
                         _LargeIcon: "main_icon_large");
                 }
+            }
+        }
+        
+                
+        [Category(CategoryCommon)]
+        public bool Send_Test_Analytic
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic);
             }
         }
 

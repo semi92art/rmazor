@@ -22,7 +22,7 @@
 			#pragma target 2.0
 
 			#include "UnityCG.cginc"
-			#include "Common.cginc"
+			#include "../Common.cginc"
 
 			fixed4 _Color1, _Color2;
 			float _Radius;
@@ -32,9 +32,6 @@
 			}
 
 			fixed color_selector(float d1, float d2) {
-                int k = 0;
-                while (d1 > d2 * _Radius)
-                    k = k + 1;
                 return d1 > d2 * _Radius ? 0 : 1;
             }
 
@@ -45,13 +42,8 @@
 			}
 
 			fixed4 frag (v2f i) : SV_Target {
-				if (all(_Color1 == _Color2))
-					return _Color1;
-				if (_Radius < EPS)
-					return _Color1;
 				float2 uv = i.uv;
-				float ratio = _ScreenParams.x / _ScreenParams.y;
-				float x = (uv.x - 0.5) * ratio;
+				float x = (uv.x - 0.5) * screen_ratio();
 				float y = uv.y - 0.5;
 				float d1 = sqrt(x * x + y * y);
 				fixed4 lerp_coeff = color_selector(d1, _Radius);

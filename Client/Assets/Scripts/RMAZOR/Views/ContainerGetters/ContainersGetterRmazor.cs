@@ -13,9 +13,9 @@ namespace RMAZOR.Views.ContainerGetters
     public class ContainersGetterRmazor : IContainersGetterRmazor
     {
         #region nonpublic members
-        
-        private readonly Dictionary<string, Transform> m_Containers = new Dictionary<string, Transform>();
-        private readonly Dictionary<string, bool> m_Initialized = new Dictionary<string, bool>();
+
+        private readonly Dictionary<string, Transform> m_Containers  = new Dictionary<string, Transform>();
+        private readonly Dictionary<string, bool>      m_Initialized = new Dictionary<string, bool>();
         
         #endregion
         
@@ -37,7 +37,7 @@ namespace RMAZOR.Views.ContainerGetters
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.Stage != ELevelStage.Loaded) 
+            if (_Args.LevelStage != ELevelStage.Loaded) 
                 return;
             
             CoordinateConverter.SetMazeSize(Model.Data.Info.Size);

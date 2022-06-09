@@ -89,6 +89,12 @@ namespace Common.Extensions
             _Shape.DashSnap = _Snap;
             return _Shape;
         }
+        
+        public static T SetMatchDashSpacingToDashSize<T>(this T _Shape, bool _Match) where T : ShapeRenderer, IDashable
+        {
+            _Shape.MatchDashSpacingToSize = _Match;
+            return _Shape;
+        }
 
         public static Disc SetType(this Disc _Disc, DiscType _DiscType)
         {
