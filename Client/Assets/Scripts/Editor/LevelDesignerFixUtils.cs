@@ -10,6 +10,24 @@ namespace RMAZOR.Editor
     public partial class LevelDesignerEditor
     {
         [FixUtil]
+        public void FindEmptyLevels()
+        {
+            bool errors = false;
+            var levels = LevelsList.Levels;
+            for (int i = 0; i < levels.Count; i++)
+            {
+                var l = levels[i];
+                var items = l.PathItems;
+                if (items.Any())
+                    continue;
+                Dbg.LogError($"Level {i + 1} has invalid portals.");
+                errors = true;
+            }
+            if (!errors)
+                Dbg.Log("All levels are not empty.");
+        }
+
+        [FixUtil]
         public void FindLevelsWithPortalsInvalid()
         {
             bool errors = false;

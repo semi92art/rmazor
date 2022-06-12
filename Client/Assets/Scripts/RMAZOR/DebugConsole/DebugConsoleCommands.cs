@@ -30,7 +30,6 @@ namespace RMAZOR.DebugConsole
                 new DebugCommandArgs("clc",              ClearConsole, "Clear console."),
                 new DebugCommandArgs("set_lang",         SetLanguage, "set language"),
                 new DebugCommandArgs("target_fps",       SetTargetFps, "Set target frame rate"),
-                new DebugCommandArgs("wof_spin_enable",  EnableSpinButton, "Enable wheel of fortune spin."),
                 new DebugCommandArgs("enable_ads",       EnableAds, "Enable or disable advertising (true/false)"),
                 new DebugCommandArgs("load_level",       LoadLevel, "Load level by index"),
                 new DebugCommandArgs("set_money",        SetMoney, "Set money count"),
@@ -146,11 +145,6 @@ namespace RMAZOR.DebugConsole
                 Application.targetFrameRate = fps;
             else
                 Controller.AppendLogLine("Target FPS must be in range [5,120]");
-        }
-        
-        private static void EnableSpinButton(string[] _Args)
-        {
-            SaveUtils.PutValue(SaveKeysRmazor.WheelOfFortuneLastDate, DateTime.Now.Date.AddDays(-1));
         }
 
         private static void EnableAds(string[] _Args)

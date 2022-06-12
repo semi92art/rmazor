@@ -57,9 +57,9 @@ namespace RMAZOR.Views.UI
                     _Args.PreviousStage != ELevelStage.Paused
                     && RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
                 {
-                    var tutType = Tutorial.IsCurrentLevelTutorial(out _);
-                    if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
-                        return;
+                    // var tutType = Tutorial.IsCurrentLevelTutorial(out _);
+                    // if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
+                    //     return;
                     Indicator.Animator.enabled = true;
                     Indicator.Shape.enabled = true;
                     Indicator.Shape.Color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
@@ -70,9 +70,9 @@ namespace RMAZOR.Views.UI
                     _Args.PreviousStage != ELevelStage.CharacterKilled
                     && RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()):
                 {
-                    var tutType = Tutorial.IsCurrentLevelTutorial(out _);
-                    if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
-                        return;
+                    // var tutType = Tutorial.IsCurrentLevelTutorial(out _);
+                    // if (tutType.HasValue && tutType.Value == ETutorialType.Rotation)
+                    //     return;
                     Indicator.Animator.SetTrigger(AnimKeys.Stop);
                 }
                     break;
@@ -89,10 +89,10 @@ namespace RMAZOR.Views.UI
         
         public void OnTutorialStarted(ETutorialType _Type)
         {
-            if (_Type != ETutorialType.Rotation) 
-                return;
-            Indicator.Animator.enabled = false;
-            Indicator.Shape.enabled = false;
+            // if (_Type != ETutorialType.Rotation) 
+            //     return;
+            // Indicator.Animator.enabled = false;
+            // Indicator.Shape.enabled = false;
         }
 
         public void OnTutorialFinished(ETutorialType _Type) { }

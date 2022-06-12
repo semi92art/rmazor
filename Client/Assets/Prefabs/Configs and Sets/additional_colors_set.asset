@@ -89,7 +89,7 @@ MonoBehaviour:
     - main: {r: 0.20000002, g: 0.227451, b: 0.34901962, a: 1}
       bacground1: {r: 0.8196079, g: 0.52156866, b: 0.654902, a: 1}
       bacground2: {r: 0.34901962, g: 0.4117647, b: 0.6627451, a: 1}
-      inUse: 0
+      inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -102,9 +102,9 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
-    - main: {r: 0.9294118, g: 0.34509805, b: 0.4039216, a: 1}
+    - main: {r: 0.5849056, g: 0.23451404, b: 0.2697884, a: 1}
       bacground1: {r: 0.7019608, g: 0.79215693, b: 0.86274517, a: 1}
-      bacground2: {r: 0.7490196, g: 0.8392157, b: 0.90588236, a: 1}
+      bacground2: {r: 0.48500353, g: 0.54787177, b: 0.5943396, a: 1}
       inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1

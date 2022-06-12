@@ -32,7 +32,9 @@ namespace Editor
         private string                          m_ErrorText;
     
         #endregion
-    
+
+        #region engine methods
+
         [MenuItem("Tools/Localization Helper _%l", false, 1)]
         public static void ShowWindow()
         {
@@ -61,6 +63,10 @@ namespace Editor
                 CheckForErrors();
             });
         }
+
+        #endregion
+
+        #region nonpublic methods
 
         private void DisplayLanguagesRow(IEnumerable<ELanguage> _Languages)
         {
@@ -247,9 +253,11 @@ namespace Editor
             var sb = new StringBuilder();
             foreach (var (_, value) in m_LocalizedDict)
                 sb.Append(value.Values[_Language]);
-            var distinctChars = sb.ToString().ToArray();
+            var distinctChars = sb.ToString().Distinct().ToArray();
             string s = new string(distinctChars);
             CommonUtils.CopyToClipboard(s);
         }
+
+        #endregion
     }
 }

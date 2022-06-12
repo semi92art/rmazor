@@ -32,6 +32,24 @@ namespace Common
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
         {
+            if (Application.isEditor)
+            {
+                _gameWasRated = null;
+                _settingNotificationsOn = null;
+                _settingHapticsOn = null;
+                _settingSoundOn = null;
+                _settingMusicOn = null;
+                _disableAds = null;
+                _lastDbConnectionSuccess = null;
+                _notFirstLaunch = null;
+                _debugUtilsOn = null;
+                _accountId = null;
+                _login = null;
+                _passwordHash = null;
+                _previousAccountId = null;
+                _timeSinceLastIapReviewDialogShown = null;
+                _boughtPurchaseIds = null;
+            }
             SaveUtils.PutValue(GameWasRated,             SaveUtils.GetValue(GameWasRated),             true);
             SaveUtils.PutValue(SettingNotificationsOn,   SaveUtils.GetValue(SettingNotificationsOn),   true);
             SaveUtils.PutValue(SettingHapticsOn,         SaveUtils.GetValue(SettingHapticsOn),       true);

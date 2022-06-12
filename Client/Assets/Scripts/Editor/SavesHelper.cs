@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Common;
 using Common.Utils;
+using RMAZOR;
 using UnityEditor;
 using UnityEngine;
 
@@ -25,15 +27,15 @@ namespace Editor
 
         private void OnGUI()
         {
-            EditorUtilsEx.GuiButtonAction("Open Saves File", () =>
-            {
-                var p = new Process {StartInfo = new ProcessStartInfo {FileName = SaveUtils.SavesPath}};
-                Task.Run(() => p.Start());
-            });
             EditorUtilsEx.GuiButtonAction("Open Saves File Location", () =>
             {
                 var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
                 Task.Run(() => p.Start());
+            });
+            EditorUtilsEx.GuiButtonAction("Reset static variables", () =>
+            {
+                SaveKeysRmazor.ResetState();
+                SaveKeysCommon.ResetState();
             });
             EditorUtilsEx.GuiButtonAction("Reload Saves File", SaveUtils.ReloadSaves);
             EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>
@@ -42,6 +44,7 @@ namespace Editor
                     File.Delete(SaveUtils.SavesPath);
             });
             EditorUtilsEx.HorizontalLine();
+            GUILayout.Label("Save file content:");
             var elements = SaveUtils.SavesDoc.Root?.Elements();
             if (elements == null)
                 return;

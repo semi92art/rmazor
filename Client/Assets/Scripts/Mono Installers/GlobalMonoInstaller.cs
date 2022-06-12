@@ -98,8 +98,8 @@ namespace Mono_Installers
 #endif
             Container.Bind<IAdsManager>()               .To<AdsManager>()    .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
+            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
 
             #endregion
             

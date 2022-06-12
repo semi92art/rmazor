@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Common.Entities;
+using Common.Extensions;
 using Common.Utils;
+using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
 namespace RMAZOR
@@ -9,34 +13,41 @@ namespace RMAZOR
     {
         private static SaveKey<bool> _allLevelsPassed;
 
-        private static SaveKey<bool> _movementTutorialFinished;
-        private static SaveKey<bool> _rotationTutorialFinished;
-        private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
-
-        private static SaveKey<int> _dailyBonusLastClickedDay; 
-        private static SaveKey<int> _ratePanelShowsCount;
-        private static SaveKey<int?> _lastTutorialLevelIndex;
+        private static SaveKey<bool>                            _movementTutorialFinished;
+        private static SaveKey<bool>                            _rotationTutorialFinished;
+        private static Dictionary<EMazeItemType, SaveKey<bool>> _mazeItemsTutorialsFinished;
         
-        private static SaveKey<DateTime>  _wheelOfFortuneLastDate; 
-            
-        private static SaveKey<DateTime>  _dailyBonusLastDate;
+        private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
+        private static SaveKey<int>  _ratePanelShowsCount;
+        private static SaveKey<int?> _lastTutorialLevelIndex;
+
+        
         
         
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
         {
+            if (Application.isEditor)
+            {
+                _allLevelsPassed                = null;
+                _movementTutorialFinished       = null;
+                _rotationTutorialFinished       = null;
+                _mazeItemsTutorialsFinished     = null;
+                _moneyFromServerLoadedFirstTime = null;
+                _lastTutorialLevelIndex         = null;
+            }
             SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          true);
             SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
             SaveUtils.PutValue(RotationTutorialFinished, SaveUtils.GetValue(RotationTutorialFinished), true);
-            
-            SaveUtils.PutValue(DailyBonusLastClickedDay, SaveUtils.GetValue(DailyBonusLastClickedDay), true);
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
-            SaveUtils.PutValue(WheelOfFortuneLastDate,   SaveUtils.GetValue(WheelOfFortuneLastDate),   true);
             SaveUtils.PutValue(LastTutorialLevelIndex,   SaveUtils.GetValue(LastTutorialLevelIndex),   true);
-            
-            SaveUtils.PutValue(DailyBonusLastDate,       SaveUtils.GetValue(DailyBonusLastDate),       true);
-            
             SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
+            var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
+            foreach (var mazeItemType in mazeItemTypes)
+            {
+                var saveKey = GetMazeItemTutorialFinished(mazeItemType);
+                SaveUtils.PutValue(saveKey, SaveUtils.GetValue(saveKey), true);
+            }
         }
  
         public static SaveKey<bool>  AllLevelsPassed          =>
@@ -47,16 +58,21 @@ namespace RMAZOR
             _rotationTutorialFinished ??= new SaveKey<bool>(nameof(RotationTutorialFinished));
         public static SaveKey<bool>  SavedGameFromServerLoadedAtLeastOnce =>
             _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(SavedGameFromServerLoadedAtLeastOnce));
-        public static SaveKey<int>  DailyBonusLastClickedDay =>
-            _dailyBonusLastClickedDay ??= new SaveKey<int>(nameof(DailyBonusLastClickedDay));
         public static SaveKey<int>  RatePanelShowsCount      =>
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
         public static SaveKey<int?> LastTutorialLevelIndex =>
             _lastTutorialLevelIndex ??= new SaveKey<int?>(nameof(LastTutorialLevelIndex));
-        public static SaveKey<DateTime>     WheelOfFortuneLastDate =>
-            _wheelOfFortuneLastDate ??= new SaveKey<DateTime>(nameof(WheelOfFortuneLastDate));
-        public static SaveKey<DateTime>     DailyBonusLastDate     => 
-            _dailyBonusLastDate ??= new SaveKey<DateTime>(nameof(DailyBonusLastDate));
+
+        public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
+        {
+            _mazeItemsTutorialsFinished ??= new Dictionary<EMazeItemType, SaveKey<bool>>();
+            var saveKey = _mazeItemsTutorialsFinished.GetSafe(_Type, out bool containsKey);
+            if (containsKey && saveKey != null)
+                return saveKey;
+            saveKey = new SaveKey<bool>($"MazeItemTutorialFinished_{_Type}");
+            _mazeItemsTutorialsFinished.SetSafe(_Type, saveKey);
+            return saveKey;
+        }
 
     }
 }

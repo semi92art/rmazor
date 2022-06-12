@@ -10,7 +10,6 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using StansAssets.Foundation.Extensions;
 using TMPro;
 using UnityEngine;
 
@@ -93,12 +92,12 @@ namespace RMAZOR.Views.UI
         {
             GameTicker.Register(this);
             m_BottomOffset = _Offsets.z;
-            
             m_PromptObject = PrefabSetManager.InitPrefab(
                 null, "ui_game", "prompt");
             m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
             m_PromptText.fontSize = 18f;
+            m_PromptText.enabled = false;
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -184,14 +183,6 @@ namespace RMAZOR.Views.UI
             }
             if (m_CurrentPromptInfo?.Key == _Key)
                 return;
-            // if (m_CurrentPromptInfo == null || m_CurrentPromptInfo.PromptGo.IsNull())
-            // {
-            //     m_PromptObject = PrefabSetManager.InitPrefab(
-            //         null, "ui_game", "prompt");
-            //     m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
-            //     m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
-            //     m_PromptText.fontSize = 18f;
-            // }
             m_PromptObject.transform.position = _Position;
             var info = new LocalizableTextObjectInfo(m_PromptText, ETextType.GameUI, _Key);
             LocalizationManager.AddTextObject(info);

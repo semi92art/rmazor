@@ -12,7 +12,7 @@ namespace Common.Utils
     {
         public static readonly string    SavesPath  = Path.Combine(Application.persistentDataPath, "Saves.xml");
         public static          XDocument SavesDoc;
-        
+
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
 #endif

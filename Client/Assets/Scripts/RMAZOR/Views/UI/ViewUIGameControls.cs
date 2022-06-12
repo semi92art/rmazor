@@ -7,7 +7,6 @@ using Common.Extensions;
 using Common.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
 using Shapes;

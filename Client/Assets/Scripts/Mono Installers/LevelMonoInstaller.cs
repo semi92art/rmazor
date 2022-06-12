@@ -221,9 +221,9 @@ namespace Mono_Installers
         {
             Container.Bind<IViewMazeBackgroundTextureController>().To<ViewMazeBackgroundTextureController>()        .AsSingle();
             Container.Bind<IFullscreenTextureProviderTriangles2>().To<FullscreenTriangles2TextureProvider>()        .AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProviderMultiple>() .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>().To<FullscreenTransitionTextureProviderCircles>() .AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
+            // Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
             Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
         }
 
