@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins", "Stan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProceduralImage", "ProceduralImage.csproj", "{831d7eec-b0df-0db7-1132-15eede5d1596}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Runtime", "Hierarchy2.Runtime.csproj", "{ecd2bf46-9669-a61b-7c0b-9f38097a290e}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Play.Core", "Google.Play.Core.csproj", "{439f6e8d-ddd9-0c75-4094-f29800865212}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniIT.AdvertisingIdFetcher", "MiniIT.AdvertisingIdFetcher.csproj", "{3902ff1d-da36-8526-bde3-93c4bb0a65dc}"
@@ -62,8 +64,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastMobileDOF", "FastMobileDOF.csproj", "{a106cb3a-901e-27ce-e879-ebd0b3b75ff3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Manifest", "SA.Android.Manifest.csproj", "{869f5012-7037-6276-2e54-a11088fbdb90}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Runtime", "Hierarchy2.Runtime.csproj", "{ecd2bf46-9669-a61b-7c0b-9f38097a290e}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{63b2b48a-78b3-8da0-b943-c308151a6ef3}"
 EndProject
@@ -105,9 +105,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Editor", "G
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-Editor", "Zenject-Editor.csproj", "{41c99686-a020-df23-0a15-667f30a831c4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Editor", "Hierarchy2.Editor.csproj", "{b898a651-6f82-fbed-dad4-ba57469584ee}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -166,6 +166,8 @@ Global
 		{572591ff-0ef8-e2a5-fae2-7eb402acbe09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{831d7eec-b0df-0db7-1132-15eede5d1596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{831d7eec-b0df-0db7-1132-15eede5d1596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ecd2bf46-9669-a61b-7c0b-9f38097a290e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ecd2bf46-9669-a61b-7c0b-9f38097a290e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439f6e8d-ddd9-0c75-4094-f29800865212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{439f6e8d-ddd9-0c75-4094-f29800865212}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3902ff1d-da36-8526-bde3-93c4bb0a65dc}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -176,8 +178,6 @@ Global
 		{a106cb3a-901e-27ce-e879-ebd0b3b75ff3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ecd2bf46-9669-a61b-7c0b-9f38097a290e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ecd2bf46-9669-a61b-7c0b-9f38097a290e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6e1e3ec6-e18c-554f-5da4-49773c4445a0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -218,10 +218,10 @@ Global
 		{7e00453d-07e2-cf85-0fe7-60952118f595}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41c99686-a020-df23-0a15-667f30a831c4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{41c99686-a020-df23-0a15-667f30a831c4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{b898a651-6f82-fbed-dad4-ba57469584ee}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{b898a651-6f82-fbed-dad4-ba57469584ee}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

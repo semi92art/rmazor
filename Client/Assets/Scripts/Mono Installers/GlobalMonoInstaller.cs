@@ -77,6 +77,7 @@ namespace Mono_Installers
                 Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
                 Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>().AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
+                Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
                 Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()               .AsSingle();
                 Container.Bind<IScoreManager>()       .To<IosScoreManager>()                .AsSingle();
@@ -84,6 +85,7 @@ namespace Mono_Installers
                 Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>().AsSingle();
                 Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()        .AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
+                Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
 #endif
             }
 

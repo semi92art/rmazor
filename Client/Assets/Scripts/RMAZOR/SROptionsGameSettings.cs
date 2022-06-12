@@ -17,6 +17,8 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Utils;
+using Firebase.Extensions;
+using Firebase.Messaging;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -594,8 +596,7 @@ namespace RMAZOR
                 }
             }
         }
-        
-                
+
         [Category(CategoryCommon)]
         public bool Send_Test_Analytic
         {
@@ -605,6 +606,32 @@ namespace RMAZOR
                 if (!value)
                     return;
                 _managers.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic);
+            }
+        }
+
+        [Category(CategoryCommon)]
+        public bool Get_FCM_Token
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                try
+                {
+                    FirebaseMessaging.GetTokenAsync()
+                        .ContinueWithOnMainThread(_Task =>
+                    {
+                        string token = _Task.Result;
+                        Dbg.Log("FCM Token: " + token);
+                        CommonUtils.CopyToClipboard(token);
+                    });
+                }
+                catch (Exception e)
+                {
+                    Dbg.LogException(e.Message);
+                }
+
             }
         }
 

@@ -134,15 +134,18 @@ namespace Common.Managers.Notifications
 
         #region inject
 
-        private ICommonTicker        Ticker  { get; }
-        private INotificationSetting Setting { get; }
+        private ICommonTicker              Ticker                    { get; }
+        private INotificationSetting       Setting                   { get; }
+        private IPushNotificationsProvider PushNotificationsProvider { get; }
 
         private NotificationsManagerUnity(
-            ICommonTicker        _Ticker,
-            INotificationSetting _Setting)
+            ICommonTicker              _Ticker,
+            INotificationSetting       _Setting,
+            IPushNotificationsProvider _PushNotificationsProvider)
         {
-            Ticker  = _Ticker;
-            Setting = _Setting;
+            Ticker                    = _Ticker;
+            Setting                   = _Setting;
+            PushNotificationsProvider = _PushNotificationsProvider;
         }
 
         #endregion
@@ -163,6 +166,7 @@ namespace Common.Managers.Notifications
             var channel = new GameNotificationChannel(
                 ChannelId, Application.productName + " main channel", "Generic notifications");
             InitNotifications(channel);
+            PushNotificationsProvider.Init();
             base.Init();
             OnForegrounding();
         }
