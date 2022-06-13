@@ -24,6 +24,7 @@ namespace RMAZOR.DebugConsole
         {
             var commandArgsList = new List<DebugCommandArgs>
             {
+                new DebugCommandArgs("help",             Help, "Print command list."),
                 new DebugCommandArgs("restart",          Restart, "Restart game."),
                 new DebugCommandArgs("load",             Load, "Reload specified level."),
                 new DebugCommandArgs("reload",           Reload, "Reload current level."),

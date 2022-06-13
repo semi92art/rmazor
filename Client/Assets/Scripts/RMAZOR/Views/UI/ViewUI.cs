@@ -10,6 +10,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.UI
@@ -95,18 +96,10 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
-                    var lastTimeShown = SaveUtils.GetValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown);
-                    var span = DateTime.Now - lastTimeShown;
-                    if (span.Days > 31)
-                    {
-                        Managers.ShopManager.RateGame(true);
-                        SaveUtils.PutValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown, DateTime.Now);
-                    }
-                    else
-                    {
-                        DialogPanelsSet.RateGameDialogPanel.LoadPanel();
-                        ProposalDialogViewer.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
-                    }
+                    ShowRateGamePanel(false);
+                    // var lastTimeShown = SaveUtils.GetValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown);
+                    // var span = DateTime.Now - lastTimeShown;
+                    // ShowRateGamePanel(span.Days > 31);
                     int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
                     SaveUtils.PutValue(SaveKeysRmazor.RatePanelShowsCount, ratePanelShowsCount + 1);
                     break;
@@ -124,8 +117,6 @@ namespace RMAZOR.Views.UI
         {
             if (!_Focus)
                 return;
-            if (CommonData.PurchasingSomething)
-                return;
             if (MustShowRateGamePanelOnUnPause())
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
         }
@@ -137,10 +128,27 @@ namespace RMAZOR.Views.UI
         private bool MustShowRateGamePanelOnUnPause()
         {
             int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
-            return !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
-                   && ratePanelShowsCount < 10
-                   && Random.value < 0.5f
-                   && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
+            return !Application.isEditor 
+                    && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
+                    && ratePanelShowsCount < 10
+                    && Random.value < 0.5f
+                    && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
+        }
+
+        private void ShowRateGamePanel(bool _Native)
+        {
+            if (_Native)
+            {
+                if (Application.isEditor)
+                    Dbg.Log("Native rate app ui was shown.");
+                Managers.ShopManager.RateGame(true);
+                SaveUtils.PutValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown, DateTime.Now);
+            }
+            else
+            {
+                DialogPanelsSet.RateGameDialogPanel.LoadPanel();
+                ProposalDialogViewer.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
+            }
         }
 
         #endregion

@@ -58,8 +58,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         public override void SetColor(Color _Color)
         {
-            m_Triangle.Color = _Color.SetA(0.2f);
-            m_Border.Color = _Color.SetA(0.5f);
+            m_Triangle.Color = _Color.SetA(0.4f);
+            m_Border.Color = _Color.SetA(1f);
         }
 
         public override void SetParams(float _Scale, float _Thickness)

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -15,7 +13,6 @@ using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
 using UnityEngine;
@@ -26,7 +23,6 @@ namespace RMAZOR.Views.UI
     {
         #region nonpublic members
         
-        private readonly List<Component> m_Renderers             = new List<Component>();
         private readonly List<Component> m_RotatingButtonShapes  = new List<Component>();
         private readonly List<Component> m_RotatingButtonShapes2 = new List<Component>();
         
@@ -41,7 +37,6 @@ namespace RMAZOR.Views.UI
         private IModelGame                    Model             { get; }
         private IColorProvider                ColorProvider     { get; }
         private ICameraProvider               CameraProvider    { get; }
-        private IViewUITutorial               Tutorial          { get; }
         private IContainersGetter             ContainersGetter  { get; }
         private IManagersGetter               Managers          { get; }
         private IViewBetweenLevelTransitioner Transitioner      { get; }
@@ -53,7 +48,6 @@ namespace RMAZOR.Views.UI
             IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
-            IViewUITutorial               _Tutorial,
             IContainersGetter             _ContainersGetter,
             IManagersGetter               _Managers,
             IViewBetweenLevelTransitioner _Transitioner,
@@ -64,7 +58,6 @@ namespace RMAZOR.Views.UI
             Model             = _Model;
             ColorProvider     = _ColorProvider;
             CameraProvider    = _CameraProvider;
-            Tutorial          = _Tutorial;
             ContainersGetter  = _ContainersGetter;
             Managers          = _Managers;
             Transitioner      = _Transitioner;
@@ -115,18 +108,22 @@ namespace RMAZOR.Views.UI
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.Main) 
-                return;
-            foreach (var shapeComp in m_RotatingButtonShapes)
+            switch (_ColorId)
             {
-                if (shapeComp is ShapeRenderer rend)
-                    rend.Color = _Color;
-            }
-                
-            foreach (var shapeComp in m_RotatingButtonShapes2)
-            {
-                if (shapeComp is ShapeRenderer rend)
-                    rend.Color = _Color.SetA(0.2f);
+                case ColorIds.UI:
+                    foreach (var shapeComp in m_RotatingButtonShapes
+                        .Where(_R => _R is ShapeRenderer).Cast<ShapeRenderer>())
+                    {
+                        shapeComp.Color = _Color;
+                    }
+                    break;
+                case ColorIds.Main:
+                    foreach (var shapeComp in m_RotatingButtonShapes2
+                        .Where(_R => _R is ShapeRenderer).Cast<ShapeRenderer>())
+                    {
+                        shapeComp.Color = _Color.SetA(0.3f);
+                    }
+                    break;
             }
         }
 

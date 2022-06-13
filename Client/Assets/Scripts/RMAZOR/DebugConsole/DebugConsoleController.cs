@@ -77,8 +77,9 @@ namespace RMAZOR.DebugConsole
         public IScoreManager               ScoreManager      { get; private set; }
         public IModelGame                  Model             { get; private set; }
 
-        public string[]                                Log { get; private set; }
-        public Queue<string>                           Scrollback { get; } = new Queue<string>(ScrollbackSize);
+        public string[]      Log        { get; private set; }
+        public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
+        
         public Dictionary<string, DebugCommandArgs> Commands { get; } = new Dictionary<string, DebugCommandArgs>();
 
         // ReSharper disable once CollectionNeverQueried.Local

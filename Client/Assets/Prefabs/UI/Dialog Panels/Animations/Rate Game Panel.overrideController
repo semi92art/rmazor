@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Rate Game Panel
+  m_Controller: {fileID: 9100000, guid: dbbc369964cc97e4e8fcae492b1c96be, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 24a383b6b25d9f64ba474cea2e416c0b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b2f2ca6980d9a8d4d86ca05e3351e8df, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: b2f2ca6980d9a8d4d86ca05e3351e8df, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 801c2da097b943142b710673c733a751, type: 2}

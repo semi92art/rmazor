@@ -5,7 +5,6 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
@@ -23,7 +22,13 @@ namespace RMAZOR.UI.Panels
     public interface IRateGameDialogPanel : IDialogPanel
     {
         bool CanBeClosed { get; set; }
-        void SetDialogText(string _Text);
+        void SetDialogTitle(string _Text);
+    }
+    
+    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel
+    {
+        public bool CanBeClosed                 { get; set; }
+        public void SetDialogTitle(string _Text) { }
     }
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
@@ -31,11 +36,10 @@ namespace RMAZOR.UI.Panels
         #region nonpublic members
 
         private Animator           m_Animator;
-        private AnimationTriggerer m_Triggerer;
         private Button             m_ButtonClose;
         private Button             m_ButtonRateGame;
+        private TextMeshProUGUI    m_TextTitle;
         private TextMeshProUGUI    m_TextRateGame;
-        private Image              m_Stars;
 
         #endregion
 
@@ -87,12 +91,10 @@ namespace RMAZOR.UI.Panels
             PanelObject = go.RTransform();
             go.SetActive(false);
             m_Animator        = go.GetCompItem<Animator>("animator");
-            m_Triggerer       = go.GetCompItem<AnimationTriggerer>("triggerer");
             m_ButtonClose     = go.GetCompItem<Button>("close_button");
             m_ButtonRateGame  = go.GetCompItem<Button>("rate_game_button");
             m_TextRateGame    = go.GetCompItem<TextMeshProUGUI>("rate_game_text");
-            m_Stars           = go.GetCompItem<Image>("stars");
-            m_Triggerer.Trigger1 = () => Cor.Run(OnPanelStartAnimationFinished());
+            m_TextTitle       = go.GetCompItem<TextMeshProUGUI>("title");
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
             panel.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             var button = go.GetCompItem<SimpleUiButtonView>("rate_game_button");
@@ -103,7 +105,7 @@ namespace RMAZOR.UI.Panels
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(m_TextRateGame, ETextType.MenuUI, "rate_game"));
             m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
-            m_Stars.color = ColorProvider.GetColor(ColorIds.UI);
+            m_TextTitle.text = Managers.LocalizationManager.GetTranslation("we_need_comment");
             var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
             if (closeButtonAnimator.IsNotNull())
                 closeButtonAnimator.enabled = false;
@@ -118,6 +120,7 @@ namespace RMAZOR.UI.Panels
             m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
             m_Animator.SetTrigger(AnimKeys.Anim);
             m_ButtonClose.SetGoActive(false);
+            Cor.Run(OnPanelStartAnimationFinished());
         }
 
         public override void OnDialogHide()
@@ -125,23 +128,14 @@ namespace RMAZOR.UI.Panels
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
         }
 
-        public void SetDialogText(string _Text)
+        public void SetDialogTitle(string _Text)
         {
-            m_TextRateGame.text = _Text;
+            m_TextTitle.text = _Text;
         }
-
         
-
         #endregion
 
         #region nonpublic methods
-
-        protected override void OnColorChanged(int _ColorId, Color _Color)
-        {
-            base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.UI)
-                m_Stars.color = _Color;
-        }
 
         private IEnumerator OnPanelStartAnimationFinished()
         {
@@ -172,11 +166,5 @@ namespace RMAZOR.UI.Panels
         }
 
         #endregion
-    }
-
-    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel
-    {
-        public bool CanBeClosed                 { get; set; }
-        public void SetDialogText(string _Text) { }
     }
 }

@@ -10,8 +10,6 @@ namespace Common
         public static bool        LoadNextLevelAutomatically;
         public static int         GameId;
         public static bool        DevelopmentBuild;
-        public static bool        DoNotShowAdvertisingAfterAppUnpause = false;
-        public static bool        PurchasingSomething                 = false;
         public static bool        Release                             = false;
         public static bool        Testing                             = false;
         public static FirebaseApp FirebaseApp;

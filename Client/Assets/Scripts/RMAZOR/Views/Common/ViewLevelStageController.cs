@@ -374,7 +374,7 @@ namespace RMAZOR.Views.Common
             {
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
                 string panelText = Managers.LocalizationManager.GetTranslation("rate_game_text_all_levels_passed");
-                RateGameDialogPanel.SetDialogText(panelText);
+                RateGameDialogPanel.SetDialogTitle(panelText);
                 RateGameDialogPanel.CanBeClosed = false;
             }
             else if (m_NextLevelMustBeFirstInGroup)

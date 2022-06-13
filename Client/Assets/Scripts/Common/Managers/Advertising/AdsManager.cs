@@ -163,7 +163,6 @@ namespace Common.Managers.Advertising
                 }
             }
             _OnBeforeShown?.Invoke();
-            CommonData.DoNotShowAdvertisingAfterAppUnpause = true;
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
