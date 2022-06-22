@@ -33,26 +33,12 @@ namespace Editor
         #endregion
 
         #region api
-        
+
         [MenuItem("Tools/Bundles/Build")]
         public static void BuildBundles()
         {
             BuildBundles(false);
         }
-
-        // [MenuItem("Tools/Bundles/Build forced")]
-        // public static void BuildBundlesForced()
-        // {
-        //     BuildBundles(true);
-        // }
-        
-        // [MenuItem("Tools/Bundles/Refresh Assets")]
-        // public static void RefreshAssets()
-        // {
-        //     AssetDatabase.Refresh();
-        //     AssetDatabase.SaveAssets();
-        //     Dbg.Log("Assets refreshed and saved successfully.");
-        // }
 
         [MenuItem("Tools/Bundles/Copy To Git Folder")]
         public static void CopyToGitFolder()
@@ -124,7 +110,7 @@ namespace Editor
             EditorUtility.ClearProgressBar();
         }
 
-        [MenuItem("Tools/Bundles/Clear Cache")]
+        [MenuItem("Tools/Bundles/Clear Cache", false, 11)]
         public static void ClearBundlesCache()
         {
             bool clearCacheSuccess = Caching.ClearCache();

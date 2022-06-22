@@ -76,23 +76,6 @@ namespace RMAZOR.Models
         public event CharacterMovingContinuedHandler CharacterMoveContinued;
         public event CharacterMovingFinishedHandler  CharacterMoveFinished;
 
-        public void Move(EMazeMoveDirection _Direction)
-        {
-            if (!Data.ProceedingControls)
-                return;
-            if (!Alive)
-                return;
-            if (LevelStaging.LevelStage == ELevelStage.ReadyToStart)
-                LevelStaging.StartOrContinueLevel();
-            
-            var from = Position;
-            var to = GetNewPosition(from, _Direction, out var blockPositionWhoStopped);
-            var args = new CharacterMovingStartedEventArgs(_Direction, from, to);
-            IsMoving = true;
-            CharacterMoveStarted?.Invoke(args);
-            Cor.Run(MoveCharacterCore(_Direction, from, to, blockPositionWhoStopped));
-        }
-
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.LevelStage)
@@ -114,7 +97,24 @@ namespace RMAZOR.Models
             Position = _Args.Info.CurrentPosition;
             Move(_Args.Direction);
         }
-
+        
+        public void Move(EMazeMoveDirection _Direction)
+        {
+            if (!Data.ProceedingControls)
+                return;
+            if (!Alive)
+                return;
+            if (LevelStaging.LevelStage == ELevelStage.ReadyToStart)
+                LevelStaging.StartOrContinueLevel();
+            
+            var from = Position;
+            var to = GetNewPosition(from, _Direction, out var blockPositionWhoStopped);
+            var args = new CharacterMovingStartedEventArgs(_Direction, from, to);
+            IsMoving = true;
+            CharacterMoveStarted?.Invoke(args);
+            Cor.Run(MoveCharacterCore(_Direction, from, to, blockPositionWhoStopped));
+        }
+        
         #endregion
         
         #region nonpublic methods

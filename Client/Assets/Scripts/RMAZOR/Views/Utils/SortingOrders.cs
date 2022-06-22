@@ -17,9 +17,10 @@ namespace RMAZOR.Views.Utils
             PathLine                     = Path + 50,
             PathJoint                    = Path + 100,
             MoneyItem                    = Path + 150,
-            Character                    = Path + 1000,
-            GameLogoBackground           = Path + 1500,
-            GameLogoForeground           = Path + 1501;
+            GameUI                       = Path + 1000,
+            Character                    = Path + 1500,
+            GameLogoBackground           = Path + 1600,
+            GameLogoForeground           = Path + 1601;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {

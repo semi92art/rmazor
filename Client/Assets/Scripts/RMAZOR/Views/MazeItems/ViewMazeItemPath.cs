@@ -140,13 +140,13 @@ namespace RMAZOR.Views.MazeItems
         
         public event UnityAction MoneyItemCollected;
 
-        public override void Init(ViewMazeItemProps _Props)
+        public override void UpdateState(ViewMazeItemProps _Props)
         {
             if (!Initialized)
                 Managers.AudioManager.InitClip(AudioClipArgsCollectMoneyItem);
             MoneyItem.Collected -= MoneyItemCollected;
             MoneyItem.Collected += MoneyItemCollected;
-            base.Init(_Props);
+            base.UpdateState(_Props);
         }
         
         public virtual void Collect(bool _Collect, bool _OnStart = false)
@@ -229,7 +229,7 @@ namespace RMAZOR.Views.MazeItems
                 .SetType(Rectangle.RectangleType.RoundedBorder)
                 .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.Uniform)
                 .SetCornerRadius(CoordinateConverter.Scale * ViewSettings.CornerRadius)
-                .SetThickness(CoordinateConverter.Scale * ViewSettings.LineWidth * 0.5f)
+                .SetThickness(CoordinateConverter.Scale * ViewSettings.LineThickness * 0.5f)
                 .SetSortingOrder(SortingOrders.Path);
         }
 
@@ -239,12 +239,12 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (MoneyItem.Renderers.Any(_R => _R.IsNull()))
                     MoneyItem.Init(Object.transform);
+                MoneyItem.UpdateShape();
                 MoneyItem.Active = true;
                 m_PathItem.enabled = false;
             }
             else
             {
-                MoneyItem.UpdateShape();
                 MoneyItem.Active = false;
                 m_PathItem.Width = m_PathItem.Height = CoordinateConverter.Scale * 0.4f;
                 m_PathItem.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
@@ -472,7 +472,7 @@ namespace RMAZOR.Views.MazeItems
             };
             if (border.IsNull())
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
-            border.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale)
+            border.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
                 .SetEndCaps(LineEndCap.None)
                 .SetColor(GetBorderColor())
                 .SetSortingOrder(SortingOrders.PathLine)
@@ -526,7 +526,7 @@ namespace RMAZOR.Views.MazeItems
             corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(isConerNearTurret || isCornerNearTrapIncreasing ? ArcEndCap.Round : ArcEndCap.None)
                 .SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
-                .SetThickness(ViewSettings.CornerWidth * CoordinateConverter.Scale)
+                .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
                 .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))

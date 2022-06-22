@@ -116,7 +116,7 @@ namespace RMAZOR.Views.MazeItems
             base.UpdateShape();
             float scale = CoordinateConverter.Scale;
             m_Shape.SetSize(scale * 0.9f)
-                .SetThickness(ViewSettings.LineWidth * scale)
+                .SetThickness(ViewSettings.LineThickness * scale)
                 .SetCornerRadius(ViewSettings.CornerRadius * scale);
         }
 

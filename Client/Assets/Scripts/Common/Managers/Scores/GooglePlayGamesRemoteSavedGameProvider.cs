@@ -127,7 +127,7 @@ namespace Common.Managers.Scores
                     operation.Finished = true;
                 }
                 operation.Started = true;
-                Cor.Run(Cor.Delay(10f, OnDelay));
+                Cor.Run(Cor.Delay(10f, Ticker, OnDelay));
                 OpenSavedGame(operation.FileName);
                 return;
             }

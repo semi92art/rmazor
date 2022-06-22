@@ -41,14 +41,14 @@ namespace RMAZOR.Views.Common
 
         #region inject
         
-        protected RemoteProperties  RemoteProperties { get; }
-        protected IColorProvider    ColorProvider    { get; }
-        protected IPrefabSetManager PrefabSetManager { get; }
+        protected IRemotePropertiesRmazor RemoteProperties { get; }
+        protected IColorProvider          ColorProvider    { get; }
+        protected IPrefabSetManager       PrefabSetManager { get; }
 
         protected ViewMazeBackgroundTextureControllerBase(
-            RemoteProperties  _RemoteProperties,
-            IColorProvider    _ColorProvider,
-            IPrefabSetManager _PrefabSetManager)
+            IRemotePropertiesRmazor _RemoteProperties,
+            IColorProvider          _ColorProvider,
+            IPrefabSetManager       _PrefabSetManager)
         {
             RemoteProperties = _RemoteProperties;
             ColorProvider    = _ColorProvider;
@@ -152,10 +152,10 @@ namespace RMAZOR.Views.Common
         private ICameraProvider CameraProvider { get; }
 
         public ViewMazeBackgroundTextureControllerFake(
-            RemoteProperties  _RemoteProperties,
-            IColorProvider    _ColorProvider,
-            IPrefabSetManager _PrefabSetManager,
-            ICameraProvider   _CameraProvider)
+            IRemotePropertiesRmazor _RemoteProperties,
+            IColorProvider          _ColorProvider,
+            IPrefabSetManager       _PrefabSetManager,
+            ICameraProvider         _CameraProvider)
             : base(
                 _RemoteProperties,
                 _ColorProvider,

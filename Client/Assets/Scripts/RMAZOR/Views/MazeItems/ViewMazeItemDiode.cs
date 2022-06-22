@@ -127,8 +127,8 @@ namespace RMAZOR.Views.MazeItems
         protected override void UpdateShape()
         {
             float scale = CoordinateConverter.Scale;
-            m_SolidLine.SetThickness(ViewSettings.LineWidth * scale);
-            m_IntermittentLine.SetThickness(ViewSettings.LineWidth * scale);
+            m_SolidLine.SetThickness(ViewSettings.LineThickness * scale);
+            m_IntermittentLine.SetThickness(ViewSettings.LineThickness * scale);
             var dir = Props.Directions.First();
             (m_SolidLine.Start, m_SolidLine.End) = GetLinePoints(dir, false);
             (m_IntermittentLine.Start, m_IntermittentLine.End) = GetLinePoints(dir, true);
@@ -153,7 +153,7 @@ namespace RMAZOR.Views.MazeItems
         {
             const float intermAddict = .15f;
             const float sc1 = .5f;
-            float sc2 = .5f - ViewSettings.LineWidth;
+            float sc2 = .5f - ViewSettings.LineThickness;
             Vector2 start, end;
             Vector2 left, right, down, up, zero;
             (left, right, down, up, zero) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up, Vector2.zero);

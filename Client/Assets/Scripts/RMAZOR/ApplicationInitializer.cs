@@ -14,6 +14,7 @@ using Common.Managers.Advertising;
 using Common.Managers.IAP;
 using Common.Managers.Scores;
 using Common.Network;
+using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Controllers;
@@ -30,34 +31,38 @@ namespace RMAZOR
     {
         #region inject
     
-        private CommonGameSettings    Settings             { get; set; }
-        private IGameClient           GameClient           { get; set; }
-        private IAdsManager           AdsManager           { get; set; }
-        private ILocalizationManager  LocalizationManager  { get; set; }
-        private ILevelsLoader         LevelsLoader         { get; set; }
-        private IScoreManager         ScoreManager         { get; set; }
-        private IHapticsManager       HapticsManager       { get; set; }
-        private IShopManager          ShopManager          { get; set; }
-        private IRemoteConfigManager  RemoteConfigManager  { get; set; }
-        private IPermissionsRequester PermissionsRequester { get; set; }
-        private IAssetBundleManager   AssetBundleManager   { get; set; }
-
+        private IRemotePropertiesCommon RemoteProperties     { get; set; }
+        private CommonGameSettings      Settings             { get; set; }
+        private IGameClient             GameClient           { get; set; }
+        private IAdsManager             AdsManager           { get; set; }
+        private ILocalizationManager    LocalizationManager  { get; set; }
+        private ILevelsLoader           LevelsLoader         { get; set; }
+        private IScoreManager           ScoreManager         { get; set; }
+        private IHapticsManager         HapticsManager       { get; set; }
+        private IShopManager            ShopManager          { get; set; }
+        private IRemoteConfigManager    RemoteConfigManager  { get; set; }
+        private IPermissionsRequester   PermissionsRequester { get; set; }
+        private IAssetBundleManager     AssetBundleManager   { get; set; }
+        private ICommonTicker           CommonTicker         { get; set; }
         [Inject] 
         private void Inject(
-            CommonGameSettings    _Settings,
-            IGameClient           _GameClient,
-            IAdsManager           _AdsManager,
-            ILocalizationManager  _LocalizationManager,
-            ILevelsLoader         _LevelsLoader,
-            IScoreManager         _ScoreManager,
-            IHapticsManager       _HapticsManager,
-            IAssetBundleManager   _AssetBundleManager,
-            IShopManager          _ShopManager,
-            IRemoteConfigManager  _RemoteConfigManager,
-            ICameraProvider       _CameraProvider,
-            IPermissionsRequester _PermissionsRequester,
-            CompanyLogo           _CompanyLogo)
+            IRemotePropertiesCommon _RemoteProperties,
+            CommonGameSettings      _Settings,
+            IGameClient             _GameClient,
+            IAdsManager             _AdsManager,
+            ILocalizationManager    _LocalizationManager,
+            ILevelsLoader           _LevelsLoader,
+            IScoreManager           _ScoreManager,
+            IHapticsManager         _HapticsManager,
+            IAssetBundleManager     _AssetBundleManager,
+            IShopManager            _ShopManager,
+            IRemoteConfigManager    _RemoteConfigManager,
+            ICameraProvider         _CameraProvider,
+            IPermissionsRequester   _PermissionsRequester,
+            ICommonTicker           _CommonTicker,
+            CompanyLogo             _CompanyLogo)
         {
+            RemoteProperties     = _RemoteProperties;
             Settings             = _Settings;
             GameClient           = _GameClient;
             AdsManager           = _AdsManager;
@@ -69,6 +74,7 @@ namespace RMAZOR
             ShopManager          = _ShopManager;
             RemoteConfigManager  = _RemoteConfigManager;
             PermissionsRequester = _PermissionsRequester;
+            CommonTicker         = _CommonTicker;
         }
         
         #endregion
@@ -78,8 +84,9 @@ namespace RMAZOR
         private IEnumerator Start()
         {
             CommonData.GameId = 1;
+            RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= Settings.debugAnyway;
             LogAppInfo();
-            yield return Cor.Delay(0.5f); // для более плавной загрузки логотипа компании
+            yield return Cor.Delay(0.5f, CommonTicker); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
                 yield return new WaitForEndOfFrame();
@@ -136,6 +143,7 @@ namespace RMAZOR
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
                 {
+                    Dbg.Log("Init Game Controller");
                     LevelsLoader.Initialize += InitGameController;
                     LevelsLoader.Init();
                 });

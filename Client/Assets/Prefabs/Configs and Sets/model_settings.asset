@@ -15,7 +15,7 @@ MonoBehaviour:
   characterSpeed: 40
   movingItemsSpeed: 6
   gravityBlockSpeed: 15
-  gravityTrapSpeed: 10
+  gravityTrapSpeed: 15
   movingItemsPause: 1
   trapPreReactTime: 0.5
   trapReactTime: 0.5

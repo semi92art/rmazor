@@ -7,6 +7,7 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Providers;
+using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
@@ -46,7 +47,7 @@ namespace RMAZOR.Views.Common
         private GameObject     m_ButtonObj;
         private TextMeshPro    m_Text;
         private SpriteRenderer m_Border, m_Background;
-        private bool           m_AbortCountdown;
+        private IEnumerator    m_ShowButtonCoroutine;
 
         #endregion
         
@@ -55,7 +56,6 @@ namespace RMAZOR.Views.Common
         private ViewSettings                ViewSettings        { get; }
         private IModelGame                  Model               { get; }
         private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private IMazeCoordinateConverter    CoordinateConverter { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
         private IHapticsManager             HapticsManager      { get; }
@@ -64,12 +64,12 @@ namespace RMAZOR.Views.Common
         private ILocalizationManager        LocalizationManager { get; }
         private IAdsManager                 AdsManager          { get; }
         private IColorProvider              ColorProvider       { get; }
+        private IViewGameTicker             GameTicker          { get; }
 
         private ViewUILevelSkipperButton(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IMazeCoordinateConverter    _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
             IHapticsManager             _HapticsManager,
@@ -77,12 +77,12 @@ namespace RMAZOR.Views.Common
             ICameraProvider             _CameraProvider,
             ILocalizationManager        _LocalizationManager,
             IAdsManager                 _AdsManager,
-            IColorProvider              _ColorProvider)
+            IColorProvider              _ColorProvider,
+            IViewGameTicker             _GameTicker)
         {
             ViewSettings        = _ViewSettings;
             Model               = _Model;
             CommandsProceeder   = _CommandsProceeder;
-            CoordinateConverter = _CoordinateConverter;
             ContainersGetter    = _ContainersGetter;
             PrefabSetManager    = _PrefabSetManager;
             HapticsManager      = _HapticsManager;
@@ -91,6 +91,7 @@ namespace RMAZOR.Views.Common
             LocalizationManager = _LocalizationManager;
             AdsManager          = _AdsManager;
             ColorProvider       = _ColorProvider;
+            GameTicker          = _GameTicker;
         }
 
         #endregion
@@ -124,7 +125,6 @@ namespace RMAZOR.Views.Common
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
-                    m_AbortCountdown = false;
                     if (!m_Initialized)
                     {
                         InitButton();
@@ -135,18 +135,21 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.ReadyToStart:
                     ActivateButton(false);
                     break;
-                case ELevelStage.StartedOrContinued when _Args.PreviousStage == ELevelStage.ReadyToStart:
-                    m_AbortCountdown = false;
-                    Cor.Run(ShowButtonCountdownCoroutine());
+                case ELevelStage.StartedOrContinued when 
+                    _Args.PreviousStage == ELevelStage.ReadyToStart
+                    && _Args.PrePreviousStage == ELevelStage.Loaded:
+                    Cor.Stop(m_ShowButtonCoroutine);
+                    m_ShowButtonCoroutine = ShowButtonCountdownCoroutine();
+                    Cor.Run(m_ShowButtonCoroutine);
                     break;
                 case ELevelStage.Finished:
                     if (LevelSkipped)
                         CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null, true);
-                    m_AbortCountdown = true;
+                    Cor.Stop(m_ShowButtonCoroutine);
                     ActivateButton(false);
                     break;
                 case ELevelStage.CharacterKilled:
-                    m_AbortCountdown = true;
+                    Cor.Stop(m_ShowButtonCoroutine);
                     break;
             }
         }
@@ -176,7 +179,7 @@ namespace RMAZOR.Views.Common
             var go = PrefabSetManager.InitPrefab(
                 parent, "ui_game", "skip_level_button");
             var tr = go.transform;
-            tr.SetLocalScaleXY(Vector2.one * CoordinateConverter.Scale * 0.1f); 
+            tr.SetLocalScaleXY(Vector2.one * 0.3f); 
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
             float yPos = screenBounds.max.y - m_TopOffset - 8f;
             tr.SetLocalPosXY(screenBounds.center.x, yPos);
@@ -198,11 +201,14 @@ namespace RMAZOR.Views.Common
         
         private IEnumerator ShowButtonCountdownCoroutine()
         {
-            yield return Cor.Delay(ViewSettings.skipLevelSeconds, () =>
+            Dbg.Log(nameof(ShowButtonCountdownCoroutine));
+            yield return Cor.Delay(ViewSettings.skipLevelSeconds, 
+                GameTicker,
+                () =>
             {
                 if (AdsManager.RewardedAdReady)
                     ActivateButton(true);
-            }, () => m_AbortCountdown);
+            });
         }
 
         private void ActivateButton(bool _Active)

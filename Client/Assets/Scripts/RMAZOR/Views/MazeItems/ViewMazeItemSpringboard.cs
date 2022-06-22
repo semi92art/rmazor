@@ -115,7 +115,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            Pillar.SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale);
+            Pillar.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale);
             Springboard.SetThickness(Pillar.Thickness * 2f);
             (Pillar.Start, Pillar.End, Springboard.Start, Springboard.End) = GetSpringboardAndPillarEdges();
             (m_Edge1Start, m_Edge2Start) = (Springboard.Start, Springboard.End);

@@ -37,13 +37,13 @@ namespace Editor
         private Vector2            m_SettingsScrollPos;
         private static CommonGameSettings _commonGameSettings;
 
-        [MenuItem("Tools/\u2699 Editor Helper _%h", false, 0)]
+        [MenuItem("Tools/\u2699 Editor Helper _%h", false, 104)]
         public static void ShowWindow()
         {
             GetWindow<EditorHelperWindow>("Editor Helper");
         }
     
-        [MenuItem("Tools/Profiler",false, 3)]
+        [MenuItem("Tools/Profiler",false, 105)]
         public static void ShowProfilerWindow()
         {
             var tProfiler = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.ProfilerWindow");

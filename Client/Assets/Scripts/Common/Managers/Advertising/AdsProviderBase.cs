@@ -33,8 +33,6 @@ namespace Common.Managers.Advertising
 
         protected bool        TestMode;
         protected XElement    AdsData;
-        protected UnityAction OnRewardedAdShown;
-        protected UnityAction OnInterstitialAdShown;
 
         #endregion
 

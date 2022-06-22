@@ -225,10 +225,11 @@ namespace RMAZOR.Views
                 {locMan.GetTranslation("notification_1"), DateTime.Now.AddDays(1)},
                 {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(3)}
             };
-            notMan.LastNotificationsCountToReschedule = dict.Count;
             notMan.OperatingMode = Application.platform == RuntimePlatform.Android
                 ? ENotificationsOperatingMode.QueueClearAndReschedule
                 : ENotificationsOperatingMode.NoQueue;
+            if (notMan.OperatingMode.HasFlag(ENotificationsOperatingMode.RescheduleAfterClearing))
+                notMan.LastNotificationsCountToReschedule = dict.Count;
             notMan.ClearAllNotifications();
             string title = Application.productName;
             foreach ((string body, var dateTime) in dict)

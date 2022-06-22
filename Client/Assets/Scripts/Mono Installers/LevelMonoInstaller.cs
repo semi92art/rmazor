@@ -102,8 +102,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeForeground>()                .To<ViewMazeForeground>()                .AsSingle();
             Container.Bind<IViewBetweenLevelTransitioner>()      .To<ViewBetweenLevelTransitioner>()      .AsSingle();
             Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
-            Container.Bind<IViewTurretProjectile>()              .To<ViewTurretProjectileShuriken>()      .AsSingle();
-            Container.Bind<IViewTurretProjectileTail>()          .To<ViewTurretProjectileTail>()          .AsSingle();
+
             
             Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>()
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()
@@ -154,6 +153,10 @@ namespace Mono_Installers
             Container.Bind<IViewMazeDiodesGroup>()           .To<ViewMazeDiodesGroup>()              .AsSingle();
             
             Container.Bind<IViewMazeItemsGroupSet>()         .To<ViewMazeItemsGroupSet>()            .AsSingle();
+            
+            Container.Bind<IViewTurretProjectile>()          .To<ViewTurretProjectileShuriken>()     .AsSingle();
+            Container.Bind<IViewTurretProjectileTail>()      .To<ViewTurretProjectileTail>()         .AsSingle();
+            Container.Bind<IViewTurretBody>()                .To<ViewTurretBodySquare>()             .AsSingle();
         }
 
         private void BindCharacter()

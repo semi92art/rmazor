@@ -47,7 +47,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private static Dictionary<string, float> KeysAndDelays => new Dictionary<string, float>
         {
             {"M", 0f}, {"A1", 0f}, {"Z", 0f}, {"E1", 0f},
-            {"B", 0f}, {"L", 0f}, {"A2", 0f}, {"D", 0f}, {"E2", 0f},
+            {"B", 0.2f}, {"L", 0.2f}, {"A2", 0.2f}, {"D", 0.2f}, {"E2", 0.2f},
             {"bottom_line_animator", 1f},
             {"bottom_text_animator", 1f}
         };
@@ -101,7 +101,6 @@ namespace RMAZOR.Views.UI.Game_Logo
             ColorProvider.ColorChanged += OnColorChanged;
             m_TopOffset = _Offsets.w;
             InitGameLogo();
-            SetColors(ColorProvider.GetColor(ColorIds.UI));
         }
         
         public void Show()
@@ -110,8 +109,7 @@ namespace RMAZOR.Views.UI.Game_Logo
                 return;
             Cor.Run(ShowGameLogoCoroutine());
         }
-
-
+        
         #endregion
 
         #region nonpublic members
@@ -231,15 +229,17 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetStartGameLogoTransform(out Vector2 position, out float scale);
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
-            ShowGameLogo(ShowTime);
             LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
             LogoTextureProvider.SetTransitionValue(0f);
-            yield return Cor.Delay(ShowTime, () => m_GameLogoAppeared = true);
+            yield return Cor.Delay(0.5f, GameTicker);
+            SetColors(ColorProvider.GetColor(ColorIds.UI));
+            ShowGameLogo(ShowTime);
+            yield return Cor.Delay(ShowTime, GameTicker,() => m_GameLogoAppeared = true);
         }
 
         private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine(float _Delay)
         {
-            yield return Cor.Delay(_Delay);
+            yield return Cor.Delay(_Delay, GameTicker);
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
             Cor.Run(Cor.Lerp(

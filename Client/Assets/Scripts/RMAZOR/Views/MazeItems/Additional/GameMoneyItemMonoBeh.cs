@@ -8,8 +8,8 @@ namespace RMAZOR.Views.MazeItems.Additional
 {
     public class GameMoneyItemMonoBeh : MonoBehaviour, IOnLevelStageChanged
     {
-        public                   Disc icon;
-        [SerializeField] private Animator       anim;
+        public                   Disc     icon;
+        [SerializeField] private Animator anim;
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -32,11 +32,6 @@ namespace RMAZOR.Views.MazeItems.Additional
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
-        }
-        
-        private void Update()
-        {
-            transform.rotation = Quaternion.Euler(Vector3.zero);
         }
     }
 }

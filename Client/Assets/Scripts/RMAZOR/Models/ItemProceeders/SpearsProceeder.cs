@@ -88,6 +88,7 @@ namespace RMAZOR.Models.ItemProceeders
             while (shot++ < Settings.spearShotsPerUnit)
                 yield return Cor.Delay(
                     Settings.spearShotPause,
+                    GameTicker,
                     () => SpearShot?.Invoke(new SpearEventArgs(_Info)));
         }
 

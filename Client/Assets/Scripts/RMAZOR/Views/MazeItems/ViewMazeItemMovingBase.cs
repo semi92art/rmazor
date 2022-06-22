@@ -153,7 +153,7 @@ namespace RMAZOR.Views.MazeItems
                 .gameObject.AddComponent<Disc>()
                 .SetSortingOrder(SortingOrders.PathJoint)
                 .SetType(DiscType.Disc)
-                .SetRadius(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f);
+                .SetRadius(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f);
         }
 
         private Line CreateLine(Vector2 _Start, Vector2 _End, Transform _Container)
@@ -165,7 +165,7 @@ namespace RMAZOR.Views.MazeItems
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetStart(_Start)
                 .SetEnd(_End)
-                .SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f)
+                .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f)
                 .SetDashed(true)
                 .SetDashType(DashType.Rounded)
                 .SetDashSize(1f)

@@ -20,13 +20,13 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private RemoteProperties  RemoteProperties { get; }
-        private IPrefabSetManager PrefabSetManager { get; }
+        private IRemotePropertiesRmazor RemoteProperties { get; }
+        private IPrefabSetManager       PrefabSetManager { get; }
 
         private ViewMazeForeground(
-            RemoteProperties _RemoteProperties,
-            IColorProvider    _ColorProvider,
-            IPrefabSetManager _PrefabSetManager)
+            IRemotePropertiesRmazor _RemoteProperties,
+            IColorProvider          _ColorProvider,
+            IPrefabSetManager       _PrefabSetManager)
             : base(_ColorProvider)
         {
             RemoteProperties = _RemoteProperties;

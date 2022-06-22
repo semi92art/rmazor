@@ -10,9 +10,9 @@ public delegate void SROptionsPropertyChanged(object sender, string propertyName
 #endif
 public partial class SROptions : INotifyPropertyChanged
 {
-    private static RMAZOR.SROptions _current;
+    private static SRDebuggerCustomOptions.SROptions _current;
 
-    public static RMAZOR.SROptions Current
+    public static SRDebuggerCustomOptions.SROptions Current
     {
         get { return _current; }
     }
@@ -21,7 +21,7 @@ public partial class SROptions : INotifyPropertyChanged
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void OnStartup()
     {
-        _current = new RMAZOR.SROptions(); // Need to reset options here so if we enter play-mode without a domain reload there will be the default set of options.
+        _current = new SRDebuggerCustomOptions.SROptions(); // Need to reset options here so if we enter play-mode without a domain reload there will be the default set of options.
         SRServiceManager.GetService<SRDebugger.Internal.InternalOptionsRegistry>().AddOptionContainer(Current);
     }
 #endif

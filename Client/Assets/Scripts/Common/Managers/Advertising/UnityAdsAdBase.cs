@@ -12,9 +12,9 @@ namespace Common.Managers.Advertising
     public class UnityAdsAdBase : IUnityAdsAd, IUpdateTick
     {
         protected volatile bool        DoInvokeOnShown;
+        protected          string      UnitId;
         private            bool        m_DoLoadAdWithDelay;
         private            float       m_LoadAdDelayTimer;
-        private            string      m_UnitId;
         private            UnityAction m_OnShown;
 
         private CommonGameSettings Settings   { get; }
@@ -31,14 +31,14 @@ namespace Common.Managers.Advertising
         public void Init(string _AppId, string _UnitId)
         {
             CommonTicker.Register(this);
-            m_UnitId = _UnitId;
+            UnitId = _UnitId;
             LoadAd();
         }
 
         public virtual void ShowAd(UnityAction _OnShown)
         {
             m_OnShown = _OnShown;
-            Advertisement.Show(m_UnitId, this);
+            Advertisement.Show(UnitId, this);
         }
 
         public virtual void OnUnityAdsAdLoaded(string _PlacementId)
@@ -91,7 +91,7 @@ namespace Common.Managers.Advertising
         public virtual void LoadAd()
         {
             Ready = false;
-            Advertisement.Load(m_UnitId, this);
+            Advertisement.Load(UnitId, this);
         }
 
         public void UpdateTick()

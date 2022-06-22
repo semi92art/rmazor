@@ -125,6 +125,7 @@ namespace RMAZOR
                 if (!_Appear)
                     Cor.Run(Cor.Delay(
                         delay,
+                        GameTicker,
                         FastTransit));
             }
         }

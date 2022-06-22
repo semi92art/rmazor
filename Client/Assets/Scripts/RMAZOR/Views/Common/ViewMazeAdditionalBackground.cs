@@ -63,7 +63,6 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:             OnLevelLoaded(_Args);   break;

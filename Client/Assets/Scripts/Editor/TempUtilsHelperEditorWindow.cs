@@ -15,7 +15,7 @@ namespace Editor
         private int             m_LevelIndex;
         private IGameController m_GameController;
         
-        [MenuItem("Tools/Test Utils Helper", false)]
+        [MenuItem("Tools/Test Utils Helper", false, 108)]
         public static void ShowWindow()
         {
             GetWindow<TempUtilsHelperEditorWindow>("Test Utils Helper");

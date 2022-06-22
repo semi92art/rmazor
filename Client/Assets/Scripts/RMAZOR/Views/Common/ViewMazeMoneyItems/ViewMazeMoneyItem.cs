@@ -34,6 +34,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         
         private GameMoneyItemMonoBeh m_Beh;
         private bool                 m_Active;
+        private bool                 m_Initialized;
 
         #endregion
 
@@ -80,7 +81,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             m_Beh.icon.transform.localScale = Vector3.one * scale * commonScaleCoeff;
         }
 
-        public IEnumerable<Component> Renderers => new Component[] {m_Beh.IsNull() ? null : m_Beh.icon};
+        public IEnumerable<Component> Renderers => new Component[] {!m_Initialized ? null : m_Beh.icon};
 
         public event UnityAction Collected;
         public bool              IsCollected { get; set; }
@@ -91,7 +92,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             set
             {
                 m_Active = value;
-                if (m_Beh.IsNull() || m_Beh.icon.IsNull())
+                if (!m_Initialized)
                     return;
                 m_Beh.icon.enabled = value;
             }
@@ -108,8 +109,12 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         public void Init(Transform _Parent)
         {
+            if (m_Initialized)
+                return;
             ColorProvider.ColorChanged += OnColorChanged;
             InitShape(_Parent);
+            m_Initialized = true;
+            UpdateShape();
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -132,7 +137,6 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             m_Beh.icon.SetColor(col);
             m_Beh.icon.SetSortingOrder(SortingOrders.MoneyItem);
             go.transform.SetLocalPosXY(Vector2.zero);
-            UpdateShape();
         }
         
         private void OnColorChanged(int _ColorId, Color _Color)

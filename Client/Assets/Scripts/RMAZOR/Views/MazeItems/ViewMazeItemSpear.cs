@@ -66,7 +66,7 @@ namespace RMAZOR.Views.MazeItems
         private bool           m_LookAtCharacter;
         private bool           m_ProjectileIsFlying;
         private bool           m_CanSpawnTailItems;
-        private Vector3        m_CharacterPositionLerped;
+        private Vector3?       m_CharacterPositionLerped;
         private float          m_SpawnTailItemsTimer;
         private int            m_PositionIndex;
         private float          m_OuterDiscBorderRotationSpeed = OuterDiscBorderRotationSpeedIdle;
@@ -127,11 +127,11 @@ namespace RMAZOR.Views.MazeItems
                 PrefabSetManager,
                 CameraProvider);
 
-        public override void Init(ViewMazeItemProps _Props)
+        public override void UpdateState(ViewMazeItemProps _Props)
         {
             string posArg = _Props.Args.First(_Arg => _Arg.Contains("pos"));
             m_PositionIndex = int.Parse(posArg.Split('=')[1]);
-            base.Init(_Props);
+            base.UpdateState(_Props);
         }
         
         public void OnSpearAppear(SpearEventArgs _Args)
@@ -260,7 +260,7 @@ namespace RMAZOR.Views.MazeItems
             m_SpearRend.sortingOrder = sortingOrder;
             m_SpearRend.material.SetFloat(StencilRefId, stencilRefId);
             m_SpearBorderRend = go.GetCompItem<SpriteRenderer>("spear_border");
-            m_SpearBorderRend.sortingOrder = sortingOrder - 1;
+            m_SpearBorderRend.sortingOrder = sortingOrder;
             m_SpearBorderRend.material.SetFloat(StencilRefId, stencilRefId);
         }
         
@@ -335,14 +335,14 @@ namespace RMAZOR.Views.MazeItems
         {
             var projTr = m_ProjectileRb.transform;
             var charPos = GetViewCharacterInfo().Transform.position;
-            if (m_CharacterPositionLerped == default)
+            if (!m_CharacterPositionLerped.HasValue)
                 m_CharacterPositionLerped = new Vector3(projTr.position.x, charPos.y);
             else
             {
-                m_CharacterPositionLerped = Vector3.Lerp(m_CharacterPositionLerped, charPos,
+                m_CharacterPositionLerped = Vector3.Lerp(m_CharacterPositionLerped.Value, charPos,
                     GameTicker.DeltaTime * ViewSettings.spearRotationSpeed);
             }
-            m_LookAtHelper.LookAt2D(m_CharacterPositionLerped);
+            m_LookAtHelper.LookAt2D(m_CharacterPositionLerped.Value);
             var correctRotation = Quaternion.Euler(Vector3.forward * (m_LookAtHelper.eulerAngles.z - 90f));
             m_ProjectileRb.transform.rotation = correctRotation;
         }
@@ -356,7 +356,7 @@ namespace RMAZOR.Views.MazeItems
             m_ProjectileIsFlying      = true;
             m_LookAtCharacter         = false;
             var projTr      = m_ProjectileRb.transform;
-            var direction     = (m_CharacterPositionLerped - projTr.position).normalized;
+            var direction     = (m_CharacterPositionLerped!.Value - projTr.position).normalized;
             float scale = CoordinateConverter.Scale;
             var startPos = m_ProjectileRb.position;
             m_Mask1.transform.SetParent(Object.transform);
@@ -499,11 +499,19 @@ namespace RMAZOR.Views.MazeItems
         
         private void StopProjectile()
         {
+            // FIXME тут может быть много лишнего
             m_ProjectileRb.velocity = Vector2.zero;
             m_ProjectileRb.SetGoActive(false);
             m_ProjectileRb.transform.SetParent(m_ProjectileContainerOnFly);
             m_ProjectileIsFlying = false;
             m_AdditionalOuterSpearMaskBottom.enabled = true;
+            m_CharacterPositionLerped = null;
+            m_ProjectileRb.transform
+                .SetParentEx(m_ProjectileContainerOnAwait)
+                .SetLocalPosXY(Vector2.zero)
+                .SetLocalScaleXY(CoordinateConverter.Scale * ScaleCoefficient * Vector2.one)
+                .SetGoActive(false)
+                .rotation = Quaternion.Euler(Vector3.forward * 180f);
         }
 
         protected override Dictionary<IEnumerable<Component>, System.Func<Color>> GetAppearSets(bool _Appear)

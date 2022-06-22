@@ -217,14 +217,14 @@ namespace RMAZOR.Views.MazeItems
             float scale = CoordinateConverter.Scale;
             m_ClosedBlock.SetSize(scale * 0.9f)
                 .SetCornerRadius(ViewSettings.CornerRadius * scale)
-                .SetThickness(ViewSettings.LineWidth * scale);
+                .SetThickness(ViewSettings.LineThickness * scale);
             foreach (var corner in m_OpenedCorners)
             {
                 corner.SetRadius(GetCornerRadius())
-                    .SetThickness(ViewSettings.LineWidth * scale);
+                    .SetThickness(ViewSettings.LineThickness * scale);
             }
             foreach (var line in m_OpenedLines)
-                line.Thickness = ViewSettings.LineWidth * scale;
+                line.Thickness = ViewSettings.LineThickness * scale;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)

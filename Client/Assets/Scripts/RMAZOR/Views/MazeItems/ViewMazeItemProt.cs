@@ -71,7 +71,7 @@ namespace RMAZOR.Views.MazeItems
             set => props = value;
         }
         
-        public void Init(ViewMazeItemProps _Props)
+        public void UpdateState(ViewMazeItemProps _Props)
         {
             props = _Props;
             SetShapeAndHint(_Props.Type, _Props.IsNode);

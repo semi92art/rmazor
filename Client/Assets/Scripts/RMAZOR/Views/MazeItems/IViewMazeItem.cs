@@ -14,7 +14,7 @@ namespace RMAZOR.Views.MazeItems
         Component[]       Renderers          { get; }
         EProceedingStage  ProceedingStage { get; set; }
         ViewMazeItemProps Props           { get; set; }
-        void              Init(ViewMazeItemProps     _Props);
+        void              UpdateState(ViewMazeItemProps     _Props);
         void              SetLocalPosition(Vector2   _Position);
         void              SetLocalScale(float        _Scale);
         bool              Equal(IMazeItemProceedInfo _MazeItem);

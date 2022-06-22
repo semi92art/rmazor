@@ -168,6 +168,7 @@ namespace RMAZOR.Views.MazeItems
                     int levelsLoadCountCheck = m_LevelsLoadCount;
                     Cor.Run(Cor.Delay(
                     5f, 
+                    GameTicker,
                     () =>
                     {
                         var stage = Model.LevelStaging.LevelStage;

@@ -110,9 +110,12 @@ namespace RMAZOR.Views.Characters
         {
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
+            if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Portal)
+                return;
+            if (Model.PathItemsProceeder.AllPathsProceeded)
+                return;
+            ThrowParticlesOnMoveFinished(_Args.Direction);
             m_MoveDirection = null;
-            if (!Model.PathItemsProceeder.AllPathsProceeded)
-                ThrowParticlesOnMoveFinished(_Args.Direction);
         }
 
         public void OnAllPathProceed(V2Int _LastPos)

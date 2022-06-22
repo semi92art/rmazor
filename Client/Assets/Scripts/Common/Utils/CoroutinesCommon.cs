@@ -22,15 +22,22 @@ namespace Common.Utils
         }
 
         public static IEnumerator Delay(
-            float  _Delay,
+            float       _Delay,
+            ITicker     _Ticker,
             UnityAction _OnDelay = null,
-            Func<bool> _OnBreak = null
-        )
+            Func<bool>  _OnBreak = null)
         {
-            if (_Delay > float.Epsilon)
+            float time = _Ticker?.Time ?? Time.time;
+            bool IsTimeValid()
+            {
+                return time + _Delay > (_Ticker?.Time ?? Time.time);
+            }
+            while (IsTimeValid())
+            {
+                if (_OnBreak != null && _OnBreak())
+                    yield break;
                 yield return new WaitForSeconds(_Delay);
-            if (_OnBreak != null && _OnBreak())
-                yield break;
+            }
             _OnDelay?.Invoke();
         }
 

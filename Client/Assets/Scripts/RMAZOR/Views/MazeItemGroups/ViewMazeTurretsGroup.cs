@@ -2,6 +2,7 @@
 using System.Linq;
 using Common;
 using Common.Managers;
+using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -31,14 +32,17 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region inject
         
-        private IManagersGetter Managers { get; }
-        
+        private IManagersGetter Managers   { get; }
+        private IViewGameTicker GameTicker { get; }
+
         private ViewMazeTurretsGroup(
             IViewMazeCommon _Common,
-            IManagersGetter _Managers)
+            IManagersGetter _Managers,
+            IViewGameTicker _GameTicker)
             : base(_Common)
         {
             Managers = _Managers;
+            GameTicker = _GameTicker;
         }
         
         #endregion
@@ -89,6 +93,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 m_IsHapticPause = true;
                 Cor.Run(Cor.Delay(
                     0.5f,
+                    GameTicker,
                     () => m_IsHapticPause = false));
             }
         }

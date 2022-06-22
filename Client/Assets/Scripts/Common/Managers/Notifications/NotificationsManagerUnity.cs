@@ -346,8 +346,10 @@ namespace Common.Managers.Notifications
                 if (loaded == null)
                     return;
                 foreach (IGameNotification savedNotification in loaded)
+                {
                     if (savedNotification.DeliveryTime > DateTime.Now)
                         PendingNotifications.Add(new PendingNotification(savedNotification));
+                }
             }
         }
 
@@ -380,19 +382,43 @@ namespace Common.Managers.Notifications
 
         public void OnApplicationFocus(bool _HasFocus)
         {
-            if (!Setting.Get())
-                return;
-            if (Platform == null || !Initialized)
+            if (!Setting.Get() || Platform == null || !Initialized)
                 return;
             m_InForeground = _HasFocus;
             if (_HasFocus)
             {
                 OnForegrounding();
-                return;
             }
+            else
+            {
+                Platform.OnBackground();
+                QueueFutureDatesNotifications();
+                SaveFutureDatesNotifications();
+            }
+        }
 
-            Platform.OnBackground();
-            // Backgrounding
+        public void OnDestroy()
+        {
+            if (Platform == null)
+                return;
+            Platform.NotificationReceived -= OnNotificationReceived;
+            if (Platform is IDisposable disposable)
+                disposable.Dispose();
+            m_InForeground = false;
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void EnableNotifications(bool _Enable)
+        {
+            if (!_Enable)
+                ClearAllNotifications();
+        }
+
+        private void QueueFutureDatesNotifications()
+        {
             // Queue future dated notifications
             if ((OperatingMode & ENotificationsOperatingMode.Queue) == ENotificationsOperatingMode.Queue)
             {
@@ -457,7 +483,10 @@ namespace Common.Managers.Notifications
                     }
                 }
             }
+        }
 
+        private void SaveFutureDatesNotifications()
+        {
             // Calculate notifications to save
             var notificationsToSave = new List<PendingNotification>(PendingNotifications.Count);
             var notificationsSortedByDeliveryTime = PendingNotifications
@@ -465,7 +494,6 @@ namespace Common.Managers.Notifications
                 .Where(_N => _N.Notification.DeliveryTime.HasValue)
                 .OrderByDescending(_N => _N.Notification.DeliveryTime.Value)
                 .ToList();
-
             int countToReschedule = LastNotificationsCountToReschedule ?? notificationsSortedByDeliveryTime.Count;
             for (int i = 0; i < countToReschedule; i++)
             {
@@ -500,53 +528,6 @@ namespace Common.Managers.Notifications
             m_Serializer.Serialize(notificationsToSave);
         }
 
-        public void OnDestroy()
-        {
-            if (Platform == null)
-                return;
-            Platform.NotificationReceived -= OnNotificationReceived;
-            if (Platform is IDisposable disposable)
-                disposable.Dispose();
-            m_InForeground = false;
-        }
-
         #endregion
-
-        #region nonpublic methods
-
-        private void EnableNotifications(bool _Enable)
-        {
-            if (!_Enable)
-                ClearAllNotifications();
-        }
-
-        #endregion
-    }
-
-    public class NotificationsManagerFake : InitBase, INotificationsManager
-    {
-        public event Action<PendingNotification> LocalNotificationDelivered;
-        public event Action<PendingNotification> LocalNotificationExpired;
-
-        public ENotificationsOperatingMode OperatingMode        { get; set; } = ENotificationsOperatingMode.NoQueue;
-        public List<PendingNotification>   PendingNotifications => new List<PendingNotification>();
-        public int?  LastNotificationsCountToReschedule { get; set; }
-
-        public void EnableNotifications(bool _Enable)
-        {
-            Dbg.LogWarning("Enabling/disabling notifications is available on device only.");
-        }
-
-        public void SendNotification(
-            string   _Title,
-            string   _Body,
-            DateTime _DeliveryTime,
-            int?     _BadgeNumber = null,
-            bool     _Reschedule  = false,
-            string   _ChannelId   = null,
-            string   _SmallIcon   = null,
-            string   _LargeIcon   = null) { }
-
-        public void ClearAllNotifications() { }
     }
 }

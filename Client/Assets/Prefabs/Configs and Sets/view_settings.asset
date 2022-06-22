@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineWidth: 12
-  cornerWidth: 12
-  cornerRadius: 20
+  lineThickness: 15
+  cornerRadius: 15
   movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: -1000
@@ -36,5 +35,8 @@ MonoBehaviour:
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
   additionalBackTexturesInUse: 1
-  filledPathAlpha: 0.884
-  skipLevelSeconds: 10
+  filledPathAlpha: 1
+  additionalBackgroundAlpha: 0.5
+  skipLevelSeconds: 100
+  animatePathFill: 1
+  animatePathFillTime: 0.2

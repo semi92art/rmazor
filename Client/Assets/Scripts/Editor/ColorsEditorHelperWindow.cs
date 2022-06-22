@@ -30,7 +30,7 @@ namespace Editor
         private bool                                  m_ChangeOnlyHueUi = true;
         private int                                   m_CurrSetIdx;
     
-        [MenuItem("Tools/Colors Helper _%&c", false, 2)]
+        [MenuItem("Tools/Colors Helper _%&c", false, 102)]
         public static void ShowWindow()
         {
             var window = GetWindow<ColorsEditorHelperWindow>("Color Palette Helper");

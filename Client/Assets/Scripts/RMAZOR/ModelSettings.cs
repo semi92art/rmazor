@@ -8,7 +8,6 @@ namespace RMAZOR
         public float characterSpeed;
         public float movingItemsSpeed;
         public float gravityBlockSpeed;
-        public float gravityTrapSpeed;
         public float movingItemsPause;
         public float trapPreReactTime;
         public float trapReactTime;

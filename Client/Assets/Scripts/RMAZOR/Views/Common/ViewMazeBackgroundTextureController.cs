@@ -25,18 +25,18 @@ namespace RMAZOR.Views.Common
         #endregion
         
         #region inject
-        
+
         private IFullscreenTextureProviderTriangles2 Triangles2TextureProvider { get; }
-        private IViewGameTicker                              Ticker                    { get; }
-        private IViewMazeBackgroundIdleItems                 IdleItems                 { get; }
+        private IViewGameTicker                      Ticker                    { get; }
+        private IViewMazeBackgroundIdleItems         IdleItems                 { get; }
 
         private ViewMazeBackgroundTextureController(
-            RemoteProperties                             _RemoteProperties,
+            IRemotePropertiesRmazor              _RemoteProperties,
             IFullscreenTextureProviderTriangles2 _Triangles2TextureProvider,
-            IPrefabSetManager                            _PrefabSetManager,
-            IColorProvider                               _ColorProvider,
-            IViewGameTicker                              _Ticker,
-            IViewMazeBackgroundIdleItems                 _IdleItems) 
+            IPrefabSetManager                    _PrefabSetManager,
+            IColorProvider                       _ColorProvider,
+            IViewGameTicker                      _Ticker,
+            IViewMazeBackgroundIdleItems         _IdleItems) 
             : base(
                 _RemoteProperties,
                 _ColorProvider, 

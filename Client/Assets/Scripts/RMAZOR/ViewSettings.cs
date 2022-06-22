@@ -7,8 +7,7 @@ namespace RMAZOR
     [CreateAssetMenu(fileName = "view_settings", menuName = "Configs and Sets/View Settings", order = 1)]
     public class ViewSettings : ScriptableObject
     {
-        public float  lineWidth;
-        public float  cornerWidth;
+        public float  lineThickness;
         public float  cornerRadius;
         public float  movingTrapRotationSpeed;
         public float  shredingerLineOffsetSpeed;
@@ -32,18 +31,15 @@ namespace RMAZOR
         public float  spearRotationSpeed;
         public string additionalBackTexturesInUse;
         public float  filledPathAlpha;
+        public float  additionalBackgroundAlpha;
         public float  skipLevelSeconds;
+        public bool   animatePathFill;
+        public float  animatePathFillTime;
 
-        public float LineWidth
+        public float LineThickness
         {
-            get => lineWidth * 0.01f;
-            set => lineWidth = value / 0.01f;
-        }
-
-        public float CornerWidth
-        {
-            get => cornerWidth * 0.01f;
-            set => cornerWidth = value / 0.01f;
+            get => lineThickness * 0.01f;
+            set => lineThickness = value / 0.01f;
         }
 
         public float CornerRadius

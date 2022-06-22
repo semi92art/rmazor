@@ -80,7 +80,7 @@ namespace Common.Managers
                 waitingTime = 5f;
             if (_WaitingTime.HasValue)
                 waitingTime = _WaitingTime.Value;
-            Cor.Run(Cor.Delay(waitingTime, () => stopWaiting = true));
+            Cor.Run(Cor.Delay(waitingTime, Ticker, () => stopWaiting = true));
             Cor.Run(Cor.WaitWhile(
                 () => !request.isDone && !stopWaiting,
                 () =>

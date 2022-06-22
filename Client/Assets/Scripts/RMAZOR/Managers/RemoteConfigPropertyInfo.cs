@@ -19,16 +19,16 @@ namespace RMAZOR.Managers
         #region ctor
         
         public RemoteConfigPropertyInfo(
-            string              _Key,
-            System.Type         _Type,
             GameDataFieldFilter _Filter,
+            System.Type         _Type,
+            string              _Key,
             UnityAction<object> _SetProperty,
             bool                _IsJson = false)
         {
-            Key              = _Key;
-            Type             = _Type;
-            IsJson           = _IsJson;
             m_Filter         = _Filter;
+            Type             = _Type;
+            Key              = _Key;
+            IsJson           = _IsJson;
             SetPropertyValue = _SetProperty;
         }
 

@@ -101,7 +101,7 @@ namespace RMAZOR.Views.MazeItemGroups
                     return info;
                 };
                 var props = new ViewMazeItemProps {Type = EMazeItemType.Spear, Args = new List<string> { $"pos={i % 3}"}};
-                spear.Init(props);
+                spear.UpdateState(props);
                 m_Spears.Add(spear);
             }
         }

@@ -75,6 +75,7 @@ namespace RMAZOR.Models.ItemProceeders
         {
             yield return Cor.Delay(
                 Settings.shredingerBlockProceedTime,
+                GameTicker,
                 () =>
                 {
                     var gravityItems = GetAllProceedInfos()

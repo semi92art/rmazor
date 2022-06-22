@@ -35,7 +35,7 @@ namespace Editor
 
         #region engine methods
 
-        [MenuItem("Tools/Localization Helper _%l", false, 1)]
+        [MenuItem("Tools/Localization Helper _%l", false, 103)]
         public static void ShowWindow()
         {
             var window = GetWindow<LocalizationHelperEditorWindow>("Localization Helper");

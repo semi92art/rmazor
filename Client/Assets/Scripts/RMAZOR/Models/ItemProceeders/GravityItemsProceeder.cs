@@ -309,9 +309,7 @@ namespace RMAZOR.Models.ItemProceeders
                 _Info.ProceedingStage = ModelCommonData.StageIdle;
                 yield break;
             }
-            float speed = _Info.Type == EMazeItemType.GravityBlock || _Info.Type == EMazeItemType.GravityBlockFree
-                ? Settings.gravityBlockSpeed
-                : Settings.gravityTrapSpeed;
+            float speed = Settings.gravityBlockSpeed;
             var busyPositions = _Info.BusyPositions;
             InvokeMoveStarted(new MazeItemMoveEventArgs(_Info, from, _To, speed, 0));
             var direction = (_To - from).Normalized;

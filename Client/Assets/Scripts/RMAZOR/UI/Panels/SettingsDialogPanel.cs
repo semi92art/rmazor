@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -9,7 +8,6 @@ using Common.Entities.UI;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Settings;
@@ -58,12 +56,12 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private CommonGameSettings          GameSettings   { get; }
-        private ISettingSelectorDialogPanel SelectorPanel  { get; }
-        private ISettingsGetter             SettingsGetter { get; }
+        private IRemotePropertiesRmazor     RemoteProperties { get; }
+        private ISettingSelectorDialogPanel SelectorPanel    { get; }
+        private ISettingsGetter             SettingsGetter   { get; }
 
         private SettingsDialogPanel(
-            CommonGameSettings          _GameSettings,
+            IRemotePropertiesRmazor     _RemoteProperties,
             ISettingSelectorDialogPanel _SelectorPanel,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
@@ -78,9 +76,9 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
-            GameSettings   = _GameSettings;
-            SelectorPanel  = _SelectorPanel;
-            SettingsGetter = _SettingsGetter;
+            RemoteProperties = _RemoteProperties;
+            SelectorPanel    = _SelectorPanel;
+            SettingsGetter   = _SettingsGetter;
         }
 
         #endregion
@@ -128,7 +126,7 @@ namespace RMAZOR.UI.Panels
 
         private void InitDebugSettingItem()
         {
-            if (Application.isEditor || GameSettings.debugEnabled)
+            if (Application.isEditor || RemoteProperties.DebugEnabled)
                 InitSettingItem(SettingsGetter.DebugSetting);
         }
         

@@ -11,7 +11,7 @@ namespace Editor
 {
     public class SavesHelper : EditorWindow
     {
-        [MenuItem("Tools/Saves Helper", false)]
+        [MenuItem("Tools/Saves Helper", false, 107)]
         public static void ShowWindow()
         {
             SaveUtils.CreateSavesFileIfNotExist();

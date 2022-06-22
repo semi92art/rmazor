@@ -277,6 +277,7 @@ namespace RMAZOR.Views.InputConfigurators
         {
             Cor.Run(Cor.Delay(
                 ViewSettings.afterRotationEnableMoveDelay,
+                GameTicker,
                 UnlockCommandsOnRotationFinished));
         }
         

@@ -166,9 +166,7 @@ namespace RMAZOR
 
         private static void OnSceneUnloaded(PlayModeStateChange _State)
         {
-            Dbg.Log(nameof(OnSceneUnloaded));
 #if UNITY_EDITOR
-            Dbg.Log(SceneUnloaded == null);
             SceneUnloaded?.Invoke();
             EditorApplication.playModeStateChanged -= OnSceneUnloaded;
 #endif

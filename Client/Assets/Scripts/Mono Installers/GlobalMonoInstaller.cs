@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using AppodealImpl;
+using Common;
 using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
@@ -29,7 +30,9 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
-            Container.BindInstance(new RemoteProperties());
+            Container.Bind(typeof(IRemotePropertiesRmazor), typeof(IRemotePropertiesCommon))
+                .To<RemotePropertiesRmazor>()
+                .AsSingle();
             Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
             Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
             Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();
@@ -98,8 +101,8 @@ namespace Mono_Installers
 #endif
             Container.Bind<IAdsManager>()               .To<AdsManager>()    .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
+            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
 
             #endregion
             
@@ -119,10 +122,12 @@ namespace Mono_Installers
             Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
             Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
 #endif
-
+#if APPODEAL
             Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
             Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
             Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
+#endif
+            Container.Bind<IAdsProvidersSet>().To<AdsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
         }

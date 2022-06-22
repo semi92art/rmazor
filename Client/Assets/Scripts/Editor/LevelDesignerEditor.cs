@@ -61,7 +61,7 @@ namespace RMAZOR.Editor
 
         #region engine methods
         
-        [MenuItem("Tools/Level Designer", false)]
+        [MenuItem("Tools/Level Designer", false, 101)]
         public static void ShowWindow()
         {
             var window = GetWindow<LevelDesignerEditor>("Level Designer");

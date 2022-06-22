@@ -98,7 +98,25 @@ namespace Common.Managers.Scores
             Ticker.Register(this);
             AuthenticatePlatformGameService(() =>
             {
-                Social.LoadAchievements(_Achievements => m_Achievements = _Achievements);
+                // FIXME отрефакторить эту хуету
+                Social.localUser.Authenticate(_Success =>
+                {
+                    if (_Success)
+                    {
+                        Social.LoadAchievements(_Achievements =>
+                        {
+                            foreach (var ach in m_Achievements)
+                            {
+                                Dbg.Log("Achievement loaded: " + ach.id);
+                            }
+                            m_Achievements = _Achievements;
+                        });
+                    }
+                    else
+                    {
+                        Dbg.LogError("Failed to authenticate to Social");
+                    }
+                });
                 base.Init();
             });
         }

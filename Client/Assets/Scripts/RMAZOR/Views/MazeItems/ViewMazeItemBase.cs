@@ -12,8 +12,6 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ProceedInfos;
-using RMAZOR.Views.Common;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
@@ -29,12 +27,11 @@ namespace RMAZOR.Views.MazeItems
         ActiveAndWorking
     }
 
-    public abstract class ViewMazeItemBase : IViewMazeItem
+    public abstract class ViewMazeItemBase : InitBase, IViewMazeItem
     {
         #region nonpublic members
         
         protected abstract string ObjectName { get; }
-        protected bool Initialized { get; set; }
         // ReSharper disable once InconsistentNaming
         protected bool m_ActivatedInSpawnPool;
 
@@ -120,7 +117,7 @@ namespace RMAZOR.Views.MazeItems
             }
         }
         
-        public virtual void Init(ViewMazeItemProps _Props)
+        public virtual void UpdateState(ViewMazeItemProps _Props)
         {
             Props = _Props;
             if (!Initialized)
@@ -129,11 +126,11 @@ namespace RMAZOR.Views.MazeItems
                 ColorProvider.ColorChanged += OnColorChanged;
                 Object = new GameObject(ObjectName);
                 InitShape();
+                base.Init();
             }
             Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             UpdateShape();
-            Initialized = true;
         }
 
         public bool Equal(IMazeItemProceedInfo _Info)
@@ -153,6 +150,7 @@ namespace RMAZOR.Views.MazeItems
 
         public virtual void Appear(bool _Appear)
         {
+            var appearSets = GetAppearSets(_Appear);
             Cor.Run(Cor.WaitWhile(
                 () => !Initialized,
                 () =>
@@ -160,7 +158,7 @@ namespace RMAZOR.Views.MazeItems
                     OnAppearStart(_Appear);
                     Transitioner.DoAppearTransition(
                         _Appear,
-                        GetAppearSets(_Appear),
+                        appearSets,
                         () => OnAppearFinish(_Appear));
                 }));
         }
@@ -201,7 +199,7 @@ namespace RMAZOR.Views.MazeItems
                 ActivateRenderer(shape, _Activate);
         }
 
-        protected void ActivateRenderer(Component _Renderer, bool _Activate)
+        protected static void ActivateRenderer(Component _Renderer, bool _Activate)
         {
             switch (_Renderer)
             {

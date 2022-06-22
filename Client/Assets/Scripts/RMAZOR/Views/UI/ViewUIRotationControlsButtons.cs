@@ -14,6 +14,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -23,8 +24,8 @@ namespace RMAZOR.Views.UI
     {
         #region nonpublic members
         
-        private readonly List<Component> m_RotatingButtonShapes  = new List<Component>();
-        private readonly List<Component> m_RotatingButtonShapes2 = new List<Component>();
+        private readonly List<ShapeRenderer> m_RotatingButtonShapes  = new List<ShapeRenderer>();
+        private readonly List<ShapeRenderer> m_RotatingButtonShapes2 = new List<ShapeRenderer>();
         
         private float           m_BottomOffset;
         private ButtonOnRaycast m_RotateClockwiseButton;
@@ -111,18 +112,12 @@ namespace RMAZOR.Views.UI
             switch (_ColorId)
             {
                 case ColorIds.UI:
-                    foreach (var shapeComp in m_RotatingButtonShapes
-                        .Where(_R => _R is ShapeRenderer).Cast<ShapeRenderer>())
-                    {
+                    foreach (var shapeComp in m_RotatingButtonShapes)
                         shapeComp.Color = _Color;
-                    }
                     break;
                 case ColorIds.Main:
-                    foreach (var shapeComp in m_RotatingButtonShapes2
-                        .Where(_R => _R is ShapeRenderer).Cast<ShapeRenderer>())
-                    {
+                    foreach (var shapeComp in m_RotatingButtonShapes2)
                         shapeComp.Color = _Color.SetA(0.3f);
-                    }
                     break;
             }
         }
@@ -173,12 +168,17 @@ namespace RMAZOR.Views.UI
                 goRccB.GetCompItem<Disc>("outer_disc"), 
                 goRccB.GetCompItem<Disc>("line"),
                 goRccB.GetCompItem<Line>("arrow_part_1"), 
-                goRccB.GetCompItem<Line>("arrow_part_2")
+                goRccB.GetCompItem<Line>("arrow_part_2"),
             });
-            
-            m_RotatingButtonShapes2.Add(goRcB.GetCompItem<Disc>("inner_disc"));
-            m_RotatingButtonShapes2.Add(goRccB.GetCompItem<Disc>("inner_disc"));
-            
+            m_RotatingButtonShapes2.AddRange(new ShapeRenderer[]
+            {
+                goRcB.GetCompItem<Disc>("inner_disc"),
+                goRccB.GetCompItem<Disc>("inner_disc")
+            });
+            foreach (var shape in m_RotatingButtonShapes)
+                shape.SetSortingOrder(SortingOrders.GameUI + 1);
+            foreach (var shape in m_RotatingButtonShapes2)
+                shape.SetSortingOrder(SortingOrders.GameUI);
             goRcB.SetActive(false);
             goRccB.SetActive(false);
         }

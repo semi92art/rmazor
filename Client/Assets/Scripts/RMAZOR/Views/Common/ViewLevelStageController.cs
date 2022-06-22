@@ -17,12 +17,11 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Characters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
-using UnityEngine.Events;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -182,21 +181,8 @@ namespace RMAZOR.Views.Common
         
         private void ProceedMazeItemGroups(LevelStageArgs _Args)
         {
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.ReadyToStart:
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Paused:
-                    return;
-                case ELevelStage.Loaded:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
-            }
+            if (!GetStagesToProceed().Contains(_Args.LevelStage))
+                return;
             var mazeItems = _Args.LevelStage == ELevelStage.Loaded ? 
                 m_MazeItemsCached = GetMazeAndPathItems() : m_MazeItemsCached;
             mazeItems.AddRange(PathItemsGroup.PathItems);
@@ -313,25 +299,51 @@ namespace RMAZOR.Views.Common
 
         private void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            if (_Args.LevelIndex >= GameSettings.firstLevelToShowAds
-                && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0
-                && !LevelSkipper.LevelSkipped)
+            bool showAd = _Args.LevelIndex >= GameSettings.firstLevelToShowAds
+                          && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0
+                          && !LevelSkipper.LevelSkipped
+                          && Managers.AdsManager.RewardedAdReady;
+            void OnBeforeAdShown()
             {
-                UnityAction<UnityAction, UnityAction, string, bool> act =  Managers.AdsManager.ShowInterstitialAd;
-                if (GameSettings.showRewardedOnLevelPass)
-                    act = Managers.AdsManager.ShowRewardedAd;
-                act(null, null, null, false);
+                ViewGameTicker.Pause = true;
+                ModelGameTicker.Pause = true;
             }
-            foreach (var mazeItem in _MazeItems)
-                mazeItem.Appear(false);
-            Cor.Run(Cor.WaitWhile(() =>
+            void UnloadLevel()
             {
-                return _MazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
-            },
-            () =>
+                ViewGameTicker.Pause = false;
+                ModelGameTicker.Pause = false;
+                foreach (var mazeItem in _MazeItems)
+                    mazeItem.Appear(false);
+                Cor.Run(Cor.WaitWhile(() =>
+                {
+                    return _MazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);
+                },
+                () =>
+                {
+                    CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, null, true);
+                }));
+            }
+
+            // FIXME сделать нормальную паузу во время показа рекламы на ios, а не эту хуету
+            if (CommonUtils.Platform == RuntimePlatform.IPhonePlayer)
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, null, true);
-            }));
+                if (showAd)
+                {
+                    Managers.AdsManager.ShowRewardedAd(null, null, null, true);
+                }
+                UnloadLevel();
+            }
+            else
+            {
+                if (showAd)
+                {
+                    Managers.AdsManager.ShowRewardedAd(OnBeforeAdShown, UnloadLevel, null, true);
+                }
+                else
+                {
+                    UnloadLevel();
+                }
+            }
         }
 
         private void OnLevelUnloaded(LevelStageArgs _Args)
@@ -489,6 +501,7 @@ namespace RMAZOR.Views.Common
             var dict = new Dictionary<long, ushort>
             {
                 {10, AchievementKeys.Level10Finished},
+                {25, AchievementKeys.Level25Finished},
                 {50, AchievementKeys.Level50Finished},
                 {100, AchievementKeys.Level100Finished},
                 {200, AchievementKeys.Level200Finished},
@@ -514,6 +527,18 @@ namespace RMAZOR.Views.Common
                 ushort id = ushort.Parse(arg.Split(':')[1]);
                 Managers.ScoreManager.UnlockAchievement(id);
             }
+        }
+
+        private static IEnumerable<ELevelStage> GetStagesToProceed()
+        {
+            return new[]
+            {
+                ELevelStage.Loaded,
+                ELevelStage.Finished,
+                ELevelStage.ReadyToUnloadLevel,
+                ELevelStage.Unloaded,
+                ELevelStage.CharacterKilled
+            };
         }
         
         #endregion

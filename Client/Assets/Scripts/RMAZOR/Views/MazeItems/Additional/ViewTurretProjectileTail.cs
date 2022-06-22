@@ -24,7 +24,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         void                   SetStencilRefId(int _RefId);
     }
     
-    public class ViewTurretProjectileTail : IViewTurretProjectileTail
+    public class ViewTurretProjectileTail : InitBase, IViewTurretProjectileTail
     {
         #region nonpublic members
 
@@ -59,7 +59,10 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         public void Init(GameObject _Projectile)
         {
+            if (Initialized)
+                return;
             InitShape(_Projectile);
+            base.Init();
         }
 
         public void ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition)
@@ -108,7 +111,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 line.SetStencilComp(CompareFunction.Equal);
         }
 
-        private float GetAngle(Vector2 _Direction)
+        private static float GetAngle(Vector2 _Direction)
         {
             if (Mathf.Abs(_Direction.x) < MathUtils.Epsilon)
                 return _Direction.y > 0 ? 90f : 270f;

@@ -13,7 +13,6 @@ using Common.Providers;
 using Common.SpawnPools;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -131,7 +130,7 @@ namespace RMAZOR.Views.Common
         private void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.Background1)
-                m_TextureRendererBack.color = _Color;
+                m_TextureRendererBack.color = _Color.SetA(ViewSettings.additionalBackgroundAlpha);
             if (_ColorId != ColorIds.Main)
                 return;
             m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(_R.color.a));
@@ -312,7 +311,6 @@ namespace RMAZOR.Views.Common
             renderer.size = new Vector2(width, height);
             m_TextureRendererBack.transform.SetLocalPosXY(center)
                 .SetLocalScaleXY(new Vector2(width, height));
-            m_TextureRendererBack.color = ColorProvider.GetColor(ColorIds.Background2);
             var mask = m_TextureRendererMasks.FirstInactive;
             mask.SetWidth(width)
                 .SetHeight(height)
@@ -326,7 +324,7 @@ namespace RMAZOR.Views.Common
         {
             var border = m_Borders.FirstInactive;
             var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            border.SetThickness(ViewSettings.LineWidth * BorderScaleCoefficient * CoordinateConverter.Scale)
+            border.SetThickness(ViewSettings.LineThickness * BorderScaleCoefficient * CoordinateConverter.Scale)
                 .transform.SetPosXY(borderPos)
                 .gameObject.name = _Side + " " + "border";
             (border.Start, border.End) = GetBorderPointsAndDashed(_Position, _Side, _StartLimit, _EndLimit);
@@ -345,7 +343,7 @@ namespace RMAZOR.Views.Common
             float radius = ViewSettings.CornerRadius * BorderScaleCoefficient
                                                      * CoordinateConverter.Scale;
             corner.SetRadius(radius)
-                .SetThickness(ViewSettings.CornerWidth * CornerScaleCoefficient * CoordinateConverter.Scale)
+                .SetThickness(ViewSettings.LineThickness * CornerScaleCoefficient * CoordinateConverter.Scale)
                 .SetAngRadiansStart(angles.x)
                 .SetAngRadiansEnd(angles.y)
                 .transform.SetPosXY(position)

@@ -91,6 +91,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 88e9174ba4a95ae45a541f7d11afd5d2, type: 3}
   - {fileID: 21300000, guid: beb46aabcbddc0e45b1689082e6cfb3b, type: 3}
   - {fileID: 21300000, guid: 13e9896c0adab1e4385ff000f4a94929, type: 3}
+  - {fileID: 21300000, guid: 424f1b7c75182e0448a443bd66cec584, type: 3}
   - {fileID: 21300000, guid: c1332cdcd2d708446ac88f24ff2dd21f, type: 3}
   - {fileID: 21300000, guid: c586ee8ddaa5dba469cb4d43c7edcce1, type: 3}
   - {fileID: 21300000, guid: 79a5f50ec238c164fbd329c96a4a9a6b, type: 3}
@@ -135,13 +136,14 @@ SpriteAtlas:
   - icon_music_on
   - coin-texture
   - hand-2-fingers
-  - throwingStar5
+  - shuriken
   - trap_react2
   - background
   - icon_coin
   - icon_notifications_off
   - saw37
   - icon_update
+  - shuriken-border
   - icon_tail
   - icon_gift
   - icon_circle_2

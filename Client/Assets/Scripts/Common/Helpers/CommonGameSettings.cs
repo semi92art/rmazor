@@ -7,13 +7,12 @@ namespace Common.Helpers
     {
         public string    adsProviders;
         public float     adsLoadDelay;
-        public bool      debugEnabled;
+        public bool      debugAnyway;
         public bool      testAds;
         public ELogLevel logLevel;
         public int       showAdsEveryLevel;
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;
-        public bool      showRewardedOnLevelPass;
         public int       moneyItemCoast;
         public int       gameId;
     }

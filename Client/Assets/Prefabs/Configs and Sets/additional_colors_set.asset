@@ -31,8 +31,8 @@ MonoBehaviour:
       pathFillFillType: 2
       characterBorderFillType: 0
     - main: {r: 0.16862746, g: 0.13725491, b: 0.08627451, a: 1}
-      bacground1: {r: 0.6698113, g: 0.49637803, b: 0.16745283, a: 1}
-      bacground2: {r: 0.4339623, g: 0.31397372, b: 0.13714845, a: 1}
+      bacground1: {r: 0.7075472, g: 0.56872857, b: 0.3037113, a: 1}
+      bacground2: {r: 0.4433962, g: 0.3487012, b: 0.21124065, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -47,8 +47,8 @@ MonoBehaviour:
       pathFillFillType: 2
       characterBorderFillType: 0
     - main: {r: 0.20000002, g: 0.227451, b: 0.34901962, a: 1}
-      bacground1: {r: 0.8396226, g: 0.2653524, b: 0.5222629, a: 1}
-      bacground2: {r: 0.18262726, g: 0.2819509, b: 0.6792453, a: 1}
+      bacground1: {r: 0.8490566, g: 0.4285333, b: 0.61575264, a: 1}
+      bacground2: {r: 0.30210927, g: 0.37880954, b: 0.6886792, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -62,9 +62,57 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
-    - main: {r: 0.6313726, g: 0.023529412, b: 0, a: 1}
-      bacground1: {r: 0.5752492, g: 0.7447251, b: 0.8773585, a: 1}
-      bacground2: {r: 0.37798145, g: 0.49622387, b: 0.5849056, a: 1}
+    - main: {r: 1, g: 1, b: 1, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 1, g: 0, b: 0, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.0754717, g: 0, b: 0, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 1, g: 0.97083825, b: 0, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.09433961, g: 0.091033876, b: 0, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 0.018880606, g: 1, b: 0, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 0, g: 0.50665617, b: 1, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 1, g: 0, b: 0.8454194, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.07450981, g: 0.07450981, b: 0.07450981, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 0, g: 0.13062407, b: 0.18867922, a: 1}
+      bacground1: {r: 0.30588236, g: 0.58431375, b: 0.45255527, a: 1}
+      bacground2: {r: 0.9528302, g: 1, b: 0.4292453, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1

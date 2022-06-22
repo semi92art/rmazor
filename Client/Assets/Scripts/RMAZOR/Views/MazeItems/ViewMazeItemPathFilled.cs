@@ -6,11 +6,11 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
+using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -91,7 +91,9 @@ namespace RMAZOR.Views.MazeItems
             base.OnColorChanged(_ColorId, _Color);
             switch (_ColorId)
             {
-                case ColorIds.PathBackground: m_PathBackground.SetColor(_Color.SetA(ViewSettings.filledPathAlpha)); break;
+                case ColorIds.PathBackground:
+                    m_PathBackground.SetColor(_Color.SetA(ViewSettings.filledPathAlpha));
+                    break;
                 case ColorIds.PathFill:
                     var col = _Color;
                     if (_Color == ColorProvider.GetColor(ColorIds.Main))
@@ -130,10 +132,38 @@ namespace RMAZOR.Views.MazeItems
             m_PassedPathBackground.enabled = true;
             float fullSize = CoordinateConverter.Scale;
             float size = fullSize * (1f + 2f * AdditionalScale);
-            m_PassedPathBackground
-                .SetWidth(size)
-                .SetHeight(size)
-                .SetCornerRadii(new Vector4(bottomLeft, topLeft, topRight, bottomRight));
+            var radii = new Vector4(bottomLeft, topLeft, topRight, bottomRight);
+            m_PassedPathBackground.SetCornerRadii(radii);
+            FillCore(ViewSettings.animatePathFill, size, radii);
+        }
+
+        private void FillCore(bool _Animate, float _Size, Vector4 _CornerRadii)
+        {
+            if (!_Animate)
+            {
+                m_PassedPathBackground
+                    .SetWidth(_Size)
+                    .SetHeight(_Size)
+                    .SetCornerRadii(_CornerRadii);
+                return;
+            }
+            float defaultCorderRadius = _Size * 0.5f;
+            Cor.Run(Cor.Lerp(
+                GameTicker,
+                ViewSettings.animatePathFillTime,
+                0f,
+                1f,
+                _P =>
+                {
+                    float size = Mathf.Lerp(0f, _Size, _P);
+                    float bottomLeft  = Mathf.Lerp(defaultCorderRadius, _CornerRadii.x, _P);
+                    float topLeft     = Mathf.Lerp(defaultCorderRadius, _CornerRadii.y, _P);
+                    float topRight    = Mathf.Lerp(defaultCorderRadius, _CornerRadii.z, _P);
+                    float bottomRight = Mathf.Lerp(defaultCorderRadius, _CornerRadii.w, _P);
+                    var radii = new Vector4(bottomLeft, topLeft, topRight, bottomRight);
+                    m_PassedPathBackground.SetWidth(size).SetHeight(size).SetCornerRadii(radii);
+                },
+                _ProgressFormula: _P => _P));
         }
 
         private void InitBackgroundShape()
@@ -168,6 +198,19 @@ namespace RMAZOR.Views.MazeItems
                 topRight, 
                 bottomRight);
         }
+        
+        private void GetCornerRadii(
+            out float _BottomLeft,
+            out float _TopLeft,
+            out float _TopRight, 
+            out float _BottomRight)
+        {
+            float radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
+            _BottomLeft  = BottomLeftCornerInited  && IsBottomLeftCornerInner  ? radius : 0f;
+            _TopLeft     = TopLeftCornerInited     && IsTopLeftCornerInner     ? radius : 0f;
+            _TopRight    = TopRightCornerInited    && IsTopRightCornerInner    ? radius : 0f;
+            _BottomRight = BottomRightCornerInited && IsBottomRightCornerInner ? radius : 0f;
+        }
 
         protected override void EnableInitializedShapes(bool _Enable)
         {
@@ -191,19 +234,6 @@ namespace RMAZOR.Views.MazeItems
             return ColorProvider.GetColor(ColorIds.Main);
         }
 
-        private void GetCornerRadii(
-            out float _BottomLeft,
-            out float _TopLeft,
-            out float _TopRight, 
-            out float _BottomRight)
-        {
-            float radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            _BottomLeft  = BottomLeftCornerInited  && IsBottomLeftCornerInner  ? radius : 0f;
-            _TopLeft     = TopLeftCornerInited     && IsTopLeftCornerInner     ? radius : 0f;
-            _TopRight    = TopRightCornerInited    && IsTopRightCornerInner    ? radius : 0f;
-            _BottomRight = BottomRightCornerInited && IsBottomRightCornerInner ? radius : 0f;
-        }
-        
         protected override void OnAppearStart(bool _Appear)
         {
             base.OnAppearStart(_Appear);

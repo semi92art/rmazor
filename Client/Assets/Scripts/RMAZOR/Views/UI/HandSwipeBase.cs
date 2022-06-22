@@ -105,9 +105,7 @@ namespace RMAZOR.Views.UI
             Cor.Stop(m_LastWaitCoroutine);
             m_LastTraceAnimCoroutine = AnimateTraceCoroutine(_Direction);
             m_LastHandAnimCoroutine = AnimateHandPositionCoroutine(_Direction);
-            m_LastWaitCoroutine = Cor.Delay(
-                _Time,
-                () => ReadyToAnimate = true);
+            m_LastWaitCoroutine = Cor.Delay(_Time, Ticker, () => ReadyToAnimate = true);
             Cor.Run(m_LastTraceAnimCoroutine);
             Cor.Run(m_LastHandAnimCoroutine);
             Cor.Run(m_LastWaitCoroutine);

@@ -1,7 +1,4 @@
 ﻿using Common.Exceptions;
-using Common.Ticker;
-using Common.Utils;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising
@@ -11,19 +8,12 @@ namespace Common.Managers.Advertising
         private readonly IAdBase         m_InterstitialAd;
         private readonly IAdBase         m_RewardedAd;
         
-        private IViewGameTicker  ViewGameTicker  { get; }
-        private IModelGameTicker ModelGameTicker { get; }
-
         protected AdsProviderCommonBase(
             IAdBase          _InterstitialAd,
-            IAdBase          _RewardedAd,
-            IViewGameTicker  _ViewGameTicker,
-            IModelGameTicker _ModelGameTicker)
+            IAdBase          _RewardedAd)
         {
             m_InterstitialAd = _InterstitialAd;
             m_RewardedAd     = _RewardedAd;
-            ViewGameTicker   = _ViewGameTicker;
-            ModelGameTicker  = _ModelGameTicker;
         }
 
         public override void LoadAd(AdvertisingType _AdvertisingType)
@@ -40,20 +30,7 @@ namespace Common.Managers.Advertising
         {
             if (RewardedAdReady)
             {
-                if (ModelGameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
-                    OnRewardedAdShown = _OnShown;
-                else
-                {
-                    ModelGameTicker.Pause = true;
-                    ViewGameTicker.Pause = true;
-                    OnRewardedAdShown = () =>
-                    {
-                        _OnShown?.Invoke();
-                        ModelGameTicker.Pause = false;
-                        ViewGameTicker.Pause = false;
-                    };
-                }
-                m_RewardedAd.ShowAd(OnRewardedAdShown);
+                m_RewardedAd.ShowAd(_OnShown);
             }
             else
             {
@@ -66,20 +43,7 @@ namespace Common.Managers.Advertising
         {
             if (InterstitialAdReady)
             {
-                if (ModelGameTicker.Pause || CommonUtils.Platform != RuntimePlatform.IPhonePlayer)
-                    OnInterstitialAdShown = _OnShown;
-                else
-                {
-                    ModelGameTicker.Pause = true;
-                    ViewGameTicker.Pause = true;
-                    OnInterstitialAdShown = () =>
-                    {
-                        _OnShown?.Invoke();
-                        ModelGameTicker.Pause = false;
-                        ViewGameTicker.Pause = false;
-                    };
-                }
-                m_InterstitialAd.ShowAd(OnInterstitialAdShown);
+                m_InterstitialAd.ShowAd(_OnShown);
             }
             else
             {

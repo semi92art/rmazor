@@ -81,7 +81,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             tr.SetParent(go.transform);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             item.MazeSize = _MazeSize; 
-            item.Init(_Props);
+            item.UpdateState(_Props);
             _Items.Add(item);
         }
         
@@ -108,7 +108,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
 
             item.MazeSize = _MazeSize;
-            item.Init(_Props);
+            item.UpdateState(_Props);
             _Items.Add(item);
         }
         

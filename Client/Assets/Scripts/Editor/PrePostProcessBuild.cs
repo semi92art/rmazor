@@ -45,7 +45,7 @@ public class PrePostProcessBuild : IPreprocessBuildWithReport, IPostprocessBuild
             return;
         }
         AddAdMobElementsToPlist(dict);
-        AddIronSourceElementsToPlist(dict);
+        // AddIronSourceElementsToPlist(dict);
         xDoc.Save(infoPlistPath);
     }
 

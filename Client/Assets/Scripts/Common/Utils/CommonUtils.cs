@@ -141,6 +141,7 @@ namespace Common.Utils
                     }
                 });
             Cor.Run(Cor.Delay(Application.platform == RuntimePlatform.Android ? 0.5f : 2f,
+                null,
                 () =>
                 {
 #if UNITY_ANDROID

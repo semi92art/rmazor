@@ -82,7 +82,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     props.IsMoneyItem = true;
                 }
                 var pathItemInPool = _PathPool.FirstInactive;
-                pathItemInPool.Init(props);
+                pathItemInPool.UpdateState(props);
                 _PathPool.Activate(pathItemInPool);
             }
         }
@@ -105,7 +105,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     IsStartNode = false
                 };
                 var blockItemInPool = _BlockPools[mazeItem.Type].FirstInactive;
-                blockItemInPool.Init(props);
+                blockItemInPool.UpdateState(props);
                 _BlockPools[mazeItem.Type].Activate(blockItemInPool);
             }
         }

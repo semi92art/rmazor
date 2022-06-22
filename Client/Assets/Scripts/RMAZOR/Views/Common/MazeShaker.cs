@@ -153,6 +153,7 @@ namespace RMAZOR.Views.Common
                 var startLocalScale = shape.transform.localScale;
                 Cor.Run(Cor.Delay(
                 Mathf.Max(0f, (dist - 1) * 0.005f),
+                GameTicker,
                 () =>
                 {
                     Cor.Run(Cor.Lerp(

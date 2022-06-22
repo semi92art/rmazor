@@ -9,9 +9,11 @@
 	<ad source="admob" type="interstitial" os="ios">ca-app-pub-5357184552698168/7483735551</ad>
 	<ad source="admob" type="reward" os="ios">ca-app-pub-5357184552698168/1768374443</ad>
 	<!--UnityAds Android-->
+	<ad source="unity_ads" type="app_id" os="android">4458391</ad>
 	<ad source="unity_ads" type="reward" os="android">Rewarded_Android</ad>
 	<ad source="unity_ads" type="interstitial" os="android">Interstitial_Android</ad>
 	<!--UnityAds iOS-->
+	<ad source="unity_ads" type="app_id" os="ios">4458390</ad>
 	<ad source="unity_ads" type="reward" os="ios">Rewarded_iOS</ad>
 	<ad source="unity_ads" type="interstitial" os="ios">Interstitial_iOS</ad>
 	<!--Facebook Ads Android-->
@@ -23,16 +25,13 @@
 	<ad source="facebook" type="reward" os="ios">2980011355594190_2980033868925272</ad>
 	<ad source="facebook" type="interstitial" os="ios">2980011355594190_2980033315591994</ad>
 	<!--Appodeal Android-->
-	<ad source="appodeal" type="app_id" os="android">cf2b0baab067723bae76e0e95b2dcf41aa6ada6795bb41e0</ad>
+	<ad source="appodeal" type="app_id" os="android">599e0faeb17135b4dacf1237d61abc0c302d2c73e99a8a4d</ad>
 	<ad source="appodeal" type="reward" os="android">empty</ad>
 	<ad source="appodeal" type="interstitial" os="android">empty</ad>
 	<!--Appodeal iOS-->
-	<ad source="appodeal" type="app_id" os="ios">599e0faeb17135b4dacf1237d61abc0c302d2c73e99a8a4d</ad>
+	<ad source="appodeal" type="app_id" os="ios">cf2b0baab067723bae76e0e95b2dcf41aa6ada6795bb41e0</ad>
 	<ad source="appodeal" type="reward" os="ios">empty</ad>
 	<ad source="appodeal" type="interstitial" os="ios">empty</ad>
-    <!--Game Ids-->
-	<game_id source="unity_ads" os="ios">4458390</game_id>
-	<game_id source="unity_ads" os="android">4458391</game_id>
 	<!--Test Devices-->
 	<test_device os="android">FE989E63CDFFFB64D9E6A288C137E1E2</test_device><!--Xiaomi Mi Mix 2 (Artem)-->
 	<test_device os="android">16DB30D44D674B09110966E0648E783D</test_device><!--Xiaomi Mi Mix 2 (Artem) (новый)-->

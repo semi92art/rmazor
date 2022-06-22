@@ -20,7 +20,7 @@ namespace RMAZOR.Managers
     {
         #region inject
 
-        private CommonGameSettings          Settings          { get; }
+        private IRemotePropertiesRmazor     RemoteProperties  { get; }
         private IModelGame                  Model             { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IDebugSetting               DebugSetting      { get; }
@@ -28,14 +28,14 @@ namespace RMAZOR.Managers
         private IScoreManager               ScoreManager      { get; }
 
         private DebugManager(
-            CommonGameSettings          _Settings,
+            IRemotePropertiesRmazor     _RemoteProperties,
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IDebugSetting               _DebugSetting,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager)
         {
-            Settings          = _Settings;
+            RemoteProperties  = _RemoteProperties;
             Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
             DebugSetting      = _DebugSetting;
@@ -70,7 +70,7 @@ namespace RMAZOR.Managers
 
         private void InitDebugConsole()
         {
-            if (!Application.isEditor && !Settings.debugEnabled)
+            if (!Application.isEditor && !RemoteProperties.DebugEnabled)
                 return;
             var instance = DebugConsoleView.Instance;
             instance.VisibilityChanged += _Value =>

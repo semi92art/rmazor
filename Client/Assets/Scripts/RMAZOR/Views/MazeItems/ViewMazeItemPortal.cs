@@ -155,18 +155,9 @@ namespace RMAZOR.Views.MazeItems
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
                     .SetType(DiscType.Arc)
                     .SetColor(GetMainColor())
-                    .SetThickness(ViewSettings.LineWidth * CoordinateConverter.Scale * 0.5f);
+                    .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f);
                 m_Orbits.Add(orbit);
             }
-            void SetRadius(float _Radius, params int[] _OrbitIndices)
-            {
-                foreach (int idx in _OrbitIndices)
-                    m_Orbits[idx].Radius = _Radius * CoordinateConverter.Scale;
-            }
-            SetRadius(0.45f, 0, 1, 2, 3);
-            SetRadius(0.4f, 4, 5, 6);
-            SetRadius(0.35f, 7, 8, 9, 10);
-            SetRadius(0.3f, 11, 12, 13);
             void SetOrbitAngles(int _OrbitIndex, float _StartAngle, float _EndAngle)
             {
                 const float deg2Rad = Mathf.Deg2Rad;
@@ -194,6 +185,15 @@ namespace RMAZOR.Views.MazeItems
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             m_Center.Radius = CoordinateConverter.Scale * 0.2f;
+            void SetRadius(float _Radius, params int[] _OrbitIndices)
+            {
+                foreach (int idx in _OrbitIndices)
+                    m_Orbits[idx].Radius = _Radius * CoordinateConverter.Scale;
+            }
+            SetRadius(0.45f, 0, 1, 2, 3);
+            SetRadius(0.4f, 4, 5, 6);
+            SetRadius(0.35f, 7, 8, 9, 10);
+            SetRadius(0.3f, 11, 12, 13);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)

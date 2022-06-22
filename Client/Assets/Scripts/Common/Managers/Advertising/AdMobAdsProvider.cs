@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Ticker;
 using Common.Utils;
 using GoogleMobileAds.Api;
 using UnityEngine;
@@ -45,10 +44,8 @@ namespace Common.Managers.Advertising
 
         private AdMobAdsProvider(
             IAdMobInterstitialAd _InterstitialAd,
-            IAdMobRewardedAd     _RewardedAd,
-            IViewGameTicker      _ViewGameTicker,
-            IModelGameTicker     _ModelGameTicker) 
-            : base(_InterstitialAd, _RewardedAd, _ViewGameTicker, _ModelGameTicker)
+            IAdMobRewardedAd     _RewardedAd) 
+            : base(_InterstitialAd, _RewardedAd)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;

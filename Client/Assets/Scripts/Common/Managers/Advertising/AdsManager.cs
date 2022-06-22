@@ -5,6 +5,7 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
+using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
 
@@ -29,21 +30,15 @@ namespace Common.Managers.Advertising
 
         #region inject
 
-        private CommonGameSettings     GameSettings          { get; }
-        private IAdMobAdsProvider      AdMobAdsProvider      { get; }
-#if UNITY_ADS_API
-        [Zenject.Inject] private IUnityAdsProvider      UnityAdsProvider      { get; }
-#endif
-        private IAppodealAdsProvider   AppodealAdsProvider   { get; }
+        private CommonGameSettings GameSettings     { get; }
+        private IAdsProvidersSet   AdsProvidersSet  { get; }
 
         private AdsManager(
             CommonGameSettings     _GameSettings,
-            IAdMobAdsProvider      _AdMobAdsProvider,
-            IAppodealAdsProvider   _AppodealAdsProvider)
+            IAdsProvidersSet       _AdsProvidersSet)
         {
-            GameSettings          = _GameSettings;
-            AdMobAdsProvider      = _AdMobAdsProvider;
-            AppodealAdsProvider   = _AppodealAdsProvider;
+            GameSettings    = _GameSettings;
+            AdsProvidersSet = _AdsProvidersSet;
         }
 
         #endregion
@@ -121,17 +116,15 @@ namespace Common.Managers.Advertising
         {
             bool testMode = GameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
-            Dictionary<string, float> providersRate = GameSettings.adsProviders.Split(',')
+            Dictionary<string, float> providersRate = GameSettings.adsProviders.Split(';')
                 .ToDictionary(_I => _I.Split(':')[0],
                     _I => float.Parse(_I.Split(':')[1]));
-            AdMobAdsProvider.Init(testMode, providersRate.GetSafe(AdvertisingNetworks.Admob, out _), adsConfig);
-            m_Providers.Add(AdvertisingNetworks.Admob, AdMobAdsProvider);
-#if UNITY_ADS_API
-            UnityAdsProvider.Init(testMode, providersRate.GetSafe(AdvertisingNetworks.UnityAds, out _), adsConfig);
-            m_Providers.Add(AdvertisingNetworks.UnityAds, UnityAdsProvider);
-#endif
-            AppodealAdsProvider.Init(testMode, providersRate.GetSafe(AdvertisingNetworks.Appodeal, out _), adsConfig);
-            m_Providers.Add(AdvertisingNetworks.Appodeal, AppodealAdsProvider);
+            foreach (var adsProvider in AdsProvidersSet.GetProviders())
+            {
+                float rate = providersRate.GetSafe(adsProvider.Source, out _);
+                adsProvider.Init(testMode, rate, adsConfig);
+                m_Providers.Add(adsProvider.Source, adsProvider);
+            }
         }
 
         private void ShowAd(
@@ -163,6 +156,11 @@ namespace Common.Managers.Advertising
                 }
             }
             _OnBeforeShown?.Invoke();
+            if (Application.isEditor)
+            {
+                selectedProvider = _Providers.First(
+                    _P => _P.Source == AdvertisingNetworks.Admob);
+            }
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:

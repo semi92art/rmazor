@@ -25,13 +25,13 @@ namespace RMAZOR.Views.Common
 
         #region inject
         
-        private RemoteProperties  RemoteProperties { get; set; }
-        private IPrefabSetManager PrefabSetManager { get; set; }
+        private IRemotePropertiesRmazor RemoteProperties { get; set; }
+        private IPrefabSetManager       PrefabSetManager { get; set; }
 
         [Inject]
         private void Inject(
-            RemoteProperties  _RemoteProperties,
-            IPrefabSetManager _PrefabSetManager)
+            IRemotePropertiesRmazor _RemoteProperties,
+            IPrefabSetManager       _PrefabSetManager)
         {
             RemoteProperties = _RemoteProperties;
             PrefabSetManager = _PrefabSetManager;

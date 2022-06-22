@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
 using Common.Entities;
+using Common.Ticker;
 using Common.Utils;
 using Unity.RemoteConfig;
 using UnityEngine;
@@ -11,6 +12,7 @@ namespace RMAZOR.Managers
 {
     public class UnityRemoteConfigProvider : RemoteConfigProviderBase
     {
+
         #region nonpublic members
 
         private static UnityRemoteConfigProvider _instance;
@@ -24,21 +26,23 @@ namespace RMAZOR.Managers
         
         #endregion
 
-        public UnityRemoteConfigProvider()
+        #region inject
+
+        private ICommonTicker CommonTicker { get; }
+        
+        public UnityRemoteConfigProvider(ICommonTicker _CommonTicker)
         {
+            CommonTicker = _CommonTicker;
             _instance = this;
         }
 
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-        public static void ResetState()
-        {
-            if (_instance != null)
-                ConfigManager.FetchCompleted -= _instance.OnFetchCompleted;
-        }
+        #endregion
+
+        #region nonpublic methods
 
         protected override Task FetchConfigs()
         {
-            Cor.Run(Cor.Delay(3f, () => FinishFetching(null)));
+            Cor.Run(Cor.Delay(3f, null, () => FinishFetching(null)));
             ConfigManager.FetchCompleted += _instance.OnFetchCompleted;
             ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
             return null;
@@ -84,5 +88,18 @@ namespace RMAZOR.Managers
                     _Info.SetPropertyValue(result);
                 }));
         }
+
+        #endregion
+
+        #region engine methods
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        public static void ResetState()
+        {
+            if (_instance != null)
+                ConfigManager.FetchCompleted -= _instance.OnFetchCompleted;
+        }
+
+        #endregion
     }
 }
