@@ -2,7 +2,7 @@
 
 namespace Common.Managers.PlatformGameServices.GameServiceAuth
 {
-    public interface IPlatformGameServiceAuthenticator
+    public interface IPlatformGameServiceAuthenticator : IInit
     {
         void AuthenticatePlatformGameService(UnityAction<bool> _OnFinish);
         bool IsAuthenticated { get; }

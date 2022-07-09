@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Common.Entities;
-using Common.Helpers;
+using Common.Managers.PlatformGameServices.SavedGames;
+using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
 using Common.Ticker;
 using Common.Utils;
 using GooglePlayGames;
@@ -14,10 +15,7 @@ using UnityEngine;
 
 namespace Common.Managers.Scores
 {
-    public class GooglePlayGamesRemoteSavedGameProvider : 
-        InitBase, 
-        IRemoteSavedGameProvider,
-        IUpdateTick
+    public class GooglePlayGamesRemoteSavedGameProvider : RemoteSavedGameProviderBase, IUpdateTick
     {
         #region types
         
@@ -66,7 +64,7 @@ namespace Common.Managers.Scores
 
         #endregion
         
-        public Entity<object> GetSavedGame(string _FileName)
+        public override Entity<object> GetSavedGame(string _FileName)
         {
             var info = new SavedGameInfo
             {
@@ -82,11 +80,11 @@ namespace Common.Managers.Scores
             return info.Entity;
         }
 
-        public void SaveGame<T>(T _Data) where T : FileNameArgs
+        public override void SaveGame<T>(T _Data)
         {
             var info = new SavedGameInfo
             {
-                Data = ScoreManagerUtils.ToByteArray(_Data)
+                Data = ToByteArray(_Data)
             };
             m_OperationInfosQueue.Enqueue(new SaveGameOperationInfo
             {
@@ -97,14 +95,14 @@ namespace Common.Managers.Scores
             m_OperationInfosQueueNotEmpty = true;
         }
 
-        public void DeleteSavedGame(string _FileName)
+        public override void DeleteSavedGame(string _FileName)
         {
             ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
             savedGameClient.OpenWithAutomaticConflictResolution(_FileName, DataSource.ReadCacheOrNetwork,
                 ConflictResolutionStrategy.UseLongestPlaytime, DeleteSavedGame);
         }
 
-        public void FetchSavedGames()
+        public override void FetchSavedGames()
         {
             
         }
@@ -156,7 +154,7 @@ namespace Common.Managers.Scores
         
         private void SaveGame(ISavedGameMetadata _Game, byte[] _SavedData, TimeSpan _TotalPlaytime)
         {
-            var data = ScoreManagerUtils.FromByteArray<object>(_SavedData);
+            var data = FromByteArray<object>(_SavedData);
             // SaveGameProgressToCache(data);
             ISavedGameClient savedGameClient = PlayGamesPlatform.Instance.SavedGame;
             SavedGameMetadataUpdate.Builder builder = new SavedGameMetadataUpdate.Builder();
@@ -244,7 +242,7 @@ namespace Common.Managers.Scores
                 FileNameArgs fileNameData;
                 try
                 {
-                    fileNameData = ScoreManagerUtils.FromByteArray<FileNameArgs>(_Data);
+                    fileNameData = FromByteArray<FileNameArgs>(_Data);
                 }
                 catch (SerializationException e)
                 {
@@ -279,13 +277,13 @@ namespace Common.Managers.Scores
                 {
                     info.Entity = new Entity<object>
                     {
-                        Value = ScoreManagerUtils.FromByteArray<object>(_Data),
+                        Value = FromByteArray<object>(_Data),
                         Result = EEntityResult.Success
                     };
                 }
                 else
                 {
-                    info.Entity.Value = ScoreManagerUtils.FromByteArray<object>(_Data);
+                    info.Entity.Value = FromByteArray<object>(_Data);
                     info.Entity.Result = EEntityResult.Success;
                 }
                 Dbg.Log($"Saved game with file name {fileNameData.FileName} was successfully written.");
@@ -294,7 +292,7 @@ namespace Common.Managers.Scores
             {
                 info.Entity = new Entity<object>
                 {
-                    Value = ScoreManagerUtils.FromByteArray<object>(_Data),
+                    Value = FromByteArray<object>(_Data),
                     Result = EEntityResult.Fail
                 };
                 Dbg.LogError($"Failed to read saved game, code: {_Status}");

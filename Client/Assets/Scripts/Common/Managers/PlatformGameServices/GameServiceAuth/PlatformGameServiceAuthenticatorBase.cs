@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using Common.Helpers;
+using UnityEngine;
 using UnityEngine.Events;
 
 namespace Common.Managers.PlatformGameServices.GameServiceAuth
 {
-    public abstract class PlatformGameServiceAuthenticatorBase : IPlatformGameServiceAuthenticator
+    public abstract class PlatformGameServiceAuthenticatorBase : InitBase, IPlatformGameServiceAuthenticator
     {
         public virtual bool IsAuthenticated => Social.localUser.authenticated;
         
@@ -15,6 +16,11 @@ namespace Common.Managers.PlatformGameServices.GameServiceAuth
                 if (!_Success)
                     Dbg.LogError("Failed to authenticate to Social");
             });
+        }
+        
+        protected static string AuthMessage(bool _Success, string _AddMessage)
+        {
+            return $"{(_Success ? "Success" : "Fail")} on authentication to game service: {_AddMessage}";
         }
     }
 }

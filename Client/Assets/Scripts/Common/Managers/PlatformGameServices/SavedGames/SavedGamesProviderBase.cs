@@ -11,17 +11,7 @@ using UnityEngine.Events;
 
 namespace Common.Managers.PlatformGameServices.SavedGames
 {
-    public interface ISavedGameProvider : IInit
-    {
-        event UnityAction<SavedGameEventArgs> GameSaved;
-
-        Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache);
-        void           SaveGameProgress<T>(T       _Data,     bool _OnlyToCache) where T : FileNameArgs;
-        void           DeleteSavedGame(string      _FileName);
-        void           FetchSavedGames();
-    }
-    
-    public abstract class SavedGamesProviderBase : InitBase, ISavedGameProvider
+    public class SavedGamesProvider : InitBase, ISavedGameProvider
     {
         #region inject
 
@@ -29,7 +19,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
         private   IGameClient              GameClient              { get; }
         protected IRemoteSavedGameProvider RemoteSavedGameProvider { get; }
 
-        protected SavedGamesProviderBase(
+        protected SavedGamesProvider(
             CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             IRemoteSavedGameProvider _RemoteSavedGameProvider)
@@ -54,9 +44,21 @@ namespace Common.Managers.PlatformGameServices.SavedGames
         {
             RemoteSavedGameProvider.DeleteSavedGame(_FileName);
         }
-        
-        public abstract void           SaveGameProgress<T>(T  _Data, bool _OnlyToCache) where T : FileNameArgs;
-        public abstract Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache);
+
+        public void SaveGameProgress<T>(T _Data, bool _OnlyToCache) where T : FileNameArgs
+        {
+            SaveGameProgressToCache(_Data);
+            if (_OnlyToCache)
+                return;
+            RemoteSavedGameProvider.SaveGame(_Data);
+        }
+
+        public Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache)
+        {
+            return _FromCache
+                ? GetSavedGameProgressFromCache(_FileName)
+                : RemoteSavedGameProvider.GetSavedGame(_FileName);
+        }
 
         #endregion
 

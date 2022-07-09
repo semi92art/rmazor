@@ -3,13 +3,11 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Common.Entities;
-using Common.Helpers;
-using Newtonsoft.Json;
 using SA.iOS.GameKit;
 
 namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders
 {
-    public class AppleICloudRemoteSavedGameProvider : InitBase, IRemoteSavedGameProvider
+    public class AppleICloudRemoteSavedGameProvider : RemoteSavedGameProviderBase
     {
         #region nonpublic members
 
@@ -18,6 +16,8 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
 
         #endregion
 
+        #region api
+
         public override void Init()
         {
             ISN_GKLocalPlayerListener.DidModifySavedGame.AddListener(DidModifySavedGame);
@@ -25,7 +25,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
             base.Init();
         }
 
-        public Entity<object> GetSavedGame(string    _FileName)
+        public override Entity<object> GetSavedGame(string _FileName)
         {
             var entity = new Entity<object>();
             var savedGame = m_FetchedSavedGames.FirstOrDefault(_G => _G.Name == _FileName);
@@ -51,7 +51,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
             return entity;
         }
 
-        public void SaveGame<T>(T _Data) where T : FileNameArgs
+        public override void SaveGame<T>(T _Data)
         {
             var data = ToByteArray(_Data);
             if (data == null)
@@ -80,7 +80,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
                 });
         }
 
-        public void DeleteSavedGame(string _FileName)
+        public override void DeleteSavedGame(string _FileName)
         {
             if (m_FetchSavedGamesResult != EEntityResult.Success
                 || m_FetchedSavedGames.All(_G => _G == null || _G.Name != _FileName))
@@ -98,7 +98,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
             });
         }
         
-        public void FetchSavedGames()
+        public override void FetchSavedGames()
         {
             ISN_GKLocalPlayer.FetchSavedGames(_Result => 
             {
@@ -125,7 +125,11 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
                 }
             });
         }
-        
+
+        #endregion
+
+        #region nonpublic methods
+
         private static void DidModifySavedGame(ISN_GKSavedGameSaveResult _Result) {
             Dbg.Log($"DidModifySavedGame! Device name = {_Result.SavedGame.DeviceName} " +
                     $"| game name = {_Result.SavedGame.Name} | modification Date = " +
@@ -143,31 +147,13 @@ namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProvide
             // var conflictedGameIds = _Result.SavedGames.Select(game => game.Id).ToList();
             // ISN_GKLocalPlayer.ResolveConflictingSavedGames(conflictedGameIds, null, null);
         }
-        
-        private static byte[] ToByteArray<T>(T _Obj) where T : class
-        {
-            if(_Obj.Equals(default(T)))
-                return default;
-            string s = ToString(_Obj);
-            return Encoding.ASCII.GetBytes(s);
-        }
 
-        private static T FromByteArray<T>(byte[] _Data) where T : class
-        {
-            if(_Data == null)
-                return default;
-            string s = Encoding.ASCII.GetString(_Data);
-            return FromString<T>(s);
-        }
-        
-        private static string ToString<T>(T _Obj) where T : class
-        {
-            return _Obj == null ? null : JsonConvert.SerializeObject(_Obj);
-        }
+        #endregion
 
-        private static T FromString<T>(string _Data) where T : class
-        {
-            return JsonConvert.DeserializeObject<T>(_Data);
-        }
+        
+        
+
+        
+
     }
 }

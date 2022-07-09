@@ -58,7 +58,6 @@ namespace Mono_Installers
             #endregion
 
             #region managers
-
             
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>() .AsSingle();
             Container.Bind<IUnityAnalyticsProvider>()      .To<UnityAnalyticsProvider>()       .AsSingle();
@@ -68,6 +67,8 @@ namespace Mono_Installers
             Container.Bind<IScoreManager>()                .To<ScoreManager>()                 .AsSingle();
             Container.Bind<IAchievementsProvider>()        .To<AchievementsProvider>()         .AsSingle();
             Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
+            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()           .AsSingle();
+            
             if (Application.isEditor)
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
@@ -77,7 +78,6 @@ namespace Mono_Installers
                 Container.Bind<INotificationsManager>().To<NotificationsManagerFake>()      .AsSingle();
                 Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorFake>().AsSingle();
                 Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
-                Container.Bind<ISavedGameProvider>()   .To<SavedGameProviderFake>()         .AsSingle();
             }
             else
             {
@@ -93,7 +93,6 @@ namespace Mono_Installers
                 Container.Bind<IPlatformGameServiceAuthenticator>()
                     .To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
                 Container.Bind<ILeaderboardProvider>().To<LeaderboardProviderGooglePlayGames>().AsSingle();
-                Container.Bind<ISavedGameProvider>().To<SavedGameProviderGooglePlay>().AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
                 Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()                .AsSingle();
                 Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()        .AsSingle();
@@ -103,7 +102,6 @@ namespace Mono_Installers
 
                 Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorIos>().AsSingle();
                 Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderIos>()         .AsSingle();
-                Container.Bind<ISavedGameProvider>()   .To<SavedGameProviderIos>()           .AsSingle();
 #endif
             }
 

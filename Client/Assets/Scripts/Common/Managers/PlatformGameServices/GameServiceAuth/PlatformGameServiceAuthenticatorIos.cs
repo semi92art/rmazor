@@ -38,6 +38,7 @@ namespace Common.Managers.PlatformGameServices.GameServiceAuth
                             sb.AppendLine($"signatureResult.Salt.Length: {_SignatureResult.Salt.Length}");
                             sb.AppendLine($"signatureResult.Signature.Length: {_SignatureResult.Signature.Length}");
                             Dbg.Log(sb.ToString());
+                            base.AuthenticatePlatformGameService(_OnFinish);
                         }
                         else
                         {
@@ -45,17 +46,10 @@ namespace Common.Managers.PlatformGameServices.GameServiceAuth
                                          $"{_SignatureResult.Error.FullMessage}");
                             _OnFinish?.Invoke(false);
                         }
-
-                        base.AuthenticatePlatformGameService(_OnFinish);
                     });
                 }
                 else
                 {
-                    static string AuthMessage(bool _Success, string _AddMessage)
-                    {
-                        return $"{(_Success ? "Success" : "Fail")} on authentication to game service: {_AddMessage}";
-                    }
-
                     Dbg.LogError(AuthMessage(false,
                         $"Error with code: {_Result.Error.Code} and description: {_Result.Error.Message}"));
                 }
