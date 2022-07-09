@@ -73,7 +73,7 @@ namespace Editor
                 Dbg.LogWarning("This option is available only in play mode");
                 return false;
             }
-            m_GameController = FindObjectOfType<GameController>();
+            m_GameController = FindObjectOfType<GameControllerMVC>();
             if (m_GameController == null)
             {
                 Dbg.LogError("Game Controller was not found.");

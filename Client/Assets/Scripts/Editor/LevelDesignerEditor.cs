@@ -11,6 +11,7 @@ using Editor;
 using ModestTree;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.ContainerGetters;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Debug;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
@@ -31,14 +32,14 @@ namespace RMAZOR.Editor
         #region nonpublic members
         
         private static LevelDesigner Des => LevelDesigner.Instance;
-        
-        private        ViewSettings             m_ViewSettings;
-        private        IPrefabSetManager        m_PrefabSetManager;
-        private        IAssetBundleManager      m_AssetBundleManager;
-        private        IMazeCoordinateConverter m_CoordinateConverter;
-        private        IContainersGetter        m_ContainersGetter;
-        private        IMazeItemsCreator        m_MazeItemsCreator;
-        private static CommonGameSettings       _commonGameSettings;
+
+        private        ViewSettings                           m_ViewSettings;
+        private        IPrefabSetManager                      m_PrefabSetManager;
+        private        IAssetBundleManager                    m_AssetBundleManager;
+        private        ICoordinateConverterRmazorInEditor m_CoordinateConverter;
+        private        IContainersGetterRmazorInEditor        m_ContainersGetter;
+        private        IMazeItemsCreator                      m_MazeItemsCreator;
+        private static CommonGameSettings                     _commonGameSettings;
         
         private static HeapReorderableList LevelsList
         {
@@ -401,8 +402,8 @@ namespace RMAZOR.Editor
             m_PrefabSetManager = new PrefabSetManager(m_AssetBundleManager);
             m_ViewSettings = m_PrefabSetManager.GetObject<ViewSettings>(
                 "configs", "view_settings");
-            m_CoordinateConverter = new MazeCoordinateConverter(m_ViewSettings, null, false);
-            m_ContainersGetter = new ContainersGetterRmazor(null, m_CoordinateConverter);
+            m_CoordinateConverter = CoordinateConverterRmazorInEditor.Create(m_ViewSettings, null, false);
+            m_ContainersGetter = new ContainersGetterRmazorInEditor(null, m_CoordinateConverter);
             m_CoordinateConverter.GetContainer = m_ContainersGetter.GetContainer;
             m_CoordinateConverter.Init();
             m_MazeItemsCreator = new MazeItemsCreatorInEditor();

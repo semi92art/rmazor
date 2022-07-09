@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -13,7 +12,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.Helpers;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
@@ -47,29 +46,31 @@ namespace RMAZOR.Views
     {
         #region inject
 
-        public ViewSettings                  Settings             { get; }
-        public IContainersGetter             ContainersGetter     { get; }
-        public IViewUI                       UI                   { get; }
-        public IViewLevelStageController     LevelStageController { get; }
-        public IViewInputCommandsProceeder   CommandsProceeder    { get; }
-        public IViewInputTouchProceeder      TouchProceeder       { get; }
-        public IViewCharacter                Character            { get; }
-        public IViewMazeRotation             MazeRotation         { get; }
-        public IViewMazeItemsGroupSet        MazeItemsGroupSet    { get; }
-        public IViewMazePathItemsGroup       PathItemsGroup       { get; }
-        public IManagersGetter               Managers             { get; }
-        public IViewBackground               Background           { get; }
-        public IViewMazeAdditionalBackground AdditionalBackground { get; }
-        
-        private IViewMazeCommon               Common                   { get; }
-        private IViewMazeForeground           Foreground               { get; }
-        private IMazeCoordinateConverter      CoordinateConverter      { get; }
-        private IColorProvider                ColorProvider            { get; }
-        private ICameraProvider               CameraProvider           { get; }
-        private IBigDialogViewer              BigDialogViewer          { get; }
-        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
+        private IRemotePropertiesRmazor       RemotePropertiesRmazor { get; }
+        public  ViewSettings                  Settings               { get; }
+        public  IContainersGetter             ContainersGetter       { get; }
+        public  IViewUI                       UI                     { get; }
+        public  IViewLevelStageController     LevelStageController   { get; }
+        public  IViewInputCommandsProceeder   CommandsProceeder      { get; }
+        public  IViewInputTouchProceeder      TouchProceeder         { get; }
+        public  IViewCharacter                Character              { get; }
+        public  IViewMazeRotation             MazeRotation           { get; }
+        public  IViewMazeItemsGroupSet        MazeItemsGroupSet      { get; }
+        public  IViewMazePathItemsGroup       PathItemsGroup         { get; }
+        public  IManagersGetter               Managers               { get; }
+        public  IViewBackground               Background             { get; }
+        public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
+
+        private IViewMazeCommon             Common                 { get; }
+        private IViewMazeForeground         Foreground             { get; }
+        private ICoordinateConverterRmazor  CoordinateConverter    { get; }
+        private IColorProvider              ColorProvider          { get; }
+        private ICameraProvider             CameraProvider         { get; }
+        private IBigDialogViewer            BigDialogViewer        { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
 
         private ViewGame(
+            IRemotePropertiesRmazor       _RemotePropertiesRmazor,
             ViewSettings                  _Settings,
             IContainersGetter             _ContainersGetter,
             IViewUI                       _UI,
@@ -81,16 +82,17 @@ namespace RMAZOR.Views
             IViewBackground               _Background,
             IViewMazeForeground           _Foreground,
             IViewMazeRotation             _MazeRotation,
-            IViewMazeItemsGroupSet        _MazeItemsGroupSet, 
+            IViewMazeItemsGroupSet        _MazeItemsGroupSet,
             IViewMazePathItemsGroup       _PathItemsGroup,
-            IManagersGetter               _Managers, 
-            IMazeCoordinateConverter      _CoordinateConverter,
+            IManagersGetter               _Managers,
+            ICoordinateConverterRmazor    _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
             IBigDialogViewer              _BigDialogViewer,
-            IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
+            IViewFullscreenTransitioner   _FullscreenTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground)
         {
+            RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
             UI                           = _UI;
@@ -109,7 +111,7 @@ namespace RMAZOR.Views
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
             BigDialogViewer              = _BigDialogViewer;
-            BetweenLevelTransitioner     = _BetweenLevelTransitioner;
+            FullscreenTransitioner       = _FullscreenTransitioner;
             AdditionalBackground         = _AdditionalBackground;
         }
         
@@ -162,6 +164,7 @@ namespace RMAZOR.Views
 
         private void InitProceeders()
         {
+            CoordinateConverter.GetContainer = ContainersGetter.GetContainer;
             CoordinateConverter.Init();
             CommonUtils.DoOnInitializedEx(
                 Managers.RemoteConfigManager, 
@@ -177,7 +180,7 @@ namespace RMAZOR.Views
                 MazeRotation,
                 PathItemsGroup,
                 MazeItemsGroupSet,
-                BetweenLevelTransitioner,
+                FullscreenTransitioner,
                 Foreground,
                 Background
             };
@@ -218,26 +221,22 @@ namespace RMAZOR.Views
         {
             if (!CommonData.Release)
                 return;
+            if (RemotePropertiesRmazor.Nofifications == null)
+                return;
             var notMan = Managers.NotificationsManager;
-            var locMan = Managers.LocalizationManager;
-            var dict = new Dictionary<string, DateTime>
-            {
-                {locMan.GetTranslation("notification_1"), DateTime.Now.AddDays(1)},
-                {locMan.GetTranslation("notification_2"), DateTime.Now.AddDays(3)}
-            };
+            var notifications = RemotePropertiesRmazor.Nofifications;
             notMan.OperatingMode = Application.platform == RuntimePlatform.Android
                 ? ENotificationsOperatingMode.QueueClearAndReschedule
                 : ENotificationsOperatingMode.NoQueue;
             if (notMan.OperatingMode.HasFlag(ENotificationsOperatingMode.RescheduleAfterClearing))
-                notMan.LastNotificationsCountToReschedule = dict.Count;
+                notMan.LastNotificationsCountToReschedule = notifications.Count;
             notMan.ClearAllNotifications();
-            string title = Application.productName;
-            foreach ((string body, var dateTime) in dict)
+            foreach (var notification in notifications)
             {
                 notMan.SendNotification(
-                    title, 
-                    body, 
-                    dateTime,
+                    notification.Message, 
+                    string.Empty, 
+                    DateTime.Now.Add(notification.TimeSpan),
                     _Reschedule: Application.platform == RuntimePlatform.Android,
                     _SmallIcon: "main_icon");
             }

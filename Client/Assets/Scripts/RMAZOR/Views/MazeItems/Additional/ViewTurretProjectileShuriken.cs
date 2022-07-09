@@ -41,17 +41,17 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         #region inject
         
-        private IContainersGetter             ContainersGetter { get; }
-        private IPrefabSetManager             PrefabSetManager { get; }
-        private IColorProvider                ColorProvider    { get; }
-        private IViewBetweenLevelTransitioner Transitioner     { get; }
+        private IContainersGetter           ContainersGetter { get; }
+        private IPrefabSetManager           PrefabSetManager { get; }
+        private IColorProvider              ColorProvider    { get; }
+        private IViewFullscreenTransitioner Transitioner     { get; }
 
         private ViewTurretProjectileShuriken(
             IViewTurretProjectileTail     _Tail,
             IContainersGetter             _ContainersGetter,
             IPrefabSetManager             _PrefabSetManager,
             IColorProvider                _ColorProvider,
-            IViewBetweenLevelTransitioner _Transitioner)
+            IViewFullscreenTransitioner _Transitioner)
         {
             Tail             = _Tail;
             ContainersGetter = _ContainersGetter;

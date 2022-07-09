@@ -22,10 +22,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "single_circle_background";
+        protected override string MaterialAssetName => "between_level_texture_material_circles";
 
-        private static readonly int Color2Id = Shader.PropertyToID("_Color2");
-        private static readonly int RadiusId = Shader.PropertyToID("_Radius");
         
         #endregion
 
@@ -46,15 +44,9 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         
         #region api
 
-        public override void Init()
-        {
-            base.Init();
-            Material.SetColor(Color2Id, new Color(0f, 0f, 0f, 0f));
-        }
-
         public override void SetTransitionValue(float _Value)
         {
-            Material.SetFloat(RadiusId, _Value);
+            Material.SetFloat(TransitionValueId, _Value);
         }
 
         public void SetColor(Color _Color)

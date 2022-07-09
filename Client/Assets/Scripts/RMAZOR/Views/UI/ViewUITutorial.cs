@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Exceptions;
@@ -12,10 +11,10 @@ using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
-using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
 using TMPro;
@@ -54,42 +53,36 @@ namespace RMAZOR.Views.UI
         private HandSwipeRotation m_Hsr;
         private TextMeshPro       m_RotPossText;
         private Animator          m_RotPossTextAnim;
-        private int               m_LastTutorialLevelIndex = -1;
 
         #endregion
 
         #region inject
 
-        private CommonGameSettings            Settings             { get; }
-        private IModelGame                    Model                { get; }
-        private IPrefabSetManager             PrefabSetManager     { get; }
-        private IContainersGetter             ContainersGetter     { get; }
-        private IMazeCoordinateConverter      CoordinateConverter  { get; }
-        private IViewInputCommandsProceeder   CommandsProceeder    { get; }
-        private ICameraProvider               CameraProvider       { get; }
-        private IColorProvider                ColorProvider        { get; }
-        private IViewGameTicker               Ticker               { get; }
-        private ILevelsLoader                 LevelsLoader         { get; }
-        private IProposalDialogViewer         ProposalDialogViewer { get; }
-        private ITutorialDialogPanel          TutorialDialogPanel  { get; }
-        private IViewUIGameLogo               GameLogo             { get; }
+        private IModelGame                  Model                { get; }
+        private IPrefabSetManager           PrefabSetManager     { get; }
+        private IContainersGetter           ContainersGetter     { get; }
+        private ICoordinateConverterRmazor  CoordinateConverter  { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private ICameraProvider             CameraProvider       { get; }
+        private IColorProvider              ColorProvider        { get; }
+        private IViewGameTicker             Ticker               { get; }
+        private IProposalDialogViewer       ProposalDialogViewer { get; }
+        private ITutorialDialogPanel        TutorialDialogPanel  { get; }
+        private IViewUIGameLogo             GameLogo             { get; }
 
         private ViewUITutorial(
-            CommonGameSettings            _Settings,
-            IModelGame                    _Model,
-            IPrefabSetManager             _PrefabSetManager,
-            IContainersGetter             _ContainersGetter,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            ICameraProvider               _CameraProvider,
-            IColorProvider                _ColorProvider,
-            IViewGameTicker               _Ticker,
-            ILevelsLoader                 _LevelsLoader,
-            IProposalDialogViewer         _ProposalDialogViewer,
-            ITutorialDialogPanel          _TutorialDialogPanel,
-            IViewUIGameLogo               _GameLogo)
+            IModelGame                  _Model,
+            IPrefabSetManager           _PrefabSetManager,
+            IContainersGetter           _ContainersGetter,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewGameTicker             _Ticker,
+            IProposalDialogViewer       _ProposalDialogViewer,
+            ITutorialDialogPanel        _TutorialDialogPanel,
+            IViewUIGameLogo             _GameLogo)
         {
-            Settings             = _Settings;
             Model                = _Model;
             PrefabSetManager     = _PrefabSetManager;
             ContainersGetter     = _ContainersGetter;
@@ -98,7 +91,6 @@ namespace RMAZOR.Views.UI
             CameraProvider       = _CameraProvider;
             ColorProvider        = _ColorProvider;
             Ticker               = _Ticker;
-            LevelsLoader         = _LevelsLoader;
             ProposalDialogViewer = _ProposalDialogViewer;
             TutorialDialogPanel  = _TutorialDialogPanel;
             GameLogo             = _GameLogo;
@@ -113,7 +105,6 @@ namespace RMAZOR.Views.UI
 
         public void Init(Vector4 _Offsets)
         {
-            GetLastTutorialLevelIndex();
             m_Offsets = _Offsets;
             m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
             CommandsProceeder.Command += OnCommand;
@@ -123,7 +114,6 @@ namespace RMAZOR.Views.UI
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            AdditionalCheckForTutorialFinishing(_Args);
             var tutType = IsCurrentLevelTutorial(out var mazeItemType);
             if (!tutType.HasValue)
                 return;
@@ -196,38 +186,6 @@ namespace RMAZOR.Views.UI
                     m_ReadyToFinishMovementTutorial = true;
                     break;
             }
-        }
-        
-        private void GetLastTutorialLevelIndex()
-        {
-            int? lastIdx = SaveUtils.GetValue(SaveKeysRmazor.LastTutorialLevelIndex);
-            if (lastIdx.HasValue)
-            {
-                m_LastTutorialLevelIndex = lastIdx.Value;
-                return;
-            }
-
-            int levelsCount = LevelsLoader.GetLevelsCount(Settings.gameId);
-            for (int i = 0; i < levelsCount; i++)
-            {
-                var info = LevelsLoader.LoadLevel(Settings.gameId, i);
-                if (info.AdditionalInfo.Arguments != "rotation tutorial")
-                    continue;
-                lastIdx = i;
-                break;
-            }
-
-            if (lastIdx.HasValue)
-                m_LastTutorialLevelIndex = lastIdx.Value;
-        }
-
-        private void AdditionalCheckForTutorialFinishing(LevelStageArgs _Args)
-        {
-            if (m_LastTutorialLevelIndex == -1 || _Args.LevelIndex <= m_LastTutorialLevelIndex)
-                return;
-            Dbg.Log("Finish all tutorials");
-            SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
-            SaveUtils.PutValue(SaveKeysRmazor.RotationTutorialFinished, true);
         }
 
         private void StartMovementTutorial()

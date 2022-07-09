@@ -14,6 +14,7 @@ using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -66,24 +67,24 @@ namespace RMAZOR.Views.Characters
 
         #region inject
 
-        private IColorProvider                ColorProvider            { get; }
-        private IContainersGetter             ContainersGetter         { get; }
-        private IPrefabSetManager             PrefabSetManager         { get; }
-        private IMazeCoordinateConverter      CoordinateConverter      { get; }
-        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
+        private IColorProvider              ColorProvider          { get; }
+        private IContainersGetter           ContainersGetter       { get; }
+        private IPrefabSetManager           PrefabSetManager       { get; }
+        private ICoordinateConverterRmazor  CoordinateConverter    { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
 
         private ViewCharacterHead(
-            IColorProvider                _ColorProvider,
-            IContainersGetter             _ContainersGetter,
-            IPrefabSetManager             _PrefabSetManager,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IViewBetweenLevelTransitioner _BetweenLevelTransitioner)
+            IColorProvider              _ColorProvider,
+            IContainersGetter           _ContainersGetter,
+            IPrefabSetManager           _PrefabSetManager,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IViewFullscreenTransitioner _FullscreenTransitioner)
         {
-            ColorProvider            = _ColorProvider;
-            ContainersGetter         = _ContainersGetter;
-            PrefabSetManager         = _PrefabSetManager;
-            CoordinateConverter      = _CoordinateConverter;
-            BetweenLevelTransitioner = _BetweenLevelTransitioner;
+            ColorProvider          = _ColorProvider;
+            ContainersGetter       = _ContainersGetter;
+            PrefabSetManager       = _PrefabSetManager;
+            CoordinateConverter    = _CoordinateConverter;
+            FullscreenTransitioner = _FullscreenTransitioner;
         }
         
         #endregion
@@ -176,7 +177,7 @@ namespace RMAZOR.Views.Characters
                 m_Animator.SetTrigger(AnimKeyStartJumping);
             var charCol = ColorProvider.GetColor(ColorIds.Character);
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
-            BetweenLevelTransitioner.DoAppearTransition(
+            FullscreenTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {

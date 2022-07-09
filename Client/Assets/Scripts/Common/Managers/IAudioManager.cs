@@ -56,7 +56,7 @@ namespace Common.Managers
         {
             ContainersGetter = _ContainersGetter;
             GameTicker       = _GameTicker;
-            Ticker         = _UITicker;
+            Ticker           = _UITicker;
             MusicSetting     = _MusicSetting;
             SoundSetting     = _SoundSetting;
             PrefabSetManager = _PrefabSetManager;

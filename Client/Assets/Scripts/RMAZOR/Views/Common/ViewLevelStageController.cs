@@ -21,7 +21,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
-using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -51,71 +50,75 @@ namespace RMAZOR.Views.Common
         private bool                m_FirstTimeLevelLoaded;
         private List<IViewMazeItem> m_MazeItemsCached;
         private bool                m_StartLogoShowing = true;
+        private bool                m_ShowRewardedOnUnload;
 
         #endregion
 
         #region inject
 
-        private CommonGameSettings            GameSettings             { get; }
-        private ViewSettings                  ViewSettings             { get; }
-        private IViewGameTicker               ViewGameTicker           { get; }
-        private IModelGameTicker              ModelGameTicker          { get; }
-        private IModelGame                    Model                    { get; }
-        private IManagersGetter               Managers                 { get; }
-        private IViewCharacter                Character                { get; }
-        private IViewInputCommandsProceeder   CommandsProceeder        { get; }
-        private IContainersGetter             ContainersGetter         { get; }
-        private IMazeShaker                   MazeShaker               { get; }
-        private IDialogPanelsSet              DialogPanelsSet          { get; }
-        private IProposalDialogViewer         ProposalDialogViewer     { get; }
-        private IViewMazeItemsGroupSet        MazeItemsGroupSet        { get; }
-        private IViewMazePathItemsGroup       PathItemsGroup           { get; }
-        private CompanyLogo                   CompanyLogo              { get; }
-        private IViewUIGameLogo               GameLogo                 { get; }
-        private IRateGameDialogPanel          RateGameDialogPanel      { get; }
-        private IViewUILevelSkipper           LevelSkipper             { get; }
-        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
+        private CommonGameSettings          GameSettings           { get; }
+        private ViewSettings                ViewSettings           { get; }
+        private IViewGameTicker             ViewGameTicker         { get; }
+        private IModelGameTicker            ModelGameTicker        { get; }
+        private IModelGame                  Model                  { get; }
+        private IManagersGetter             Managers               { get; }
+        private IViewCharacter              Character              { get; }
+        private IViewInputCommandsProceeder CommandsProceeder      { get; }
+        private IContainersGetter           ContainersGetter       { get; }
+        private IMazeShaker                 MazeShaker             { get; }
+        private IDialogPanelsSet            DialogPanelsSet        { get; }
+        private IProposalDialogViewer       ProposalDialogViewer   { get; }
+        private IViewMazeItemsGroupSet      MazeItemsGroupSet      { get; }
+        private IViewMazePathItemsGroup     PathItemsGroup         { get; }
+        private CompanyLogo                 CompanyLogo            { get; }
+        private IViewUIGameLogo             GameLogo               { get; }
+        private IRateGameDialogPanel        RateGameDialogPanel    { get; }
+        private IViewUILevelSkipper         LevelSkipper           { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
+        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader   { get; }
 
         private ViewLevelStageController(
-            CommonGameSettings            _GameSettings,
-            ViewSettings                  _ViewSettings,
-            IViewGameTicker               _ViewGameTicker,
-            IModelGameTicker              _ModelGameTicker,
-            IModelGame                    _Model,
-            IManagersGetter               _Managers,
-            IViewCharacter                _Character,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IContainersGetter             _ContainersGetter,
-            IMazeShaker                   _MazeShaker,
-            IDialogPanelsSet              _DialogPanelsSet,
-            IProposalDialogViewer         _ProposalDialogViewer,
-            IViewMazeItemsGroupSet        _MazeItemsGroupSet,
-            IViewMazePathItemsGroup       _PathItemsGroup,
-            CompanyLogo                   _CompanyLogo,
-            IViewUIGameLogo               _GameLogo,
-            IRateGameDialogPanel          _RateGameDialogPanel,
-            IViewUILevelSkipper           _LevelSkipper,
-            IViewBetweenLevelTransitioner _BetweenLevelTransitioner)
+            CommonGameSettings          _GameSettings,
+            ViewSettings                _ViewSettings,
+            IViewGameTicker             _ViewGameTicker,
+            IModelGameTicker            _ModelGameTicker,
+            IModelGame                  _Model,
+            IManagersGetter             _Managers,
+            IViewCharacter              _Character,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IContainersGetter           _ContainersGetter,
+            IMazeShaker                 _MazeShaker,
+            IDialogPanelsSet            _DialogPanelsSet,
+            IProposalDialogViewer       _ProposalDialogViewer,
+            IViewMazeItemsGroupSet      _MazeItemsGroupSet,
+            IViewMazePathItemsGroup     _PathItemsGroup,
+            CompanyLogo                 _CompanyLogo,
+            IViewUIGameLogo             _GameLogo,
+            IRateGameDialogPanel        _RateGameDialogPanel,
+            IViewUILevelSkipper         _LevelSkipper,
+            IViewFullscreenTransitioner _FullscreenTransitioner,
+            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
         {
-            GameSettings         = _GameSettings;
-            ViewSettings         = _ViewSettings;
-            ViewGameTicker       = _ViewGameTicker;
-            ModelGameTicker      = _ModelGameTicker;
-            Model                = _Model;
-            Managers             = _Managers;
-            Character            = _Character;
-            CommandsProceeder    = _CommandsProceeder;
-            ContainersGetter     = _ContainersGetter;
-            MazeShaker           = _MazeShaker;
-            DialogPanelsSet      = _DialogPanelsSet;
-            ProposalDialogViewer = _ProposalDialogViewer;
-            MazeItemsGroupSet    = _MazeItemsGroupSet;
-            PathItemsGroup       = _PathItemsGroup;
-            CompanyLogo          = _CompanyLogo;
-            GameLogo             = _GameLogo;
-            RateGameDialogPanel  = _RateGameDialogPanel;
-            LevelSkipper         = _LevelSkipper;
-            BetweenLevelTransitioner = _BetweenLevelTransitioner;
+            GameSettings           = _GameSettings;
+            ViewSettings           = _ViewSettings;
+            ViewGameTicker         = _ViewGameTicker;
+            ModelGameTicker        = _ModelGameTicker;
+            Model                  = _Model;
+            Managers               = _Managers;
+            Character              = _Character;
+            CommandsProceeder      = _CommandsProceeder;
+            ContainersGetter       = _ContainersGetter;
+            MazeShaker             = _MazeShaker;
+            DialogPanelsSet        = _DialogPanelsSet;
+            ProposalDialogViewer   = _ProposalDialogViewer;
+            MazeItemsGroupSet      = _MazeItemsGroupSet;
+            PathItemsGroup         = _PathItemsGroup;
+            CompanyLogo            = _CompanyLogo;
+            GameLogo               = _GameLogo;
+            RateGameDialogPanel    = _RateGameDialogPanel;
+            LevelSkipper           = _LevelSkipper;
+            FullscreenTransitioner = _FullscreenTransitioner;
+            BetweenLevelAdLoader   = _BetweenLevelAdLoader;
         }
 
         #endregion
@@ -125,7 +128,7 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             CommandsProceeder.Command += OnCommand;
-            BetweenLevelTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
+            FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
             Managers.AudioManager.InitClip(AudioClipArgsLevelComplete);
             base.Init();
@@ -149,13 +152,12 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            PauseTimers(_Args.LevelStage == ELevelStage.Paused);
-            foreach (var proceeder in m_ProceedersToExecuteBeforeGroups)
-                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+            PauseGameTickers(_Args.LevelStage == ELevelStage.Paused);
+            ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
-            foreach (var proceeder in m_ProceedersToExecuteAfterGroups)
-                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
-            ProceedMazeItemGroups(_Args);
+            ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
+            ProceedMazeItems(_Args);
+            ProceedOther(_Args);
             ProceedSounds(_Args);
         }
 
@@ -178,30 +180,46 @@ namespace RMAZOR.Views.Common
             if(_Args[0].ToString() == CommonInputCommandArgs.LoadFirstLevelFromGroupArg)
                 m_NextLevelMustBeFirstInGroup = true;
         }
-        
-        private void ProceedMazeItemGroups(LevelStageArgs _Args)
+
+        private void ProceedProceedersToExecuteBeforeMazeItemGroups(LevelStageArgs _Args)
         {
-            if (!GetStagesToProceed().Contains(_Args.LevelStage))
-                return;
-            var mazeItems = _Args.LevelStage == ELevelStage.Loaded ? 
-                m_MazeItemsCached = GetMazeAndPathItems() : m_MazeItemsCached;
-            mazeItems.AddRange(PathItemsGroup.PathItems);
+            foreach (var proceeder in m_ProceedersToExecuteBeforeGroups)
+                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+        }
+        
+        private void ProceedProceedersToExecuteAfterMazeItemGroups(LevelStageArgs _Args)
+        {
+            foreach (var proceeder in m_ProceedersToExecuteAfterGroups)
+                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+        }
+        
+        private void ProceedMazeItems(LevelStageArgs _Args)
+        {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args, mazeItems);        break;
-                case ELevelStage.Finished:           OnLevelFinished(_Args);                 break;
-                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, mazeItems); break;
-                case ELevelStage.Unloaded:           OnLevelUnloaded(_Args);                 break;
-                case ELevelStage.CharacterKilled:    OnCharacterKilled(mazeItems);           break;
-                case ELevelStage.ReadyToStart:
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Paused:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
+                case ELevelStage.Loaded:             OnLevelLoaded(       _Args, GetMazeItems(_Args)); break;
+                case ELevelStage.ReadyToUnloadLevel: OnReadyToUnloadLevel(_Args, GetMazeItems(_Args)); break;
+                case ELevelStage.CharacterKilled:    OnCharacterKilled(   _Args, GetMazeItems(_Args)); break;
             }
         }
 
+        private void ProceedOther(LevelStageArgs _Args)
+        {
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.Finished: OnLevelFinished(_Args); break;
+                case ELevelStage.Unloaded: OnLevelUnloaded(_Args); break;
+            }
+        }
+
+        private IReadOnlyCollection<IViewMazeItem> GetMazeItems(LevelStageArgs _Args)
+        {
+            var mazeItems = _Args.LevelStage == ELevelStage.Loaded ? 
+                m_MazeItemsCached = GetMazeAndPathItems() : m_MazeItemsCached;
+            mazeItems.AddRange(PathItemsGroup.PathItems);
+            return mazeItems;
+        }
+        
         private List<IViewMazeItem> GetMazeAndPathItems()
         {
             var mazeItems = new List<IViewMazeItem>();
@@ -256,6 +274,7 @@ namespace RMAZOR.Views.Common
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(true);
+            FullscreenTransitioner.DoTextureTransition(false);
         }
 
         private void OnLevelFinished(LevelStageArgs _Args)
@@ -297,21 +316,18 @@ namespace RMAZOR.Views.Common
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
         }
 
-        private void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
+        private void OnReadyToUnloadLevel(
+            LevelStageArgs                     _Args,
+            IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            bool showAd = _Args.LevelIndex >= GameSettings.firstLevelToShowAds
-                          && _Args.LevelIndex % GameSettings.showAdsEveryLevel == 0
-                          && !LevelSkipper.LevelSkipped
-                          && Managers.AdsManager.RewardedAdReady;
             void OnBeforeAdShown()
             {
-                ViewGameTicker.Pause = true;
-                ModelGameTicker.Pause = true;
+                PauseGameTickers(true);
             }
             void UnloadLevel()
             {
-                ViewGameTicker.Pause = false;
-                ModelGameTicker.Pause = false;
+                FullscreenTransitioner.DoTextureTransition(true);
+                PauseGameTickers(false);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);
                 Cor.Run(Cor.WaitWhile(() =>
@@ -323,27 +339,11 @@ namespace RMAZOR.Views.Common
                     CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, null, true);
                 }));
             }
-
-            // FIXME сделать нормальную паузу во время показа рекламы на ios, а не эту хуету
-            if (CommonUtils.Platform == RuntimePlatform.IPhonePlayer)
-            {
-                if (showAd)
-                {
-                    Managers.AdsManager.ShowRewardedAd(null, null, null, true);
-                }
-                UnloadLevel();
-            }
-            else
-            {
-                if (showAd)
-                {
-                    Managers.AdsManager.ShowRewardedAd(OnBeforeAdShown, UnloadLevel, null, true);
-                }
-                else
-                {
-                    UnloadLevel();
-                }
-            }
+            BetweenLevelAdLoader.TryShowAd(
+                _Args.LevelIndex,
+                OnBeforeAdShown, 
+                UnloadLevel, 
+                UnloadLevel);
         }
 
         private void OnLevelUnloaded(LevelStageArgs _Args)
@@ -395,7 +395,9 @@ namespace RMAZOR.Views.Common
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
         }
 
-        private void OnCharacterKilled(List<IViewMazeItem> _MazeItems)
+        private void OnCharacterKilled(
+            LevelStageArgs                     _Args,
+            IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
             MazeShaker.OnCharacterDeathAnimation(
                 ContainersGetter.GetContainer(ContainerNames.Character).transform.position,
@@ -424,7 +426,7 @@ namespace RMAZOR.Views.Common
                 });
         }
         
-        private void PauseTimers(bool _Pause)
+        private void PauseGameTickers(bool _Pause)
         {
             ViewGameTicker.Pause = _Pause;
             ModelGameTicker.Pause = _Pause;
@@ -489,14 +491,20 @@ namespace RMAZOR.Views.Common
             Managers.AnalyticsManager.SendAnalytic(analyticId, 
                 new Dictionary<string, object>
                 {
-                    {"index", _Args.LevelIndex},
-                    {"spent_time", Model.LevelStaging.LevelTime},
-                    {"dies_count", Model.LevelStaging.DiesCount},
-                    {"money_count", _MoneyCount}
+                    {AnalyticIds.LevelIndex, _Args.LevelIndex},
+                    {AnalyticIds.LevelTime, Model.LevelStaging.LevelTime},
+                    {AnalyticIds.DiesCount, Model.LevelStaging.DiesCount},
+                    {AnalyticIds.MoneyCount, _MoneyCount}
                 });
         }
 
         private void UnlockAchievementOnLevelFinishedIfKeyExist(LevelStageArgs _Args)
+        {
+            UnlockAchievementLevelFinishedByIndex(_Args.LevelIndex);
+            UnlockSpecificAchievementOnLevelFinished();
+        }
+
+        private void UnlockAchievementLevelFinishedByIndex(long _LevelIndex)
         {
             var dict = new Dictionary<long, ushort>
             {
@@ -514,11 +522,27 @@ namespace RMAZOR.Views.Common
                 {900, AchievementKeys.Level900Finished},
                 {1000, AchievementKeys.Level1000Finished},
             };
-            ushort achievementKey = dict.GetSafe(_Args.LevelIndex + 1, out bool containsKey);
+            ushort achievementKey = dict.GetSafe(_LevelIndex + 1, out bool containsKey);
             if (!containsKey)
                 return;
-            Managers.ScoreManager.UnlockAchievement(achievementKey);
-            
+            var achievementEntity = Managers.ScoreManager.GetAchievement(achievementKey);
+            Cor.Run(Cor.WaitWhile(
+                () => achievementEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    if (achievementEntity.Result != EEntityResult.Success)
+                        return;
+                    var achievement = achievementEntity.Value;
+                    if (achievement.completed)
+                        return;
+                    Managers.ScoreManager.UnlockAchievement(achievementKey);
+                    var eventData = new Dictionary<string, object> {{AnalyticIds.AchievementId, achievementKey.ToString()}};
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.AchievementUnlocked, eventData);
+                }));
+        }
+
+        private void UnlockSpecificAchievementOnLevelFinished()
+        {
             var args = Model.Data.Info.AdditionalInfo.Arguments.Split(';');
             foreach (string arg in args)
             {
@@ -529,18 +553,6 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private static IEnumerable<ELevelStage> GetStagesToProceed()
-        {
-            return new[]
-            {
-                ELevelStage.Loaded,
-                ELevelStage.Finished,
-                ELevelStage.ReadyToUnloadLevel,
-                ELevelStage.Unloaded,
-                ELevelStage.CharacterKilled
-            };
-        }
-        
         #endregion
     }
 }

@@ -11,6 +11,7 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -31,20 +32,20 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         #region inject
 
-        protected IModelGame                    Model               { get; }
-        protected IViewGameTicker               GameTicker          { get; }
-        protected ViewSettings                  ViewSettings        { get; }
-        protected IColorProvider                ColorProvider       { get; }
-        protected IMazeCoordinateConverter      CoordinateConverter { get; }
-        protected IViewBetweenLevelTransitioner Transitioner        { get; }
+        protected IModelGame                  Model               { get; }
+        protected IViewGameTicker             GameTicker          { get; }
+        protected ViewSettings                ViewSettings        { get; }
+        protected IColorProvider              ColorProvider       { get; }
+        protected ICoordinateConverterRmazor  CoordinateConverter { get; }
+        protected IViewFullscreenTransitioner Transitioner        { get; }
 
         protected ViewTurretBodyBase(
-            IModelGame                    _Model,
-            IViewGameTicker               _GameTicker,
-            ViewSettings                  _ViewSettings,
-            IColorProvider                _ColorProvider,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IViewBetweenLevelTransitioner _Transitioner)
+            IModelGame                  _Model,
+            IViewGameTicker             _GameTicker,
+            ViewSettings                _ViewSettings,
+            IColorProvider              _ColorProvider,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IViewFullscreenTransitioner _Transitioner)
         {
             Model               = _Model;
             GameTicker          = _GameTicker;

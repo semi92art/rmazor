@@ -8,7 +8,6 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Utils;
-using Firebase.Extensions;
 using Newtonsoft.Json;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace RMAZOR.Helpers
 {
     public interface ILevelsLoader : IInit
     {
-        MazeInfo LoadLevel(int      _GameId, long _Index);
+        MazeInfo GetLevelInfo(int      _GameId, long _Index);
         int      GetLevelsCount(int _GameId);
     }
     
@@ -28,7 +27,7 @@ namespace RMAZOR.Helpers
         private readonly Dictionary<int, string[]> m_SerializedLevelsFromCacheDict = new Dictionary<int, string[]>();
         private readonly Dictionary<int, string[]> m_SerializedLevelsFromRemoteDict = new Dictionary<int, string[]>();
 
-        private volatile bool m_CachedLoaded, m_RemoteLoaded;
+        private bool m_CachedLoaded, m_RemoteLoaded;
 
         #endregion
 
@@ -41,7 +40,7 @@ namespace RMAZOR.Helpers
             IPrefabSetManager  _PrefabSetManager,
             IMazeInfoValidator _MazeInfoValidator)
         {
-            PrefabSetManager = _PrefabSetManager;
+            PrefabSetManager  = _PrefabSetManager;
             MazeInfoValidator = _MazeInfoValidator;
         }
 
@@ -60,7 +59,7 @@ namespace RMAZOR.Helpers
                 () => base.Init()));
         }
 
-        public MazeInfo LoadLevel(int _GameId, long _Index)
+        public MazeInfo GetLevelInfo(int _GameId, long _Index)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
             MazeInfo Deserialize(IReadOnlyDictionary<int, string[]> _Dict) => JsonConvert.DeserializeObject<MazeInfo>(

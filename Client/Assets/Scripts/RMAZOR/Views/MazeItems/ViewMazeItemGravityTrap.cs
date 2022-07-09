@@ -14,6 +14,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
@@ -58,16 +59,16 @@ namespace RMAZOR.Views.MazeItems
         private IMazeShaker MazeShaker { get; }
 
         private ViewMazeItemGravityTrap(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IMazeShaker                   _MazeShaker,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder)
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IMazeShaker                 _MazeShaker,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,

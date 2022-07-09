@@ -11,6 +11,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -28,18 +29,18 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region inject
-        
-        private ViewMazeItemPathFilled(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewMazeMoneyItem            _MoneyItem)
+
+        protected ViewMazeItemPathFilled(
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewMazeMoneyItem          _MoneyItem)
             : base(
                 _ViewSettings,
                 _Model,
@@ -109,8 +110,8 @@ namespace RMAZOR.Views.MazeItems
 
         public override void Collect(bool _Collect, bool _OnStart = false)
         {
-            if (_OnStart && (IsAnyBlockWithSamePosition(EMazeItemType.Portal) 
-                             || IsAnyBlockWithSamePosition(EMazeItemType.ShredingerBlock)))
+            if (_OnStart && (IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal) 
+                             || IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.ShredingerBlock)))
             {
                 if (!_Collect)
                     return;

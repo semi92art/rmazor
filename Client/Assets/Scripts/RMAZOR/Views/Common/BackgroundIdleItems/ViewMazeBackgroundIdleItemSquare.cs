@@ -1,5 +1,6 @@
 ﻿using Common.Extensions;
 using Common.Managers;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -20,8 +21,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region inject
         
         private ViewMazeBackgroundIdleItemSquare(
-            IPrefabSetManager        _PrefabSetManager,
-            IMazeCoordinateConverter _CoordinateConverter)
+            IPrefabSetManager          _PrefabSetManager,
+            ICoordinateConverterRmazor _CoordinateConverter)
             : base(_PrefabSetManager, _CoordinateConverter) { }
 
         #endregion

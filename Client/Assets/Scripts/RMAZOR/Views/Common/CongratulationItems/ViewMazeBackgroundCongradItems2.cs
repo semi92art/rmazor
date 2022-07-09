@@ -36,13 +36,13 @@ namespace RMAZOR.Views.Common.CongratulationItems
         private IAudioManager     AudioManager     { get; }
 
         private ViewMazeBackgroundCongradItems2(
-            IColorProvider                _ColorProvider,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            ICameraProvider               _CameraProvider,
-            IPrefabSetManager             _PrefabSetManager,
-            IAudioManager                 _AudioManager)
+            IColorProvider              _ColorProvider,
+            IViewFullscreenTransitioner _Transitioner,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            ICameraProvider             _CameraProvider,
+            IPrefabSetManager           _PrefabSetManager,
+            IAudioManager               _AudioManager)
             : base(
                 _ColorProvider,
                 _Transitioner,

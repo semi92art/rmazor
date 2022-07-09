@@ -8,6 +8,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -49,11 +50,11 @@ namespace RMAZOR.Views.UI
         #region api
 
         public override void Init(
-            ITicker                  _Ticker,
-            ICameraProvider          _CameraProvider,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IColorProvider           _ColorProvider,
-            Vector4                  _Offsets)
+            ITicker                    _Ticker,
+            ICameraProvider            _CameraProvider,
+            ICoordinateConverterRmazor _CoordinateConverter,
+            IColorProvider             _ColorProvider,
+            Vector4                    _Offsets)
         {
             base.Init(_Ticker, _CameraProvider, _CoordinateConverter, _ColorProvider, _Offsets);
             var uiCol = _ColorProvider.GetColor(ColorIds.UI);

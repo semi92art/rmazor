@@ -38,7 +38,10 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: c0a423367bef21246963430fe0e63562, type: 2}
       name: single_circle_background
       bundle: 0
-    - item: {fileID: 2100000, guid: afb34e80db91395458d229f0ae343723, type: 2}
+    - item: {fileID: 2100000, guid: c502415a64babfc4eb8e22341c02f6e6, type: 2}
+      name: between_level_texture_material_lines
+      bundle: 0
+    - item: {fileID: 2100000, guid: c502415a64babfc4eb8e22341c02f6e6, type: 2}
       name: between_level_texture_material_circles
       bundle: 0
     - item: {fileID: 2100000, guid: fa08a47d2377063498fff8f9dd14e0ec, type: 2}

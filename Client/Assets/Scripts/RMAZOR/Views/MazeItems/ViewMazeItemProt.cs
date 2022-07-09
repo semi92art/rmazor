@@ -11,6 +11,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.ContainerGetters;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -27,26 +28,26 @@ namespace RMAZOR.Views.MazeItems
         [SerializeField, HideInInspector] private ShapeRenderer           shape;
         [SerializeField, HideInInspector] private SpriteRenderer          hint;
         [SerializeField, HideInInspector] private V2Int                   mazeSize;
-        [SerializeField, HideInInspector] private MazeCoordinateConverter converter;
+        [SerializeField, HideInInspector] private CoordinateConverterRmazorInEditor converter;
         [SerializeField]                  private float                   scale;
         
         #endregion
 
         #region nonpublic members
 
-        private IContainersGetter m_ContainersGetter;
+        private IContainersGetterRmazorInEditor m_ContainersGetter;
         private IPrefabSetManager m_PrefabSetManager;
-        private MazeCoordinateConverter Converter
+        private CoordinateConverterRmazorInEditor Converter
         {
             get
             {
-                if (converter == null || !converter.InitializedAndMazeSizeSet())
+                if (converter == null || !converter.IsValid())
                 {
                     m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
                         "configs", "view_settings");
-                    converter = new MazeCoordinateConverter(settings, null, false);
-                    m_ContainersGetter = new ContainersGetterRmazor(null, converter);
+                    converter = CoordinateConverterRmazorInEditor.Create(settings, null, false);
+                    m_ContainersGetter = new ContainersGetterRmazorInEditor(null, converter);
                     converter.GetContainer = m_ContainersGetter.GetContainer;
                     converter.Init();
                     converter.SetMazeSize(mazeSize);

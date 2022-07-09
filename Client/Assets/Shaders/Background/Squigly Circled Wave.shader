@@ -1,7 +1,10 @@
 ﻿// https://www.shadertoy.com/view/MtBSWR
 Shader "RMAZOR/Background/Squigly Circled Wave" {
     Properties {
-        _Color ("Color", Color) = (1,1,1,1)
+        _Color ("Background", Color) = (1,1,1,1)
+        _Ring1Color("Ring 1", Color) = (1,1,1,1)
+        _Ring2Color("Ring 2", Color) = (1,1,1,1)
+        _Ring3Color("Ring 3", Color) = (1,1,1,1)
         _TimeAlt ("Time", Float) = 0
     }
     SubShader {
@@ -21,7 +24,7 @@ Shader "RMAZOR/Background/Squigly Circled Wave" {
             #pragma multi_compile _ PIXELSNAP_ON
             #include "../Common.cginc"
 
-            fixed4 _Color;
+            fixed4 _Color, _Ring1Color, _Ring2Color, _Ring3Color;
             float _TimeAlt;
 
 			v2f vert(appdata v) {
@@ -45,13 +48,13 @@ Shader "RMAZOR/Background/Squigly Circled Wave" {
                 float distance_to_wave = min(angle_difference, tau - angle_difference);
                 float final_multiplier = pow(max(1., distance_to_wave), -4.);
                 //Rings
-                float ring1 = .50 + .03 * cos(angle * 7.) * final_multiplier;
-                float ring2 = .485 + .03 * cos(angle * 7. + tau / 3.) * final_multiplier;
-                float ring3 = .47 + .03 * cos(angle * 7. - tau / 3.) * final_multiplier;
+                float ring1 = .40 + .03 * cos(angle * 7.) * final_multiplier;
+                float ring2 = .385 + .03 * cos(angle * 7. + tau / 3.) * final_multiplier;
+                float ring3 = .37 + .03 * cos(angle * 7. - tau / 3.) * final_multiplier;
                 //Drawing
-                fixed3 color_ring1 = rgb(10, 205, 203);
-                fixed3 color_ring2 = rgb(46, 72, 82);
-                fixed3 color_ring3 = rgb(54, 147, 147);
+                fixed3 color_ring1 = _Ring1Color.rgb;
+                fixed3 color_ring2 = _Ring2Color.rgb;
+                fixed3 color_ring3 = _Ring3Color.rgb;
                 color = lerp(color, color_ring1, smoothstep(.01 + t, .01, abs(ring1 - l)));
                 color = lerp(color, color_ring2, smoothstep(.01 + t, .01, abs(ring2 - l)));
                 color = lerp(color, color_ring3, smoothstep(.01 + t, .01, abs(ring3 - l)));

@@ -5,6 +5,7 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
 using Common.Utils;
+using RMAZOR.Views.CoordinateConverters;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ namespace RMAZOR.Views.Debug
         public static ScreenViewDebug Instance =>
             _instance.IsNotNull() ? _instance : _instance = FindObjectOfType<ScreenViewDebug>(); 
         
-        private                  MazeCoordinateConverter m_Converter;
+        private                  CoordinateConverterRmazorInEditor m_Converter;
         private                  ViewSettings            m_Settings;
         [SerializeField] private Vector2                 mazeSize;
         public                   bool                    drawMazeBounds;
@@ -40,7 +41,7 @@ namespace RMAZOR.Views.Debug
             }
             m_Settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "configs", "view_settings");
-            m_Converter = new MazeCoordinateConverter(m_Settings, null, true);
+            m_Converter = CoordinateConverterRmazorInEditor.Create(m_Settings, null, true);
             m_Converter.Init();
             m_Converter.SetMazeSize((V2Int)mazeSize);
         }
@@ -49,7 +50,7 @@ namespace RMAZOR.Views.Debug
         {
             if (m_Converter == null)
                 return;
-            if (!m_Converter.InitializedAndMazeSizeSet())
+            if (!m_Converter.IsValid())
                 return;
             Gizmos.color = Color.red;
             var mazeBds = m_Converter.GetMazeBounds();

@@ -12,15 +12,17 @@ namespace RMAZOR.Helpers
     
     public class MazeInfoValidator : IMazeInfoValidator
     {
-        private static readonly List<EMazeItemType> PossibleMazeItemTypes = Enum.GetValues(typeof(EMazeItemType))
-            .Cast<EMazeItemType>()
+        private static readonly List<int> PossibleMazeItemTypes = Enum.GetValues(typeof(EMazeItemType))
+            .Cast<int>()
             .ToList();
         
         public bool Validate(MazeInfo _Info)
         {
+            if (!_Info.MazeItems.Any())
+                return _Info.PathItems.Any();
             return _Info.MazeItems
                 .Select(_Item => _Item.Type)
-                .All(_Type => PossibleMazeItemTypes.Contains(_Type));
+                .All(_Type => PossibleMazeItemTypes.Contains((int)_Type));
         }
     }
 }

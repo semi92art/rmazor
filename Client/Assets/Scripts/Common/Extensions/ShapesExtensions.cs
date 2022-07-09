@@ -89,7 +89,7 @@ namespace Common.Extensions
             _Shape.DashSnap = _Snap;
             return _Shape;
         }
-        
+
         public static T SetMatchDashSpacingToDashSize<T>(this T _Shape, bool _Match) where T : ShapeRenderer, IDashable
         {
             _Shape.MatchDashSpacingToSize = _Match;
@@ -99,6 +99,12 @@ namespace Common.Extensions
         public static T SetDashOffset<T>(this T _Shape, float _Offset) where T : ShapeRenderer, IDashable
         {
             _Shape.DashOffset = _Offset;
+            return _Shape;
+        }
+        
+        public static T SetDashShapeModifier<T>(this T _Shape, float _ShapeModifier) where T : ShapeRenderer, IDashable
+        {
+            _Shape.DashShapeModifier = _ShapeModifier;
             return _Shape;
         }
 

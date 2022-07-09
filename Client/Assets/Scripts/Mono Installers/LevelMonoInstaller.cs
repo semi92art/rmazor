@@ -19,7 +19,7 @@ using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.Helpers;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
@@ -35,7 +35,6 @@ namespace Mono_Installers
     public class LevelMonoInstaller : MonoInstallerImplBase
     {
         public GameObject colorProvider;
-        public GameObject subtitle;
 
         public override void InstallBindings()
         {
@@ -84,9 +83,11 @@ namespace Mono_Installers
 
         private void BindViewCommon()
         {
+            Container.Bind<ICoordinateConverterRmazor>().To<CoordinateConverterRmazor>().AsSingle();
+            Container.Bind(typeof(IContainersGetter), typeof(IContainersGetterRmazor))
+                .To<ContainersGetterRmazor>()
+                .AsSingle();
             Container.Bind<IMazeShaker>()             .To<MazeShaker>()             .AsSingle();
-            Container.Bind<IMazeCoordinateConverter>().To<MazeCoordinateConverter>().AsSingle();
-            Container.Bind<IContainersGetter>()       .To<ContainersGetterRmazor>() .AsSingle();
             Container.Bind<IMazeItemsCreator>()       .To<MazeItemsCreator>()       .AsSingle();
             Container.Bind<IViewGame>()               .To<ViewGame>()               .AsSingle();
             Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()         .AsSingle();
@@ -100,7 +101,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>()    .To<ViewMazeBackgroundCongradItems2>()   .AsSingle();
             Container.Bind<IViewMazeForeground>()                .To<ViewMazeForeground>()                .AsSingle();
-            Container.Bind<IViewBetweenLevelTransitioner>()      .To<ViewBetweenLevelTransitioner>()      .AsSingle();
+            Container.Bind<IViewFullscreenTransitioner>()        .To<ViewFullscreenTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
 
             
@@ -123,8 +124,8 @@ namespace Mono_Installers
 
         private void BindMazeItemBlocksAndGroups()
         {
-            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()          .AsSingle();
-            Container.Bind<IViewMazeItemPath>()              .To<ViewMazeItemPathFilled>()           .AsSingle();
+            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
+            Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
             Container.Bind<IViewMazeItemShredingerBlock>()   .To<ViewMazeItemShredingerBlock>()      .AsSingle();
@@ -224,7 +225,7 @@ namespace Mono_Installers
         {
             Container.Bind<IViewMazeBackgroundTextureController>().To<ViewMazeBackgroundTextureController>()        .AsSingle();
             Container.Bind<IFullscreenTextureProviderTriangles2>().To<FullscreenTriangles2TextureProvider>()        .AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProvideTriaHex>()  .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>().To<FullscreenTransitionTextureProviderCircles>() .AsSingle();
             // Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
             Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
@@ -232,12 +233,13 @@ namespace Mono_Installers
 
         private void BindOther()
         {
-            Container.Bind<IGameController>().To<GameController>().AsSingle();
+            Container.Bind<IGameController>().To<GameControllerMVC>().AsSingle();
             Container.Bind<IDebugManager>()  .To<DebugManager>()  .AsSingle();
             Container.Bind<IManagersGetter>().To<ManagersGetter>().AsSingle();
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()
                 .AsSingle();
+            Container.Bind<IViewBetweenLevelAdLoader>().To<ViewBetweenLevelAdLoader>().AsSingle();
         }
     }
 }

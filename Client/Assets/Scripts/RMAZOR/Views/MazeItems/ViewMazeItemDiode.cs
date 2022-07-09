@@ -12,6 +12,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -40,15 +41,15 @@ namespace RMAZOR.Views.MazeItems
         #region inject
         
         private ViewMazeItemDiode(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder) 
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder) 
             : base(
                 _ViewSettings, 
                 _Model,

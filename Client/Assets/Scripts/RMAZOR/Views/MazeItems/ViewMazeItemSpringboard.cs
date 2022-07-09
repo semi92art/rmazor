@@ -15,6 +15,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -46,23 +47,23 @@ namespace RMAZOR.Views.MazeItems
         
         private Vector2 m_Edge1Start, m_Edge2Start;
         
-        protected Line Springboard;
-        protected Line Pillar;
+        private Line m_Springboard;
+        private Line m_Pillar;
         
         #endregion
         
         #region inject
 
         private ViewMazeItemSpringboard(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder)
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -78,7 +79,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
         
-        public override Component[] Renderers => new Component[] {Springboard, Pillar};
+        public override Component[] Renderers => new Component[] {m_Springboard, m_Pillar};
         
         public override object Clone() => new ViewMazeItemSpringboard(
             ViewSettings, 
@@ -105,35 +106,35 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void InitShape()
         {
-            Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _)
+            m_Pillar = Object.AddComponentOnNewChild<Line>("Springboard Item", out _)
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetEndCaps(LineEndCap.Round);
-            Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _)
+            m_Springboard = Object.AddComponentOnNewChild<Line>("Springboard", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetEndCaps(LineEndCap.Round);
         }
 
         protected override void UpdateShape()
         {
-            Pillar.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale);
-            Springboard.SetThickness(Pillar.Thickness * 2f);
-            (Pillar.Start, Pillar.End, Springboard.Start, Springboard.End) = GetSpringboardAndPillarEdges();
-            (m_Edge1Start, m_Edge2Start) = (Springboard.Start, Springboard.End);
+            m_Pillar.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale);
+            m_Springboard.SetThickness(m_Pillar.Thickness * 2f);
+            (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) = GetSpringboardAndPillarEdges();
+            (m_Edge1Start, m_Edge2Start) = (m_Springboard.Start, m_Springboard.End);
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId != ColorIds.Main)
                 return;
-            Pillar.Color = _Color;
-            Springboard.Color = _Color;
+            m_Pillar.Color = _Color;
+            m_Springboard.Color = _Color;
         }
 
         private IEnumerator JumpCoroutine()
         {
             void DoOnProgress(float _Progress)
             {
-                (Springboard.Start, Springboard.End, Pillar.End) =
+                (m_Springboard.Start, m_Springboard.End, m_Pillar.End) =
                     GetSpringboardEdgesOnJump(_Progress * JumpCoefficient);
             }
             yield return Cor.Lerp(

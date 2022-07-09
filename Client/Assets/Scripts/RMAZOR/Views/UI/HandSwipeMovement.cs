@@ -9,6 +9,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -53,7 +54,7 @@ namespace RMAZOR.Views.UI
         public override void Init(
             ITicker                  _Ticker,
             ICameraProvider          _CameraProvider,
-            IMazeCoordinateConverter _CoordinateConverter,
+            ICoordinateConverterRmazor _CoordinateConverter,
             IColorProvider           _ColorProvider,
             Vector4                  _Offsets)
         {

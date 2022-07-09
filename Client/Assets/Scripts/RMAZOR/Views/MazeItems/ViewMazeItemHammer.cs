@@ -16,6 +16,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -65,18 +66,18 @@ namespace RMAZOR.Views.MazeItems
         private IViewParticlesThrower ParticlesThrower { get; }
 
         private ViewMazeItemHammer(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IPrefabSetManager             _PrefabSetManager,
-            IMazeShaker                   _Shaker,
-            IViewParticlesThrower         _ParticlesThrower) 
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IPrefabSetManager           _PrefabSetManager,
+            IMazeShaker                 _Shaker,
+            IViewParticlesThrower       _ParticlesThrower) 
             : base(
                 _ViewSettings,
                 _Model,

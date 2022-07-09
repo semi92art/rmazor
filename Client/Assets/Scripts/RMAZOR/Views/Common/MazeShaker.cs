@@ -8,6 +8,7 @@ using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.MazeItems;
 using UnityEngine;
 using UnityEngine.Events;
@@ -20,9 +21,9 @@ namespace RMAZOR.Views.Common
         IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args);
         IEnumerator ShakeMazeCoroutine(float                          _Duration, float _Amplitude);
         void OnCharacterDeathAnimation(
-            Vector2             _DeathPosition,
-            List<IViewMazeItem> _MazeItems,
-            UnityAction         _OnFinish);
+            Vector2                    _DeathPosition,
+            IEnumerable<IViewMazeItem> _MazeItems,
+            UnityAction                _OnFinish);
     }
     
     public class MazeShaker : InitBase, IMazeShaker, IUpdateTick
@@ -37,14 +38,14 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private IContainersGetter        ContainersGetter    { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IViewGameTicker          GameTicker          { get; }
+        private IContainersGetter          ContainersGetter    { get; }
+        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private IViewGameTicker            GameTicker          { get; }
 
         private MazeShaker(
-            IContainersGetter        _ContainersGetter,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IViewGameTicker          _GameTicker)
+            IContainersGetter          _ContainersGetter,
+            ICoordinateConverterRmazor _CoordinateConverter,
+            IViewGameTicker            _GameTicker)
         {
             ContainersGetter    = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -128,9 +129,9 @@ namespace RMAZOR.Views.Common
         }
         
          public void OnCharacterDeathAnimation(
-            Vector2             _DeathPosition,
-            List<IViewMazeItem> _MazeItems,
-            UnityAction         _OnFinish)
+             Vector2                    _DeathPosition,
+             IEnumerable<IViewMazeItem> _MazeItems,
+             UnityAction                _OnFinish)
         {
             const float scaleCoeff = 0.2f;
             const float maxDistance = 10f;

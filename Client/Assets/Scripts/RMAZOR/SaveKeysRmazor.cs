@@ -11,19 +11,13 @@ namespace RMAZOR
 {
     public static class SaveKeysRmazor
     {
-        private static SaveKey<bool> _allLevelsPassed;
-
-        private static SaveKey<bool>                            _movementTutorialFinished;
-        private static SaveKey<bool>                            _rotationTutorialFinished;
         private static Dictionary<EMazeItemType, SaveKey<bool>> _mazeItemsTutorialsFinished;
-        
+
+        private static SaveKey<bool> _allLevelsPassed;
+        private static SaveKey<bool> _movementTutorialFinished;
         private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
         private static SaveKey<int>  _ratePanelShowsCount;
-        private static SaveKey<int?> _lastTutorialLevelIndex;
 
-        
-        
-        
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
         {
@@ -31,16 +25,12 @@ namespace RMAZOR
             {
                 _allLevelsPassed                = null;
                 _movementTutorialFinished       = null;
-                _rotationTutorialFinished       = null;
                 _mazeItemsTutorialsFinished     = null;
                 _moneyFromServerLoadedFirstTime = null;
-                _lastTutorialLevelIndex         = null;
             }
             SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          true);
             SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
-            SaveUtils.PutValue(RotationTutorialFinished, SaveUtils.GetValue(RotationTutorialFinished), true);
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
-            SaveUtils.PutValue(LastTutorialLevelIndex,   SaveUtils.GetValue(LastTutorialLevelIndex),   true);
             SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
             var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
             foreach (var mazeItemType in mazeItemTypes)
@@ -54,14 +44,10 @@ namespace RMAZOR
             _allLevelsPassed ??= new SaveKey<bool>(nameof(AllLevelsPassed));
         public static SaveKey<bool>  MovementTutorialFinished => 
             _movementTutorialFinished ??= new SaveKey<bool>(nameof(MovementTutorialFinished));
-        public static SaveKey<bool>  RotationTutorialFinished =>
-            _rotationTutorialFinished ??= new SaveKey<bool>(nameof(RotationTutorialFinished));
         public static SaveKey<bool>  SavedGameFromServerLoadedAtLeastOnce =>
             _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(SavedGameFromServerLoadedAtLeastOnce));
         public static SaveKey<int>  RatePanelShowsCount      =>
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
-        public static SaveKey<int?> LastTutorialLevelIndex =>
-            _lastTutorialLevelIndex ??= new SaveKey<int?>(nameof(LastTutorialLevelIndex));
 
         public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
         {

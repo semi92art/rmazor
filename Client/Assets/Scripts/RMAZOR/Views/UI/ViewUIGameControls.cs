@@ -33,33 +33,33 @@ namespace RMAZOR.Views.UI
         
         #region inject
 
-        private IViewBetweenLevelTransitioner BetweenLevelTransitioner { get; }
-        private IColorProvider                ColorProvider            { get; }
-        private IViewUIPrompt                 Prompt                   { get; }
-        private IViewUICongratsMessage        CongratsMessage          { get; }
-        private IViewUIGameLogo               GameLogo                 { get; }
-        private IViewUILevelsPanel            LevelsPanel              { get; }
-        private IViewUIRotationControls       RotationControls         { get; }
-        private IViewUITopButtons             TopButtons               { get; }
-        private IViewUITutorial               Tutorial                 { get; }
-        private IViewUILevelSkipper           LevelSkipper             { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
+        private IColorProvider              ColorProvider          { get; }
+        private IViewUIPrompt               Prompt                 { get; }
+        private IViewUICongratsMessage      CongratsMessage        { get; }
+        private IViewUIGameLogo             GameLogo               { get; }
+        private IViewUILevelsPanel          LevelsPanel            { get; }
+        private IViewUIRotationControls     RotationControls       { get; }
+        private IViewUITopButtons           TopButtons             { get; }
+        private IViewUITutorial             Tutorial               { get; }
+        private IViewUILevelSkipper         LevelSkipper           { get; }
 
         public ViewUIGameControls(
-            IModelGame                    _Model,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewBetweenLevelTransitioner _BetweenLevelTransitioner,
-            IColorProvider                _ColorProvider,
-            IViewUIPrompt                 _Prompt,
-            IViewUICongratsMessage        _CongratsMessage,
-            IViewUIGameLogo               _GameLogo,
-            IViewUILevelsPanel            _LevelsPanel,
-            IViewUIRotationControls       _RotationControls,
-            IViewUITopButtons             _TopButtons,
-            IViewUITutorial               _Tutorial,
-            IViewUILevelSkipper           _LevelSkipper)
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewFullscreenTransitioner _FullscreenTransitioner,
+            IColorProvider              _ColorProvider,
+            IViewUIPrompt               _Prompt,
+            IViewUICongratsMessage      _CongratsMessage,
+            IViewUIGameLogo             _GameLogo,
+            IViewUILevelsPanel          _LevelsPanel,
+            IViewUIRotationControls     _RotationControls,
+            IViewUITopButtons           _TopButtons,
+            IViewUITutorial             _Tutorial,
+            IViewUILevelSkipper         _LevelSkipper)
             : base(_Model, _CommandsProceeder)
         {
-            BetweenLevelTransitioner = _BetweenLevelTransitioner;
+            FullscreenTransitioner   = _FullscreenTransitioner;
             ColorProvider            = _ColorProvider;
             Prompt                   = _Prompt;
             CongratsMessage          = _CongratsMessage;
@@ -173,7 +173,7 @@ namespace RMAZOR.Views.UI
             var allRenderers = GetInterfaceOfProceeders<IViewUIGetRenderers>()
                 .Where(_R => _R != null)
                 .SelectMany(_Item => _Item.GetRenderers());
-            BetweenLevelTransitioner.DoAppearTransition(
+            FullscreenTransitioner.DoAppearTransition(
                 _Show, 
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {

@@ -14,6 +14,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -59,15 +60,15 @@ namespace RMAZOR.Views.MazeItems
         #region inject
 
         private ViewMazeItemTrapIncreasing(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder)
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IViewFullscreenTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,
@@ -188,17 +189,18 @@ namespace RMAZOR.Views.MazeItems
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
                 m_Blades.Add(prefab.GetCompItem<SpriteRenderer>($"blade_{i}"));
             }
+            int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
+            m_Center.SortingOrder = m_Center2.SortingOrder = sortingOrder;
             foreach (var bladeContainer in m_BladeContainers)
             {
-                bladeContainer.SortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing) - 1;
-                bladeContainer.Thickness = 0.07f;
-                bladeContainer.EndCaps = LineEndCap.Round;
-                bladeContainer.enabled = false;
+                bladeContainer.SetSortingOrder(sortingOrder - 1)
+                    .SetThickness(0.07f)
+                    .SetEndCaps(LineEndCap.Round)
+                    .enabled = false;
             }
-
             foreach (var blade in m_Blades)
             {
-                blade.sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
+                blade.sortingOrder = sortingOrder;
                 blade.enabled = false;
             }
         }

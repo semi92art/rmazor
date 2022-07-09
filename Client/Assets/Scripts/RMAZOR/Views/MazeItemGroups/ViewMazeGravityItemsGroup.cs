@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
@@ -10,7 +11,7 @@ namespace RMAZOR.Views.MazeItemGroups
     public class ViewMazeGravityItemsGroup : ViewMazeMovingItemsGroup, IViewMazeGravityItemsGroup
     {
         public ViewMazeGravityItemsGroup(
-            IMazeCoordinateConverter _CoordinateConverter,
+            ICoordinateConverterRmazor _CoordinateConverter,
             IViewMazeCommon _Common)
             : base(_CoordinateConverter, _Common) { }
 

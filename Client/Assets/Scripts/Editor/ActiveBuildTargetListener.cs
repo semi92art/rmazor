@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.PackageManager;
 using UnityEditor.PackageManager.Requests;
+// ReSharper disable DelegateSubtraction
 
 public class ActiveBuildTargetListener : IActiveBuildTargetChanged
 {
@@ -18,26 +19,36 @@ public class ActiveBuildTargetListener : IActiveBuildTargetChanged
     {
         switch (_NewTarget)
         {
+            case BuildTarget.StandaloneWindows:
+            case BuildTarget.StandaloneWindows64:
+            case BuildTarget.StandaloneOSX:
+                SwitchToIos();
+                break;
             case BuildTarget.Android: ConfigureAndroidPlatform(); break;
             case BuildTarget.iOS:     ConfigureIosPlatform();     break;
         }
+    }
+
+    private static void SwitchToIos()
+    {
+        EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTargetGroup.iOS, BuildTarget.iOS);
     }
 
     private static void ConfigureAndroidPlatform()
     {
         var target = NamedBuildTarget.Android;
         SetNiceVibrationsPluginVersion(NiceVibrationsVer39, target);
-        AddAppodeal(target);
-        RemoteUnityAds(target);
-
+        // AddAppodeal(target);
+        // RemoteUnityAds(target);
+        // AddUnityAds(target);
     }
 
     private static void ConfigureIosPlatform()
     {
         var target = NamedBuildTarget.iOS;
         SetNiceVibrationsPluginVersion(NiceVibrationsVer41, target);
-        RemoveAppodeal(target);
-        AddUnityAds(target);
+        // RemoveAppodeal(target);
+        // AddUnityAds(target);
     }
 
     private static void SetNiceVibrationsPluginVersion(string _Version, NamedBuildTarget _Target)

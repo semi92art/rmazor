@@ -1,23 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common.Constants;
 using Common.Helpers;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
 
 namespace Common.Managers.Analytics
 {
-    public interface IAnalyticsProvider : IInit
-    {
-        void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null);
-    }
-
     public interface IUnityAnalyticsProvider : IAnalyticsProvider { }
 
-    public class UnityAnalyticsProvider : InitBase, IUnityAnalyticsProvider
+    public class UnityAnalyticsProvider : AnalyticsProviderBase, IUnityAnalyticsProvider
     {
-        #region api
+        #region nonpublic members
 
-        public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
+        protected override Dictionary<string, string> ValidIdsAndNamesTranslations => null;
+        
+        #endregion
+        
+        #region nonpublic methods
+        
+        protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
             if (UnityServices.State != ServicesInitializationState.Initialized)
                 return;

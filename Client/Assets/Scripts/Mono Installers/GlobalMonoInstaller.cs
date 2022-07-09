@@ -1,13 +1,19 @@
-﻿using AppodealImpl;
-using Common;
+﻿using Common;
 using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Advertising.AdBlocks;
+using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.Notifications;
-using Common.Managers.Scores;
+using Common.Managers.PlatformGameServices;
+using Common.Managers.PlatformGameServices.Achievements;
+using Common.Managers.PlatformGameServices.GameServiceAuth;
+using Common.Managers.PlatformGameServices.Leaderboards;
+using Common.Managers.PlatformGameServices.SavedGames;
+using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
 using Common.Network;
 using Common.Settings;
 using Common.Ticker;
@@ -54,20 +60,24 @@ namespace Mono_Installers
             #region managers
 
             
-            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>().AsSingle();
-            Container.Bind<IUnityAnalyticsProvider>()  .To<UnityAnalyticsProvider>()        .AsSingle();
-            Container.Bind<IFirebaseAnalyticsProvider>().To<FirebaseAnalyticsProvider>()    .AsSingle();
-            Container.Bind<IGameClient>()              .To<GameClient>()                    .AsSingle();
+            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>() .AsSingle();
+            Container.Bind<IUnityAnalyticsProvider>()      .To<UnityAnalyticsProvider>()       .AsSingle();
+            Container.Bind<IFirebaseAnalyticsProvider>()   .To<FirebaseAnalyticsProvider>()    .AsSingle();
+            Container.Bind<IGameClient>()                  .To<GameClient>()                   .AsSingle();
 
+            Container.Bind<IScoreManager>()                .To<ScoreManager>()                 .AsSingle();
+            Container.Bind<IAchievementsProvider>()        .To<AchievementsProvider>()         .AsSingle();
+            Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
             if (Application.isEditor)
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
                 Container.Bind<IAnalyticsManager>()    .To<AnalyticsManagerFake>()          .AsSingle();
-                Container.Bind<IScoreManager>()        .To<ScoreManagerFake>()              .AsSingle();
                 Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
-                Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>().AsSingle();
                 Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>()      .AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerFake>()      .AsSingle();
+                Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorFake>().AsSingle();
+                Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
+                Container.Bind<ISavedGameProvider>()   .To<SavedGameProviderFake>()         .AsSingle();
             }
             else
             {
@@ -76,19 +86,24 @@ namespace Mono_Installers
 #if UNITY_ANDROID
                 Container.Bind<IAnalyticsManager>()    .To<AnalyticsManager>()              .AsSingle();
                 Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>()      .AsSingle();
-                Container.Bind<IScoreManager>()        .To<AndroidScoreManager>()           .AsSingle();
                 Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
-                Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>().AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
                 Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
+                
+                Container.Bind<IPlatformGameServiceAuthenticator>()
+                    .To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
+                Container.Bind<ILeaderboardProvider>().To<LeaderboardProviderGooglePlayGames>().AsSingle();
+                Container.Bind<ISavedGameProvider>().To<SavedGameProviderGooglePlay>().AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
-                Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()               .AsSingle();
-                Container.Bind<IScoreManager>()       .To<IosScoreManager>()                .AsSingle();
-                Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()       .AsSingle();
-                Container.Bind<IRemoteSavedGameProvider>().To<FakeRemoteSavedGameProvider>().AsSingle();
+                Container.Bind<IAnalyticsManager>()   .To<AnalyticsManager>()                .AsSingle();
+                Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()        .AsSingle();
                 Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()        .AsSingle();
-                Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
+                Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()      .AsSingle();
                 Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
+
+                Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorIos>().AsSingle();
+                Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderIos>()         .AsSingle();
+                Container.Bind<ISavedGameProvider>()   .To<SavedGameProviderIos>()           .AsSingle();
 #endif
             }
 
@@ -99,10 +114,10 @@ namespace Mono_Installers
 #else
             Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_4_1>().AsSingle();
 #endif
-            Container.Bind<IAdsManager>()               .To<AdsManager>()    .AsSingle();
+            Container.Bind<IAdsManager>()               .To<AdsManager>()                   .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
             Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()           .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
 
             #endregion
             
@@ -112,22 +127,23 @@ namespace Mono_Installers
             Container.Bind<IUITicker>()                 .To<UITicker>()                     .AsSingle();
             Container.Bind<ILevelsLoader>()             .To<LevelsLoader>()                 .AsSingle();
             Container.Bind<IMazeInfoValidator>()        .To<MazeInfoValidator>()            .AsSingle();
-
+#if ADMOB_API
             Container.Bind<IAdMobAdsProvider>()         .To<AdMobAdsProvider>()             .AsSingle();
             Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsSingle();
             Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsSingle();
-            
+#endif
 #if UNITY_ADS_API
             Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
             Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
             Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
 #endif
-#if APPODEAL
+#if APPODEAL_3
             Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
             Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
             Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 #endif
             Container.Bind<IAdsProvidersSet>().To<AdsProvidersSet>().AsSingle();
+            Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
         }

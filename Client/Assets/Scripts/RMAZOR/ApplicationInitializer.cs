@@ -12,7 +12,7 @@ using Common.Managers;
 using Common.Managers.Achievements;
 using Common.Managers.Advertising;
 using Common.Managers.IAP;
-using Common.Managers.Scores;
+using Common.Managers.PlatformGameServices;
 using Common.Network;
 using Common.Ticker;
 using Common.Utils;
@@ -143,7 +143,6 @@ namespace RMAZOR
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
                 {
-                    Dbg.Log("Init Game Controller");
                     LevelsLoader.Initialize += InitGameController;
                     LevelsLoader.Init();
                 });
@@ -170,7 +169,7 @@ namespace RMAZOR
 
         private void InitGameController()
         {
-            var controller = GameController.CreateInstance();
+            var controller = GameControllerMVC.CreateInstance();
             controller.Initialize += () =>
             {
                 const string fName = CommonData.SavedGameFileName;
@@ -217,7 +216,7 @@ namespace RMAZOR
 
         private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex)
         {
-            var info = LevelsLoader.LoadLevel(1, _LevelIndex);
+            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex);
             _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
         }
         

@@ -7,6 +7,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Views.CoordinateConverters;
 using Shapes;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -37,14 +38,14 @@ namespace RMAZOR.Views.MazeItems.Additional
         
         #region inject
 
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IColorProvider           ColorProvider       { get; }
+        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private IContainersGetter          ContainersGetter    { get; }
+        private IColorProvider             ColorProvider       { get; }
 
         private ViewTurretProjectileTail(
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter        _ContainersGetter,
-            IColorProvider           _ColorProvider)
+            ICoordinateConverterRmazor _CoordinateConverter,
+            IContainersGetter          _ContainersGetter,
+            IColorProvider             _ColorProvider)
         {
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter    = _ContainersGetter;

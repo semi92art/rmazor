@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using Common;
+using Common.Helpers;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.ProceedInfos;
@@ -7,6 +9,7 @@ using RMAZOR.Views;
 namespace RMAZOR.Models
 {
     public interface IModelItemsProceedersSet :
+        IInit,
         IGetAllProceedInfos,
         IOnLevelStageChanged,
         ICharacterMoveStarted, 
@@ -28,7 +31,7 @@ namespace RMAZOR.Models
         IItemsProceeder[] GetProceeders();
     }
     
-    public class ModelItemsProceedersSet : IModelItemsProceedersSet
+    public class ModelItemsProceedersSet : InitBase, IModelItemsProceedersSet
     {
         #region nonpublic members
 
@@ -91,7 +94,14 @@ namespace RMAZOR.Models
                 }
             }
         }
-        
+
+        public override void Init()
+        {
+            foreach (var item in GetInterfaceOfProceeders<IInit>().Where(_Item => _Item != null))
+                item.Init();
+            base.Init();
+        }
+
         public IItemsProceeder[] GetProceeders()
         {
             if (m_ProceedersCached != null)

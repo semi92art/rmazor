@@ -1,11 +1,13 @@
-﻿using Common.Exceptions;
+﻿using Common;
+using Common.Exceptions;
+using Common.Helpers;
 using Common.Ticker;
 using RMAZOR.Views;
 using UnityEngine.Events;
 
 namespace RMAZOR.Models.InputSchedulers
 {
-    public interface IInputSchedulerGameProceeder : IAddCommand, IOnLevelStageChanged
+    public interface IInputSchedulerGameProceeder : IInit, IAddCommand, IOnLevelStageChanged
     {
         event UnityAction<EInputCommand, object[]> MoveCommand; 
         event UnityAction<EInputCommand, object[]> RotateCommand;
@@ -13,7 +15,7 @@ namespace RMAZOR.Models.InputSchedulers
         void                                       LockRotation(bool _Lock);
     }
     
-    public class InputSchedulerGameProceeder : IInputSchedulerGameProceeder, IUpdateTick
+    public class InputSchedulerGameProceeder : InitBase, IInputSchedulerGameProceeder, IUpdateTick
     {
         #region constants
 
@@ -23,8 +25,8 @@ namespace RMAZOR.Models.InputSchedulers
         
         #region nonpublic members
 
-        private readonly EInputCommand?[]      m_MoveCommands   = new EInputCommand?[MaxCommandsCount];
-        private readonly EInputCommand?[]      m_RotateCommands = new EInputCommand?[MaxCommandsCount];
+        private readonly EInputCommand?[] m_MoveCommands   = new EInputCommand?[MaxCommandsCount];
+        private readonly EInputCommand?[] m_RotateCommands = new EInputCommand?[MaxCommandsCount];
         
         private bool m_MovementLocked = true;
         private bool m_RotationLocked = true;
@@ -35,19 +37,18 @@ namespace RMAZOR.Models.InputSchedulers
         
         #region inject
 
-        private IModelCharacter Character { get; }
+        private IModelGameTicker   GameTicker   { get; }
+        private IModelCharacter    Character    { get; }
         private IModelMazeRotation MazeRotation { get; }
         
         private InputSchedulerGameProceeder(
-            IModelGameTicker _GameTicker,
-            IModelCharacter _Character,
+            IModelGameTicker   _GameTicker,
+            IModelCharacter    _Character,
             IModelMazeRotation _MazeRotation)
         {
-            Character = _Character;
+            GameTicker   = _GameTicker;
+            Character    = _Character;
             MazeRotation = _MazeRotation;
-            MoveCommand += OnMoveCommand;
-            RotateCommand += OnRotateCommand;
-            _GameTicker.Register(this);
         }
 
         #endregion
@@ -56,7 +57,15 @@ namespace RMAZOR.Models.InputSchedulers
 
         public event UnityAction<EInputCommand, object[]> MoveCommand; 
         public event UnityAction<EInputCommand, object[]> RotateCommand;
-        
+
+        public override void Init()
+        {
+            MoveCommand += OnMoveCommand;
+            RotateCommand += OnRotateCommand;
+            GameTicker.Register(this);
+            base.Init();
+        }
+
         public void UpdateTick()
         {
             ScheduleMovementCommands();

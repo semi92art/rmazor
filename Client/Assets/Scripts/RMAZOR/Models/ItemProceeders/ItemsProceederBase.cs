@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Entities;
 using Common.Exceptions;
+using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models.MazeInfos;
@@ -11,12 +13,12 @@ using RMAZOR.Views;
 
 namespace RMAZOR.Models.ItemProceeders
 {
-    public interface IItemsProceeder : IOnLevelStageChanged
+    public interface IItemsProceeder : IInit, IOnLevelStageChanged
     {
         IMazeItemProceedInfo[] ProceedInfos { get; }
     }
 
-    public abstract class ItemsProceederBase : IItemsProceeder
+    public abstract class ItemsProceederBase : InitBase, IItemsProceeder
     {
         #region types
 
@@ -62,16 +64,16 @@ namespace RMAZOR.Models.ItemProceeders
         protected IModelGameTicker   GameTicker   { get; }
         
         protected ItemsProceederBase(
-            ModelSettings _Settings, 
-            IModelData _Data,
-            IModelCharacter _Character,
+            ModelSettings    _Settings,
+            IModelData       _Data,
+            IModelCharacter  _Character,
             IModelGameTicker _GameTicker)
         {
-            Settings = _Settings;
-            Data = _Data;
-            Character = _Character;
+            Settings   = _Settings;
+            Data       = _Data;
+            Character  = _Character;
             GameTicker = _GameTicker;
-            GameTicker.Register(this);
+            
         }
 
         #endregion
@@ -80,6 +82,12 @@ namespace RMAZOR.Models.ItemProceeders
 
         protected abstract EMazeItemType[] Types { get; }
         public IMazeItemProceedInfo[] ProceedInfos { get; private set; } = new IMazeItemProceedInfo[0];
+
+        public override void Init()
+        {
+            GameTicker.Register(this);
+            base.Init();
+        }
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {

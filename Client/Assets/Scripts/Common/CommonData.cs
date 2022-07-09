@@ -14,7 +14,7 @@ namespace Common
         public static bool        Testing                             = false;
         public static FirebaseApp FirebaseApp;
 
-        public static readonly Color CompanyLogoBackgroundColor = Color.black;// new Color(0.37f, 0.07f, 0.25f);
+        public static readonly Color CompanyLogoBackgroundColor = new Color(0.06f, 0f, 0.03f);
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetState()

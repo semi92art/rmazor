@@ -180,7 +180,7 @@ namespace RMAZOR
             EditorApplication.playModeStateChanged += OnSceneUnloaded;
             #endif
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
-            var controller = GameController.CreateInstance();
+            var controller = GameControllerMVC.CreateInstance();
             controller.Initialize += () =>
             {
                 int selectedLevel = SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerSelectedLevel);

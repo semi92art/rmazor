@@ -8,6 +8,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -35,18 +36,18 @@ namespace RMAZOR.Views.Characters
         
         #region inject
 
-        private ModelSettings            ModelSettings       { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter        ContainersGetter    { get; }
-        private IViewGameTicker          GameTicker          { get; }
-        private IColorProvider           ColorProvider       { get; }
+        private ModelSettings              ModelSettings       { get; }
+        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private IContainersGetter          ContainersGetter    { get; }
+        private IViewGameTicker            GameTicker          { get; }
+        private IColorProvider             ColorProvider       { get; }
 
         public ViewCharacterTailSimple(
-            ModelSettings            _ModelSettings,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IContainersGetter        _ContainersGetter,
-            IViewGameTicker          _GameTicker,
-            IColorProvider           _ColorProvider)
+            ModelSettings              _ModelSettings,
+            ICoordinateConverterRmazor _CoordinateConverter,
+            IContainersGetter          _ContainersGetter,
+            IViewGameTicker            _GameTicker,
+            IColorProvider             _ColorProvider)
         {
             ModelSettings       = _ModelSettings;
             CoordinateConverter = _CoordinateConverter;

@@ -9,6 +9,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -46,7 +47,7 @@ namespace RMAZOR.Views.UI
         
         protected ITicker                  Ticker;
         private   ICameraProvider          m_CameraProvider;
-        private   IMazeCoordinateConverter m_CoordinateConverter;
+        private   ICoordinateConverterRmazor m_CoordinateConverter;
         private   Vector4                  m_Offsets;
         protected bool                     ReadyToAnimate;
         protected EMazeMoveDirection?      Direction;
@@ -64,7 +65,7 @@ namespace RMAZOR.Views.UI
         public virtual void Init(
             ITicker                  _Ticker,
             ICameraProvider          _CameraProvider,
-            IMazeCoordinateConverter _CoordinateConverter,
+            ICoordinateConverterRmazor _CoordinateConverter,
             IColorProvider           _ColorProvider,
             Vector4                  _Offsets)
         {

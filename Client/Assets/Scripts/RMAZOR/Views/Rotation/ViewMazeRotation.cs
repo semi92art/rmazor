@@ -24,24 +24,18 @@ namespace RMAZOR.Views.Rotation
         private ViewSettings                ViewSettings        { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IViewGameTicker             GameTicker          { get; }
-        private IModelGame                  Model               { get; }
         private IViewCharacter              Character           { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
 
         private ViewMazeRotation(
             ViewSettings                _ViewSettings,
             IContainersGetter           _ContainersGetter, 
             IViewGameTicker             _GameTicker,
-            IModelGame                  _Model,
-            IViewCharacter              _Character,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewCharacter              _Character)
         {
             ViewSettings      = _ViewSettings;
             ContainersGetter  = _ContainersGetter;
             GameTicker        = _GameTicker;
-            Model             = _Model;
             Character         = _Character;
-            CommandsProceeder = _CommandsProceeder;
         }
         
         #endregion

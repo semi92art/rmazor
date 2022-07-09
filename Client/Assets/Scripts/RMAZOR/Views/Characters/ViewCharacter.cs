@@ -8,6 +8,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -43,7 +44,7 @@ namespace RMAZOR.Views.Characters
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
             IViewCharacterEffector      _Effector,
-            IMazeCoordinateConverter    _CoordinateConverter, 
+            ICoordinateConverterRmazor  _CoordinateConverter, 
             IModelGame                  _Model,
             IContainersGetter           _ContainersGetter,
             IViewMazeCommon             _ViewMazeCommon,

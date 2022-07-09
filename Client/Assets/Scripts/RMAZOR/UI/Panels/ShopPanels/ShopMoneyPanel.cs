@@ -249,8 +249,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private void BuyHideAdsItem()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.NoAdsBuy);
-            Managers.AdsManager.ShowAds = new BoolEntity
+            Managers.AnalyticsManager.SendAnalytic(
+                AnalyticIds.Purchase,
+        new Dictionary<string, object> { {AnalyticIds.PurchaseProductId, "no_ads"}});
+            Managers.AdsManager.ShowAds = new Entity<bool>
             {
                 Result = EEntityResult.Success,
                 Value = false
@@ -289,19 +291,21 @@ namespace RMAZOR.UI.Panels.ShopPanels
                                             .GetTranslation("coins_alt")
                                             .ToLowerInvariant();
                     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-                    string anId = _PurchaseKey switch
+                    string productId = _PurchaseKey switch
                     {
-                        1 => AnalyticIds.Product1Buy,
-                        2 => AnalyticIds.Product2Buy,
-                        3 => AnalyticIds.Product3Buy,
+                        1 => "coins_pack_small",
+                        2 => "coins_pack_medium",
+                        3 => "coins_pack_large",
                         _ => null
                     };
-                    if (anId == null)
+                    if (productId == null)
                     {
                         Dbg.LogError("Analytic Id was not found by Purchase Key");
                         return;
                     }
-                    Managers.AnalyticsManager.SendAnalytic(anId);
+                    Managers.AnalyticsManager.SendAnalytic(
+                        AnalyticIds.Purchase,
+                        new Dictionary<string, object> { {AnalyticIds.PurchaseProductId, productId}});
                 }));
         }
 

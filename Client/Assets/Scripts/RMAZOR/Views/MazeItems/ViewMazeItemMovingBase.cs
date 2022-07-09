@@ -13,6 +13,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -49,10 +50,10 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemMovingBase(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
-            IMazeCoordinateConverter      _CoordinateConverter,
+            ICoordinateConverterRmazor      _CoordinateConverter,
             IContainersGetter             _ContainersGetter,
             IViewGameTicker               _GameTicker,
-            IViewBetweenLevelTransitioner _Transitioner,
+            IViewFullscreenTransitioner _Transitioner,
             IManagersGetter               _Managers,
             IColorProvider                _ColorProvider,
             IViewInputCommandsProceeder   _CommandsProceeder)

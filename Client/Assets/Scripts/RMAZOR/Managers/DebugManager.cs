@@ -2,7 +2,7 @@
 using Common;
 using Common.Helpers;
 using Common.Managers.Advertising;
-using Common.Managers.Scores;
+using Common.Managers.PlatformGameServices;
 using Common.Settings;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;

@@ -34,7 +34,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         #region constants
 
         private const float ShowTime           = 1.5f;
-        private const float HideBackgroundTime = 1.5f;
+        private const float HideBackgroundTime = 0.75f;
 
         #endregion
 
@@ -230,7 +230,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
             LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
-            LogoTextureProvider.SetTransitionValue(0f);
+            LogoTextureProvider.SetTransitionValue(1f);
             yield return Cor.Delay(0.5f, GameTicker);
             SetColors(ColorProvider.GetColor(ColorIds.UI));
             ShowGameLogo(ShowTime);
@@ -244,7 +244,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
             Cor.Run(Cor.Lerp(
                 GameTicker,
-                HideBackgroundTime * 0.5f,
+                HideBackgroundTime,
                 _OnProgress: _P =>
                 {
                     var pos = Vector2.Lerp(startPos, finalPos, _P);
@@ -254,7 +254,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             yield return Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
-                _OnProgress: _P => LogoTextureProvider.SetTransitionValue(_P), 
+                _OnProgress: _P => LogoTextureProvider.SetTransitionValue(1f - _P), 
                 _OnFinish: () =>
                 {
                     LockGameplayAndUiCommands(false);

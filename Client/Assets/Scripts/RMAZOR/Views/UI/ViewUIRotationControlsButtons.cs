@@ -35,26 +35,26 @@ namespace RMAZOR.Views.UI
         
         #region inject
 
-        private IModelGame                    Model             { get; }
-        private IColorProvider                ColorProvider     { get; }
-        private ICameraProvider               CameraProvider    { get; }
-        private IContainersGetter             ContainersGetter  { get; }
-        private IManagersGetter               Managers          { get; }
-        private IViewBetweenLevelTransitioner Transitioner      { get; }
-        private IViewInputCommandsProceeder   CommandsProceeder { get; }
-        private IViewInputTouchProceeder      TouchProceeder    { get; }
-        private IViewGameTicker               GameTicker        { get; }
+        private IModelGame                  Model             { get; }
+        private IColorProvider              ColorProvider     { get; }
+        private ICameraProvider             CameraProvider    { get; }
+        private IContainersGetter           ContainersGetter  { get; }
+        private IManagersGetter             Managers          { get; }
+        private IViewFullscreenTransitioner Transitioner      { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IViewInputTouchProceeder    TouchProceeder    { get; }
+        private IViewGameTicker             GameTicker        { get; }
 
         private ViewUIRotationControlsButtons(
-            IModelGame                    _Model,
-            IColorProvider                _ColorProvider,
-            ICameraProvider               _CameraProvider,
-            IContainersGetter             _ContainersGetter,
-            IManagersGetter               _Managers,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewInputTouchProceeder      _TouchProceeder,
-            IViewGameTicker               _GameTicker)
+            IModelGame                  _Model,
+            IColorProvider              _ColorProvider,
+            ICameraProvider             _CameraProvider,
+            IContainersGetter           _ContainersGetter,
+            IManagersGetter             _Managers,
+            IViewFullscreenTransitioner _Transitioner,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewInputTouchProceeder    _TouchProceeder,
+            IViewGameTicker             _GameTicker)
         {
             Model             = _Model;
             ColorProvider     = _ColorProvider;

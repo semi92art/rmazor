@@ -26,10 +26,10 @@ namespace RMAZOR
         Random
     }
     
-    public interface IViewBetweenLevelTransitioner : IInit
+    public interface IViewFullscreenTransitioner : IInit
     {
         event UnityAction<bool> TransitionFinished;
-
+        void                    DoTextureTransition(bool _Appear);
         void DoAppearTransition(
             bool                                            _Appear,
             Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
@@ -37,10 +37,7 @@ namespace RMAZOR
             EAppearTransitionType                           _Type     = EAppearTransitionType.Simple);
     }
 
-    public class ViewBetweenLevelTransitioner 
-        : InitBase,
-          IViewBetweenLevelTransitioner,
-          IOnLevelStageChanged
+    public class ViewFullscreenTransitioner : InitBase, IViewFullscreenTransitioner
     {
         #region nonpublic members
 
@@ -51,18 +48,18 @@ namespace RMAZOR
         
         #region inject
 
-        private IViewGameTicker                      GameTicker                            { get; }
-        private IFullscreenTransitionTextureProvider BetweenLevelTransitionTextureProvider { get; }
-        private ViewSettings                         ViewSettings                          { get; }
+        private IViewGameTicker                      GameTicker      { get; }
+        private IFullscreenTransitionTextureProvider TextureProvider { get; }
+        private ViewSettings                         ViewSettings    { get; }
 
-        private ViewBetweenLevelTransitioner(
+        private ViewFullscreenTransitioner(
             IViewGameTicker                      _GameTicker,
-            IFullscreenTransitionTextureProvider _BetweenLevelTransitionTextureProvider,
+            IFullscreenTransitionTextureProvider _TextureProvider,
             ViewSettings                         _ViewSettings)
         {
-            GameTicker                            = _GameTicker;
-            BetweenLevelTransitionTextureProvider = _BetweenLevelTransitionTextureProvider;
-            ViewSettings                          = _ViewSettings;
+            GameTicker      = _GameTicker;
+            TextureProvider = _TextureProvider;
+            ViewSettings    = _ViewSettings;
         }
 
         #endregion
@@ -73,22 +70,14 @@ namespace RMAZOR
 
         public override void Init()
         {
-            BetweenLevelTransitionTextureProvider.Init();
+            TextureProvider.Init();
+            m_FullTransitionTime = GetDelay(EAppearTransitionType.Simple);
             base.Init();
         }
-
-        public void OnLevelStageChanged(LevelStageArgs _Args)
+        
+        public void DoTextureTransition(bool _Appear)
         {
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.Loaded:
-                    m_FullTransitionTime = GetDelay(EAppearTransitionType.Simple);
-                    Cor.Run(DoTextureTransition(false));
-                    break;
-                case ELevelStage.ReadyToUnloadLevel:
-                    Cor.Run(DoTextureTransition(true));
-                    break;
-            }
+            Cor.Run(DoTextureTransitionCore(_Appear));
         }
 
         public void DoAppearTransition(
@@ -150,10 +139,10 @@ namespace RMAZOR
             }
         }
 
-        private IEnumerator DoTextureTransition(bool _Appear)
+        private IEnumerator DoTextureTransitionCore(bool _Appear)
         {
             if (_Appear)
-                BetweenLevelTransitionTextureProvider.Activate(true);
+                TextureProvider.Activate(true);
             yield return Cor.Lerp(
                 GameTicker,
                 m_FullTransitionTime,
@@ -161,13 +150,13 @@ namespace RMAZOR
                 _Appear ? 1f : 0f,
                 _P =>
                 {
-                    BetweenLevelTransitionTextureProvider.SetTransitionValue(_P);
+                    TextureProvider.SetTransitionValue(_P);
                 },
                 () =>
                 {
                     TransitionFinished?.Invoke(_Appear);
                     if (!_Appear)
-                        BetweenLevelTransitionTextureProvider.Activate(false);
+                        TextureProvider.Activate(false);
                 },
                 _ProgressFormula: _P =>
                 {

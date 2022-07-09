@@ -160,7 +160,7 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine(@"Wrong argument! Need ""true"" or ""false""");
                 return;
             }
-            var entity = new BoolEntity
+            var entity = new Entity<bool>
             {
                 Result = EEntityResult.Success,
                 Value = _Args[0] == "true"

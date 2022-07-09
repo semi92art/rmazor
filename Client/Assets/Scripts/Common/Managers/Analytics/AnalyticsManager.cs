@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Constants;
 using Common.Helpers;
 
 namespace Common.Managers.Analytics
@@ -10,18 +9,16 @@ namespace Common.Managers.Analytics
     {
         #region inject
 
-        private IRemotePropertiesCommon    RemoteProperties          { get; }
-        private IUnityAnalyticsProvider    UnityAnalyticsProvider    { get; }
-        private IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
+        private IRemotePropertiesCommon RemoteProperties { get; }
+        private IAnalyticsProvidersSet  ProvidersSet     { get; }
+
 
         private AnalyticsManager(
-            IRemotePropertiesCommon    _RemoteProperties,
-            IUnityAnalyticsProvider    _UnityAnalyticsProvider,
-            IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider)
+            IRemotePropertiesCommon _RemoteProperties,
+            IAnalyticsProvidersSet  _ProvidersSet)
         {
-            RemoteProperties          = _RemoteProperties;
-            UnityAnalyticsProvider    = _UnityAnalyticsProvider;
-            FirebaseAnalyticsProvider = _FirebaseAnalyticsProvider;
+            RemoteProperties = _RemoteProperties;
+            ProvidersSet     = _ProvidersSet;
         }
         
         #endregion
@@ -33,10 +30,8 @@ namespace Common.Managers.Analytics
             if (Initialized)
                 return;
             if (!RemoteProperties.DebugEnabled)
-            {
-                UnityAnalyticsProvider.Init();
-                FirebaseAnalyticsProvider.Init();
-            }
+                foreach (var provider in ProvidersSet.GetProviders())
+                    provider.Init();
             base.Init();
         }
         
@@ -44,8 +39,8 @@ namespace Common.Managers.Analytics
         {
             // if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
             //     return;
-            UnityAnalyticsProvider.SendAnalytic(_AnalyticId, _EventData);
-            FirebaseAnalyticsProvider.SendAnalytic(_AnalyticId, _EventData);
+            foreach (var provider in ProvidersSet.GetProviders())
+                provider.SendAnalytic(_AnalyticId, _EventData);
         }
         
         #endregion

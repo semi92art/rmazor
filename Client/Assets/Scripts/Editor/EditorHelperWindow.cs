@@ -9,6 +9,8 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
+using Common.Managers.Advertising;
+using Common.Managers.Notifications;
 using Common.Network;
 using Common.Network.Packets;
 using Common.Ticker;
@@ -192,6 +194,50 @@ namespace Editor
                 var set = GetPrefLoader().GetObject<Triangles2TexturePropsSetScriptableObject>
                     (setName, "triangles2_texture_set");
                 string json = JsonConvert.SerializeObject(set.set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Default ads providers set", () =>
+            {
+                var set = new List<AdProviderInfo>
+                {
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.Admob
+                    },
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.UnityAds
+                    },
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.Appodeal
+                    }
+                };
+                string json = JsonConvert.SerializeObject(set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Default notifications set", () =>
+            {
+                var set = new List<NotificationInfo>
+                {
+                    new NotificationInfo
+                    {
+                        Message = "",
+                        TimeSpan = new TimeSpan(1, 0, 0, 0),
+                    },
+                    new NotificationInfo
+                    {
+                        Message = "",
+                        TimeSpan = new TimeSpan(3, 0, 0, 0),
+                    }
+                };
+                string json = JsonConvert.SerializeObject(set);
                 CommonUtils.CopyToClipboard(json);
             });
         }

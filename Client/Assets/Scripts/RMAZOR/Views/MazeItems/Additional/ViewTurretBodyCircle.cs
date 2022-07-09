@@ -12,6 +12,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
@@ -26,12 +27,12 @@ namespace RMAZOR.Views.MazeItems.Additional
         #region inject
 
         private ViewTurretBodyCircle(
-            IModelGame                    _Model,
-            IViewGameTicker               _GameTicker,
-            ViewSettings                  _ViewSettings,
-            IColorProvider                _ColorProvider,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IViewBetweenLevelTransitioner _Transitioner)
+            IModelGame                  _Model,
+            IViewGameTicker             _GameTicker,
+            ViewSettings                _ViewSettings,
+            IColorProvider              _ColorProvider,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IViewFullscreenTransitioner _Transitioner)
             : base(
                 _Model,
                 _GameTicker,

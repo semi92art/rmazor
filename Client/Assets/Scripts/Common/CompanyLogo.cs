@@ -1,5 +1,4 @@
-﻿using System;
-using Common.CameraProviders;
+﻿using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
@@ -27,17 +26,18 @@ namespace Common
         #endregion
 
         #region inject
-    
-        private IPrefabSetManager PrefabSetManager { get; set; }
-        private ICameraProvider   CameraProvider   { get; set; }
+
+        private IPrefabSetManager    PrefabSetManager    { get; set; }
+        private ICameraProvider      CameraProvider      { get; set; }
     
         [Inject]
         internal void Inject(
-            IPrefabSetManager _PrefabSetManager,
-            ICameraProvider   _CameraProvider)
+            IPrefabSetManager    _PrefabSetManager,
+            ILocalizationManager _LocalizationManager,
+            ICameraProvider      _CameraProvider)
         {
-            PrefabSetManager = _PrefabSetManager;
-            CameraProvider   = _CameraProvider;
+            PrefabSetManager    = _PrefabSetManager;
+            CameraProvider      = _CameraProvider;
         }
 
         #endregion
@@ -52,7 +52,6 @@ namespace Common
                 logoRend.enabled = false;
                 return;
             }
-
             logoRend.transform.localScale = Vector3.one;
             background.enabled = true;
             logoRend.enabled = true;

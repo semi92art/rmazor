@@ -13,6 +13,7 @@ using Common.Providers;
 using Common.SpawnPools;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -57,20 +58,20 @@ namespace RMAZOR.Views.Common
 
         #region inject
 
-        private ViewSettings                  ViewSettings        { get; }
-        private IColorProvider                ColorProvider       { get; }
-        private IContainersGetter             ContainersGetter    { get; }
-        private IMazeCoordinateConverter      CoordinateConverter { get; }
-        private IPrefabSetManager             PrefabSetManager    { get; }
-        private IViewBetweenLevelTransitioner Transitioner        { get; }
+        private ViewSettings                ViewSettings        { get; }
+        private IColorProvider              ColorProvider       { get; }
+        private IContainersGetter           ContainersGetter    { get; }
+        private ICoordinateConverterRmazor  CoordinateConverter { get; }
+        private IPrefabSetManager           PrefabSetManager    { get; }
+        private IViewFullscreenTransitioner Transitioner        { get; }
         
         private ViewMazeAdditionalBackgroundDrawerSimple(
-            ViewSettings                  _ViewSettings,
-            IColorProvider                _ColorProvider,
-            IContainersGetter             _ContainersGetter,
-            IMazeCoordinateConverter      _CoordinateConverter,
-            IPrefabSetManager             _PrefabSetManager,
-            IViewBetweenLevelTransitioner _Transitioner)
+            ViewSettings                _ViewSettings,
+            IColorProvider              _ColorProvider,
+            IContainersGetter           _ContainersGetter,
+            ICoordinateConverterRmazor  _CoordinateConverter,
+            IPrefabSetManager           _PrefabSetManager,
+            IViewFullscreenTransitioner _Transitioner)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -109,7 +110,8 @@ namespace RMAZOR.Views.Common
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             var mainCol = ColorProvider.GetColor(ColorIds.Main);
-            var back1Col = ColorProvider.GetColor(ColorIds.Background1);
+            var back1Col = ColorProvider.GetColor(ColorIds.Background1)
+                .SetA(ViewSettings.additionalBackgroundAlpha);
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {m_Borders.GetAllActiveItems(), () => mainCol},

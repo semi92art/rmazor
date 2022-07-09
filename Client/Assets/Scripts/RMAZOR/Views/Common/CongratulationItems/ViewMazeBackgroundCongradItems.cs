@@ -52,12 +52,12 @@ namespace RMAZOR.Views.Common.CongratulationItems
         private IPrefabSetManager PrefabSetManager { get; }
 
         private ViewMazeBackgroundCongradItems(
-            IColorProvider                _ColorProvider,
-            IViewBetweenLevelTransitioner _Transitioner,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            ICameraProvider               _CameraProvider,
-            IPrefabSetManager             _PrefabSetManager)
+            IColorProvider              _ColorProvider,
+            IViewFullscreenTransitioner _Transitioner,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            ICameraProvider             _CameraProvider,
+            IPrefabSetManager           _PrefabSetManager)
             : base(
                 _ColorProvider,
                 _Transitioner,

@@ -5,6 +5,7 @@ using Common.Enums;
 using Common.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.CoordinateConverters;
 using UnityEngine;
 
 namespace RMAZOR.Views.Characters
@@ -13,14 +14,14 @@ namespace RMAZOR.Views.Characters
     {
         #region constructor
 
-        protected IMazeCoordinateConverter CoordinateConverter { get; }
+        protected ICoordinateConverterRmazor CoordinateConverter { get; }
         protected IModelGame Model { get; }
 
         protected IContainersGetter ContainersGetter { get; }
         protected IViewMazeCommon ViewMazeCommon { get; }
 
         protected ViewCharacterBase(
-            IMazeCoordinateConverter _CoordinateConverter, 
+            ICoordinateConverterRmazor _CoordinateConverter, 
             IModelGame _Model,
             IContainersGetter _ContainersGetter,
             IViewMazeCommon _ViewMazeCommon)

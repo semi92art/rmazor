@@ -12,15 +12,15 @@ namespace RMAZOR.Models
 {
     public interface IModelGame : IInit, IOnLevelStageChanged
     {
-        ModelSettings          Settings           { get; }
-        IModelData             Data               { get; }
-        IModelMazeRotation     MazeRotation       { get; }
-        IPathItemsProceeder    PathItemsProceeder { get; }
-        IModelItemsProceedersSet    ModelItemsProceedersSet { get; }
-        IModelCharacter        Character          { get; }
-        IModelLevelStaging     LevelStaging       { get; }
-        IInputScheduler        InputScheduler     { get; }
-        IMazeItemProceedInfo[] GetAllProceedInfos();
+        ModelSettings            Settings                { get; }
+        IModelData               Data                    { get; }
+        IModelMazeRotation       MazeRotation            { get; }
+        IPathItemsProceeder      PathItemsProceeder      { get; }
+        IModelItemsProceedersSet ModelItemsProceedersSet { get; }
+        IModelCharacter          Character               { get; }
+        IModelLevelStaging       LevelStaging            { get; }
+        IInputScheduler          InputScheduler          { get; }
+        IMazeItemProceedInfo[]   GetAllProceedInfos();
     }
     
     public class ModelGame : InitBase, IModelGame
@@ -69,30 +69,10 @@ namespace RMAZOR.Models
         
         public override void Init()
         {
-            m_ProceedersCached = new object[]
-            {
-                PathItemsProceeder,
-                Character,
-                ModelItemsProceedersSet,
-                InputScheduler,
-                LevelStaging,
-                MazeRotation
-            };
-            LevelStaging.LevelStageChanged   += OnLevelStageChanged;
-            MazeRotation.RotationStarted     += OnMazeRotationStarted;
-            MazeRotation.RotationFinished    += OnMazeRotationFinished;
-            Character.CharacterMoveStarted   += OnCharacterMoveStarted;
-            Character.CharacterMoveContinued += OnCharacterMoveContinued;
-            Character.CharacterMoveFinished  += OnCharacterMoveFinished;
-            ModelItemsProceedersSet.PortalsProceeder.PortalEvent          += Character.OnPortal;
-            ModelItemsProceedersSet.SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
-            ModelItemsProceedersSet.ShredingerBlocksProceeder.ShredingerBlockEvent += 
-                ModelItemsProceedersSet.GravityItemsProceeder.OnShredingerBlockEvent;
-            var notNullProceeders = GetInterfaceOfProceeders<IGetAllProceedInfos>()
-                .Where(_P => _P != null);
-            foreach (var item in notNullProceeders)
-                item.GetAllProceedInfos = GetAllProceedInfos;
-            Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
+            CacheProceeders();
+            SubscribeProceedersEvents();
+            SetProceedersActions();
+            InitProceeders();
             base.Init();
         }
         
@@ -177,6 +157,53 @@ namespace RMAZOR.Models
         private T[] GetInterfaceOfProceeders<T>() where T : class
         {
             return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void CacheProceeders()
+        {
+            m_ProceedersCached = new object[]
+            {
+                PathItemsProceeder,
+                Character,
+                ModelItemsProceedersSet,
+                InputScheduler,
+                LevelStaging,
+                MazeRotation
+            };
+        }
+
+        private void SubscribeProceedersEvents()
+        {
+            LevelStaging.LevelStageChanged   += OnLevelStageChanged;
+            MazeRotation.RotationStarted     += OnMazeRotationStarted;
+            MazeRotation.RotationFinished    += OnMazeRotationFinished;
+            Character.CharacterMoveStarted   += OnCharacterMoveStarted;
+            Character.CharacterMoveContinued += OnCharacterMoveContinued;
+            Character.CharacterMoveFinished  += OnCharacterMoveFinished;
+            ModelItemsProceedersSet.PortalsProceeder.PortalEvent          += Character.OnPortal;
+            ModelItemsProceedersSet.SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
+            ModelItemsProceedersSet.ShredingerBlocksProceeder.ShredingerBlockEvent += 
+                ModelItemsProceedersSet.GravityItemsProceeder.OnShredingerBlockEvent;
+        }
+
+        private void InitProceeders()
+        {
+            foreach (var init in GetInterfaceOfProceeders<IInit>().Where(_P => _P != null))
+                init.Init();
+        }
+        
+        private void SetProceedersActions()
+        {
+            Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
+            foreach (var item in GetInterfaceOfProceeders<IGetAllProceedInfos>()
+                .Where(_P => _P != null))
+            {
+                item.GetAllProceedInfos = GetAllProceedInfos;
+            }
         }
 
         #endregion

@@ -76,10 +76,12 @@ namespace Common
                 Logger.Log(LogType.Error, "MGCE", _Message);
         }
         
-        public static void LogException(object _Message)
+        public static void LogException(Exception _Exception)
         {
-            if (LogLevel >= ELogLevel.Exception)
-                Logger.Log(LogType.Exception, "MGCEX", _Message);
+            if (LogLevel < ELogLevel.Exception)
+                return;
+            Logger.Log(LogType.Exception, "MGCX", _Exception.Message);
+            throw _Exception;
         }
 
         public static void LogZone(ELogLevel _LogLevel, UnityAction _Action)

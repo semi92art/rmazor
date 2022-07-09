@@ -1,0 +1,149 @@
+﻿using System.Collections.Generic;
+using Common.Entities;
+using Common.Helpers;
+using Common.Managers.PlatformGameServices.Achievements;
+using Common.Managers.PlatformGameServices.GameServiceAuth;
+using Common.Managers.PlatformGameServices.Leaderboards;
+using Common.Managers.PlatformGameServices.SavedGames;
+using Common.Ticker;
+using UnityEngine.Events;
+using UnityEngine.SocialPlatforms;
+
+namespace Common.Managers.PlatformGameServices
+{
+    public class ScoresEventArgs
+    {
+        public ScoresEntity ScoresEntity { get; }
+
+        public ScoresEventArgs(ScoresEntity _ScoresEntity)
+        {
+            ScoresEntity = _ScoresEntity;
+        }
+    }
+    
+    public class SavedGameEventArgs
+    {
+        public object SavedGame { get; }
+
+        public SavedGameEventArgs(object _SavedGame)
+        {
+            SavedGame = _SavedGame;
+        }
+    }
+
+    public delegate void ScoresEventHandler(ScoresEventArgs _Args);
+
+    public interface IScoreManager:
+        IAchievementsProvider,
+        ILeaderboardProvider,
+        ISavedGameProvider { }
+    
+    public class ScoreManager : InitBase, IScoreManager
+    {
+        #region inject
+
+        private ICommonTicker                     Ticker               { get; }
+        private IPlatformGameServiceAuthenticator Authenticator        { get; }
+        private IAchievementsProvider             AchievementsProvider { get; }
+        private ILeaderboardProvider              LeaderboardProvider  { get; }
+        private ISavedGameProvider                SavedGameProvider    { get; }
+
+        protected ScoreManager(
+            ICommonTicker                     _Ticker,
+            IPlatformGameServiceAuthenticator _Authenticator,
+            IAchievementsProvider             _AchievementsProvider,
+            ILeaderboardProvider              _LeaderboardProvider,
+            ISavedGameProvider                _SavedGameProvider)
+        {
+            Ticker                  = _Ticker;
+            Authenticator           = _Authenticator;
+            AchievementsProvider    = _AchievementsProvider;
+            LeaderboardProvider     = _LeaderboardProvider;
+            SavedGameProvider       = _SavedGameProvider;
+        }
+        
+        #endregion
+        
+        #region api
+
+        public event ScoresEventHandler              ScoresChanged;
+        public event UnityAction<SavedGameEventArgs> GameSaved;
+        
+        public override void Init()
+        {
+            if (Initialized)
+                return;
+            Ticker.Register(this);
+            Authenticator.AuthenticatePlatformGameService(_Success =>
+            {
+                if (!_Success)
+                {
+                    Dbg.LogError("Failed to authenticate to platform game service");
+                    base.Init();
+                    return;
+                }
+                AchievementsProvider.Init();
+                LeaderboardProvider.Init();
+                SavedGameProvider.Init();
+                base.Init();
+            });
+        }
+
+        public Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache)
+        {
+            return SavedGameProvider.GetSavedGameProgress(_FileName, _FromCache);
+        }
+
+        public void SaveGameProgress<T>(T _Data, bool _OnlyToCache) where T : FileNameArgs
+        {
+            SavedGameProvider.SaveGameProgress(_Data, _OnlyToCache);
+        }
+
+        public void DeleteSavedGame(string _FileName)
+        {
+            SavedGameProvider.DeleteSavedGame(_FileName);
+        }
+
+        public void FetchSavedGames()
+        {
+            SavedGameProvider.FetchSavedGames();
+        }
+
+        public void RegisterLeaderboardsMap(Dictionary<ushort, string> _Map)
+        {
+            LeaderboardProvider.RegisterLeaderboardsMap(_Map);
+        }
+
+        public virtual ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
+        {
+            return LeaderboardProvider.GetScoreFromLeaderboard(_Key, _FromCache);
+        }
+
+        public virtual bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
+        {
+            return LeaderboardProvider.SetScoreToLeaderboard(_Key, _Value, _OnlyToCache);
+        }
+
+        public virtual bool ShowLeaderboard(ushort _Key)
+        {
+            return LeaderboardProvider.ShowLeaderboard(_Key);
+        }
+        
+        public void RegisterAchievementsMap(Dictionary<ushort, string> _Map)
+        {
+            AchievementsProvider.RegisterAchievementsMap(_Map);
+        }
+
+        public Entity<IAchievement> UnlockAchievement(ushort _Key)
+        {
+            return AchievementsProvider.UnlockAchievement(_Key);
+        }
+
+        public Entity<IAchievement> GetAchievement(ushort _Key)
+        {
+            return AchievementsProvider.GetAchievement(_Key);
+        }
+
+        #endregion
+    }
+}

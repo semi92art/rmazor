@@ -6,7 +6,7 @@ using Common.Managers.Advertising;
 using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.Notifications;
-using Common.Managers.Scores;
+using Common.Managers.PlatformGameServices;
 using RMAZOR.Models;
 using RMAZOR.Views;
 

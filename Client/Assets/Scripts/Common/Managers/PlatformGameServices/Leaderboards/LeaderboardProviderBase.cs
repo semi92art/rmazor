@@ -1,0 +1,146 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
+using Common.Managers.PlatformGameServices.GameServiceAuth;
+using Common.Network;
+using Common.Network.DataFieldFilters;
+using Common.Utils;
+
+namespace Common.Managers.PlatformGameServices.Leaderboards
+{
+    public interface ILeaderboardProvider : IInit
+    {
+        event ScoresEventHandler ScoresChanged;
+        void                     RegisterLeaderboardsMap(Dictionary<ushort, string> _Map);
+
+        ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache);
+        bool         SetScoreToLeaderboard(ushort   _Key, long _Value, bool _OnlyToCache);
+        bool         ShowLeaderboard(ushort         _Key);
+    }
+
+
+    public abstract class LeaderboardProviderBase : InitBase, ILeaderboardProvider
+    {
+        private Dictionary<ushort, string> m_LeaderboardsMap;
+
+        private   CommonGameSettings                Settings            { get; }
+        private   ILocalizationManager              LocalizationManager { get; }
+        private   IGameClient                       GameClient          { get; }
+        protected IPlatformGameServiceAuthenticator Authenticator       { get; }
+
+        protected LeaderboardProviderBase(
+            CommonGameSettings                _Settings,
+            ILocalizationManager              _LocalizationManager,
+            IGameClient                       _GameClient,
+            IPlatformGameServiceAuthenticator _Authenticator)
+        {
+            Settings            = _Settings;
+            LocalizationManager = _LocalizationManager;
+            GameClient          = _GameClient;
+            Authenticator       = _Authenticator;
+        }
+
+        public event ScoresEventHandler ScoresChanged;
+
+        public void RegisterLeaderboardsMap(Dictionary<ushort, string> _Map)
+        {
+            m_LeaderboardsMap = _Map;
+        }
+
+        public virtual ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
+        {
+            if (_FromCache)
+                return GetScoreCached(_Key);
+            var scoreEntity = new ScoresEntity();
+            if (Authenticator.IsAuthenticated) 
+                return null;
+            Dbg.LogWarning($"{nameof(GetScoreFromLeaderboard)}: User is not authenticated");
+            scoreEntity = GetScoreCached(_Key, scoreEntity);
+            return scoreEntity;
+        }
+
+        public virtual bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
+        {
+            SetScoreCached(_Key, _Value);
+            return true;
+        }
+
+        public virtual bool ShowLeaderboard(ushort _Key)
+        {
+            string oopsText = LocalizationManager.GetTranslation("oops");
+            if (!NetworkUtils.IsInternetConnectionAvailable())
+            {
+                string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
+                Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {noIntConnText}");
+                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
+                return false;
+            }
+            if (Authenticator.IsAuthenticated) 
+                return true;
+            string failedToLoadLeadText = LocalizationManager.GetTranslation("failed_to_load_lead");
+            Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {failedToLoadLeadText}");
+            CommonUtils.ShowAlertDialog(oopsText, failedToLoadLeadText);
+            return false;
+        }
+        
+        protected string GetScoreId(ushort _Key)
+        {
+            string id = m_LeaderboardsMap.GetSafe(_Key, out bool containsKey);
+            if (containsKey) 
+                return id;
+            Dbg.LogError($"Score with id {_Key} does not exist.");
+            return null;
+        }
+        
+        
+        protected ScoresEntity GetScoreCached(ushort _Id, ScoresEntity _Entity = null)
+        {
+            var entity = _Entity ?? new ScoresEntity();
+            var gdff = new GameDataFieldFilter(
+                    GameClient,
+                    GameClientUtils.AccountId, 
+                    Settings.gameId,
+                    _Id)
+                {OnlyLocal = true};
+            gdff.Filter(_Fields =>
+            {
+                var scoreField = _Fields.FirstOrDefault();
+                if (scoreField == null)
+                {
+                    entity.Result = EEntityResult.Fail;
+                }
+                else
+                {
+                    entity.Result = EEntityResult.Success;
+                    entity.Value.Add(_Id, scoreField.ToInt());
+                }
+            });
+            return entity;
+        }
+
+        private void SetScoreCached(ushort _Id, long _Value)
+        {
+            var gdff = new GameDataFieldFilter(
+                GameClient, GameClientUtils.AccountId, 
+                Settings.gameId,
+                _Id) {OnlyLocal = true};
+            gdff.Filter(_Fields =>
+            {
+                var scoreField = _Fields.First();
+                scoreField.SetValue(_Value).Save(true);
+                Cor.RunSync(() =>
+                {
+                    var entity = new ScoresEntity
+                    {
+                        Result = EEntityResult.Success,
+                        Value = new Dictionary<ushort, long> {{_Id, _Value}}
+                    };
+                    var args = new ScoresEventArgs(entity);
+                    ScoresChanged?.Invoke(args);
+                });
+            });
+        }
+    }
+}

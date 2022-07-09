@@ -7,6 +7,7 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using RMAZOR.Models;
+using RMAZOR.Views.CoordinateConverters;
 using RMAZOR.Views.MazeItems.Additional;
 using RMAZOR.Views.Utils;
 using UnityEngine;
@@ -40,18 +41,18 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         #region inject
 
-        private ViewSettings             ViewSettings        { get; }
-        private IPrefabSetManager        PrefabSetManager    { get; }
-        private IColorProvider           ColorProvider       { get; }
-        private IMazeCoordinateConverter CoordinateConverter { get; }
-        private IAudioManager            AudioManager        { get; }
+        private ViewSettings               ViewSettings        { get; }
+        private IPrefabSetManager          PrefabSetManager    { get; }
+        private IColorProvider             ColorProvider       { get; }
+        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private IAudioManager              AudioManager        { get; }
 
         private ViewMazeMoneyItemDisc(
-            ViewSettings             _ViewSettings,
-            IPrefabSetManager        _PrefabSetManager,
-            IColorProvider           _ColorProvider,
-            IMazeCoordinateConverter _CoordinateConverter,
-            IAudioManager            _AudioManager)
+            ViewSettings               _ViewSettings,
+            IPrefabSetManager          _PrefabSetManager,
+            IColorProvider             _ColorProvider,
+            ICoordinateConverterRmazor _CoordinateConverter,
+            IAudioManager              _AudioManager)
         {
             ViewSettings        = _ViewSettings;
             PrefabSetManager    = _PrefabSetManager;

@@ -5,7 +5,6 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -325,7 +324,7 @@ namespace SRDebuggerCustomOptions
             }
         }
         
-#if APPODEAL
+#if APPODEAL_3
         [Category(CategoryAds)]
         public bool Show_Appodeal_Test_Screen
         {
@@ -334,7 +333,7 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                AppodealAds.Unity.Api.Appodeal.showTestScreen();
+                AppodealStack.Monetization.Api.Appodeal.ShowTestScreen();
             }
         }
 #endif
@@ -574,30 +573,18 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryCommon)]
-        public bool Send_Notifications
+        public bool Test_Notification
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                var locMan = _managers.LocalizationManager;
-                var notMan = _managers.NotificationsManager;
-                string title = Application.productName;
-                var dict = new Dictionary<string, DateTime>
-                {
-                    {locMan.GetTranslation("notification_1"), DateTime.Now.AddSeconds(10)},
-                    {locMan.GetTranslation("notification_2"), DateTime.Now.AddSeconds(20)},
-                };
-                foreach ((string body, var dateTime) in dict)
-                {
-                    notMan.SendNotification(
-                        title, 
-                        body, 
-                        dateTime,
-                        _SmallIcon: "main_icon",
-                        _LargeIcon: "main_icon_large");
-                }
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!", 
+                    string.Empty, 
+                    DateTime.Now.AddSeconds(10),
+                    _SmallIcon: "main_icon");
             }
         }
 
