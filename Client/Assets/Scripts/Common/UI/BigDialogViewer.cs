@@ -135,7 +135,7 @@ namespace Common.UI
         
         public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
         {
-            CameraProvider.DofEnabled = true;
+            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
             CurrentPanel = _ItemTo;
             m_CloseButton.transform.SetAsLastSibling();
             ShowCore(_ItemTo, _HidePrevious, false);
@@ -186,7 +186,7 @@ namespace Common.UI
                     () =>
                     {
                         if (_PanelTo == FakePanel && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
-                            CameraProvider.DofEnabled = false;
+                            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                         panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
                             return;

@@ -73,7 +73,7 @@ namespace Common.UI
                 && CurrentPanel.AppearingState == EAppearingState.Appeared)
                 return;
             AnimationSpeed = _Speed;
-            CameraProvider.DofEnabled = true;
+            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
             CurrentPanel = _Item;
             var panel = CurrentPanel.PanelObject;
             m_Alphas = panel.GetComponentsInChildrenEx<Graphic>()
@@ -104,7 +104,7 @@ namespace Common.UI
                 {
                     panel.AppearingState = EAppearingState.Dissapeared;
                     if (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing())
-                        CameraProvider.DofEnabled = false;
+                        CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                     panel.OnDialogHide();
                     Object.Destroy(panel.PanelObject.gameObject);
                     _OnFinish?.Invoke();

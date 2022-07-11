@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MathfsAsmdef", "MathfsAsmde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GooglePlayGames", "GooglePlayGames.csproj", "{8d2fc42c-d69a-95f0-d471-742e20b1ff39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraEffects", "CameraEffects.csproj", "{103dcb2d-a996-0447-6d34-dc1f92e76ead}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8441f412-22a4-275f-22e6-507969043f15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Foundation", "SA.Foundation.csproj", "{603797c3-be06-50b9-a839-369f4cb8af60}"
@@ -146,6 +148,8 @@ Global
 		{ec80512d-605a-e0b8-1d1e-d2c492387686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8d2fc42c-d69a-95f0-d471-742e20b1ff39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8d2fc42c-d69a-95f0-d471-742e20b1ff39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{103dcb2d-a996-0447-6d34-dc1f92e76ead}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{103dcb2d-a996-0447-6d34-dc1f92e76ead}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

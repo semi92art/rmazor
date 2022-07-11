@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common.CameraProviders;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Extensions;
 using Common.Managers;
 using Common.Ticker;
@@ -88,16 +89,17 @@ namespace Common.UI
         {
             if (_Disappear)
             {
-                CameraProvider.DofEnabled = false;
+                CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                 yield break;
             }
-            CameraProvider.DofEnabled = true;
+            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
             float currTime = Ticker.Time;
             while (Ticker.Time < currTime + _Time)
             {
                 float timeCoeff = (currTime + _Time - Ticker.Time) / _Time;
-                float strengthCoeff = 1 - timeCoeff;
-                CameraProvider.SetDofValue(strengthCoeff);
+                float blurAmount = 1 - timeCoeff;
+                CameraProvider.SetEffectParameters(
+                    ECameraEffect.DepthOfField, new FastDofProps {BlurAmount = blurAmount});
                 yield return new WaitForEndOfFrame();
             }
         }

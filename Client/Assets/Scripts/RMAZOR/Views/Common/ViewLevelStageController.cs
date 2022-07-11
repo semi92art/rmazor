@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.CameraProviders;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -9,6 +11,7 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers.Achievements;
+using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
@@ -21,6 +24,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -76,6 +80,8 @@ namespace RMAZOR.Views.Common
         private IViewUILevelSkipper         LevelSkipper           { get; }
         private IViewFullscreenTransitioner FullscreenTransitioner { get; }
         private IViewBetweenLevelAdLoader   BetweenLevelAdLoader   { get; }
+        private ICameraProvider             CameraProvider         { get; }
+        private IColorProvider              ColorProvider          { get; }
 
         private ViewLevelStageController(
             CommonGameSettings          _GameSettings,
@@ -97,7 +103,9 @@ namespace RMAZOR.Views.Common
             IRateGameDialogPanel        _RateGameDialogPanel,
             IViewUILevelSkipper         _LevelSkipper,
             IViewFullscreenTransitioner _FullscreenTransitioner,
-            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
+            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider)
         {
             GameSettings           = _GameSettings;
             ViewSettings           = _ViewSettings;
@@ -119,6 +127,8 @@ namespace RMAZOR.Views.Common
             LevelSkipper           = _LevelSkipper;
             FullscreenTransitioner = _FullscreenTransitioner;
             BetweenLevelAdLoader   = _BetweenLevelAdLoader;
+            CameraProvider         = _CameraProvider;
+            ColorProvider          = _ColorProvider;
         }
 
         #endregion
@@ -153,6 +163,7 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             PauseGameTickers(_Args.LevelStage == ELevelStage.Paused);
+            ProceedCameraEffects(_Args);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
@@ -430,6 +441,21 @@ namespace RMAZOR.Views.Common
         {
             ViewGameTicker.Pause = _Pause;
             ModelGameTicker.Pause = _Pause;
+        }
+
+        private void ProceedCameraEffects(LevelStageArgs _Args)
+        {
+            if (_Args.LevelStage != ELevelStage.Loaded)
+                return;
+            CameraProvider.EnableEffect(ECameraEffect.ColorGrading, true);
+            CameraProvider.SetEffectParameters(ECameraEffect.ColorGrading, new ColorGradingProps
+            {
+                Contrast = 0.35f,
+                Blur = 0.2f,
+                VignetteColor = ColorProvider.GetColor(ColorIds.Background1),
+                VignetteAmount = 0.085f,
+                VignetteSoftness = 0.5f
+            });
         }
 
         private void ProceedSounds(LevelStageArgs _Args)
