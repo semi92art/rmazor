@@ -12,7 +12,7 @@ using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdsProviders
 {
-    public interface IAppodealAdsProvider : IAdsProvider, IConsentInfoUpdateListener, IAppodealInitializationListener { }
+    public interface IAppodealAdsProvider : IAdsProvider, IAppodealInitializationListener { }
     
     public class AppodealAdsProvider : AdsProviderCommonBase, IAppodealAdsProvider
     {
@@ -39,21 +39,7 @@ namespace Common.Managers.Advertising.AdsProviders
         public override string Source              => AdvertisingNetworks.Appodeal;
         public override bool   RewardedAdReady     => RewardedAd.Ready;
         public override bool   InterstitialAdReady => InterstitialAd.Ready;
-        
-        // User's consent status successfully updated.
-        public void OnConsentInfoUpdated(IConsent _Consent)
-        {
-            m_Consent = _Consent;
-            Dbg.Log("Attempt to initialize Appodeal inside of OnConsentInfoUpdated");
-            InitAppodeal();
-        }
 
-        // User's consent status failed to update.
-        public void OnFailedToUpdateConsentInfo(IConsentManagerException _Error)
-        {
-            Dbg.Log($"OnFailedToUpdateConsentInfo Reason: {_Error.GetReason()}");
-        }
-        
         public void OnInitializationFinished(List<string> _Errors)
         {
             if (_Errors == null || !_Errors.Any())
@@ -76,24 +62,13 @@ namespace Common.Managers.Advertising.AdsProviders
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
             m_OnSuccess = _OnSuccess;
-            // TestMode = false;
-            // Appodeal.SetLogLevel(AppodealLogLevel.Verbose);
             Appodeal.SetTesting(TestMode);
             Appodeal.SetLogLevel(TestMode ? AppodealLogLevel.Verbose : AppodealLogLevel.None);
-            Appodeal.SetAutoCache(AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, false);
             Appodeal.SetChildDirectedTreatment(true);
-            var consentManager = ConsentManager.GetInstance();
-            consentManager.RequestConsentInfoUpdate(AppId, this);
+            Appodeal.SetAutoCache(AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, false);
+            Appodeal.Initialize(AppId, AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, this);
         }
-
-        private void InitAppodeal()
-        {
-            Appodeal.Initialize(
-                AppId, 
-                AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, 
-                this);
-        }
-
+        
         protected override void InitRewardedAd()
         {
             RewardedAd.Init(AppId, RewardedUnitId);

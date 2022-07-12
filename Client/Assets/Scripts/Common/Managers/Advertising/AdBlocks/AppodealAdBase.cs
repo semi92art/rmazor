@@ -8,12 +8,6 @@ namespace Common.Managers.Advertising.AdBlocks
 {
     public abstract class AppodealAdBase : AdBase, IUpdateTick
     {
-        #region constants
-
-        private const string DefaultPlacement = "default";
-        
-        #endregion
-
         #region nonpublic members
         
         protected abstract int ShowStyle { get; }
@@ -43,16 +37,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         #region api
         
-        public bool Ready
-        {
-            get
-            {
-                Dbg.Log($"Appodeal ad ready status: loaded: {Appodeal.IsLoaded(AdType)}," +
-                        $" canShow: {Appodeal.CanShow(AdType, DefaultPlacement)}");
-                return Appodeal.IsLoaded(AdType)
-                       && Appodeal.CanShow(AdType, DefaultPlacement);
-            }
-        }
+        public bool Ready => Appodeal.IsLoaded(AdType);
 
         public virtual void Init(string _AppId, string _UnitId)
         {
@@ -72,8 +57,7 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClicked = _OnClicked;
             if (!Ready) 
                 return;
-            Dbg.Log("Attempt to show appodeal ad, type: " + AdType + ", show style: " + ShowStyle);
-            Appodeal.Show(ShowStyle, DefaultPlacement);
+            Appodeal.Show(ShowStyle);
         }
 
         public void UpdateTick()
@@ -93,7 +77,7 @@ namespace Common.Managers.Advertising.AdBlocks
             if (!DoLoadAdWithDelay)
                 return;
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
-            if (!(m_LoadAdDelayTimer > Settings.adsLoadDelay)) 
+            if (m_LoadAdDelayTimer < Settings.adsLoadDelay) 
                 return;
             LoadAd();
             m_LoadAdDelayTimer = 0f;
