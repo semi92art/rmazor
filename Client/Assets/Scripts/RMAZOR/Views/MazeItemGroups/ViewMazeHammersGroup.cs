@@ -42,13 +42,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 .Where(_Item => _Item is IViewMazeItemHammer)
                 .Cast<IViewMazeItemHammer>();
             foreach (var item in items)
-                item.GetViewCharacterInfo = () =>
-                {
-                    var transform = Character.Transform;
-                    var colliders = Character.Colliders;
-                    var info = new ViewCharacterInfo(transform, colliders);
-                    return info;
-                };
+                item.GetViewCharacterInfo = () => Character.GetObjects();
         }
 
         public void OnHammerShot(HammerShotEventArgs _Args)

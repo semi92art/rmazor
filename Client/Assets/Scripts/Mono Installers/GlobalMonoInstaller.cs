@@ -18,17 +18,18 @@ using Common.Network;
 using Common.Settings;
 using Common.Ticker;
 using RMAZOR;
+using RMAZOR.Camera_Providers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Settings;
 using UnityEngine;
 using Zenject;
+using ZMAZOR.Views.Camera_Providers;
 
 namespace Mono_Installers
 {
     public class GlobalMonoInstaller : MonoInstaller
     {
-        public GameObject         cameraProvider;
         public GameObject         companyLogo;
         public CommonGameSettings commonGameSettings;
         public ModelSettings      modelSettings;
@@ -36,13 +37,22 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
+            switch (CommonData.GameId)
+            {
+                case GameIds.RMAZOR:
+                    Container.Bind<ICameraProvider>().To<CameraProviderRmazor>().AsSingle();
+                    break;
+                case GameIds.ZMAZOR:
+                    Container.Bind<ICameraProvider>().To<CameraProviderZmazor>().AsSingle();
+                    break;
+            }
+            
             Container.Bind(typeof(IRemotePropertiesRmazor), typeof(IRemotePropertiesCommon))
                 .To<RemotePropertiesRmazor>()
                 .AsSingle();
             Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
             Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
             Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();
-            Container.Bind<ICameraProvider>()     .FromComponentInNewPrefab(cameraProvider) .AsSingle();
             Container.Bind<CompanyLogo>()         .FromComponentInNewPrefab(companyLogo)    .AsSingle();
 
             #region settings

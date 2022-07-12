@@ -93,13 +93,7 @@ namespace RMAZOR.Views.MazeItemGroups
             for (int i = 0; i < MaxSpearsOnLevel; i++)
             {
                 var spear = (IViewMazeItemSpear) Spear.Clone();
-                spear.GetViewCharacterInfo = () =>
-                {
-                    var transform = Character.Transform;
-                    var colliders = Character.Colliders;
-                    var info = new ViewCharacterInfo(transform, colliders);
-                    return info;
-                };
+                spear.GetViewCharacterInfo = () => Character.GetObjects();
                 var props = new ViewMazeItemProps {Type = EMazeItemType.Spear, Args = new List<string> { $"pos={i % 3}"}};
                 spear.UpdateState(props);
                 m_Spears.Add(spear);

@@ -4,7 +4,7 @@ using Common.Extensions;
 
 namespace Common
 {
-    public static partial class ColorIds
+    public static class ColorIds
     {
         public const int UI                 = 1;
         public const int UiDialogItemNormal = 2;

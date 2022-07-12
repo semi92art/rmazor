@@ -4,7 +4,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using UnityEngine;
 
 namespace RMAZOR.Views.ContainerGetters
@@ -43,7 +43,7 @@ namespace RMAZOR.Views.ContainerGetters
                 return;
             UpdateCoordinateConverterState();
             var mazeHolderCont = GetContainer(ContainerNames.MazeHolder);
-            mazeHolderCont.SetLocalPosXY(CoordinateConverter.GetMazeCenter());
+            mazeHolderCont.SetLocalPosXY(CoordinateConverter.GetMazeBounds().center);
             var mazeItemsCont = GetContainer(ContainerNames.MazeItems);
             mazeItemsCont.SetLocalPosXY(Vector2.zero);
             mazeItemsCont.PlusLocalPosY(CoordinateConverter.Scale * 0.5f);

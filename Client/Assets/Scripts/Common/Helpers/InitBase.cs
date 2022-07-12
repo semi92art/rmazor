@@ -9,6 +9,8 @@ namespace Common.Helpers
         
         public virtual void Init()
         {
+            if (Initialized)
+                return;
             RaiseInitialization();
         }
 

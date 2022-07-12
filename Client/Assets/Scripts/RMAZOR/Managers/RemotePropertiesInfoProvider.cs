@@ -179,7 +179,7 @@ namespace RMAZOR.Managers
             return new GameDataFieldFilter(
                     GameClient, 
                     GameClientUtils.AccountId, 
-                    CommonGameSettings.gameId,
+                    CommonData.GameId,
                     fieldIds) 
                 {OnlyLocal = true};
         }

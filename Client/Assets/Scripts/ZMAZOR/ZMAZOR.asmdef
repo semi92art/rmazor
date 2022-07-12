@@ -1,0 +1,17 @@
+{
+    "name": "ZMAZOR",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3f247d9b7bde0da408049eaea6684d9f",
+        "GUID:00e8053b72aa4fd4cb1baaa21d288534"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -3,7 +3,7 @@ using Common.CameraProviders;
 using Common.Entities;
 using UnityEngine;
 
-namespace RMAZOR.Views.CoordinateConverters
+namespace RMAZOR.Views.Coordinate_Converters
 {
     public interface ICoordinateConverterRmazorInEditor : ICoordinateConverterRmazorBase
     {
@@ -12,7 +12,7 @@ namespace RMAZOR.Views.CoordinateConverters
     
     [Serializable]
     public class CoordinateConverterRmazorInEditor :
-        CoordinateConverterBase, 
+        CoordinateConverterRmazor, 
         ICoordinateConverterRmazorInEditor
     {
         #region inject
@@ -31,7 +31,7 @@ namespace RMAZOR.Views.CoordinateConverters
             ICameraProvider _CameraProvider,
             bool            _Debug)
         {
-            return new CoordinateConverterRmazorInEditor(_ViewSettings, _CameraProvider) {Debug = _Debug};
+            return new CoordinateConverterRmazorInEditor(_ViewSettings, _CameraProvider) {IsDebug = _Debug};
         }
 
         #endregion
@@ -40,7 +40,8 @@ namespace RMAZOR.Views.CoordinateConverters
 
         public void SetMazeSize(V2Int _Size)
         {
-            MazeSize = _Size;
+            MazeSizeForPositioning = _Size;
+            MazeSizeForScale = _Size;
             MazeDataWasSet = true;
             CheckForErrors();
             SetScale();
@@ -52,10 +53,9 @@ namespace RMAZOR.Views.CoordinateConverters
 
         protected override Vector2 ToLocalMazePosition(Vector2 _Point)
         {
-            CheckForErrors();
-            return ScaleValue * (_Point - MazeSize * 0.5f);
+            return ScaleValue * (_Point - MazeSizeForPositioning * 0.5f);
         }
-        
+
         #endregion
         
     }

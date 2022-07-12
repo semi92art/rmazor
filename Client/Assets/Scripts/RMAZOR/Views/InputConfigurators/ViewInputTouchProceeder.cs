@@ -260,7 +260,7 @@ namespace RMAZOR.Views.InputConfigurators
                 return LeanInput.GetTouchCount() == _Count;
             if (_Count > 1)
                 return false;
-            var view = CameraProvider.MainCamera.ScreenToViewportPoint(LeanInput.GetMousePosition());
+            var view = CameraProvider.Camera.ScreenToViewportPoint(LeanInput.GetMousePosition());
             bool isOutside = view.x < 0 || view.x > 1 || view.y < 0 || view.y > 1;
             return !isOutside && LeanInput.GetMousePressed(0);
         }

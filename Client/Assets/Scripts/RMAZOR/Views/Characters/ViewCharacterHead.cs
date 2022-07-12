@@ -14,7 +14,7 @@ using Common.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -22,10 +22,10 @@ using UnityEngine;
 namespace RMAZOR.Views.Characters
 {
     public interface IViewCharacterHead :
+        IInit,
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
-        ICharacterMoveContinued,
         ICharacterMoveFinished,
         IAppear
     {
@@ -35,7 +35,7 @@ namespace RMAZOR.Views.Characters
         void         OnAllPathProceed(V2Int                   _LastPath);
     }
     
-    public class ViewCharacterHead : IViewCharacterHead
+    public class ViewCharacterHead : InitBase, IViewCharacterHead
     {
         #region constants
 
@@ -70,14 +70,14 @@ namespace RMAZOR.Views.Characters
         private IColorProvider              ColorProvider          { get; }
         private IContainersGetter           ContainersGetter       { get; }
         private IPrefabSetManager           PrefabSetManager       { get; }
-        private ICoordinateConverterRmazor  CoordinateConverter    { get; }
+        private ICoordinateConverter  CoordinateConverter    { get; }
         private IViewFullscreenTransitioner FullscreenTransitioner { get; }
 
         private ViewCharacterHead(
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IViewFullscreenTransitioner _FullscreenTransitioner)
         {
             ColorProvider          = _ColorProvider;
@@ -92,7 +92,9 @@ namespace RMAZOR.Views.Characters
         #region api
         
         public EAppearingState AppearingState { get; private set; }
-        
+        public Transform       Transform      => m_Head.transform;
+        public Collider2D[]    Colliders      => new Collider2D[] {m_HeadCollider};
+
         public bool Activated
         {
             get => m_Activated;
@@ -103,7 +105,6 @@ namespace RMAZOR.Views.Characters
                     if (!m_Initialized)
                     {
                         ColorProvider.ColorChanged += OnColorChanged;
-                        InitPrefab();
                         m_Initialized = true;
                     }
                     UpdatePrefab();
@@ -112,9 +113,12 @@ namespace RMAZOR.Views.Characters
                 m_Activated = value;
             }
         }
-
-        public Transform    Transform => m_Head.transform;
-        public Collider2D[] Colliders => new Collider2D[] {m_HeadCollider};
+        
+        public override void Init()
+        {
+            InitPrefab();
+            base.Init();
+        }
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
@@ -157,8 +161,6 @@ namespace RMAZOR.Views.Characters
             }
             m_Animator.SetTrigger(animKey);
         }
-        
-        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args) { }
         
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {

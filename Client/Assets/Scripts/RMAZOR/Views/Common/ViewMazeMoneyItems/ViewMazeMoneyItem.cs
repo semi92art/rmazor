@@ -7,7 +7,7 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems.Additional;
 using RMAZOR.Views.Utils;
 using UnityEngine;
@@ -44,14 +44,14 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private ViewSettings               ViewSettings        { get; }
         private IPrefabSetManager          PrefabSetManager    { get; }
         private IColorProvider             ColorProvider       { get; }
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
         private IAudioManager              AudioManager        { get; }
 
         private ViewMazeMoneyItemDisc(
             ViewSettings               _ViewSettings,
             IPrefabSetManager          _PrefabSetManager,
             IColorProvider             _ColorProvider,
-            ICoordinateConverterRmazor _CoordinateConverter,
+            ICoordinateConverter _CoordinateConverter,
             IAudioManager              _AudioManager)
         {
             ViewSettings        = _ViewSettings;

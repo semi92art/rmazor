@@ -17,6 +17,9 @@ namespace RMAZOR
     {
         #region api
 
+        public static float MaxMazeWidth  = 20;
+        public static float MaxMazeHeight = 20;
+
         public static Tuple<float, float> GetRightAndLeftScreenOffsets()
         {
             float ratio = GraphicUtils.AspectRatio;

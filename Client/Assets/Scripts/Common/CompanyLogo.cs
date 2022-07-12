@@ -76,7 +76,7 @@ namespace Common
         
         private void ScaleTextureToViewport(Transform _Transform)
         {
-            var cam = CameraProvider.MainCamera;
+            var cam = CameraProvider.Camera;
             _Transform.position = cam.transform.position.PlusZ(20f);
             var bds = GraphicUtils.GetVisibleBounds();
             _Transform.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;

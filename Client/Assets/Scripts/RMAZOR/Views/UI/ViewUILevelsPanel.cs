@@ -132,7 +132,7 @@ namespace RMAZOR.Views.UI
         private void InitLevelPanel()
         {
             m_LevelPanelItemsFinishPositions.Clear();
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goLevelText = Managers.PrefabSetManager.InitPrefab(
                 cont, "ui_game", "level_text");
@@ -148,7 +148,7 @@ namespace RMAZOR.Views.UI
         private void InitCheckMarks()
         {
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var goLevelCheckMark = Managers.PrefabSetManager.GetPrefab(
                 "ui_game", "level_check_mark");
             float yPos = screenBounds.max.y - m_TopOffset - 3f;
@@ -173,7 +173,7 @@ namespace RMAZOR.Views.UI
         {          
             foreach (var checkmark in m_CheckMarks)
                 checkmark.gameObject.SetActive(false);
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             int groupIndex = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
             int levelsInGroup = RmazorUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - m_TopOffset - 3f;

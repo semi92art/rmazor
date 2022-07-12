@@ -10,7 +10,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.Events;
@@ -39,7 +39,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemPathBase(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IViewFullscreenTransitioner _Transitioner,

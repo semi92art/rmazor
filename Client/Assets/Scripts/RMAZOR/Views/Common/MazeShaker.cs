@@ -8,7 +8,7 @@ using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems;
 using UnityEngine;
 using UnityEngine.Events;
@@ -39,12 +39,12 @@ namespace RMAZOR.Views.Common
         #region inject
 
         private IContainersGetter          ContainersGetter    { get; }
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
         private IViewGameTicker            GameTicker          { get; }
 
         private MazeShaker(
             IContainersGetter          _ContainersGetter,
-            ICoordinateConverterRmazor _CoordinateConverter,
+            ICoordinateConverter _CoordinateConverter,
             IViewGameTicker            _GameTicker)
         {
             ContainersGetter    = _ContainersGetter;
@@ -77,7 +77,7 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             if (_Args.LevelStage == ELevelStage.Loaded)
-                m_StartPosition = CoordinateConverter.GetMazeCenter();
+                m_StartPosition = CoordinateConverter.GetMazeBounds().center;
         }
 
         public IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args)

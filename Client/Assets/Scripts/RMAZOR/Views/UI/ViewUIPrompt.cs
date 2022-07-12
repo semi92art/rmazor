@@ -170,7 +170,7 @@ namespace RMAZOR.Views.UI
             float addIndentY = m_BottomOffset + 4f + (rotationButtonsShowing ? 7f : 2f);
             var screenBounds = GraphicUtils.GetVisibleBounds();
             float xPos = screenBounds.center.x;
-            float yPos = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera).min.y + addIndentY;
+            float yPos = GraphicUtils.GetVisibleBounds(CameraProvider.Camera).min.y + addIndentY;
             return new Vector3(xPos, yPos);
         }
 

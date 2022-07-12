@@ -16,7 +16,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
@@ -82,7 +82,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemSpear(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IViewFullscreenTransitioner _Transitioner,
@@ -546,7 +546,7 @@ namespace RMAZOR.Views.MazeItems
 
         private bool IsInsideOfScreenBounds(Vector2 _Position)
         {
-            var screenBds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var padding = Vector2.one * 5f;
             var min = screenBds.min;
             var max = screenBds.max;

@@ -101,7 +101,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
             var gdff = new GameDataFieldFilter(
                     GameClient,
                     GameClientUtils.AccountId, 
-                    Settings.gameId,
+                    CommonData.GameId,
                     _Id)
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -124,7 +124,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         {
             var gdff = new GameDataFieldFilter(
                 GameClient, GameClientUtils.AccountId, 
-                Settings.gameId,
+                CommonData.GameId,
                 _Id) {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {

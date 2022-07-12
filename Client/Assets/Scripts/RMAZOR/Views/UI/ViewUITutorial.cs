@@ -14,7 +14,7 @@ using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
 using TMPro;
@@ -61,7 +61,7 @@ namespace RMAZOR.Views.UI
         private IModelGame                  Model                { get; }
         private IPrefabSetManager           PrefabSetManager     { get; }
         private IContainersGetter           ContainersGetter     { get; }
-        private ICoordinateConverterRmazor  CoordinateConverter  { get; }
+        private ICoordinateConverter  CoordinateConverter  { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
         private ICameraProvider             CameraProvider       { get; }
         private IColorProvider              ColorProvider        { get; }
@@ -74,7 +74,7 @@ namespace RMAZOR.Views.UI
             IModelGame                  _Model,
             IPrefabSetManager           _PrefabSetManager,
             IContainersGetter           _ContainersGetter,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,

@@ -15,7 +15,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Additional;
 using RMAZOR.Views.MazeItems.Props;
@@ -63,7 +63,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemTurret(
             ViewSettings                  _ViewSettings,
             IModelGame                    _Model,
-            ICoordinateConverterRmazor    _CoordinateConverter,
+            ICoordinateConverter    _CoordinateConverter,
             IContainersGetter             _ContainersGetter,
             IViewGameTicker               _GameTicker,
             IViewBackground               _Background,

@@ -13,7 +13,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -45,18 +45,18 @@ namespace RMAZOR.Views.MazeItems
 
         #endregion
 
-        #region constructor
+        #region inject
 
         protected ViewMazeItemMovingBase(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            ICoordinateConverterRmazor      _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverter  _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
             IViewFullscreenTransitioner _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder)
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _ViewSettings,
                 _Model,

@@ -35,6 +35,7 @@ namespace RMAZOR
         public float  skipLevelSeconds;
         public bool   animatePathFill;
         public float  animatePathFillTime;
+        public float  cameraSpeed;
 
         public float LineThickness
         {

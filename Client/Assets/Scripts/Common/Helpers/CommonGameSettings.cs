@@ -13,6 +13,5 @@ namespace Common.Helpers
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;
         public int       moneyItemCoast;
-        public int       gameId;
     }
 }

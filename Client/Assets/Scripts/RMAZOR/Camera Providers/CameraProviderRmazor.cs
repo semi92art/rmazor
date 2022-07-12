@@ -1,15 +1,17 @@
-﻿using Common.CameraProviders.Camera_Effects_Props;
+﻿using System;
+using Common.CameraProviders;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Zenject;
 
-namespace Common.CameraProviders
+namespace RMAZOR.Camera_Providers
 {
-    public class CameraProvider : MonoBehaviour, ICameraProvider
+    public class CameraProviderRmazor : InitBase, ICameraProvider
     {
         #region constants
 
@@ -19,25 +21,26 @@ namespace Common.CameraProviders
         
         #region nonpublic members
 
-        private bool                m_LevelCameraInitialized;
-        private GameObject          m_LevelCameraObj;
-        private Camera              m_LevelCamera;
-        private FastDOF             m_DepthOfField;
-        private FastGlitch          m_FastGlitch;
-        private ChromaticAberration m_ChromaticAberration;
-        private ColorGrading        m_ColorGrading;
-        private Pixellate           m_Pixelate;
-        private FXAA                m_Fxaa;
-        private string              m_CurrentLevelName;
+        protected bool      LevelCameraInitialized;
+        protected Transform LevelCameraTr;
+        protected Camera    LevelCamera;
+        protected bool      FollowTransformIsNotNull;
+        private   Transform m_FollowTr;
+        
+        private   FastDOF             m_DepthOfField;
+        private   FastGlitch          m_FastGlitch;
+        private   ChromaticAberration m_ChromaticAberration;
+        private   ColorGrading        m_ColorGrading;
+        private   Pixellate           m_Pixelate;
+        private   FXAA                m_Fxaa;
 
         #endregion
 
         #region inject
         
-        private IPrefabSetManager PrefabSetManager { get; set; }
-        
-        [Inject] 
-        public void Inject(IPrefabSetManager _PrefabSetManager)
+        private IPrefabSetManager PrefabSetManager { get; }
+
+        protected CameraProviderRmazor(IPrefabSetManager _PrefabSetManager)
         {
             PrefabSetManager = _PrefabSetManager;
         }
@@ -46,8 +49,19 @@ namespace Common.CameraProviders
 
         #region api
 
-        public Camera MainCamera => m_LevelCameraInitialized && m_CurrentLevelName == SceneNames.Level ? 
-            m_LevelCamera : Camera.main;
+        public Func<Bounds> GetMazeBounds     { protected get; set; }
+        public Func<float>  GetConverterScale { protected get; set; }
+
+        public Transform Follow
+        {
+            get => m_FollowTr;
+            set
+            {
+                m_FollowTr = value;
+                FollowTransformIsNotNull = true;
+            }
+        }
+        public Camera    Camera => LevelCameraInitialized ? LevelCamera : Camera.main;
 
         public void SetEffectParameters<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps
         {
@@ -143,14 +157,30 @@ namespace Common.CameraProviders
             }
         }
 
+        public void UpdateState()
+        {
+            if (SceneManager.GetActiveScene().name != SceneNames.Level)
+            {
+                LevelCameraInitialized = false;
+                FollowTransformIsNotNull = false;
+                return;
+            }
+            InitLevelCamera();
+            InitLevelCameraEffectComponents();
+        }
+
         #endregion
 
         #region nonpublic methods
 
         private void InitLevelCamera()
         {
+            if (LevelCamera.IsNotNull())
+                return;
             var obj = PrefabSetManager.InitPrefab(null, PrefabSetName, "level_camera");
-            m_LevelCamera = obj.GetComponent<Camera>();
+            LevelCameraTr = obj.transform;
+            LevelCamera = obj.GetComponent<Camera>();
+            LevelCameraInitialized = true;
         }
 
         private void InitLevelCameraEffectComponents()
@@ -165,14 +195,14 @@ namespace Common.CameraProviders
 
         private void InitDepthOfField()
         {
-            m_DepthOfField = m_LevelCamera.GetCompItem<FastDOF>("fast_dof");
+            m_DepthOfField = LevelCamera.GetCompItem<FastDOF>("fast_dof");
             m_DepthOfField.enabled = false;
             m_DepthOfField.BlurAmount = 0;
         }
 
         private void InitGlitch()
         {
-            m_FastGlitch = m_LevelCamera.GetCompItem<FastGlitch>("fast_glitch");
+            m_FastGlitch = LevelCamera.GetCompItem<FastGlitch>("fast_glitch");
             m_FastGlitch.enabled = false;
             m_FastGlitch.material = PrefabSetManager.InitObject<Material>(
                 PrefabSetName, "fast_glitch_material");
@@ -180,51 +210,28 @@ namespace Common.CameraProviders
 
         private void InitChromaticAberration()
         {
-            m_ChromaticAberration = m_LevelCamera.GetCompItem<ChromaticAberration>("chromatic_aberration");
+            m_ChromaticAberration = LevelCamera.GetCompItem<ChromaticAberration>("chromatic_aberration");
             m_ChromaticAberration.enabled = false;
         }
 
         private void InitColorGrading()
         {
-            m_ColorGrading = m_LevelCamera.GetCompItem<ColorGrading>("color_grading");
+            m_ColorGrading = LevelCamera.GetCompItem<ColorGrading>("color_grading");
             m_ColorGrading.enabled = false;
         }
 
         private void InitFxaa()
         {
-            m_Fxaa = m_LevelCamera.GetCompItem<FXAA>("fxaa");
+            m_Fxaa = LevelCamera.GetCompItem<FXAA>("fxaa");
             m_Fxaa.enabled = false;
         }
 
         private void InitPixelate()
         {
-            m_Pixelate = m_LevelCamera.GetCompItem<Pixellate>("pixelate");
+            m_Pixelate = LevelCamera.GetCompItem<Pixellate>("pixelate");
             m_Pixelate.enabled = false;
         }
         
-        #endregion
-
-        #region engine methods
-        
-        private void Awake()
-        {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void OnDestroy()
-        {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-        
-        private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
-        {
-            m_CurrentLevelName = _Scene.name;
-            if (m_CurrentLevelName != SceneNames.Level)
-                return;
-            InitLevelCamera();
-            InitLevelCameraEffectComponents();
-        }
-
         #endregion
     }
 }

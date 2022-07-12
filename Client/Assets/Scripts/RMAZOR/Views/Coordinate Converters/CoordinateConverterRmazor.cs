@@ -1,26 +1,24 @@
 ﻿using System.Linq;
-using Common;
 using Common.CameraProviders;
-using Common.Entities;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
-namespace RMAZOR.Views.CoordinateConverters
+namespace RMAZOR.Views.Coordinate_Converters
 {
-    public interface ICoordinateConverterRmazor : ICoordinateConverterRmazorBase
+    public interface ICoordinateConverter : ICoordinateConverterRmazorBase
     {
         void SetMazeInfo(MazeInfo _Info);
     }
     
-    public class CoordinateConverterRmazor : CoordinateConverterBase, ICoordinateConverterRmazor
+    public class CoordinateConverterRmazor : CoordinateConverterBase, ICoordinateConverter
     {
         #region constants
 
         private const int MinWidth  = 11;
         private const int MinHeight = 11;
-        
+
         #endregion
         
         #region nonpublic members
@@ -31,7 +29,7 @@ namespace RMAZOR.Views.CoordinateConverters
 
         #region inject
 
-        private CoordinateConverterRmazor(
+        protected CoordinateConverterRmazor(
             ViewSettings    _ViewSettings,
             ICameraProvider _CameraProvider)
             : base(_ViewSettings, _CameraProvider) { }
@@ -56,12 +54,20 @@ namespace RMAZOR.Views.CoordinateConverters
         protected override Vector2 ToLocalMazePosition(Vector2 _Point)
         {
             CheckForErrors();
-            var pos = ScaleValue * (_Point - MazeSize * 0.5f);
+            var pos = ScaleValue * (_Point - MazeSizeForPositioning * 0.5f);
             if (m_CutLeft)
                 pos += Vector2.left * (ScaleValue * 1f);
             if (m_CutBottom)
                 pos += Vector2.down * (ScaleValue * 1f);
             return pos;
+        }
+        
+        protected override void SetCenterPoint()
+        {
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.Camera);
+            float centerX = ((bounds.min.x + LeftOffset) + (bounds.max.x - RightOffset)) * 0.5f;
+            float centerY = ((bounds.min.y + BottomOffset) + (bounds.max.y - TopOffset)) * 0.5f;
+            Center = new Vector2(centerX, centerY);
         }
 
         private void SetCorrectionInfo(MazeInfo _Info)
@@ -108,14 +114,29 @@ namespace RMAZOR.Views.CoordinateConverters
             m_CutTop = hasTrapsReact.HasValue && hasTrapsReact.Value  && !hasOtherBlocks && k >= 0;
         }
 
-        private void SetCorrectMazeSize(MazeInfo _Info)
+        protected virtual void SetCorrectMazeSize(MazeInfo _Info)
         {
-            MazeSize = _Info.Size;
-            Dbg.Log(m_CutLeft + " " + m_CutRight + " " + m_CutBottom + " " + m_CutTop);
-            if (m_CutLeft   && MazeSize.x > MinWidth  + MathUtils.Epsilon) MazeSize.x -= 1f;
-            if (m_CutRight  && MazeSize.x > MinWidth  + MathUtils.Epsilon) MazeSize.x -= 1f;
-            if (m_CutBottom && MazeSize.y > MinHeight + MathUtils.Epsilon) MazeSize.y -= 1f;
-            if (m_CutTop    && MazeSize.y > MinHeight + MathUtils.Epsilon) MazeSize.y -= 1f;
+            MazeSizeForPositioning = MazeSizeForScale = _Info.Size;
+            if (m_CutLeft && MazeSizeForScale.x > MinWidth)
+            {
+                MazeSizeForPositioning.x -= 1f;
+                MazeSizeForScale.x -= 1f;
+            }
+            if (m_CutRight && MazeSizeForScale.x > MinWidth)
+            {
+                MazeSizeForPositioning.x -= 1f;
+                MazeSizeForScale.x -= 1f;
+            }
+            if (m_CutBottom && MazeSizeForScale.y > MinHeight)
+            {
+                MazeSizeForPositioning.y -= 1f;
+                MazeSizeForScale.y -= 1f;
+            }
+            if (m_CutTop && MazeSizeForScale.y > MinHeight)
+            {
+                MazeSizeForPositioning.y -= 1f;
+                MazeSizeForScale.y -= 1f;
+            }
         }
 
         private static void IsTrapReactOrOtherBlock(
@@ -133,7 +154,6 @@ namespace RMAZOR.Views.CoordinateConverters
                 _IsOtherBlock = true;
         }
         
-
         #endregion
     }
 }

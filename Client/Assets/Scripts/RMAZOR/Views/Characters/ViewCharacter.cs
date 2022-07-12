@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
+using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -19,15 +21,18 @@ namespace RMAZOR.Views.Characters
     {
         #region constants
 
-        private const int AudioCharacterEndMoveCount = 5;
+        private const int   AudioCharacterEndMoveCount   = 5;
+        private const float SpeedCorrectionFactor        = 50f;
+        private const float SetVelocityDistanceThreshold = 2f;
 
         #endregion
         
         #region nonpublic members
 
-        private bool m_EnableMoving;
-        private bool m_Activated;
-        private bool m_Initialized;
+        private bool             m_NeedToSetPosition;
+        private bool             m_EnableMoving;
+        private bool             m_Activated;
+        private Rigidbody2D      m_CharacterRb;
 
         #endregion
         
@@ -39,23 +44,25 @@ namespace RMAZOR.Views.Characters
         private IManagersGetter             Managers          { get; }
         private IMazeShaker                 MazeShaker        { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IViewGameTicker             ViewGameTicker    { get; }
+        private ModelSettings               ModelSettings     { get; }
 
         private ViewCharacter(
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
             IViewCharacterEffector      _Effector,
-            ICoordinateConverterRmazor  _CoordinateConverter, 
+            ICoordinateConverter        _CoordinateConverter,
             IModelGame                  _Model,
             IContainersGetter           _ContainersGetter,
-            IViewMazeCommon             _ViewMazeCommon,
             IManagersGetter             _Managers,
             IMazeShaker                 _MazeShaker,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewGameTicker             _ViewGameTicker,
+            ModelSettings               _ModelSettings) 
             : base(
                 _CoordinateConverter, 
                 _Model, 
-                _ContainersGetter,
-                _ViewMazeCommon)
+                _ContainersGetter)
         {
             Head              = _Head;
             Tail              = _Tail;
@@ -63,6 +70,8 @@ namespace RMAZOR.Views.Characters
             Managers          = _Managers;
             MazeShaker        = _MazeShaker;
             CommandsProceeder = _CommandsProceeder;
+            ViewGameTicker    = _ViewGameTicker;
+            ModelSettings     = _ModelSettings;
         }
         
         #endregion
@@ -76,31 +85,37 @@ namespace RMAZOR.Views.Characters
             get => m_Activated;
             set
             {
-                if (value)
-                {
-                    if (!m_Initialized)
-                    {
-                        Init();
-                        MazeShaker.Init();
-                        m_Initialized = true;
-                    }
-                }
-                m_Activated = value;
-                Head.Activated = value;
-                Tail.Activated = value;
+                m_Activated        = value;
+                Head.Activated     = value;
+                Tail.Activated     = value;
                 Effector.Activated = value;
             }
         }
 
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        public override void Init()
         {
-            if (_Command != EInputCommand.KillCharacter)
+            if (Initialized)
                 return;
-            m_EnableMoving = false;
+            AddRigidbodyComponentToCharacterContainer();
+            ViewGameTicker.Register(this);
+            CommandsProceeder.Command += OnCommand;
+            Managers.AudioManager.InitClip(GetCharacterDeadAudioClipArgs());
+            for (int i = 1; i <= AudioCharacterEndMoveCount; i++)
+            {
+                var args = GetCharacterEndMoveAudioClipArgs(i);
+                Managers.AudioManager.InitClip(args);
+            }
+            Tail.GetCharacterObjects = GetObjects;
+            Head.Init();
+            Tail.Init();
+            MazeShaker.Init();
+            base.Init();
         }
 
-        public override Transform    Transform => Head.Transform;
-        public override Collider2D[] Colliders => Head.Colliders;
+        public override ViewCharacterInfo GetObjects()
+        {
+            return new ViewCharacterInfo(Head.Transform, Head.Colliders);
+        }
 
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
@@ -118,6 +133,10 @@ namespace RMAZOR.Views.Characters
         {
             if (!m_EnableMoving)
                 return;
+            var posFrom = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            var posTo = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
+            SetPosition(posFrom);
+            StartMovement(_Args.Direction, posTo);
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
@@ -128,9 +147,6 @@ namespace RMAZOR.Views.Characters
         {
             if (!m_EnableMoving)
                 return;
-            var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
-            SetPosition(pos);
-            Head.OnCharacterMoveContinued(_Args);
             Tail.OnCharacterMoveContinued(_Args);
         }
 
@@ -140,6 +156,8 @@ namespace RMAZOR.Views.Characters
                 return;
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
+            var posTo = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
+            EndMovement(posTo);
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
             Head.OnCharacterMoveFinished(_Args);
             Tail.OnCharacterMoveFinished(_Args);
@@ -183,17 +201,33 @@ namespace RMAZOR.Views.Characters
         
         #region nonpublic methods
 
-        private void Init()
+        private void StartMovement(EMazeMoveDirection _Direction, Vector2 _To)
         {
-            CommandsProceeder.Command += OnCommand;
-            Managers.AudioManager.InitClip(GetCharacterDeadAudioClipArgs());
-            for (int i = 1; i <= AudioCharacterEndMoveCount; i++)
-            {
-                var args = GetCharacterEndMoveAudioClipArgs(i);
-                Managers.AudioManager.InitClip(args);
-            }
+            var dir = RmazorUtils.GetDirectionVector(_Direction, Model.Data.Orientation);
+            float distToEnd = Vector2.Distance(m_CharacterRb.position, _To);
+            float velocity = ViewGameTicker.FixedDeltaTime * ModelSettings.characterSpeed * CoordinateConverter.Scale;
+            if (distToEnd > CoordinateConverter.Scale * SetVelocityDistanceThreshold)
+                m_CharacterRb.velocity = velocity * dir * SpeedCorrectionFactor;
+        }
+
+        private void EndMovement(Vector2 _To)
+        {
+            m_CharacterRb.velocity = Vector2.zero;
+            SetPosition(_To);
         }
         
+        private void SetPosition(Vector2 _Position)
+        {
+            ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
+        }
+        
+        private void OnCommand(EInputCommand _Command, object[] _Args)
+        {
+            if (_Command != EInputCommand.KillCharacter)
+                return;
+            m_EnableMoving = false;
+        }
+
         private void SetDefaultPosition()
         {
             SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.PathItems[0].Position));
@@ -207,6 +241,14 @@ namespace RMAZOR.Views.Characters
         private static AudioClipArgs GetCharacterEndMoveAudioClipArgs(int _Index)
         {
             return new AudioClipArgs($"character_end_move_{_Index}", EAudioClipType.GameSound);
+        }
+
+        private void AddRigidbodyComponentToCharacterContainer()
+        {
+            var cont = ContainersGetter.GetContainer(ContainerNames.Character);
+            m_CharacterRb = cont.gameObject.AddComponent<Rigidbody2D>();
+            m_CharacterRb.gravityScale = 0f;
+            m_CharacterRb.angularDrag = 0f;
         }
 
         #endregion

@@ -5,7 +5,7 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems;
 using Shapes;
 using UnityEngine;
@@ -41,10 +41,10 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region inject
         
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeMovingItemsGroup(
-            ICoordinateConverterRmazor _CoordinateConverter,
+            ICoordinateConverter _CoordinateConverter,
             IViewMazeCommon            _Common)
             : base(_Common)
         {

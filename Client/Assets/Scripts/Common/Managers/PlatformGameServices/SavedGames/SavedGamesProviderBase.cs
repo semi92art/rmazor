@@ -15,16 +15,13 @@ namespace Common.Managers.PlatformGameServices.SavedGames
     {
         #region inject
 
-        private   CommonGameSettings       Settings                { get; }
         private   IGameClient              GameClient              { get; }
         protected IRemoteSavedGameProvider RemoteSavedGameProvider { get; }
 
         protected SavedGamesProvider(
-            CommonGameSettings       _Settings,
             IGameClient              _GameClient,
             IRemoteSavedGameProvider _RemoteSavedGameProvider)
         {
-            Settings                = _Settings;
             GameClient              = _GameClient;
             RemoteSavedGameProvider = _RemoteSavedGameProvider;
         }
@@ -81,7 +78,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
             var gdff = new GameDataFieldFilter(
                 GameClient, 
                 GameClientUtils.AccountId, 
-                Settings.gameId,
+                CommonData.GameId,
                 (ushort)CommonUtils.StringToHash(fileNameData.FileName)) 
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
@@ -106,7 +103,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
             var gdff = new GameDataFieldFilter(
                 GameClient,
                 GameClientUtils.AccountId, 
-                Settings.gameId,
+                CommonData.GameId,
                 (ushort)CommonUtils.StringToHash(_FileName))
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>

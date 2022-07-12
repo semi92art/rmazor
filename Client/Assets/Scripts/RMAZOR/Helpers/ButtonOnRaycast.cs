@@ -76,7 +76,7 @@ namespace RMAZOR.Helpers
         private void ProceedButtonNotIdleState()
         {
             var pos = m_ViewInputTouchProceeder.GetFingerPosition(0);
-            var ray = m_CameraProvider.MainCamera.ScreenPointToRay(pos);
+            var ray = m_CameraProvider.Camera.ScreenPointToRay(pos);
             if (!Physics.Raycast(ray, out var hit))
             {
                 if (m_FingerState == EFingerState.Stay)

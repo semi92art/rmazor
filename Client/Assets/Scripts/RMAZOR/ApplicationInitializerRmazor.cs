@@ -27,7 +27,7 @@ using Zenject;
 
 namespace RMAZOR
 {
-    public class ApplicationInitializer : MonoBehaviour
+    public class ApplicationInitializerRmazor : MonoBehaviour
     {
         #region inject
     
@@ -44,6 +44,7 @@ namespace RMAZOR
         private IPermissionsRequester   PermissionsRequester { get; set; }
         private IAssetBundleManager     AssetBundleManager   { get; set; }
         private ICommonTicker           CommonTicker         { get; set; }
+        
         [Inject] 
         private void Inject(
             IRemotePropertiesCommon _RemoteProperties,
@@ -83,7 +84,8 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
-            CommonData.GameId = 1;
+            if (CommonData.Release)
+                CommonData.GameId = GameIds.RMAZOR;
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= Settings.debugAnyway;
             LogAppInfo();
             yield return Cor.Delay(0.5f, CommonTicker); // для более плавной загрузки логотипа компании

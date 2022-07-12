@@ -6,7 +6,7 @@ using Common.Extensions;
 using Common.Utils;
 using UnityEngine;
 
-namespace RMAZOR.Views.CoordinateConverters
+namespace RMAZOR.Views.Coordinate_Converters
 {
     public interface ICoordinateConverterRmazorBase
     {
@@ -15,7 +15,6 @@ namespace RMAZOR.Views.CoordinateConverters
         bool                    IsValid();
         
         void                    Init();
-        Vector2                 GetMazeCenter();
         Bounds                  GetMazeBounds();
         Vector2                 ToGlobalMazeItemPosition(Vector2 _Point);
         Vector2                 ToLocalMazeItemPosition(Vector2  _Point);
@@ -38,13 +37,14 @@ namespace RMAZOR.Views.CoordinateConverters
             RightOffset,
             BottomOffset,
             TopOffset;
-        
+
         protected bool    Initialized;
         protected bool    MazeDataWasSet;
         protected float   ScaleValue;
-        protected Vector2 MazeSize;
-        private   Vector2 m_Center;
-        protected   bool  Debug;
+        protected Vector2 MazeSizeForPositioning;
+        protected Vector2 MazeSizeForScale;
+        protected Vector2 Center;
+        protected bool    IsDebug;
 
         #endregion
 
@@ -60,8 +60,7 @@ namespace RMAZOR.Views.CoordinateConverters
             ViewSettings   = _ViewSettings;
             CameraProvider = _CameraProvider;
         }
-
-
+        
         #endregion
 
         #region api
@@ -90,21 +89,17 @@ namespace RMAZOR.Views.CoordinateConverters
             (BottomOffset, TopOffset) = (vs.bottomScreenOffset, vs.topScreenOffset);
             SetCenterPoint();
             Initialized = true;
-            if (Debug)
+            if (IsDebug)
                 return;
             mazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
             mazeItemFake.SetParent(GetContainer(ContainerNames.MazeItems));
         }
 
-        public Vector2 GetMazeCenter()
-        {
-            return m_Center;
-        }
-
         public Bounds GetMazeBounds()
         {
-            CheckForErrors();
-            return new Bounds(m_Center, ScaleValue * new Vector2(MazeSize.x, MazeSize.y));
+            return new Bounds(
+                Center, 
+                ScaleValue * new Vector2(MazeSizeForPositioning.x, MazeSizeForPositioning.y));
         }
 
         public Vector2 ToGlobalMazeItemPosition(Vector2 _Point)
@@ -134,29 +129,22 @@ namespace RMAZOR.Views.CoordinateConverters
         
         protected void SetScale()
         {
-            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.MainCamera);
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.Camera);
             float sizeX = bounds.size.x - LeftOffset - RightOffset;
             float sizeY = bounds.size.y - BottomOffset - TopOffset;
-            if (MazeSize.x / MazeSize.y > sizeX / sizeY)
-                ScaleValue = sizeX / MazeSize.x;
+            if (MazeSizeForScale.x / MazeSizeForScale.y > sizeX / sizeY)
+                ScaleValue = sizeX / MazeSizeForScale.x;
             else
-                ScaleValue = sizeY / MazeSize.y;
+                ScaleValue = sizeY / MazeSizeForScale.y;
         }
         
-        
-        private void SetCenterPoint()
-        {
-            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.MainCamera);
-            float centerX = ((bounds.min.x + LeftOffset) + (bounds.max.x - RightOffset)) * 0.5f;
-            float centerY = ((bounds.min.y + BottomOffset) + (bounds.max.y - TopOffset)) * 0.5f;
-            m_Center = new Vector2(centerX, centerY);
-        }
-        
+        protected abstract void SetCenterPoint();
+
         protected void CheckForErrors()
         {
             if (!Initialized)
                 Dbg.LogError("Coordinate converter was not initialized.");
-            if (!MazeDataWasSet || MazeSize.x < MathUtils.Epsilon || MazeSize.y < MathUtils.Epsilon)
+            if (!MazeDataWasSet || MazeSizeForPositioning.x < MathUtils.Epsilon || MazeSizeForPositioning.y < MathUtils.Epsilon)
                 Dbg.LogError("Maze size was not set.");
         }
 

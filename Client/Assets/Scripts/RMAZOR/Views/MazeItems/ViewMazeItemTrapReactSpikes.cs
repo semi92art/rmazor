@@ -15,7 +15,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -71,7 +71,7 @@ namespace RMAZOR.Views.MazeItems
             ViewSettings                  _ViewSettings,
             ModelSettings                 _ModelSettings,
             IModelGame                    _Model,
-            ICoordinateConverterRmazor    _CoordinateConverter,
+            ICoordinateConverter    _CoordinateConverter,
             IContainersGetter             _ContainersGetter,
             IViewGameTicker               _GameTicker,
             IViewFullscreenTransitioner   _Transitioner,

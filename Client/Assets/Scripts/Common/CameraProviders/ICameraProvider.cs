@@ -1,4 +1,4 @@
-﻿using Common.Entities;
+﻿using System;
 using UnityEngine;
 
 namespace Common.CameraProviders
@@ -15,12 +15,16 @@ namespace Common.CameraProviders
     
     public interface ICameraEffectProps { }
 
-    public interface ICameraProvider
+    public interface ICameraProvider : IInit
     {
-        Camera MainCamera { get; }
-        void   SetEffectParameters<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps;
-        bool   IsEffectEnabled(ECameraEffect        _Effect);
-        void   EnableEffect(ECameraEffect           _Effect, bool _Enabled);
+        Func<Bounds> GetMazeBounds     { set; }
+        Func<float>  GetConverterScale { set; }
+        Transform    Follow            { set; }
+        Camera       Camera            { get; }
+        void         SetEffectParameters<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps;
+        bool         IsEffectEnabled(ECameraEffect        _Effect);
+        void         EnableEffect(ECameraEffect           _Effect, bool _Enabled);
+        void         UpdateState();
     }
     
 }

@@ -62,7 +62,7 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             GameTicker.Register(this);
-            m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             ColorProvider.ColorChanged += OnColorChanged;
             InitItems();
             base.Init();

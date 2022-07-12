@@ -42,8 +42,8 @@ namespace Common.Managers
         
         public override void Init()
         {
-            if (Settings.gameId == 0)
-                Settings.gameId = GameClientUtils.GetDefaultGameId();
+            if (CommonData.GameId == 0)
+                CommonData.GameId = GameClientUtils.GetDefaultGameId();
             base.Init();
         }
         

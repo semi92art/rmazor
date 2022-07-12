@@ -8,7 +8,6 @@ using Common.Constants;
 using Common.Entities;
 using Common.Exceptions;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Controllers;
 using RMAZOR.Models.MazeInfos;
@@ -17,13 +16,24 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using Zenject;
-using ObjectExtensions = StansAssets.Foundation.Extensions.ObjectExtensions;
 
 namespace RMAZOR
 {
+    [InitializeOnLoad]
     public class LevelDesigner : MonoBehaviour
     {
+        public static int LevelDesignerHeapIndex
+        {
+            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerHeapIndex);
+            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
+        }
+        
+        public static int LevelDesignerGameId
+        {
+            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerGameId);
+            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerGameId, value);
+        }
+        
         private static LevelDesigner _instance;
         public static LevelDesigner Instance => _instance.IsNotNull() ?
             _instance : _instance = FindObjectOfType<LevelDesigner>();
@@ -36,6 +46,7 @@ namespace RMAZOR
         [HideInInspector] public bool                   valid;
         [SerializeField]  public List<ViewMazeItemProt> maze;
         [HideInInspector] public V2Int                  size;
+        [HideInInspector] public int                    loadedLevelGameId    = -1;
         [HideInInspector] public int                    loadedLevelIndex     = -1;
         [HideInInspector] public int                    loadedLevelHeapIndex = -1;
         [HideInInspector] public GameObject             mazeObject;
@@ -51,18 +62,14 @@ namespace RMAZOR
         public static void ResetState()
         {
             _instance = null;
+        }
+
+        static LevelDesigner()
+        {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
         }
-        
-        private static CommonGameSettings CommonGameSettings { get; set; }
 
-        [Inject]
-        private void Inject(CommonGameSettings _CommonGameSettings)
-        {
-            CommonGameSettings = _CommonGameSettings;
-        }
-        
         public MazeInfo GetLevelInfoFromScene()
         {
             mazeObject = GameObject.Find(ContainerNames.MazeItems);
@@ -122,32 +129,30 @@ namespace RMAZOR
             };
         }
 
-        public V2Int GetSizeByIndex()
+        public V2Int GetEnteredMazeSize()
         {
             return new V2Int(width, height);
         }
         
         private static void OnPlayModeStateChanged(PlayModeStateChange _Change)
         {
-            var sceneName = SceneManager.GetActiveScene().name;
-            if (!sceneName.Contains(SceneNames.Prototyping))
+            if (!SceneManager.GetActiveScene().name.Contains(SceneNames.Prototyping))
                 return;
-
             switch (_Change)
             {
                 case PlayModeStateChange.EnteredEditMode:
-                    // SceneManager.sceneLoaded -= OnSceneLoaded;
                     break;
                 case PlayModeStateChange.ExitingEditMode:
+                    Dbg.Log("LevelDesignerGameId: " + LevelDesignerGameId);
+                    CommonData.GameId = LevelDesignerGameId;
                     break;
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
-                    CommonGameSettings.gameId = 1;
                     CommonData.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
                     Cor.Run(LoadSceneLevel());
-                    EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
+                    // EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                     break;
                 case PlayModeStateChange.ExitingPlayMode:
                     break;

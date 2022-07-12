@@ -11,7 +11,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
 using Shapes;

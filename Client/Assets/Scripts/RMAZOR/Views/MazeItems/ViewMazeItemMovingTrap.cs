@@ -9,7 +9,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 
@@ -43,7 +43,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemMovingTrap(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IViewFullscreenTransitioner _Transitioner,

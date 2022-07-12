@@ -13,7 +13,7 @@ using Common.Providers;
 using Common.SpawnPools;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -26,13 +26,14 @@ namespace RMAZOR.Views.Common
         void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex);
     }
     
-    public class ViewMazeAdditionalBackgroundDrawerSimple : InitBase, IViewMazeAdditionalBackgroundDrawer
+    public class ViewMazeAdditionalBackgroundDrawerRmazor : InitBase, IViewMazeAdditionalBackgroundDrawer
     {
         #region constants
 
-        private const int   BordersPoolCount       = 100;
-        private const int   CornersPoolCount       = 20;
-        private const int   MasksPoolCount         = 10;
+        private const int   BordersPoolCount       = 500;
+        private const int   CornersPoolCount       = 500;
+        private const int   MasksPoolCount         = 200;
+        
         private const int   TextureRenderersCount  = 3;
         private const float BorderRelativeIndent   = 0.5f;
         private const float BorderScaleCoefficient = 2f;
@@ -46,7 +47,9 @@ namespace RMAZOR.Views.Common
 
         private Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
 
-        private readonly RendererSpawnPool<SpriteRenderer> m_TextureRenderers = new RendererSpawnPool<SpriteRenderer>();
+        private readonly RendererSpawnPool<SpriteRenderer> m_TextureRenderers = 
+            new RendererSpawnPool<SpriteRenderer>();
+        
         private readonly BehavioursSpawnPool<Line>      m_Borders              = new BehavioursSpawnPool<Line>();
         private readonly BehavioursSpawnPool<Disc>      m_Corners              = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
@@ -61,15 +64,15 @@ namespace RMAZOR.Views.Common
         private ViewSettings                ViewSettings        { get; }
         private IColorProvider              ColorProvider       { get; }
         private IContainersGetter           ContainersGetter    { get; }
-        private ICoordinateConverterRmazor  CoordinateConverter { get; }
+        private ICoordinateConverter  CoordinateConverter { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
         private IViewFullscreenTransitioner Transitioner        { get; }
         
-        private ViewMazeAdditionalBackgroundDrawerSimple(
+        private ViewMazeAdditionalBackgroundDrawerRmazor(
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IPrefabSetManager           _PrefabSetManager,
             IViewFullscreenTransitioner _Transitioner)
         {

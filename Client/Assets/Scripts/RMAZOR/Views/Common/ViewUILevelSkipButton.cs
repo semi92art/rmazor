@@ -180,7 +180,7 @@ namespace RMAZOR.Views.Common
                 parent, "ui_game", "skip_level_button");
             var tr = go.transform;
             tr.SetLocalScaleXY(Vector2.one * 0.3f); 
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             float yPos = screenBounds.max.y - m_TopOffset - 8f;
             tr.SetLocalPosXY(screenBounds.center.x, yPos);
             m_Text = go.GetCompItem<TextMeshPro>("text");

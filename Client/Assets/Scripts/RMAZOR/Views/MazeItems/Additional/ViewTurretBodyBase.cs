@@ -11,7 +11,7 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -36,7 +36,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected IViewGameTicker             GameTicker          { get; }
         protected ViewSettings                ViewSettings        { get; }
         protected IColorProvider              ColorProvider       { get; }
-        protected ICoordinateConverterRmazor  CoordinateConverter { get; }
+        protected ICoordinateConverter  CoordinateConverter { get; }
         protected IViewFullscreenTransitioner Transitioner        { get; }
 
         protected ViewTurretBodyBase(
@@ -44,7 +44,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             IViewGameTicker             _GameTicker,
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IViewFullscreenTransitioner _Transitioner)
         {
             Model               = _Model;

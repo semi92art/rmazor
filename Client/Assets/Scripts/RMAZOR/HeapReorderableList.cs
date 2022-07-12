@@ -45,7 +45,6 @@ namespace RMAZOR
         [SerializeField] private int            loadedLevelIndex     = -1;
         [SerializeField] private int            loadedLevelHeapIndex = -1;
         [SerializeField] private bool           fastMode;
-        // [SerializeField] public  List<MazeInfo> levels;
         [SerializeField] private int            page = 1;
 
         #endregion
@@ -140,11 +139,12 @@ namespace RMAZOR
             ReloadList();
         }
 
-        public void Reload(int _HeapIndex)
+        public void Reload(int _GameId, int _HeapIndex)
         {
-            LevelsCached = GetLevelsSaver().LoadHeapLevels(gameId, _HeapIndex).Levels;
-            page = 1;
+            gameId = _GameId;
             heapIndex = _HeapIndex;
+            LevelsCached = GetLevelsSaver().LoadHeapLevels(gameId, heapIndex).Levels;
+            page = 1;
             ReloadList();
         }
 
@@ -244,10 +244,11 @@ namespace RMAZOR
             GUI.contentColor = ContentColor;
         }
 
-        public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex)
+        public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex, int _GameId)
         {
             loadedLevelIndex = _LevelIndex;
             loadedLevelHeapIndex = _HeapIndex;
+            gameId = _GameId;
         }
 
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
@@ -267,7 +268,7 @@ namespace RMAZOR
                 _Rect.width,
                 LineHeight), elementColor);
             EditorGUI.LabelField(GetRect(), $"{(page - 1) * LevelsOnPage + _Index + 1}");
-            (x, w) = (x + w, 50f);
+            (x, w) = (x + w, 60f);
             var info = (MazeInfo)List.list[_Index];
             EditorGUI.LabelField(GetRect(), $"S: {info.Size.X}x{info.Size.Y}");
             if (fastMode)
@@ -292,7 +293,7 @@ namespace RMAZOR
                 if (selectedFilters.Contains(filter)
                     && info.MazeItems.Any(_Item => _Item.Type == filter))
                 {
-                    const float w1 = 2f * 40f;
+                    const float w1 = 2f * 40f - 10f;
                     EditorGUI.DrawRect(new Rect(
                         _Rect.x + 40f + _Rect.width - 3f * 40f + w1 / filters.Count * k,
                         _Rect.y,

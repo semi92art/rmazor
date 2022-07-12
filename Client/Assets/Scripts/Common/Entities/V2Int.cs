@@ -36,13 +36,13 @@ namespace Common.Entities
         [JsonIgnore] public Vector2 Normalized            => ToVector2().normalized;
 
         [JsonIgnore]
-        public V2Int NormalizedOrth
+        public V2Int NormalizedAlt
         {
             get
             {
                 if (x != 0 && y != 0)
                 {
-                    Dbg.LogError("Unable to calculate NormalizedOrth");
+                    Dbg.LogError($"Unable to calculate {nameof(NormalizedAlt)}");
                     return Zero;
                 }
                 // ReSharper disable once ConvertIfStatementToSwitchStatement

@@ -8,7 +8,7 @@ using Common.Providers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace RMAZOR.Views.Characters
         
         #region inject
         
-        private ICoordinateConverterRmazor  CoordinateConverter { get; }
+        private ICoordinateConverter  CoordinateConverter { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IModelGame                  Model               { get; }
         private IColorProvider              ColorProvider       { get; }
@@ -37,7 +37,7 @@ namespace RMAZOR.Views.Characters
         private IViewParticlesThrower       ParticlesThrower    { get; }
 
         private ViewCharacterEffectorParticles(
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IModelGame                  _Model,
             IColorProvider              _ColorProvider,

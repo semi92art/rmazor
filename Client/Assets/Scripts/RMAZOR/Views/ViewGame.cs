@@ -3,6 +3,7 @@ using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.CameraProviders.Camera_Effects_Props;
+using Common.Constants;
 using Common.Helpers;
 using Common.Managers.Notifications;
 using Common.Providers;
@@ -13,7 +14,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
@@ -64,7 +65,7 @@ namespace RMAZOR.Views
 
         private IViewMazeCommon             Common                 { get; }
         private IViewMazeForeground         Foreground             { get; }
-        private ICoordinateConverterRmazor  CoordinateConverter    { get; }
+        private ICoordinateConverter  CoordinateConverter    { get; }
         private IColorProvider              ColorProvider          { get; }
         private ICameraProvider             CameraProvider         { get; }
         private IBigDialogViewer            BigDialogViewer        { get; }
@@ -86,7 +87,7 @@ namespace RMAZOR.Views
             IViewMazeItemsGroupSet        _MazeItemsGroupSet,
             IViewMazePathItemsGroup       _PathItemsGroup,
             IManagersGetter               _Managers,
-            ICoordinateConverterRmazor    _CoordinateConverter,
+            ICoordinateConverter    _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
             IBigDialogViewer              _BigDialogViewer,
@@ -128,6 +129,10 @@ namespace RMAZOR.Views
 
         public override void Init()
         {
+            CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
+            CameraProvider.GetConverterScale = () => CoordinateConverter.Scale;
+            CameraProvider.Init();
+            CameraProvider.UpdateState();
             InitProceeders();
             SendNotificationsOnInit();
             base.Init();
@@ -211,6 +216,7 @@ namespace RMAZOR.Views
                 CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
             };
             TouchProceeder.ProceedRotation = Application.isEditor;
+            CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNames.Character);
         }
 
         private T[] GetInterfaceOfProceeders<T>(object[] _Proceeders = null) where T : class

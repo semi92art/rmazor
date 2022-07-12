@@ -97,7 +97,7 @@ namespace RMAZOR.Views.UI
             const float topOffset = 0f;
             const float horOffset = 1f;
             float scale = GraphicUtils.AspectRatio * 3f;
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             float yPos = screenBounds.max.y - m_TopOffset;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goShopButton = Managers.PrefabSetManager.InitPrefab(

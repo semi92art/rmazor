@@ -1,5 +1,5 @@
 ﻿using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 
 namespace RMAZOR.Views.ContainerGetters
 {
@@ -7,11 +7,11 @@ namespace RMAZOR.Views.ContainerGetters
     
     public class ContainersGetterRmazor : ContainersGetterRmazorBase, IContainersGetterRmazor
     {
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
 
         public ContainersGetterRmazor(
             IModelGame               _Model,
-            ICoordinateConverterRmazor _CoordinateConverter)
+            ICoordinateConverter _CoordinateConverter)
             : base(_Model, _CoordinateConverter)
         {
             CoordinateConverter = _CoordinateConverter;

@@ -153,14 +153,14 @@ namespace RMAZOR.Views.UI.Game_Logo
         
         private void GetStartGameLogoTransform(out Vector2 _Position, out float _Scale)
         {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             _Position = screenBounds.center;
             _Scale = GraphicUtils.AspectRatio * 6.5f;
         }
         
         private void GetFinalGameLogoTransform(out Vector2 _Position, out float _Scale)
         {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             const float additionalOffset = 3f;
             float yPos = screenBounds.max.y - m_TopOffset - additionalOffset;
             _Position = new Vector3(screenBounds.center.x, yPos);

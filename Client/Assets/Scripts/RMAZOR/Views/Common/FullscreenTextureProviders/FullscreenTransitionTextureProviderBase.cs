@@ -70,7 +70,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         private void ScaleTextureToViewport(Component _Renderer)
         {
-            var camera = CameraProvider.MainCamera;
+            var camera = CameraProvider.Camera;
             var tr = _Renderer.transform;
             tr.position = camera.transform.position.PlusZ(20f);
             var bds = GraphicUtils.GetVisibleBounds();

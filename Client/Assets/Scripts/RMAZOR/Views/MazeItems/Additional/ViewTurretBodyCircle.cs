@@ -12,7 +12,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
@@ -31,7 +31,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             IViewGameTicker             _GameTicker,
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IViewFullscreenTransitioner _Transitioner)
             : base(
                 _Model,

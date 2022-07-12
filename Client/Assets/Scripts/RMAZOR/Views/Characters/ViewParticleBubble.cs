@@ -4,7 +4,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
 
@@ -37,11 +37,11 @@ namespace RMAZOR.Views.Characters
         #region inject
 
         private IContainersGetter          ContainersGetter    { get; }
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
 
         private ViewParticleBubble(
             IContainersGetter          _ContainersGetter,
-            ICoordinateConverterRmazor _CoordinateConverter,
+            ICoordinateConverter _CoordinateConverter,
             IViewGameTicker            _Ticker) 
             : base(_Ticker)
         {

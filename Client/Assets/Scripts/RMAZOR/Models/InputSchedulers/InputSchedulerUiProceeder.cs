@@ -19,18 +19,15 @@ namespace RMAZOR.Models.InputSchedulers
     {
         #region inject
 
-        private CommonGameSettings Settings     { get; }
         private IModelLevelStaging LevelStaging { get; }
         private IModelData         Data         { get; }
         private ILevelsLoader      LevelsLoader { get; }
 
         private InputSchedulerUiProceeder(
-            CommonGameSettings _Settings,
             IModelLevelStaging _LevelStaging,
             IModelData         _Data,
             ILevelsLoader      _LevelsLoader)
         {
-            Settings     = _Settings;
             LevelStaging = _LevelStaging;
             Data         = _Data;
             LevelsLoader = _LevelsLoader;
@@ -81,7 +78,7 @@ namespace RMAZOR.Models.InputSchedulers
         {
             MazeInfo info;
             long levelIndex;
-            int gameId = Settings.gameId;
+            int gameId = CommonData.GameId;
             switch (_Command)
             {
                 case EInputCommand.LoadCurrentLevel:

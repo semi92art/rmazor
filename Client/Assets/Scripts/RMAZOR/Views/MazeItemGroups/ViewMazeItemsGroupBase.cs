@@ -16,7 +16,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         #endregion
 
-        #region constructor
+        #region inject
 
         protected ViewMazeItemsGroupBase(IViewMazeCommon _Common)
         {

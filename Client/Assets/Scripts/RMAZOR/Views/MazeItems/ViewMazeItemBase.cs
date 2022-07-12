@@ -12,7 +12,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ProceedInfos;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
@@ -42,7 +42,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected ViewSettings                ViewSettings        { get; }
         protected IModelGame                  Model               { get; }
-        protected ICoordinateConverterRmazor  CoordinateConverter { get; }
+        protected ICoordinateConverter  CoordinateConverter { get; }
         protected IContainersGetter           ContainersGetter    { get; }
         protected IViewGameTicker             GameTicker          { get; }
         protected IViewFullscreenTransitioner Transitioner        { get; }
@@ -53,7 +53,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemBase(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverterRmazor  _CoordinateConverter,
+            ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IViewFullscreenTransitioner _Transitioner,

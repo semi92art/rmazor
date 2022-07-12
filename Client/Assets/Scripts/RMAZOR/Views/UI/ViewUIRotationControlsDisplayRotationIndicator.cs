@@ -44,7 +44,7 @@ namespace RMAZOR.Views.UI
         {
             Indicator.Name = "Rotating Indicator";
             Indicator.Init(_Offsets);
-            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.MainCamera);
+            var bounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             Indicator.SetPosition(new Vector2(bounds.center.x, bounds.min.y + 8f));
         }
 

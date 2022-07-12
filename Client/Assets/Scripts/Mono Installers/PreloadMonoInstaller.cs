@@ -7,7 +7,7 @@ namespace Mono_Installers
         public override void InstallBindings()
         {
             base.InstallBindings();
-            Container.Bind<ApplicationInitializer>().FromComponentInHierarchy().AsSingle();
+            Container.Bind<ApplicationInitializerRmazor>().FromComponentInHierarchy().AsSingle();
         }
     }
 }

@@ -9,7 +9,7 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -47,7 +47,7 @@ namespace RMAZOR.Views.UI
         
         protected ITicker                  Ticker;
         private   ICameraProvider          m_CameraProvider;
-        private   ICoordinateConverterRmazor m_CoordinateConverter;
+        private   ICoordinateConverter m_CoordinateConverter;
         private   Vector4                  m_Offsets;
         protected bool                     ReadyToAnimate;
         protected EMazeMoveDirection?      Direction;
@@ -65,7 +65,7 @@ namespace RMAZOR.Views.UI
         public virtual void Init(
             ITicker                  _Ticker,
             ICameraProvider          _CameraProvider,
-            ICoordinateConverterRmazor _CoordinateConverter,
+            ICoordinateConverter _CoordinateConverter,
             IColorProvider           _ColorProvider,
             Vector4                  _Offsets)
         {
@@ -117,38 +117,37 @@ namespace RMAZOR.Views.UI
         protected abstract IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction);
 
 
-        private Dictionary<EMazeMoveDirection, Func<Vector2>> HandPositions =>
-            new Dictionary<EMazeMoveDirection,Func<Vector2>>
+        private Dictionary<EMazeMoveDirection, Func<Vector2>> HandPositions
+        {
+            get
             {
+                var mazeCenter = m_CoordinateConverter.GetMazeBounds().center;
+                var screeenBds = GetScreenBounds();
+                return new Dictionary<EMazeMoveDirection, Func<Vector2>>
                 {
-                    EMazeMoveDirection.Left, 
-                    () => new Vector2(
-                        m_CoordinateConverter.GetMazeCenter().x, 
-                        GetScreenBounds().min.y + m_Offsets.z + 10f)
-                },
-                {
-                    EMazeMoveDirection.Right, 
-                    () => new Vector2(
-                        m_CoordinateConverter.GetMazeCenter().x, 
-                        GetScreenBounds().min.y + m_Offsets.z + 10f)
-                },
-                {
-                    EMazeMoveDirection.Down, 
-                    () => new Vector2(
-                        GetScreenBounds().max.x - m_Offsets.y - 5f,
-                        m_CoordinateConverter.GetMazeCenter().y)
-                },
-                {
-                    EMazeMoveDirection.Up, 
-                    () => new Vector2(
-                        GetScreenBounds().max.x - m_Offsets.y - 5f,
-                        m_CoordinateConverter.GetMazeCenter().y)
-                },
-            };
-        
+                    {
+                        EMazeMoveDirection.Left,
+                        () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
+                    },
+                    {
+                        EMazeMoveDirection.Right,
+                        () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
+                    },
+                    {
+                        EMazeMoveDirection.Down,
+                        () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
+                    },
+                    {
+                        EMazeMoveDirection.Up,
+                        () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
+                    },
+                };
+            }
+        }
+
         private Bounds GetScreenBounds()
         {
-            return GraphicUtils.GetVisibleBounds(m_CameraProvider.MainCamera);
+            return GraphicUtils.GetVisibleBounds(m_CameraProvider.Camera);
         }
         
         protected IEnumerator AnimateHandPositionCoroutine(

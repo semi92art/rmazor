@@ -1,14 +1,14 @@
-﻿using Common.Entities;
+﻿using Common;
+using Common.Entities;
 using Common.SpawnPools;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
-using UnityEngine;
 
 namespace RMAZOR.Views.Characters
 {
     public interface IViewCharacter :
+        IInit,
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
@@ -16,9 +16,8 @@ namespace RMAZOR.Views.Characters
         ICharacterMoveFinished,
         IAppear
     {
-        Transform    Transform { get; }
-        Collider2D[] Colliders { get; }
-        void         OnRotationFinished(MazeRotationEventArgs _Args);
-        void         OnAllPathProceed(V2Int                   _LastPath);
+        ViewCharacterInfo GetObjects();
+        void              OnRotationFinished(MazeRotationEventArgs _Args);
+        void              OnAllPathProceed(V2Int                   _LastPath);
     }
 }

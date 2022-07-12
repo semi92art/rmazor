@@ -173,7 +173,7 @@ namespace RMAZOR.Views.Common
         private void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == ColorIds.Background1)
-                CameraProvider.MainCamera.backgroundColor = _Color;
+                CameraProvider.Camera.backgroundColor = _Color;
         }
     }
 }

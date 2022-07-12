@@ -5,7 +5,7 @@ using Common.Extensions;
 using Common.Managers;
 using Common.SpawnPools;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
 
@@ -44,11 +44,11 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region inject
 
         protected IPrefabSetManager          PrefabSetManager    { get; }
-        protected ICoordinateConverterRmazor CoordinateConverter { get; }
+        protected ICoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeBackgroundIdleItemBase(
             IPrefabSetManager          _PrefabSetManager,
-            ICoordinateConverterRmazor _CoordinateConverter)
+            ICoordinateConverter _CoordinateConverter)
         {
             PrefabSetManager    = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;

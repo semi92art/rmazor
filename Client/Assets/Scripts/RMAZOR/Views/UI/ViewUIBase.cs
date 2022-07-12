@@ -20,7 +20,7 @@ namespace RMAZOR.Views.UI
         
         #endregion
 
-        #region constructor
+        #region inject
 
         public IViewUIGameControls GameControls { get; }
 

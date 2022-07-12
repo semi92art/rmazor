@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Common;
 using Common.Constants;
 using Common.Entities;
@@ -8,14 +9,14 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.Characters
 {
-    public class ViewCharacterTailSimple : IViewCharacterTail
+    public class ViewCharacterTailDefault : InitBase, IViewCharacterTail
     {
         #region constants
 
@@ -28,28 +29,30 @@ namespace RMAZOR.Views.Characters
         private Triangle m_Tail;
         private Triangle m_TailBorder;
         private bool     m_Hiding;
-        private bool     m_Activated;
-        private bool     m_Initialized;
-        private bool     m_ShowTail;
+        private bool     m_DoShowTail;
+        private Vector2  m_CharacterPositionOnMoveStart;
         
         #endregion
         
         #region inject
 
-        private ModelSettings              ModelSettings       { get; }
-        private ICoordinateConverterRmazor CoordinateConverter { get; }
-        private IContainersGetter          ContainersGetter    { get; }
-        private IViewGameTicker            GameTicker          { get; }
-        private IColorProvider             ColorProvider       { get; }
+        private ModelSettings        ModelSettings       { get; }
+        private IModelGame           Model               { get; }
+        private ICoordinateConverter CoordinateConverter { get; }
+        private IContainersGetter    ContainersGetter    { get; }
+        private IViewGameTicker      GameTicker          { get; }
+        private IColorProvider       ColorProvider       { get; }
 
-        public ViewCharacterTailSimple(
-            ModelSettings              _ModelSettings,
-            ICoordinateConverterRmazor _CoordinateConverter,
-            IContainersGetter          _ContainersGetter,
-            IViewGameTicker            _GameTicker,
-            IColorProvider             _ColorProvider)
+        public ViewCharacterTailDefault(
+            ModelSettings        _ModelSettings,
+            IModelGame _Model,
+            ICoordinateConverter _CoordinateConverter,
+            IContainersGetter    _ContainersGetter,
+            IViewGameTicker      _GameTicker,
+            IColorProvider       _ColorProvider)
         {
             ModelSettings       = _ModelSettings;
+            Model = _Model;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter    = _ContainersGetter;
             GameTicker          = _GameTicker;
@@ -60,26 +63,15 @@ namespace RMAZOR.Views.Characters
         
         #region api
         
-        public bool Activated
+        public bool Activated { get; set; }
+
+        public override void Init()
         {
-            get => m_Activated;
-            set
-            {
-                if (value && !m_Initialized)
-                {
-                    ColorProvider.ColorChanged += OnColorChanged;
-                    InitShape();
-                    m_Initialized = true;
-                }
-                m_Activated = value;
-            }
+            InitShape();
+            base.Init();
         }
 
-        private void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId == ColorIds.CharacterTail)
-                m_Tail.Color = _Color;
-        }
+        public Func<ViewCharacterInfo> GetCharacterObjects { get; set; }
 
         public void OnAllPathProceed(V2Int _LastPath)
         {
@@ -88,7 +80,7 @@ namespace RMAZOR.Views.Characters
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            m_ShowTail = _Args.LevelStage == ELevelStage.StartedOrContinued;
+            m_DoShowTail = _Args.LevelStage == ELevelStage.StartedOrContinued;
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
@@ -107,6 +99,9 @@ namespace RMAZOR.Views.Characters
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
+            m_CharacterPositionOnMoveStart = GetCharacterObjects().Transform.position;
+            m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail));
+            m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2));
             ShowTail(_Args);
         }
         
@@ -117,40 +112,37 @@ namespace RMAZOR.Views.Characters
         
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            if (m_ShowTail)
-                HideTail(_Args);
+            ShowTail(_Args);
+            if (m_DoShowTail)
+                HideTail(Model.PathItemsProceeder.AllPathsProceeded ? null : _Args);
         }
 
         public void ShowTail(CharacterMoveEventArgsBase _Args)
         {
-            if (!m_ShowTail)
+            if (!m_DoShowTail)
                 return;
+            float scale = CoordinateConverter.Scale;
             m_Hiding = false;
-            m_Tail.Color = ColorProvider.GetColor(ColorIds.CharacterTail);
-            m_TailBorder.Color = Color.black;
-            var dir = (Vector2)(_Args.To - _Args.From).NormalizedOrth;
+            var dir = (Vector2)(_Args.To - _Args.From).NormalizedAlt;
             var orth = new Vector2(dir.y, dir.x); //-V3066
-            var currPos = Vector2.Lerp(_Args.From, _Args.To, _Args.Progress);
-            var b = currPos - dir * 0.2f + orth * 0.3f;
-            var c = currPos - dir * 0.2f - orth * 0.3f;
-            var d = (b + c) * 0.5f;
-            var a = Vector2.Distance(_Args.From, d) < MaxTailLength ? _Args.From : d - dir * MaxTailLength;
-            m_Tail.A = m_TailBorder.A = CoordinateConverter.ToLocalCharacterPosition(a);
-            m_Tail.B = m_TailBorder.B = CoordinateConverter.ToLocalCharacterPosition(b);
-            m_Tail.C = m_TailBorder.C = CoordinateConverter.ToLocalCharacterPosition(c);
-            var mazeCenter = CoordinateConverter.GetMazeCenter();
-            m_Tail.gameObject.transform.SetPosXY(mazeCenter);
-            m_TailBorder.gameObject.transform.SetPosXY(mazeCenter);
+            var cP = (Vector2)GetCharacterObjects().Transform.position;
+            var b = orth * 0.3f * scale;
+            var c = -orth * 0.3f * scale;
+            var a = Vector2.Distance(m_CharacterPositionOnMoveStart, cP) < MaxTailLength * scale ? 
+                m_CharacterPositionOnMoveStart - cP : -dir * MaxTailLength * scale;
+            m_Tail.A = m_TailBorder.A = a;
+            m_Tail.B = m_TailBorder.B = b;
+            m_Tail.C = m_TailBorder.C = c;
         }
 
         public void HideTail(CharacterMovingFinishedEventArgs _Args = null)
         {
-            if (!m_Initialized)
+            if (!Initialized)
                 return;
             if (_Args == null)
             {
                 m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail).SetA(0f));
-                m_TailBorder.SetColor(Color.black.SetA(0f));
+                m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2).SetA(0f));
             }
             else
                 Cor.Run(HideTailCoroutine(_Args));
@@ -159,7 +151,7 @@ namespace RMAZOR.Views.Characters
         #endregion
 
         #region nonpublic methods
-
+        
         private void InitShape()
         {
             var cont = ContainersGetter.GetContainer(ContainerNames.Character);
@@ -183,24 +175,24 @@ namespace RMAZOR.Views.Characters
             var tailBorderCol = ColorProvider.GetColor(ColorIds.Character2);
             m_Hiding = true;
             Vector2 startA = m_Tail.A;
-            var dir = (_Args.To - _Args.From).Normalized;
-            var finishA = CoordinateConverter.ToLocalCharacterPosition(_Args.To - dir * 0.4f);
-            float distance = V2Int.Distance(_Args.From, _Args.To);
+            var finishA = Vector2.zero;
             yield return Cor.Lerp(
                 GameTicker,
-                distance / ModelSettings.characterSpeed,
+                10f / ModelSettings.characterSpeed,
                 _OnProgress: _P =>
                 {
                     var a = Vector2.Lerp(startA, finishA, _P);
                     m_Tail.A = a;
                     m_TailBorder.A = a;
                 },
-                _OnFinish: () =>
+                _OnFinishEx: (_Broken, _Progress) =>
                 {
+                    if (_Broken)
+                        return;
                     m_Tail.Color = tailCol.SetA(0f);
                     m_TailBorder.Color = tailBorderCol.SetA(0f);
                 },
-                _BreakPredicate: () => !m_Hiding || !m_ShowTail);
+                _BreakPredicate: () => !m_Hiding || !m_DoShowTail);
         }
 
         #endregion

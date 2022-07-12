@@ -19,7 +19,7 @@ using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.ContainerGetters;
-using RMAZOR.Views.CoordinateConverters;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
@@ -29,6 +29,7 @@ using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
 using RMAZOR.Views.UI.Game_Logo;
 using UnityEngine;
+using ZMAZOR.Views.Coordinate_Converters;
 
 namespace Mono_Installers
 {
@@ -83,7 +84,16 @@ namespace Mono_Installers
 
         private void BindViewCommon()
         {
-            Container.Bind<ICoordinateConverterRmazor>().To<CoordinateConverterRmazor>().AsSingle();
+            switch (CommonData.GameId)
+            {
+                case GameIds.RMAZOR:
+                    Container.Bind<ICoordinateConverter>() .To<CoordinateConverterRmazor>()            .AsSingle();
+                    break;
+                case GameIds.ZMAZOR:
+                    Container.Bind<ICoordinateConverter>() .To<CoordinateConverterZmazor>()            .AsSingle();
+                    break;
+            }
+            
             Container.Bind(typeof(IContainersGetter), typeof(IContainersGetterRmazor))
                 .To<ContainersGetterRmazor>()
                 .AsSingle();
@@ -109,7 +119,7 @@ namespace Mono_Installers
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()
                 .AsSingle();
             Container.Bind<IViewMazeAdditionalBackgroundDrawer>()    
-                .To<ViewMazeAdditionalBackgroundDrawerSimple>()  
+                .To<ViewMazeAdditionalBackgroundDrawerRmazor>()  
                 .AsSingle();
             
             Container.Bind<IViewInputTouchProceeder>()     .To<ViewInputTouchProceeder>()     .AsSingle();
@@ -124,8 +134,17 @@ namespace Mono_Installers
 
         private void BindMazeItemBlocksAndGroups()
         {
+            switch (CommonData.GameId)
+            {
+                case GameIds.RMAZOR:
+                    Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
+                    break;
+                case GameIds.ZMAZOR:
+                    Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathWithAdditionalBorders>().AsSingle();
+                    break;
+            }
+            
             Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
-            Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
             Container.Bind<IViewMazeItemShredingerBlock>()   .To<ViewMazeItemShredingerBlock>()      .AsSingle();
@@ -165,7 +184,7 @@ namespace Mono_Installers
             Container.Bind<IViewCharacter>()         .To<ViewCharacter>()                 .AsSingle();
             Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
-            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailSimple>()       .AsSingle();
+            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailDefault>()       .AsSingle();
             Container.Bind<IViewParticleBubble>()    .To<ViewParticleBubble>()            .AsSingle();
             Container.Bind<IViewParticlesThrower>()  .To<ViewParticlesThrower>()          .AsTransient();
         }
