@@ -40,8 +40,9 @@ namespace RMAZOR.Models.ItemProceeders
             ModelSettings    _Settings,
             IModelData       _Data,
             IModelCharacter  _Character,
-            IModelGameTicker _GameTicker)
-            : base (_Settings, _Data, _Character, _GameTicker) { }
+            IModelGameTicker _GameTicker,
+            IModelMazeRotation _Rotation)
+            : base (_Settings, _Data, _Character, _GameTicker, _Rotation) { }
         
         #endregion
         
@@ -69,7 +70,7 @@ namespace RMAZOR.Models.ItemProceeders
             }
             if (m_LastArgs != null && !_Forced)
                 return;
-            var charInverseDir = -1 * RmazorUtils.GetDirectionVector(_Direction, Data.Orientation);
+            var charInverseDir = -1 * RmazorUtils.GetDirectionVector(_Direction, Rotation.Orientation);
             V2Int newDirection = default;
             if (_Info.Direction == V2Int.Up + V2Int.Left)
                 newDirection = charInverseDir == V2Int.Up ? V2Int.Left : V2Int.Up;
@@ -79,7 +80,7 @@ namespace RMAZOR.Models.ItemProceeders
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Left : V2Int.Down;
             else if (_Info.Direction == V2Int.Down + V2Int.Right)
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Right : V2Int.Down;
-            var moveDirection = RmazorUtils.GetMoveDirection(newDirection, Data.Orientation);
+            var moveDirection = RmazorUtils.GetMoveDirection(newDirection, Rotation.Orientation);
             m_LastArgs = new SpringboardEventArgs(moveDirection, _Info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }

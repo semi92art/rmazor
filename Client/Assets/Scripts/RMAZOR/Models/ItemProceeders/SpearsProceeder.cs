@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Linq;
 using Common;
 using Common.Ticker;
@@ -17,7 +16,7 @@ namespace RMAZOR.Models.ItemProceeders
 
     public delegate void SpearEventHandler(SpearEventArgs _Args);
 
-    public interface ISpearsProceeder : IItemsProceeder, IGetAllProceedInfos, ICharacterMoveFinished
+    public interface ISpearsProceeder : IItemsProceeder, ICharacterMoveFinished
     {
         event SpearEventHandler SpearAppear;
         event SpearEventHandler SpearShot;
@@ -26,7 +25,7 @@ namespace RMAZOR.Models.ItemProceeders
     public class SpearsProceeder : ItemsProceederBase, ISpearsProceeder
     {
         #region nonpublic members
-        
+
         protected override EMazeItemType[] Types => new[] {EMazeItemType.Spear};
 
         #endregion
@@ -34,18 +33,22 @@ namespace RMAZOR.Models.ItemProceeders
         #region inject
         
         private SpearsProceeder(
-            ModelSettings    _Settings,
-            IModelData       _Data,
-            IModelCharacter  _Character,
-            IModelGameTicker _GameTicker)
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            ModelSettings      _Settings,
+            IModelData         _Data,
+            IModelCharacter    _Character,
+            IModelGameTicker   _GameTicker,
+            IModelMazeRotation _Rotation)
+            : base(
+                _Settings,
+                _Data,
+                _Character,
+                _GameTicker, 
+                _Rotation) { }
 
         #endregion
 
         #region api
 
-        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { get; set; }
-        
         public event SpearEventHandler SpearAppear;
         public event SpearEventHandler SpearShot;
 

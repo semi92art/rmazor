@@ -87,13 +87,12 @@ namespace Mono_Installers
             switch (CommonData.GameId)
             {
                 case GameIds.RMAZOR:
-                    Container.Bind<ICoordinateConverter>() .To<CoordinateConverterRmazor>()            .AsSingle();
+                    Container.Bind<ICoordinateConverter>().To<CoordinateConverterRmazor>().AsSingle();
                     break;
                 case GameIds.ZMAZOR:
-                    Container.Bind<ICoordinateConverter>() .To<CoordinateConverterZmazor>()            .AsSingle();
+                    Container.Bind<ICoordinateConverter>().To<CoordinateConverterZmazor>().AsSingle();
                     break;
             }
-            
             Container.Bind(typeof(IContainersGetter), typeof(IContainersGetterRmazor))
                 .To<ContainersGetterRmazor>()
                 .AsSingle();
@@ -143,7 +142,6 @@ namespace Mono_Installers
                     Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathWithAdditionalBorders>().AsSingle();
                     break;
             }
-            
             Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
@@ -184,7 +182,7 @@ namespace Mono_Installers
             Container.Bind<IViewCharacter>()         .To<ViewCharacter>()                 .AsSingle();
             Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
-            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailDefault>()       .AsSingle();
+            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailDefault>()      .AsSingle();
             Container.Bind<IViewParticleBubble>()    .To<ViewParticleBubble>()            .AsSingle();
             Container.Bind<IViewParticlesThrower>()  .To<ViewParticlesThrower>()          .AsTransient();
         }

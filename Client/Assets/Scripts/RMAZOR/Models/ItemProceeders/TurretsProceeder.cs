@@ -51,8 +51,14 @@ namespace RMAZOR.Models.ItemProceeders
             IModelData          _Data,
             IModelCharacter     _Character,
             IModelGameTicker    _GameTicker,
-            IPathItemsProceeder _PathItemsProceeder) 
-            : base(_Settings, _Data, _Character, _GameTicker)
+            IPathItemsProceeder _PathItemsProceeder,
+            IModelMazeRotation  _Rotation) 
+            : base(
+                _Settings, 
+                _Data, 
+                _Character, 
+                _GameTicker, 
+                _Rotation)
         {
             PathItemsProceeder = _PathItemsProceeder;
         }

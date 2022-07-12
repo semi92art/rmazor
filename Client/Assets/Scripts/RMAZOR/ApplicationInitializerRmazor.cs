@@ -84,7 +84,8 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
-            if (CommonData.Release)
+            var scene = SceneManager.GetActiveScene();
+            if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= Settings.debugAnyway;
             LogAppInfo();

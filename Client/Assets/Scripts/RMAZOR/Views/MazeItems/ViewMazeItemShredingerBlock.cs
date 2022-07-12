@@ -14,7 +14,6 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
 using UnityEngine;
@@ -130,7 +129,7 @@ namespace RMAZOR.Views.MazeItems
             const float delta = 0.5f;
             const float duration = 0.1f;
             var startPos = m_ClosedBlock.transform.localPosition;
-            Vector2 dir = RmazorUtils.GetDirectionVector(_Args.Direction, Model.Data.Orientation);
+            Vector2 dir = RmazorUtils.GetDirectionVector(_Args.Direction, Model.MazeRotation.Orientation);
             Cor.Run(Cor.Lerp(
                 GameTicker,
                 duration * 0.5f,

@@ -7,11 +7,11 @@ namespace RMAZOR.Models.ItemProceeders
 {
     public class MazeItemMoveEventArgs : EventArgs
     {
-        public IMazeItemProceedInfo Info { get; }
-        public V2Int From { get; }
-        public V2Int To { get; }
-        public float Speed { get; }
-        public float Progress { get; }
+        public IMazeItemProceedInfo Info     { get; }
+        public V2Int                From     { get; }
+        public V2Int                To       { get; }
+        public float                Speed    { get; }
+        public float                Progress { get; }
 
         public MazeItemMoveEventArgs(
             IMazeItemProceedInfo _Info,
@@ -39,17 +39,33 @@ namespace RMAZOR.Models.ItemProceeders
     
     public abstract class MovingItemsProceederBase : ItemsProceederBase, IMovingItemsProceeder
     {
+        #region inject
+        
         protected MovingItemsProceederBase(
-            ModelSettings _Settings, 
-            IModelData _Data, 
-            IModelCharacter _Character,
-            IModelGameTicker _GameTicker) 
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            ModelSettings      _Settings,
+            IModelData         _Data,
+            IModelCharacter    _Character,
+            IModelGameTicker   _GameTicker,
+            IModelMazeRotation _Rotation) 
+            : base(
+                _Settings, 
+                _Data, 
+                _Character,
+                _GameTicker, 
+                _Rotation) { }
 
+        #endregion
+
+        #region api
+        
         public event MazeItemMoveHandler MazeItemMoveStarted;
         public event MazeItemMoveHandler MazeItemMoveContinued;
         public event MazeItemMoveHandler MazeItemMoveFinished;
 
+        #endregion
+
+        #region nonpublic methods
+        
         protected void InvokeMoveStarted(MazeItemMoveEventArgs _Args)
         {
             MazeItemMoveStarted?.Invoke(_Args);
@@ -64,5 +80,7 @@ namespace RMAZOR.Models.ItemProceeders
         {
             MazeItemMoveFinished?.Invoke(_Args);
         }
+
+        #endregion
     }
 }

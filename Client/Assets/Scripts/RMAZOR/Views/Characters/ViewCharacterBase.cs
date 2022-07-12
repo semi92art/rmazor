@@ -11,14 +11,13 @@ namespace RMAZOR.Views.Characters
         #region inject
 
         protected ICoordinateConverter CoordinateConverter { get; }
-        protected IModelGame Model { get; }
-
-        protected IContainersGetter ContainersGetter { get; }
+        protected IModelGame           Model               { get; }
+        protected IContainersGetter    ContainersGetter    { get; }
 
         protected ViewCharacterBase(
             ICoordinateConverter _CoordinateConverter,
-            IModelGame                 _Model,
-            IContainersGetter          _ContainersGetter)
+            IModelGame           _Model,
+            IContainersGetter    _ContainersGetter)
         {
             CoordinateConverter = _CoordinateConverter;
             Model               = _Model;

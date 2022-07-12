@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Constants;
+﻿using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
@@ -17,48 +16,44 @@ using Random = UnityEngine.Random;
 
 namespace RMAZOR.Views.Characters
 {
-    public class ViewCharacter : ViewCharacterBase
+    public class ViewCharacter : ViewCharacterBase, IFixedUpdateTick
     {
         #region constants
 
-        private const int   AudioCharacterEndMoveCount   = 5;
-        private const float SpeedCorrectionFactor        = 50f;
-        private const float SetVelocityDistanceThreshold = 2f;
+        private const int AudioCharacterEndMoveCount = 5;
 
         #endregion
         
         #region nonpublic members
 
-        private bool             m_NeedToSetPosition;
-        private bool             m_EnableMoving;
-        private bool             m_Activated;
-        private Rigidbody2D      m_CharacterRb;
+        protected bool    EnableMoving;
+        private   bool    m_Activated;
+        private   Vector2 m_NewPosition;
+        private   bool    m_IsMoving;
 
         #endregion
         
         #region inject
 
-        private IViewCharacterHead          Head              { get; }
-        private IViewCharacterTail          Tail              { get; }
-        private IViewCharacterEffector      Effector          { get; }
-        private IManagersGetter             Managers          { get; }
-        private IMazeShaker                 MazeShaker        { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private IViewGameTicker             ViewGameTicker    { get; }
-        private ModelSettings               ModelSettings     { get; }
+        private   IViewCharacterHead          Head              { get; }
+        protected IViewCharacterTail          Tail              { get; }
+        private   IViewCharacterEffector      Effector          { get; }
+        private   IManagersGetter             Managers          { get; }
+        private   IMazeShaker                 MazeShaker        { get; }
+        private   IViewInputCommandsProceeder CommandsProceeder { get; }
+        protected   IViewGameTicker             ViewGameTicker    { get; }
 
-        private ViewCharacter(
+        protected ViewCharacter(
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
             IViewCharacterEffector      _Effector,
-            ICoordinateConverter        _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter, 
             IModelGame                  _Model,
             IContainersGetter           _ContainersGetter,
             IManagersGetter             _Managers,
             IMazeShaker                 _MazeShaker,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewGameTicker             _ViewGameTicker,
-            ModelSettings               _ModelSettings) 
+            IViewGameTicker _ViewGameTicker) 
             : base(
                 _CoordinateConverter, 
                 _Model, 
@@ -70,8 +65,7 @@ namespace RMAZOR.Views.Characters
             Managers          = _Managers;
             MazeShaker        = _MazeShaker;
             CommandsProceeder = _CommandsProceeder;
-            ViewGameTicker    = _ViewGameTicker;
-            ModelSettings     = _ModelSettings;
+            ViewGameTicker = _ViewGameTicker;
         }
         
         #endregion
@@ -85,18 +79,17 @@ namespace RMAZOR.Views.Characters
             get => m_Activated;
             set
             {
-                m_Activated        = value;
-                Head.Activated     = value;
-                Tail.Activated     = value;
+                m_Activated = value;
+                Head.Activated = value;
+                Tail.Activated = value;
                 Effector.Activated = value;
             }
         }
-
+        
         public override void Init()
         {
             if (Initialized)
                 return;
-            AddRigidbodyComponentToCharacterContainer();
             ViewGameTicker.Register(this);
             CommandsProceeder.Command += OnCommand;
             Managers.AudioManager.InitClip(GetCharacterDeadAudioClipArgs());
@@ -131,12 +124,9 @@ namespace RMAZOR.Views.Characters
 
         public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            if (!m_EnableMoving)
+            if (!EnableMoving)
                 return;
-            var posFrom = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
-            var posTo = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
-            SetPosition(posFrom);
-            StartMovement(_Args.Direction, posTo);
+            m_IsMoving = true;
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
@@ -145,19 +135,21 @@ namespace RMAZOR.Views.Characters
 
         public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
-            if (!m_EnableMoving)
+            if (!EnableMoving)
                 return;
+            m_NewPosition = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
             Tail.OnCharacterMoveContinued(_Args);
         }
 
         public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            if (!m_EnableMoving)
+            if (!EnableMoving)
                 return;
             if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
                 return;
-            var posTo = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
-            EndMovement(posTo);
+            m_IsMoving = false;
+            var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
+            SetPosition(pos);
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
             Head.OnCharacterMoveFinished(_Args);
             Tail.OnCharacterMoveFinished(_Args);
@@ -178,7 +170,7 @@ namespace RMAZOR.Views.Characters
                     break;
                 case ELevelStage.ReadyToStart:
                     SetDefaultPosition();
-                    m_EnableMoving = true;
+                    EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
                     Managers.AudioManager.PlayClip(GetCharacterDeadAudioClipArgs());
@@ -201,33 +193,13 @@ namespace RMAZOR.Views.Characters
         
         #region nonpublic methods
 
-        private void StartMovement(EMazeMoveDirection _Direction, Vector2 _To)
-        {
-            var dir = RmazorUtils.GetDirectionVector(_Direction, Model.Data.Orientation);
-            float distToEnd = Vector2.Distance(m_CharacterRb.position, _To);
-            float velocity = ViewGameTicker.FixedDeltaTime * ModelSettings.characterSpeed * CoordinateConverter.Scale;
-            if (distToEnd > CoordinateConverter.Scale * SetVelocityDistanceThreshold)
-                m_CharacterRb.velocity = velocity * dir * SpeedCorrectionFactor;
-        }
-
-        private void EndMovement(Vector2 _To)
-        {
-            m_CharacterRb.velocity = Vector2.zero;
-            SetPosition(_To);
-        }
-        
-        private void SetPosition(Vector2 _Position)
-        {
-            ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
-        }
-        
         private void OnCommand(EInputCommand _Command, object[] _Args)
         {
             if (_Command != EInputCommand.KillCharacter)
                 return;
-            m_EnableMoving = false;
+            EnableMoving = false;
         }
-
+        
         private void SetDefaultPosition()
         {
             SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.PathItems[0].Position));
@@ -242,15 +214,19 @@ namespace RMAZOR.Views.Characters
         {
             return new AudioClipArgs($"character_end_move_{_Index}", EAudioClipType.GameSound);
         }
-
-        private void AddRigidbodyComponentToCharacterContainer()
+        
+        protected void SetPosition(Vector2 _Position)
         {
-            var cont = ContainersGetter.GetContainer(ContainerNames.Character);
-            m_CharacterRb = cont.gameObject.AddComponent<Rigidbody2D>();
-            m_CharacterRb.gravityScale = 0f;
-            m_CharacterRb.angularDrag = 0f;
+            ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
         }
 
         #endregion
+
+        public void FixedUpdateTick()
+        {
+            if (!m_IsMoving)
+                return;
+            SetPosition(m_NewPosition);
+        }
     }
 }

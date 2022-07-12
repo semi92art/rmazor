@@ -42,11 +42,17 @@ namespace RMAZOR.Models.ItemProceeders
         protected override EMazeItemType[] Types => new[] {EMazeItemType.Diode};
         
         private DiodesProceeder(
-            ModelSettings    _Settings,
-            IModelData       _Data,
-            IModelCharacter  _Character,
-            IModelGameTicker _GameTicker)
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            ModelSettings      _Settings,
+            IModelData         _Data,
+            IModelCharacter    _Character,
+            IModelGameTicker   _GameTicker,
+            IModelMazeRotation _Rotation)
+            : base(
+                _Settings, 
+                _Data,
+                _Character,
+                _GameTicker,
+                _Rotation) { }
 
         #endregion
 

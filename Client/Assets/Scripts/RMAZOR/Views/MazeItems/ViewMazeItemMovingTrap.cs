@@ -33,8 +33,9 @@ namespace RMAZOR.Views.MazeItems
 
         protected override string ObjectName => "Moving Trap Block";
 
-        private SpriteRenderer m_Saw, m_Border;
-        private Vector2        m_PrecisePosition;
+        private SpriteRenderer   m_Saw, m_Border;
+        private Vector2          m_PrecisePosition;
+        private CircleCollider2D m_Collider;
 
         #endregion
         
@@ -137,8 +138,8 @@ namespace RMAZOR.Views.MazeItems
             border.sortingOrder = GetSortingOrder() - 1;
             border.enabled = false;
             m_Border = border;
-            var coll = Object.AddComponent<CircleCollider2D>();
-            coll.radius = 0.5f;
+            m_Collider = Object.AddComponent<CircleCollider2D>();
+            m_Collider.radius = 0.5f;
         }
 
         protected override void UpdateShape()
@@ -204,6 +205,24 @@ namespace RMAZOR.Views.MazeItems
                     return;
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
             }
+        }
+
+        protected override void OnAppearStart(bool _Appear)
+        {
+            base.OnAppearStart(_Appear);
+            if (!_Appear)
+                return;
+            m_Border.enabled = true;
+            m_Collider.enabled = true;
+        }
+
+        protected override void OnAppearFinish(bool _Appear)
+        {
+            base.OnAppearFinish(_Appear);
+            if (_Appear)
+                return;
+            m_Border.enabled = false;
+            m_Collider.enabled = false;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

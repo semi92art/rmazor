@@ -58,22 +58,24 @@ namespace RMAZOR.Models.ItemProceeders
 
         #region inject
         
-        protected ModelSettings      Settings     { get; }
-        protected IModelData         Data         { get; }
-        protected IModelCharacter    Character    { get; }
-        protected IModelGameTicker   GameTicker   { get; }
-        
+        protected ModelSettings      Settings   { get; }
+        protected IModelData         Data       { get; }
+        protected IModelCharacter    Character  { get; }
+        protected IModelGameTicker   GameTicker { get; }
+        protected IModelMazeRotation Rotation   { get; }
+
         protected ItemsProceederBase(
             ModelSettings    _Settings,
             IModelData       _Data,
             IModelCharacter  _Character,
-            IModelGameTicker _GameTicker)
+            IModelGameTicker _GameTicker,
+            IModelMazeRotation _Rotation)
         {
             Settings   = _Settings;
             Data       = _Data;
             Character  = _Character;
             GameTicker = _GameTicker;
-            
+            Rotation   = _Rotation;
         }
 
         #endregion

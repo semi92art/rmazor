@@ -25,11 +25,17 @@ namespace RMAZOR.Models.ItemProceeders
         #region inject
 
         private TrapsMovingProceeder(
-            ModelSettings    _Settings,
-            IModelData       _Data,
-            IModelCharacter  _Character,
-            IModelGameTicker _GameTicker)
-            : base(_Settings, _Data, _Character, _GameTicker) { }
+            ModelSettings      _Settings,
+            IModelData         _Data,
+            IModelCharacter    _Character,
+            IModelGameTicker   _GameTicker,
+            IModelMazeRotation _Rotation)
+            : base(
+                _Settings,
+                _Data,
+                _Character, 
+                _GameTicker, 
+                _Rotation) { }
         
         #endregion
         

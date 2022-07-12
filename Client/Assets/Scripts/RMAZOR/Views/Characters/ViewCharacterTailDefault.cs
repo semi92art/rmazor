@@ -3,6 +3,7 @@ using System.Collections;
 using Common;
 using Common.Constants;
 using Common.Entities;
+using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
@@ -16,7 +17,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Characters
 {
-    public class ViewCharacterTailDefault : InitBase, IViewCharacterTail
+    public class ViewCharacterTailDefault : InitBase, IViewCharacterTail, IFixedUpdateTick
     {
         #region constants
 
@@ -28,9 +29,12 @@ namespace RMAZOR.Views.Characters
 
         private Triangle m_Tail;
         private Triangle m_TailBorder;
-        private bool     m_Hiding;
         private bool     m_DoShowTail;
         private Vector2  m_CharacterPositionOnMoveStart;
+        private bool     m_DoUpdateTailOnFixedUpdate;
+        private int      m_MoveCount, m_MoveCountCheck;
+
+        private CharacterMovingStartedEventArgs m_CurrentMovingArgs;
         
         #endregion
         
@@ -40,22 +44,22 @@ namespace RMAZOR.Views.Characters
         private IModelGame           Model               { get; }
         private ICoordinateConverter CoordinateConverter { get; }
         private IContainersGetter    ContainersGetter    { get; }
-        private IViewGameTicker      GameTicker          { get; }
+        private IViewGameTicker      ViewGameTicker      { get; }
         private IColorProvider       ColorProvider       { get; }
 
         public ViewCharacterTailDefault(
             ModelSettings        _ModelSettings,
-            IModelGame _Model,
+            IModelGame           _Model,
             ICoordinateConverter _CoordinateConverter,
             IContainersGetter    _ContainersGetter,
-            IViewGameTicker      _GameTicker,
+            IViewGameTicker      _ViewGameTicker,
             IColorProvider       _ColorProvider)
         {
             ModelSettings       = _ModelSettings;
-            Model = _Model;
+            Model               = _Model;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter    = _ContainersGetter;
-            GameTicker          = _GameTicker;
+            ViewGameTicker      = _ViewGameTicker;
             ColorProvider       = _ColorProvider;
         }
         
@@ -67,6 +71,7 @@ namespace RMAZOR.Views.Characters
 
         public override void Init()
         {
+            ViewGameTicker.Register(this);
             InitShape();
             base.Init();
         }
@@ -99,9 +104,11 @@ namespace RMAZOR.Views.Characters
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
+            m_MoveCount++;
             m_CharacterPositionOnMoveStart = GetCharacterObjects().Transform.position;
             m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail));
             m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2));
+            m_CurrentMovingArgs = _Args;
             ShowTail(_Args);
         }
         
@@ -121,18 +128,7 @@ namespace RMAZOR.Views.Characters
         {
             if (!m_DoShowTail)
                 return;
-            float scale = CoordinateConverter.Scale;
-            m_Hiding = false;
-            var dir = (Vector2)(_Args.To - _Args.From).NormalizedAlt;
-            var orth = new Vector2(dir.y, dir.x); //-V3066
-            var cP = (Vector2)GetCharacterObjects().Transform.position;
-            var b = orth * 0.3f * scale;
-            var c = -orth * 0.3f * scale;
-            var a = Vector2.Distance(m_CharacterPositionOnMoveStart, cP) < MaxTailLength * scale ? 
-                m_CharacterPositionOnMoveStart - cP : -dir * MaxTailLength * scale;
-            m_Tail.A = m_TailBorder.A = a;
-            m_Tail.B = m_TailBorder.B = b;
-            m_Tail.C = m_TailBorder.C = c;
+            m_DoUpdateTailOnFixedUpdate = true;
         }
 
         public void HideTail(CharacterMovingFinishedEventArgs _Args = null)
@@ -145,7 +141,17 @@ namespace RMAZOR.Views.Characters
                 m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2).SetA(0f));
             }
             else
+            {
                 Cor.Run(HideTailCoroutine(_Args));
+            }
+        }
+        
+        public void FixedUpdateTick()
+        {
+            if (!m_DoUpdateTailOnFixedUpdate)
+                return;
+            ShowTailCore();
+            m_DoUpdateTailOnFixedUpdate = false;
         }
 
         #endregion
@@ -171,13 +177,13 @@ namespace RMAZOR.Views.Characters
 
         private IEnumerator HideTailCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
+            int moveCount = m_MoveCount;
             var tailCol = ColorProvider.GetColor(ColorIds.CharacterTail);
             var tailBorderCol = ColorProvider.GetColor(ColorIds.Character2);
-            m_Hiding = true;
             Vector2 startA = m_Tail.A;
             var finishA = Vector2.zero;
             yield return Cor.Lerp(
-                GameTicker,
+                ViewGameTicker,
                 10f / ModelSettings.characterSpeed,
                 _OnProgress: _P =>
                 {
@@ -192,7 +198,23 @@ namespace RMAZOR.Views.Characters
                     m_Tail.Color = tailCol.SetA(0f);
                     m_TailBorder.Color = tailBorderCol.SetA(0f);
                 },
-                _BreakPredicate: () => !m_Hiding || !m_DoShowTail);
+                _BreakPredicate: () => moveCount != m_MoveCount || !m_DoShowTail);
+        }
+
+        private void ShowTailCore()
+        {
+            float scale = CoordinateConverter.Scale;
+            var dir = (Vector2)RmazorUtils.GetDirectionVector(m_CurrentMovingArgs.Direction, Model.MazeRotation.Orientation);
+            var orth = new Vector2(dir.y, dir.x); //-V3066
+            var cP = (Vector2)GetCharacterObjects().Transform.position;
+            var b = orth * 0.3f * scale;
+            var c = -orth * 0.3f * scale;
+            var a = Vector2.Distance(m_CharacterPositionOnMoveStart, cP) < MaxTailLength * scale ? 
+                -dir * Vector2.Distance(m_CharacterPositionOnMoveStart, cP)
+                : -dir * MaxTailLength * scale;
+            m_Tail.A = m_TailBorder.A = a;
+            m_Tail.B = m_TailBorder.B = b;
+            m_Tail.C = m_TailBorder.C = c;
         }
 
         #endregion

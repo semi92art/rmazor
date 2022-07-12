@@ -3,7 +3,6 @@ using Common.Exceptions;
 using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Views;
-using UnityEngine.Events;
 
 namespace RMAZOR.Models
 {
@@ -33,6 +32,7 @@ namespace RMAZOR.Models
     
     public interface IModelMazeRotation : IInit, IOnLevelStageChanged
     {
+        MazeOrientation Orientation        { get; set; }
         event MazeOrientationHandler RotationStarted;
         event MazeOrientationHandler RotationFinished;
         void StartRotation(EMazeRotateDirection _Direction, MazeOrientation? _NextOrientation = null);
@@ -48,6 +48,7 @@ namespace RMAZOR.Models
             Data = _Data;
         }
 
+        public MazeOrientation              Orientation { get; set; }
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinished;
 
@@ -57,10 +58,10 @@ namespace RMAZOR.Models
         {
             if (!Data.ProceedingControls)
                 return;
-            var currOrientation = Data.Orientation;
-            Data.Orientation = _NextOrientation ?? GetNextOrientation(_Direction, currOrientation);
+            var currOrientation = Orientation;
+            Orientation = _NextOrientation ?? GetNextOrientation(_Direction, currOrientation);
             var args = new MazeRotationEventArgs(
-                _Direction, currOrientation, Data.Orientation, false);
+                _Direction, currOrientation, Orientation, false);
             RotationStarted?.Invoke(args);
         }
 
@@ -74,24 +75,24 @@ namespace RMAZOR.Models
             switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.CharacterKilled:
-                    if (Data.Orientation == MazeOrientation.North)
+                    if (Orientation == MazeOrientation.North)
                         return;
-                    var rotDir = (int) Data.Orientation < 2
+                    var rotDir = (int) Orientation < 2
                         ? EMazeRotateDirection.CounterClockwise
                         : EMazeRotateDirection.Clockwise;
-                    var currOrient = Data.Orientation;
-                    Data.Orientation = MazeOrientation.North;
+                    var currentOrientation = Orientation;
+                    Orientation = MazeOrientation.North;
                 {
                     var args = new MazeRotationEventArgs(
-                        rotDir, currOrient, Data.Orientation, false);
+                        rotDir, currentOrientation, Orientation, false);
                     RotationStarted?.Invoke(args);
                 }
                 break;
                 case ELevelStage.Unloaded:
-                    Data.Orientation = MazeOrientation.North;
+                    Orientation = MazeOrientation.North;
                 {
                     var args = new MazeRotationEventArgs(
-                        default, default, Data.Orientation, true);
+                        default, default, Orientation, true);
                     RotationStarted?.Invoke(args);
                 }
                 break;

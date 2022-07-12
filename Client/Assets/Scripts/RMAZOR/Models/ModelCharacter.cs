@@ -48,17 +48,20 @@ namespace RMAZOR.Models
         private IModelData         Data         { get; }
         private IModelLevelStaging LevelStaging { get; }
         private IModelGameTicker   GameTicker   { get; }
+        private IModelMazeRotation Rotation     { get; }
 
         public ModelCharacter(
             ModelSettings      _Settings,
             IModelData         _Data,
             IModelLevelStaging _LevelStaging,
-            IModelGameTicker   _GameTicker)
+            IModelGameTicker   _GameTicker,
+            IModelMazeRotation _Rotation)
         {
             Settings     = _Settings;
             Data         = _Data;
             LevelStaging = _LevelStaging;
             GameTicker   = _GameTicker;
+            Rotation = _Rotation;
         }
 
         #endregion
@@ -123,7 +126,7 @@ namespace RMAZOR.Models
         {
             var nextPos = Position;
             var infos = GetAllProceedInfos();
-            var dirVector = RmazorUtils.GetDirectionVector(_Direction, Data.Orientation);
+            var dirVector = RmazorUtils.GetDirectionVector(_Direction, Rotation.Orientation);
             while (IsNextPositionValid(
                 infos,
                 Data.PathItems,

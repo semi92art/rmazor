@@ -9,10 +9,9 @@ namespace RMAZOR.Models
     
     public interface IModelData
     {
-        public V2Int[]  PathItems          { get; }
-        MazeInfo        Info               { get; set; }
-        MazeOrientation Orientation        { get; set; }
-        bool            ProceedingControls { get; set; }
+        public V2Int[] PathItems          { get; }
+        MazeInfo       Info               { get; set; }
+        bool           ProceedingControls { get; set; }
     }
     
     // ReSharper disable once ClassNeverInstantiated.Global

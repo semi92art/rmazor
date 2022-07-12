@@ -39,8 +39,14 @@ namespace RMAZOR.Models.ItemProceeders
             IModelData          _Data,
             IModelCharacter     _Character,
             IModelGameTicker    _GameTicker,
-            IPathItemsProceeder _PathItemsProceeder)
-            : base(_Settings, _Data, _Character, _GameTicker)
+            IPathItemsProceeder _PathItemsProceeder,
+            IModelMazeRotation  _Rotation)
+            : base(
+                _Settings,
+                _Data, 
+                _Character, 
+                _GameTicker, 
+                _Rotation)
         {
             PathItemsProceeder = _PathItemsProceeder;
         }
@@ -55,23 +61,23 @@ namespace RMAZOR.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.LevelStage == ELevelStage.ReadyToStart && Data.Orientation == MazeOrientation.North)
-                MoveMazeItemsGravity(Data.Orientation, Character.Position);
+            if (_Args.LevelStage == ELevelStage.ReadyToStart && Rotation.Orientation == MazeOrientation.North)
+                MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
         }
 
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
         {
-            MoveMazeItemsGravity(Data.Orientation, Character.Position);
+            MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
         }
 
         public void OnMazeOrientationChanged()
         {
-            MoveMazeItemsGravity(Data.Orientation, Character.Position);
+            MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
         }
 
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            MoveMazeItemsGravity(Data.Orientation, _Args.To);
+            MoveMazeItemsGravity(Rotation.Orientation, _Args.To);
         }
 
         #endregion
