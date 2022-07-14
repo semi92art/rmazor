@@ -139,6 +139,8 @@ namespace RMAZOR.Views.Characters
             {
                 m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail).SetA(0f));
                 m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2).SetA(0f));
+                m_Tail.A = m_Tail.B = m_Tail.C = Vector3.zero;
+                m_TailBorder.A = m_TailBorder.B = m_TailBorder.C = Vector3.zero;
             }
             else
             {

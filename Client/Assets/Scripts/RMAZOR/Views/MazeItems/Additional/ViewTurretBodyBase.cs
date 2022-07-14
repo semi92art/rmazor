@@ -37,7 +37,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected ViewSettings                ViewSettings        { get; }
         protected IColorProvider              ColorProvider       { get; }
         protected ICoordinateConverter  CoordinateConverter { get; }
-        protected IViewFullscreenTransitioner Transitioner        { get; }
+        protected IRendererAppearTransitioner Transitioner        { get; }
 
         protected ViewTurretBodyBase(
             IModelGame                  _Model,
@@ -45,7 +45,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             ICoordinateConverter  _CoordinateConverter,
-            IViewFullscreenTransitioner _Transitioner)
+            IRendererAppearTransitioner _Transitioner)
         {
             Model               = _Model;
             GameTicker          = _GameTicker;
@@ -104,6 +104,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                     Transitioner.DoAppearTransition(
                         _Appear,
                         GetAppearSets(_Appear),
+                        ViewSettings.betweenLevelTransitionTime,
                         () => OnAppearFinish(_Appear));
                 }));
         }

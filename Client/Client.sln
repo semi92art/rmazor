@@ -57,9 +57,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Runtime", "Hiera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Play.Core", "Google.Play.Core.csproj", "{439f6e8d-ddd9-0c75-4094-f29800865212}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniIT.AdvertisingIdFetcher", "MiniIT.AdvertisingIdFetcher.csproj", "{3902ff1d-da36-8526-bde3-93c4bb0a65dc}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZMAZOR", "ZMAZOR.csproj", "{191dd238-7d57-8b27-45fa-95a19d57745e}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniIT.AdvertisingIdFetcher", "MiniIT.AdvertisingIdFetcher.csproj", "{3902ff1d-da36-8526-bde3-93c4bb0a65dc}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Services.Analytics.Samples", "Unity.Services.Analytics.Samples.csproj", "{7389e611-e2c3-f1f7-647e-eb964cca63fd}"
 EndProject
@@ -170,10 +170,10 @@ Global
 		{ecd2bf46-9669-a61b-7c0b-9f38097a290e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{439f6e8d-ddd9-0c75-4094-f29800865212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{439f6e8d-ddd9-0c75-4094-f29800865212}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3902ff1d-da36-8526-bde3-93c4bb0a65dc}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3902ff1d-da36-8526-bde3-93c4bb0a65dc}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{191dd238-7d57-8b27-45fa-95a19d57745e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{191dd238-7d57-8b27-45fa-95a19d57745e}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3902ff1d-da36-8526-bde3-93c4bb0a65dc}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3902ff1d-da36-8526-bde3-93c4bb0a65dc}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

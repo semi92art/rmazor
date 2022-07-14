@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Common;
-using Common.Extensions;
+﻿using Common.Extensions;
 using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
@@ -29,16 +27,14 @@ namespace ZMAZOR.Views.Camera_Providers
         #region inject
 
         private ViewSettings    ViewSettings   { get; }
-        private IViewGameTicker ViewGameTicker { get; }
 
         private CameraProviderZmazor(
-            IPrefabSetManager    _PrefabSetManager,
-            ViewSettings         _ViewSettings,
-            IViewGameTicker      _ViewGameTicker) 
-            : base(_PrefabSetManager)
+            IPrefabSetManager _PrefabSetManager,
+            ViewSettings      _ViewSettings,
+            IViewGameTicker   _ViewGameTicker) 
+            : base(_PrefabSetManager, _ViewGameTicker)
         {
             ViewSettings   = _ViewSettings;
-            ViewGameTicker = _ViewGameTicker;
         }
 
         #endregion

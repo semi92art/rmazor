@@ -21,9 +21,10 @@ namespace Common.CameraProviders
         Func<float>  GetConverterScale { set; }
         Transform    Follow            { set; }
         Camera       Camera            { get; }
-        void         SetEffectParameters<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps;
-        bool         IsEffectEnabled(ECameraEffect        _Effect);
-        void         EnableEffect(ECameraEffect           _Effect, bool _Enabled);
+        void         SetEffectProps<T>(ECameraEffect     _Effect, T _Args) where T : ICameraEffectProps;
+        void         AnimateEffectProps<T>(ECameraEffect _Effect, T _From, T _To, float _Duration) where T : ICameraEffectProps;
+        bool         IsEffectEnabled(ECameraEffect       _Effect);
+        void         EnableEffect(ECameraEffect          _Effect, bool _Enabled);
         void         UpdateState();
     }
     

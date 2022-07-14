@@ -45,7 +45,7 @@ namespace RMAZOR.Views.MazeItems
         protected ICoordinateConverter  CoordinateConverter { get; }
         protected IContainersGetter           ContainersGetter    { get; }
         protected IViewGameTicker             GameTicker          { get; }
-        protected IViewFullscreenTransitioner Transitioner        { get; }
+        protected IRendererAppearTransitioner Transitioner        { get; }
         protected IManagersGetter             Managers            { get; }
         protected IColorProvider              ColorProvider       { get; }
         protected IViewInputCommandsProceeder CommandsProceeder   { get; }
@@ -56,7 +56,7 @@ namespace RMAZOR.Views.MazeItems
             ICoordinateConverter  _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
-            IViewFullscreenTransitioner _Transitioner,
+            IRendererAppearTransitioner _Transitioner,
             IManagersGetter             _Managers,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)
@@ -160,6 +160,7 @@ namespace RMAZOR.Views.MazeItems
                     Transitioner.DoAppearTransition(
                         _Appear,
                         appearSets,
+                        ViewSettings.betweenLevelTransitionTime,
                         () => OnAppearFinish(_Appear));
                 }));
         }

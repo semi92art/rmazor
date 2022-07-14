@@ -36,11 +36,11 @@ namespace RMAZOR.Helpers
             IHapticsManager          _HapticsManager,
             IViewInputTouchProceeder _ViewInputTouchProceeder)
         {
-            onClickEvent.AddListener(_Action);
-            m_LevelStage = _LevelStage;
-            m_CameraProvider = _CameraProvider;
-            m_HapticsManager = _HapticsManager;
+            m_LevelStage              = _LevelStage;
+            m_CameraProvider          = _CameraProvider;
+            m_HapticsManager          = _HapticsManager;
             m_ViewInputTouchProceeder = _ViewInputTouchProceeder;
+            onClickEvent.AddListener(_Action);
             m_Initialized = true;
         }
 

@@ -67,24 +67,27 @@ namespace RMAZOR.Views.Characters
 
         #region inject
 
-        private IColorProvider              ColorProvider          { get; }
-        private IContainersGetter           ContainersGetter       { get; }
-        private IPrefabSetManager           PrefabSetManager       { get; }
-        private ICoordinateConverter  CoordinateConverter    { get; }
-        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
+        private ViewSettings                ViewSettings        { get; }
+        private IColorProvider              ColorProvider       { get; }
+        private IContainersGetter           ContainersGetter    { get; }
+        private IPrefabSetManager           PrefabSetManager    { get; }
+        private ICoordinateConverter        CoordinateConverter { get; }
+        private IRendererAppearTransitioner AppearTransitioner  { get; }
 
         private ViewCharacterHead(
+            ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
-            ICoordinateConverter  _CoordinateConverter,
-            IViewFullscreenTransitioner _FullscreenTransitioner)
+            ICoordinateConverter        _CoordinateConverter,
+            IRendererAppearTransitioner _AppearTransitioner)
         {
-            ColorProvider          = _ColorProvider;
-            ContainersGetter       = _ContainersGetter;
-            PrefabSetManager       = _PrefabSetManager;
-            CoordinateConverter    = _CoordinateConverter;
-            FullscreenTransitioner = _FullscreenTransitioner;
+            ViewSettings        = _ViewSettings;
+            ColorProvider       = _ColorProvider;
+            ContainersGetter    = _ContainersGetter;
+            PrefabSetManager    = _PrefabSetManager;
+            CoordinateConverter = _CoordinateConverter;
+            AppearTransitioner  = _AppearTransitioner;
         }
         
         #endregion
@@ -179,13 +182,14 @@ namespace RMAZOR.Views.Characters
                 m_Animator.SetTrigger(AnimKeyStartJumping);
             var charCol = ColorProvider.GetColor(ColorIds.Character);
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
-            FullscreenTransitioner.DoAppearTransition(
+            AppearTransitioner.DoAppearTransition(
                 _Appear,
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {new Component[] {m_HeadShape}, () => charCol},
                     {new Component[] {m_BorderShape, m_Eye1Shape, m_Eye2Shape}, () => charCol2},
                 },
+                ViewSettings.betweenLevelTransitionTime,
                 () =>
                 {
                     AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;

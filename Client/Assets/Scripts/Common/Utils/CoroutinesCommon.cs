@@ -156,7 +156,12 @@ namespace Common.Utils
                 if (_ProgressFormula != null)
                     progress = _ProgressFormula(progress);
                 _OnProgress(progress);
-                yield return new WaitForEndOfFrame();
+                if (_Ticker == null)
+                    yield return new WaitForEndOfFrame();
+                else if (_FixedUpdate)
+                    yield return new WaitForFixedUpdate();
+                else 
+                    yield return new WaitForSeconds(_Ticker.DeltaTime);
             }
             if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;

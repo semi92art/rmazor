@@ -40,7 +40,7 @@ namespace RMAZOR.Views.UI
         private ICameraProvider             CameraProvider    { get; }
         private IContainersGetter           ContainersGetter  { get; }
         private IManagersGetter             Managers          { get; }
-        private IViewFullscreenTransitioner Transitioner      { get; }
+        private IRendererAppearTransitioner Transitioner      { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IViewInputTouchProceeder    TouchProceeder    { get; }
         private IViewGameTicker             GameTicker        { get; }
@@ -51,7 +51,7 @@ namespace RMAZOR.Views.UI
             ICameraProvider             _CameraProvider,
             IContainersGetter           _ContainersGetter,
             IManagersGetter             _Managers,
-            IViewFullscreenTransitioner _Transitioner,
+            IRendererAppearTransitioner _Transitioner,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewInputTouchProceeder    _TouchProceeder,
             IViewGameTicker             _GameTicker)
@@ -189,30 +189,18 @@ namespace RMAZOR.Views.UI
             // if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
             //     return;
 
-            switch (Model.LevelStaging.LevelStage)
-            {
-                case ELevelStage.Loaded:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    return;
-                case ELevelStage.ReadyToStart:
-                case ELevelStage.StartedOrContinued:
-                    bool raised = CommandsProceeder.RaiseCommand(
-                        _Clockwise ? EInputCommand.RotateClockwise : EInputCommand.RotateCounterClockwise,
-                        null);
-                    if (!raised)
-                        return;
-                    Cor.Run(ButtonOnClickCoroutine(_Clockwise ? m_RotateClockwiseButton : m_RotateCounterClockwiseButton));
-                    LockCommandsOnRotationStarted();
-                    if (Model.LevelStaging.LevelStage == ELevelStage.ReadyToStart)
-                        CommandsProceeder.RaiseCommand(EInputCommand.StartOrContinueLevel, null, true);
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(Model.LevelStaging.LevelStage);
-            }
+            var stage = Model.LevelStaging.LevelStage;
+            if (stage != ELevelStage.ReadyToStart && stage != ELevelStage.StartedOrContinued)
+                return;
+            bool raised = CommandsProceeder.RaiseCommand(
+                _Clockwise ? EInputCommand.RotateClockwise : EInputCommand.RotateCounterClockwise,
+                null);
+            if (!raised)
+                return;
+            Cor.Run(ButtonOnClickCoroutine(_Clockwise ? m_RotateClockwiseButton : m_RotateCounterClockwiseButton));
+            LockCommandsOnRotationStarted();
+            if (Model.LevelStaging.LevelStage == ELevelStage.ReadyToStart)
+                CommandsProceeder.RaiseCommand(EInputCommand.StartOrContinueLevel, null, true);
         }
         
         private void LockCommandsOnRotationStarted()
@@ -257,7 +245,7 @@ namespace RMAZOR.Views.UI
                 {
                     {m_RotatingButtonShapes, () => ColorProvider.GetColor(ColorIds.UI)},
                     {m_RotatingButtonShapes2, () => ColorProvider.GetColor(ColorIds.UI).SetA(0.2f)}
-                }, _Type: EAppearTransitionType.WithoutDelay);
+                }, 0f);
         }
         
         private IEnumerator ButtonOnClickCoroutine(ButtonOnRaycast _Button)

@@ -34,12 +34,12 @@ namespace RMAZOR.Editor
         
         private static LD Des => LD.Instance;
 
-        private        ViewSettings                           m_ViewSettings;
-        private        IPrefabSetManager                      m_PrefabSetManager;
-        private        IAssetBundleManager                    m_AssetBundleManager;
-        private        ICoordinateConverterRmazorInEditor m_CoordinateConverter;
-        private        IContainersGetterRmazorInEditor        m_ContainersGetter;
-        private        IMazeItemsCreator                      m_MazeItemsCreator;
+        private ViewSettings                       m_ViewSettings;
+        private IPrefabSetManager                  m_PrefabSetManager;
+        private IAssetBundleManager                m_AssetBundleManager;
+        private ICoordinateConverterRmazorInEditor m_CoordinateConverter;
+        private IContainersGetterRmazorInEditor    m_ContainersGetter;
+        private IMazeItemsCreator                  m_MazeItemsCreator;
 
         private static HeapReorderableList LevelsList
         {
@@ -121,6 +121,7 @@ namespace RMAZOR.Editor
             GUILayout.Label($"Level designer available only on scene {SceneNames.Prototyping}.unity");
             EditorUtilsEx.GuiButtonAction("Load scene", () =>
             {
+                InitEditor(true);
                 string sceneName = AssetDatabase
                     .FindAssets("l:Scene t:Scene", new[] {"Assets\\Scenes"})
                     .Select(AssetDatabase.GUIDToAssetPath)
@@ -405,9 +406,9 @@ namespace RMAZOR.Editor
             EditorUtilsEx.ScrollViewZone(ref m_HeapScroll, () => LevelsList.DoLayoutList());
         }
 
-        private void InitEditor()
+        private void InitEditor(bool _Forced = false)
         {
-            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping)
+            if (SceneManager.GetActiveScene().name != SceneNames.Prototyping && !_Forced)
                 return;
             m_AssetBundleManager = new AssetBundleManagerFake();
             m_PrefabSetManager = new PrefabSetManager(m_AssetBundleManager);

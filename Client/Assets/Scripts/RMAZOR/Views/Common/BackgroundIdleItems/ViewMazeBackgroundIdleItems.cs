@@ -44,7 +44,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         private ViewMazeBackgroundIdleItems(
             IColorProvider                      _ColorProvider,
-            IViewFullscreenTransitioner         _Transitioner,
+            IRendererAppearTransitioner         _Transitioner,
             IContainersGetter                   _ContainersGetter,
             IViewGameTicker                     _GameTicker,
             ICameraProvider                     _CameraProvider,

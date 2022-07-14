@@ -30,8 +30,7 @@ MonoBehaviour:
   afterRotationEnableMoveDelay: 0.1
   levelsCountMain: 360
   firstLevelToRateGame: 4
-  mazeItemTransitionTime: 1
-  mazeItemTransitionDelayCoefficient: 0
+  betweenLevelTransitionTime: 1
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
   additionalBackTexturesInUse: 1

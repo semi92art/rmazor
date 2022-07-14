@@ -217,7 +217,5 @@ namespace RMAZOR.Views.Common
         }
 
         #endregion
-
-
     }
 }

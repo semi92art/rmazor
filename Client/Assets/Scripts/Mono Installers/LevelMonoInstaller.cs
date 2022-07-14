@@ -100,19 +100,22 @@ namespace Mono_Installers
             Container.Bind<IMazeItemsCreator>()       .To<MazeItemsCreator>()       .AsSingle();
             Container.Bind<IViewGame>()               .To<ViewGame>()               .AsSingle();
             Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()         .AsSingle();
+            Container.Bind<IViewMazeRotation>()       .To<ViewMazeRotation>()       .AsSingle();
+            Container.Bind<IViewBackground>()         .To<ViewBackground>()         .AsSingle();
+            Container.Bind<IViewMazeForeground>()     .To<ViewMazeForeground>()     .AsSingle();
+            Container.Bind<IViewInputTouchProceeder>().To<ViewInputTouchProceeder>().AsSingle();
 
-            Container.Bind<IViewMazeRotation>()                  .To<ViewMazeRotation>()                  .AsSingle();
-            Container.Bind<IViewBackground>()                    .To<ViewBackground>()                    .AsSingle();
             Container.Bind<IViewMazeAdditionalBackground>()      .To<ViewMazeAdditionalBackground>()      .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItems>()       .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
             Container.Bind<IViewMazeBackgroundCongradItems>()    .To<ViewMazeBackgroundCongradItems2>()   .AsSingle();
-            Container.Bind<IViewMazeForeground>()                .To<ViewMazeForeground>()                .AsSingle();
+            Container.Bind<IRendererAppearTransitioner>()        .To<RendererAppearTransitioner>()        .AsSingle();
             Container.Bind<IViewFullscreenTransitioner>()        .To<ViewFullscreenTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
-
+            Container.Bind<IViewCameraEffectsCustomAnimator>()   .To<ViewCameraEffectsCustomAnimator>()   .AsSingle();
+            Container.Bind<IRotatingPossibilityIndicator>()      .To<RotatingPossibilityIndicator>()      .AsTransient();
             
             Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>()
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()
@@ -121,9 +124,6 @@ namespace Mono_Installers
                 .To<ViewMazeAdditionalBackgroundDrawerRmazor>()  
                 .AsSingle();
             
-            Container.Bind<IViewInputTouchProceeder>()     .To<ViewInputTouchProceeder>()     .AsSingle();
-            Container.Bind<IRotatingPossibilityIndicator>().To<RotatingPossibilityIndicator>().AsTransient();
-
             var inputControllerType = Application.isEditor ? 
                 typeof(ViewCommandsProceederInEditor) : typeof(ViewInputCommandsProceeder);
             Container.Bind<IViewInputCommandsProceeder>().To(inputControllerType) .AsSingle();

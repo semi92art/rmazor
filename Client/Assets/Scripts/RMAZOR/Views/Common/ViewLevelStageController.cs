@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -24,7 +23,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
-using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -60,75 +58,72 @@ namespace RMAZOR.Views.Common
 
         #region inject
 
-        private CommonGameSettings          GameSettings           { get; }
-        private ViewSettings                ViewSettings           { get; }
-        private IViewGameTicker             ViewGameTicker         { get; }
-        private IModelGameTicker            ModelGameTicker        { get; }
-        private IModelGame                  Model                  { get; }
-        private IManagersGetter             Managers               { get; }
-        private IViewCharacter              Character              { get; }
-        private IViewInputCommandsProceeder CommandsProceeder      { get; }
-        private IContainersGetter           ContainersGetter       { get; }
-        private IMazeShaker                 MazeShaker             { get; }
-        private IDialogPanelsSet            DialogPanelsSet        { get; }
-        private IProposalDialogViewer       ProposalDialogViewer   { get; }
-        private IViewMazeItemsGroupSet      MazeItemsGroupSet      { get; }
-        private IViewMazePathItemsGroup     PathItemsGroup         { get; }
-        private CompanyLogo                 CompanyLogo            { get; }
-        private IViewUIGameLogo             GameLogo               { get; }
-        private IRateGameDialogPanel        RateGameDialogPanel    { get; }
-        private IViewUILevelSkipper         LevelSkipper           { get; }
-        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader   { get; }
-        private ICameraProvider             CameraProvider         { get; }
-        private IColorProvider              ColorProvider          { get; }
+        private ViewSettings                     ViewSettings                { get; }
+        private IViewGameTicker                  ViewGameTicker              { get; }
+        private IModelGameTicker                 ModelGameTicker             { get; }
+        private IModelGame                       Model                       { get; }
+        private IManagersGetter                  Managers                    { get; }
+        private IViewCharacter                   Character                   { get; }
+        private IViewInputCommandsProceeder      CommandsProceeder           { get; }
+        private IContainersGetter                ContainersGetter            { get; }
+        private IMazeShaker                      MazeShaker                  { get; }
+        private IDialogPanelsSet                 DialogPanelsSet             { get; }
+        private IProposalDialogViewer            ProposalDialogViewer        { get; }
+        private IViewMazeItemsGroupSet           MazeItemsGroupSet           { get; }
+        private IViewMazePathItemsGroup          PathItemsGroup              { get; }
+        private CompanyLogo                      CompanyLogo                 { get; }
+        private IViewUIGameLogo                  GameLogo                    { get; }
+        private IRateGameDialogPanel             RateGameDialogPanel         { get; }
+        private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
+        private IViewBetweenLevelAdLoader        BetweenLevelAdLoader        { get; }
+        private ICameraProvider                  CameraProvider              { get; }
+        private IColorProvider                   ColorProvider               { get; }
+        private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
 
         private ViewLevelStageController(
-            CommonGameSettings          _GameSettings,
-            ViewSettings                _ViewSettings,
-            IViewGameTicker             _ViewGameTicker,
-            IModelGameTicker            _ModelGameTicker,
-            IModelGame                  _Model,
-            IManagersGetter             _Managers,
-            IViewCharacter              _Character,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IContainersGetter           _ContainersGetter,
-            IMazeShaker                 _MazeShaker,
-            IDialogPanelsSet            _DialogPanelsSet,
-            IProposalDialogViewer       _ProposalDialogViewer,
-            IViewMazeItemsGroupSet      _MazeItemsGroupSet,
-            IViewMazePathItemsGroup     _PathItemsGroup,
-            CompanyLogo                 _CompanyLogo,
-            IViewUIGameLogo             _GameLogo,
-            IRateGameDialogPanel        _RateGameDialogPanel,
-            IViewUILevelSkipper         _LevelSkipper,
-            IViewFullscreenTransitioner _FullscreenTransitioner,
-            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider)
+            ViewSettings                     _ViewSettings,
+            IViewGameTicker                  _ViewGameTicker,
+            IModelGameTicker                 _ModelGameTicker,
+            IModelGame                       _Model,
+            IManagersGetter                  _Managers,
+            IViewCharacter                   _Character,
+            IViewInputCommandsProceeder      _CommandsProceeder,
+            IContainersGetter                _ContainersGetter,
+            IMazeShaker                      _MazeShaker,
+            IDialogPanelsSet                 _DialogPanelsSet,
+            IProposalDialogViewer            _ProposalDialogViewer,
+            IViewMazeItemsGroupSet           _MazeItemsGroupSet,
+            IViewMazePathItemsGroup          _PathItemsGroup,
+            CompanyLogo                      _CompanyLogo,
+            IViewUIGameLogo                  _GameLogo,
+            IRateGameDialogPanel             _RateGameDialogPanel,
+            IViewFullscreenTransitioner      _FullscreenTransitioner,
+            IViewBetweenLevelAdLoader        _BetweenLevelAdLoader,
+            ICameraProvider                  _CameraProvider,
+            IColorProvider                   _ColorProvider,
+            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator)
         {
-            GameSettings           = _GameSettings;
-            ViewSettings           = _ViewSettings;
-            ViewGameTicker         = _ViewGameTicker;
-            ModelGameTicker        = _ModelGameTicker;
-            Model                  = _Model;
-            Managers               = _Managers;
-            Character              = _Character;
-            CommandsProceeder      = _CommandsProceeder;
-            ContainersGetter       = _ContainersGetter;
-            MazeShaker             = _MazeShaker;
-            DialogPanelsSet        = _DialogPanelsSet;
-            ProposalDialogViewer   = _ProposalDialogViewer;
-            MazeItemsGroupSet      = _MazeItemsGroupSet;
-            PathItemsGroup         = _PathItemsGroup;
-            CompanyLogo            = _CompanyLogo;
-            GameLogo               = _GameLogo;
-            RateGameDialogPanel    = _RateGameDialogPanel;
-            LevelSkipper           = _LevelSkipper;
-            FullscreenTransitioner = _FullscreenTransitioner;
-            BetweenLevelAdLoader   = _BetweenLevelAdLoader;
-            CameraProvider         = _CameraProvider;
-            ColorProvider          = _ColorProvider;
+            ViewSettings                = _ViewSettings;
+            ViewGameTicker              = _ViewGameTicker;
+            ModelGameTicker             = _ModelGameTicker;
+            Model                       = _Model;
+            Managers                    = _Managers;
+            Character                   = _Character;
+            CommandsProceeder           = _CommandsProceeder;
+            ContainersGetter            = _ContainersGetter;
+            MazeShaker                  = _MazeShaker;
+            DialogPanelsSet             = _DialogPanelsSet;
+            ProposalDialogViewer        = _ProposalDialogViewer;
+            MazeItemsGroupSet           = _MazeItemsGroupSet;
+            PathItemsGroup              = _PathItemsGroup;
+            CompanyLogo                 = _CompanyLogo;
+            GameLogo                    = _GameLogo;
+            RateGameDialogPanel         = _RateGameDialogPanel;
+            FullscreenTransitioner      = _FullscreenTransitioner;
+            BetweenLevelAdLoader        = _BetweenLevelAdLoader;
+            CameraProvider              = _CameraProvider;
+            ColorProvider               = _ColorProvider;
+            CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
         }
 
         #endregion
@@ -163,8 +158,8 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             PauseGameTickers(_Args.LevelStage == ELevelStage.Paused);
-            ProceedCameraEffects(_Args);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
+            CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
             ProceedMazeItems(_Args);
@@ -285,7 +280,8 @@ namespace RMAZOR.Views.Common
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(true);
-            FullscreenTransitioner.DoTextureTransition(false);
+            FullscreenTransitioner.DoTextureTransition(false, ViewSettings.betweenLevelTransitionTime);
+            CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(true);
         }
 
         private void OnLevelFinished(LevelStageArgs _Args)
@@ -337,7 +333,8 @@ namespace RMAZOR.Views.Common
             }
             void UnloadLevel()
             {
-                FullscreenTransitioner.DoTextureTransition(true);
+                CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
+                FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
                 PauseGameTickers(false);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);
@@ -441,21 +438,6 @@ namespace RMAZOR.Views.Common
         {
             ViewGameTicker.Pause = _Pause;
             ModelGameTicker.Pause = _Pause;
-        }
-
-        private void ProceedCameraEffects(LevelStageArgs _Args)
-        {
-            if (_Args.LevelStage != ELevelStage.Loaded)
-                return;
-            CameraProvider.EnableEffect(ECameraEffect.ColorGrading, true);
-            CameraProvider.SetEffectParameters(ECameraEffect.ColorGrading, new ColorGradingProps
-            {
-                Contrast = 0.35f,
-                Blur = 0.2f,
-                VignetteColor = ColorProvider.GetColor(ColorIds.Background1),
-                VignetteAmount = 0.085f,
-                VignetteSoftness = 0.5f
-            });
         }
 
         private void ProceedSounds(LevelStageArgs _Args)

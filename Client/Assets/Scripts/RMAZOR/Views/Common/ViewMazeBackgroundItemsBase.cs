@@ -36,14 +36,14 @@ namespace RMAZOR.Views.Common
         #region inject
 
         protected IColorProvider              ColorProvider    { get; }
-        protected IViewFullscreenTransitioner Transitioner     { get; }
+        protected IRendererAppearTransitioner Transitioner     { get; }
         protected IContainersGetter           ContainersGetter { get; }
         protected IViewGameTicker             GameTicker       { get; }
         protected ICameraProvider             CameraProvider   { get; }
 
         protected ViewMazeBackgroundItemsBase(
             IColorProvider              _ColorProvider,
-            IViewFullscreenTransitioner _Transitioner,
+            IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             ICameraProvider             _CameraProvider)

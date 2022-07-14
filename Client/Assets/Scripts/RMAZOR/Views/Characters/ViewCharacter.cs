@@ -41,19 +41,19 @@ namespace RMAZOR.Views.Characters
         private   IManagersGetter             Managers          { get; }
         private   IMazeShaker                 MazeShaker        { get; }
         private   IViewInputCommandsProceeder CommandsProceeder { get; }
-        protected   IViewGameTicker             ViewGameTicker    { get; }
+        protected IViewGameTicker             ViewGameTicker    { get; }
 
         protected ViewCharacter(
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
             IViewCharacterEffector      _Effector,
-            ICoordinateConverter        _CoordinateConverter, 
+            ICoordinateConverter        _CoordinateConverter,
             IModelGame                  _Model,
             IContainersGetter           _ContainersGetter,
             IManagersGetter             _Managers,
             IMazeShaker                 _MazeShaker,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewGameTicker _ViewGameTicker) 
+            IViewGameTicker             _ViewGameTicker) 
             : base(
                 _CoordinateConverter, 
                 _Model, 
@@ -65,7 +65,7 @@ namespace RMAZOR.Views.Characters
             Managers          = _Managers;
             MazeShaker        = _MazeShaker;
             CommandsProceeder = _CommandsProceeder;
-            ViewGameTicker = _ViewGameTicker;
+            ViewGameTicker    = _ViewGameTicker;
         }
         
         #endregion
@@ -79,9 +79,9 @@ namespace RMAZOR.Views.Characters
             get => m_Activated;
             set
             {
-                m_Activated = value;
-                Head.Activated = value;
-                Tail.Activated = value;
+                m_Activated        = value;
+                Head.Activated     = value;
+                Tail.Activated     = value;
                 Effector.Activated = value;
             }
         }
@@ -173,6 +173,7 @@ namespace RMAZOR.Views.Characters
                     EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
+                    m_IsMoving = false;
                     Managers.AudioManager.PlayClip(GetCharacterDeadAudioClipArgs());
                     Managers.HapticsManager.PlayPreset(EHapticsPresetType.Failure);
                     Cor.Run(MazeShaker.ShakeMazeCoroutine(1f, 0.5f));

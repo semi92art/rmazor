@@ -62,14 +62,15 @@ namespace RMAZOR.Views
         public  IManagersGetter               Managers               { get; }
         public  IViewBackground               Background             { get; }
         public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
+        private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
 
-        private IViewMazeCommon             Common                 { get; }
-        private IViewMazeForeground         Foreground             { get; }
-        private ICoordinateConverter  CoordinateConverter    { get; }
-        private IColorProvider              ColorProvider          { get; }
-        private ICameraProvider             CameraProvider         { get; }
-        private IBigDialogViewer            BigDialogViewer        { get; }
-        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
+        private IViewMazeCommon             Common              { get; }
+        private IViewMazeForeground         Foreground          { get; }
+        private ICoordinateConverter        CoordinateConverter { get; }
+        private IColorProvider              ColorProvider       { get; }
+        private ICameraProvider             CameraProvider      { get; }
+        private IBigDialogViewer            BigDialogViewer     { get; }
+        private IRendererAppearTransitioner AppearTransitioner  { get; }
 
         private ViewGame(
             IRemotePropertiesRmazor       _RemotePropertiesRmazor,
@@ -87,12 +88,13 @@ namespace RMAZOR.Views
             IViewMazeItemsGroupSet        _MazeItemsGroupSet,
             IViewMazePathItemsGroup       _PathItemsGroup,
             IManagersGetter               _Managers,
-            ICoordinateConverter    _CoordinateConverter,
+            ICoordinateConverter          _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
             IBigDialogViewer              _BigDialogViewer,
-            IViewFullscreenTransitioner   _FullscreenTransitioner,
-            IViewMazeAdditionalBackground _AdditionalBackground)
+            IRendererAppearTransitioner   _AppearTransitioner,
+            IViewMazeAdditionalBackground _AdditionalBackground,
+            IViewFullscreenTransitioner   _FullscreenTransitioner)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -113,8 +115,9 @@ namespace RMAZOR.Views
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
             BigDialogViewer              = _BigDialogViewer;
-            FullscreenTransitioner       = _FullscreenTransitioner;
+            AppearTransitioner           = _AppearTransitioner;
             AdditionalBackground         = _AdditionalBackground;
+            FullscreenTransitioner       = _FullscreenTransitioner;
         }
         
         #endregion
@@ -186,6 +189,7 @@ namespace RMAZOR.Views
                 MazeRotation,
                 PathItemsGroup,
                 MazeItemsGroupSet,
+                AppearTransitioner,
                 FullscreenTransitioner,
                 Foreground,
                 Background

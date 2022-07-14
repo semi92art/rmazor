@@ -67,7 +67,7 @@ namespace RMAZOR.Views.MazeItems
             IContainersGetter             _ContainersGetter,
             IViewGameTicker               _GameTicker,
             IViewBackground               _Background,
-            IViewFullscreenTransitioner   _Transitioner,
+            IRendererAppearTransitioner   _Transitioner,
             IManagersGetter               _Managers,
             IColorProvider                _ColorProvider,
             IViewInputCommandsProceeder   _CommandsProceeder,
@@ -128,8 +128,8 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!Initialized)
             {
-                Projectile.Init();
-                ProjectileFake.Init();
+                Projectile.Init(false);
+                ProjectileFake.Init(true);
                 ProjectileFake.Tail.HideTail();
             }
             base.UpdateState(_Props);
@@ -171,7 +171,7 @@ namespace RMAZOR.Views.MazeItems
             if (AppearingState == EAppearingState.Appearing)
                 return;
             if (!m_ProjRotating)
-                Projectile.ContainerTransform.localRotation = ProjectileFake.ContainerTransform.localRotation;
+                Projectile.ProjectileTransform.localRotation = ProjectileFake.ProjectileTransform.localRotation;
             else
             {
                 var angles = Vector3.forward * m_RotatingSpeed * GameTicker.DeltaTime;
@@ -437,12 +437,10 @@ namespace RMAZOR.Views.MazeItems
         {
             if (_Appear)
             {
-                Projectile.Show(true);
-                ProjectileFake.Show(false);
                 Projectile.Tail.HideTail();
                 ProjectileFake.Tail.HideTail();
-                m_ProjRotating             = false;
-                m_HolderBorder.enabled     = true;
+                m_ProjRotating         = false;
+                m_HolderBorder.enabled = true;
                 OpenBarrel(false, true);
                 Cor.Run(AnimateFakeProjectileBeforeShoot());
             }

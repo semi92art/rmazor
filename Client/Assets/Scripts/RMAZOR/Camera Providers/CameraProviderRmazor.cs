@@ -1,4 +1,5 @@
 ﻿using System;
+using Common;
 using Common.CameraProviders;
 using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
@@ -6,7 +7,10 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
+using Common.Ticker;
+using Common.Utils;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace RMAZOR.Camera_Providers
@@ -37,12 +41,16 @@ namespace RMAZOR.Camera_Providers
         #endregion
 
         #region inject
-        
-        private IPrefabSetManager PrefabSetManager { get; }
 
-        protected CameraProviderRmazor(IPrefabSetManager _PrefabSetManager)
+        private   IPrefabSetManager PrefabSetManager { get; }
+        protected IViewGameTicker   ViewGameTicker   { get; }
+
+        protected CameraProviderRmazor(
+            IPrefabSetManager _PrefabSetManager,
+            IViewGameTicker   _ViewGameTicker)
         {
             PrefabSetManager = _PrefabSetManager;
+            ViewGameTicker   = _ViewGameTicker;
         }
 
         #endregion
@@ -63,20 +71,33 @@ namespace RMAZOR.Camera_Providers
         }
         public Camera    Camera => LevelCameraInitialized ? LevelCamera : Camera.main;
 
-        public void SetEffectParameters<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps
+        public void SetEffectProps<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps
         {
+            void ShowTypeError<T1>() where T1 : ICameraEffectProps
+            {
+                Dbg.LogError($"_Args must have type {typeof(T1)}," +
+                             $" but has type {_Args.GetType()}");
+            }
             switch (_Effect)
             {
                 case ECameraEffect.DepthOfField:
                 {
-                    var props = _Args as FastDofProps;
+                    if (!(_Args is FastDofProps props))
+                    {
+                        ShowTypeError<FastDofProps>();
+                        break;
+                    }
                     if (props!.BlurAmount.HasValue)
                         m_DepthOfField.BlurAmount = props.BlurAmount.Value;
                 }
                     break;
                 case ECameraEffect.Glitch:
                 {
-                    var props = _Args as FastGlitchProps;
+                    if (!(_Args is FastGlitchProps props))
+                    {
+                        ShowTypeError<FastGlitchProps>();
+                        break;
+                    }
                     if (props!.ChromaticGlitch.HasValue) m_FastGlitch.ChromaticGlitch = props.ChromaticGlitch.Value;
                     if (props.FrameGlitch.HasValue)      m_FastGlitch.FrameGlitch     = props.FrameGlitch.Value;
                     if (props.PixelGlitch.HasValue)      m_FastGlitch.PixelGlitch     = props.PixelGlitch.Value;
@@ -84,7 +105,11 @@ namespace RMAZOR.Camera_Providers
                     break;
                 case ECameraEffect.ColorGrading:
                 {
-                    var props = _Args as ColorGradingProps;
+                    if (!(_Args is ColorGradingProps props))
+                    {
+                        ShowTypeError<ColorGradingProps>();
+                        break;
+                    }
                     if (props!.Color.HasValue)            m_ColorGrading.Color            = props.Color.Value;
                     if (props.Hue.HasValue)               m_ColorGrading.Hue              = props.Hue.Value;
                     if (props.Contrast.HasValue)          m_ColorGrading.Contrast         = props.Contrast.Value;
@@ -101,7 +126,11 @@ namespace RMAZOR.Camera_Providers
                     break;
                 case ECameraEffect.ChromaticAberration:
                 {
-                    var props = _Args as ChromaticAberrationProps;
+                    if (!(_Args is ChromaticAberrationProps props))
+                    {
+                        ShowTypeError<ChromaticAberrationProps>();
+                        break;
+                    }
                     if (props!.RedX.HasValue) m_ChromaticAberration.RedX  = props.RedX.Value;
                     if (props.RedY.HasValue)  m_ChromaticAberration.RedY  = props.RedY.Value;
                     if (props.BlueX.HasValue) m_ChromaticAberration.BlueX = props.BlueX.Value;
@@ -112,15 +141,139 @@ namespace RMAZOR.Camera_Providers
                     break;
                 case ECameraEffect.AntiAliasing:
                 {
-                    var props = _Args as FxaaProps;
+                    if (!(_Args is FxaaProps props))
+                    {
+                        ShowTypeError<FxaaProps>();
+                        break;
+                    }
                     if (props!.Sharpness.HasValue) m_Fxaa.Sharpness = props.Sharpness.Value;
                     if (props.Threshold.HasValue)  m_Fxaa.Sharpness = props.Threshold.Value;
                 }
                     break;
                 case ECameraEffect.Pixelate:
                 {
-                    var props = _Args as PixelateProps;
+                    if (!(_Args is PixelateProps props))
+                    {
+                        ShowTypeError<PixelateProps>();
+                        break;
+                    }
                     if (props!.Density.HasValue) m_Pixelate.Dencity = props.Density.Value;
+                }
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Effect);
+            }
+        }
+
+        public void AnimateEffectProps<T>(ECameraEffect _Effect, T _From, T _To, float _Duration) where T : ICameraEffectProps
+        {
+            void ShowTypeError<T1>() where T1 : ICameraEffectProps
+            {
+                Dbg.LogError($"_From and _To must have type {typeof(T1)}," +
+                             $" but have types {_From.GetType()} and {_To.GetType()}");
+            }
+            switch (_Effect)
+            {
+                case ECameraEffect.DepthOfField:
+                {
+                    if (!(_From is FastDofProps from) || !(_To is FastDofProps to))
+                    {
+                        ShowTypeError<FastDofProps>();
+                        break;
+                    }
+                    if (from.BlurAmount.HasValue && to.BlurAmount.HasValue)
+                        AnimateEffectParameter(_V => m_DepthOfField.BlurAmount = _V, from.BlurAmount.Value, to.BlurAmount.Value, _Duration);
+                }
+                    break;
+                case ECameraEffect.Glitch:
+                {
+                    if (!(_From is FastGlitchProps from) || !(_To is FastGlitchProps to))
+                    {
+                        ShowTypeError<FastGlitchProps>();
+                        break;
+                    }
+                    if (from.ChromaticGlitch.HasValue && to.ChromaticGlitch.HasValue)
+                        AnimateEffectParameter(_V => m_FastGlitch.ChromaticGlitch = _V, from.ChromaticGlitch.Value, to.ChromaticGlitch.Value, _Duration);
+                    if (from.FrameGlitch.HasValue && to.FrameGlitch.HasValue)
+                        AnimateEffectParameter(_V => m_FastGlitch.FrameGlitch = _V, from.FrameGlitch.Value, to.FrameGlitch.Value, _Duration);
+                    if (from.PixelGlitch.HasValue && to.PixelGlitch.HasValue)
+                        AnimateEffectParameter(_V => m_FastGlitch.PixelGlitch = _V, from.PixelGlitch.Value, to.PixelGlitch.Value, _Duration);
+                }
+                    break;
+                case ECameraEffect.ColorGrading:
+                {
+                    if (!(_From is ColorGradingProps from) || !(_To is ColorGradingProps to))
+                    {
+                        ShowTypeError<ColorGradingProps>();
+                        break;
+                    }
+                    if (from.Color.HasValue && to.Color.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Color = _V, from.Color.Value, to.Color.Value, _Duration);
+                    if (from.Hue.HasValue && to.Hue.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Hue = _V, from.Hue.Value, to.Hue.Value, _Duration);
+                    if (from.Contrast.HasValue && to.Contrast.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Contrast = _V, from.Contrast.Value, to.Contrast.Value, _Duration);
+                    if (from.Brightness.HasValue && to.Brightness.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Brightness = _V, from.Brightness.Value, to.Brightness.Value, _Duration);
+                    if (from.Saturation.HasValue && to.Saturation.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Saturation = _V, from.Saturation.Value, to.Saturation.Value, _Duration);
+                    if (from.Exposure.HasValue && to.Exposure.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Exposure = _V, from.Exposure.Value, to.Exposure.Value, _Duration);
+                    if (from.Gamma.HasValue && to.Gamma.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Gamma = _V, from.Gamma.Value, to.Gamma.Value, _Duration);
+                    if (from.Sharpness.HasValue && to.Sharpness.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Sharpness = _V, from.Sharpness.Value, to.Sharpness.Value, _Duration);
+                    if (from.Blur.HasValue && to.Blur.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.Blur = _V, from.Blur.Value, to.Blur.Value, _Duration);
+                    if (from.VignetteColor.HasValue && to.VignetteColor.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.VignetteColor = _V, from.VignetteColor.Value, to.VignetteColor.Value, _Duration);
+                    if (from.VignetteSoftness.HasValue && to.VignetteSoftness.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.VignetteSoftness = _V, from.VignetteSoftness.Value, to.VignetteSoftness.Value, _Duration);
+                    if (from.VignetteAmount.HasValue && to.VignetteAmount.HasValue)
+                        AnimateEffectParameter(_V => m_ColorGrading.VignetteAmount = _V, from.VignetteAmount.Value, to.VignetteAmount.Value, _Duration);
+                }
+                    break;
+                case ECameraEffect.ChromaticAberration:
+                {
+                    if (!(_From is ChromaticAberrationProps from) || !(_To is ChromaticAberrationProps to))
+                    {
+                        ShowTypeError<ChromaticAberrationProps>();
+                        break;
+                    }
+                    if (from.RedX.HasValue && to.RedX.HasValue)
+                        AnimateEffectParameter(_V => m_ChromaticAberration.RedX = _V, from.RedX.Value, to.RedX.Value, _Duration);
+                    if (from.RedY.HasValue && to.RedY.HasValue)
+                        AnimateEffectParameter(_V => m_ChromaticAberration.RedY = _V, from.RedY.Value, to.RedY.Value, _Duration);
+                    if (from.BlueX.HasValue && to.BlueX.HasValue)
+                        AnimateEffectParameter(_V => m_ChromaticAberration.BlueX = _V, from.BlueX.Value, to.BlueX.Value, _Duration);
+                    if (from.BlueY.HasValue && to.BlueY.HasValue)
+                        AnimateEffectParameter(_V => m_ChromaticAberration.BlueY = _V, from.BlueY.Value, to.BlueY.Value, _Duration);
+                    if (from.FishEyeDistortion.HasValue && to.FishEyeDistortion.HasValue)
+                        AnimateEffectParameter(_V => m_ChromaticAberration.FishEyeDistortion = _V, from.FishEyeDistortion.Value, to.FishEyeDistortion.Value, _Duration);
+                }
+                    break;
+                case ECameraEffect.AntiAliasing:
+                {
+                    if (!(_From is FxaaProps from) || !(_To is FxaaProps to))
+                    {
+                        ShowTypeError<FxaaProps>();
+                        break;
+                    }
+                    if (from.Sharpness.HasValue && to.Sharpness.HasValue)
+                        AnimateEffectParameter(_V => m_Fxaa.Sharpness = _V, from.Sharpness.Value, to.Sharpness.Value, _Duration);
+                    if (from.Threshold.HasValue && to.Threshold.HasValue)
+                        AnimateEffectParameter(_V => m_Fxaa.Threshold = _V, from.Threshold.Value, to.Threshold.Value, _Duration);
+                }
+                    break;
+                case ECameraEffect.Pixelate:
+                {
+                    if (!(_From is PixelateProps from) || !(_To is PixelateProps to))
+                    {
+                        ShowTypeError<PixelateProps>();
+                        break;
+                    }
+                    if (from.Density.HasValue && to.Density.HasValue)
+                        AnimateEffectParameter(_V => m_Pixelate.Dencity = _V, from.Density.Value, to.Density.Value, _Duration);
                 }
                     break;
                 default:
@@ -177,7 +330,7 @@ namespace RMAZOR.Camera_Providers
         {
             if (LevelCamera.IsNotNull())
                 return;
-            var obj = PrefabSetManager.InitPrefab(null, PrefabSetName, "level_camera");
+            var obj = GameObject.Find("Level Camera");
             LevelCameraTr = obj.transform;
             LevelCamera = obj.GetComponent<Camera>();
             LevelCameraInitialized = true;
@@ -230,6 +383,50 @@ namespace RMAZOR.Camera_Providers
         {
             m_Pixelate = LevelCamera.GetCompItem<Pixellate>("pixelate");
             m_Pixelate.enabled = false;
+        }
+
+        private void AnimateEffectParameter(
+            UnityAction<float> _UpdateValue,
+            float              _From,
+            float              _To,
+            float              _Duration)
+        {
+            Cor.Run(Cor.Lerp(
+                ViewGameTicker,
+                _Duration,
+                _From,
+                _To,
+                _UpdateValue));
+        }
+        
+        private void AnimateEffectParameter(
+            UnityAction<int> _UpdateValue,
+            int              _From,
+            int              _To,
+            float            _Duration)
+        {
+            Cor.Run(Cor.Lerp(
+                ViewGameTicker,
+                _Duration,
+                _From,
+                _To,
+                _P => _UpdateValue((int)_P)));
+        }
+        
+        private void AnimateEffectParameter(
+            UnityAction<Color> _UpdateValue,
+            Color              _From,
+            Color              _To,
+            float              _Duration)
+        {
+            Cor.Run(Cor.Lerp(
+                ViewGameTicker,
+                _Duration,
+                _OnProgress: _P =>
+                {
+                    var val = Color.Lerp(_From, _To, _P);
+                    _UpdateValue(val);
+                }));
         }
         
         #endregion

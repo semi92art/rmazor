@@ -20,6 +20,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         Transform                 ContainerTransform  { get; }
         Transform                 ProjectileTransform { get; }
         
+        void                      Init(bool _Fake);
         void                      SetSortingOrder(int _Order);
         void                      SetStencilRefId(int _RefId);
         void                      Show(bool _Show);
@@ -36,6 +37,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private GameObject        m_Turret;
         private SpriteRenderer    m_BorderRenderer;
         private SpriteRenderer    m_MainRenderer;
+        private bool              m_Fake;
         
         #endregion
 
@@ -44,15 +46,17 @@ namespace RMAZOR.Views.MazeItems.Additional
         private IContainersGetter           ContainersGetter { get; }
         private IPrefabSetManager           PrefabSetManager { get; }
         private IColorProvider              ColorProvider    { get; }
-        private IViewFullscreenTransitioner Transitioner     { get; }
+        private IRendererAppearTransitioner Transitioner     { get; }
 
         private ViewTurretProjectileShuriken(
-            IViewTurretProjectileTail     _Tail,
-            IContainersGetter             _ContainersGetter,
-            IPrefabSetManager             _PrefabSetManager,
-            IColorProvider                _ColorProvider,
-            IViewFullscreenTransitioner _Transitioner)
+            ViewSettings                _ViewSettings,
+            IViewTurretProjectileTail   _Tail,
+            IContainersGetter           _ContainersGetter,
+            IPrefabSetManager           _PrefabSetManager,
+            IColorProvider              _ColorProvider,
+            IRendererAppearTransitioner _Transitioner)
         {
+            ViewSettings     = _ViewSettings;
             Tail             = _Tail;
             ContainersGetter = _ContainersGetter;
             PrefabSetManager = _PrefabSetManager;
@@ -63,13 +67,15 @@ namespace RMAZOR.Views.MazeItems.Additional
         #endregion
 
         #region api
-        
-        public IViewTurretProjectileTail Tail                { get; }
-        public Transform                 ContainerTransform  => m_Projectile.transform;
-        public Transform                 ProjectileTransform => m_MainRenderer.transform;
-        public EAppearingState           AppearingState { get; private set; }
+
+        private ViewSettings              ViewSettings        { get; }
+        public  IViewTurretProjectileTail Tail                { get; }
+        public  Transform                 ContainerTransform  => m_Projectile.transform;
+        public  Transform                 ProjectileTransform => m_MainRenderer.transform;
+        public  EAppearingState           AppearingState      { get; private set; }
 
         public object Clone() => new ViewTurretProjectileShuriken(
+            ViewSettings,
             Tail.Clone() as IViewTurretProjectileTail,
             ContainersGetter,
             PrefabSetManager,
@@ -78,10 +84,15 @@ namespace RMAZOR.Views.MazeItems.Additional
         
         public override void Init()
         {
+            throw new NotSupportedException();
+        }
+        
+        public void Init(bool _Fake)
+        {
             if (Initialized) 
                 return;
             ColorProvider.ColorChanged += OnColorChanged;
-            InitShape();
+            InitShape(_Fake);
             Tail.Init(m_Projectile);
             base.Init();
         }
@@ -91,7 +102,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             m_MainRenderer.enabled = _Show;
             m_BorderRenderer.enabled = _Show;
         }
-
+        
         public void SetSortingOrder(int _Order)
         {
             m_MainRenderer.sortingOrder = _Order;
@@ -116,6 +127,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                     Transitioner.DoAppearTransition(
                         _Appear,
                         GetAppearSets(_Appear),
+                        ViewSettings.betweenLevelTransitionTime,
                         () => OnAppearFinish(_Appear));
                 }));
         }
@@ -137,12 +149,13 @@ namespace RMAZOR.Views.MazeItems.Additional
             }
         }
         
-        private void InitShape()
+        private void InitShape(bool _Fake)
         {
+            m_Fake = _Fake;
             var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             m_Projectile =  PrefabSetManager.InitPrefab(
                 projParent, "views", "turret_projectile");
-            m_Projectile.name = "Turret Projectile";
+            m_Projectile.name = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
             m_MainRenderer = m_Projectile.GetCompItem<SpriteRenderer>("projectile");
             m_BorderRenderer = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
             m_MainRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
@@ -157,8 +170,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (!_Appear) 
                 return;
-            m_MainRenderer.enabled = true;
-            m_BorderRenderer.enabled = true;
+            Show(!m_Fake);
         }
 
         protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

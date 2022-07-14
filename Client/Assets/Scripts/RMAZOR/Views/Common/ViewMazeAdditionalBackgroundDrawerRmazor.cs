@@ -66,7 +66,7 @@ namespace RMAZOR.Views.Common
         private IContainersGetter           ContainersGetter    { get; }
         private ICoordinateConverter  CoordinateConverter { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
-        private IViewFullscreenTransitioner Transitioner        { get; }
+        private IRendererAppearTransitioner Transitioner        { get; }
         
         private ViewMazeAdditionalBackgroundDrawerRmazor(
             ViewSettings                _ViewSettings,
@@ -74,7 +74,7 @@ namespace RMAZOR.Views.Common
             IContainersGetter           _ContainersGetter,
             ICoordinateConverter  _CoordinateConverter,
             IPrefabSetManager           _PrefabSetManager,
-            IViewFullscreenTransitioner _Transitioner)
+            IRendererAppearTransitioner _Transitioner)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -122,10 +122,9 @@ namespace RMAZOR.Views.Common
                 {new[] {m_TextureRendererBack}, () => back1Col},
                 {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
-            Transitioner.DoAppearTransition(_Appear, dict, () =>
-            {
-                AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-            });
+            Transitioner.DoAppearTransition(_Appear, dict,
+                ViewSettings.betweenLevelTransitionTime,
+                () => AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared);
         }
         
         #endregion

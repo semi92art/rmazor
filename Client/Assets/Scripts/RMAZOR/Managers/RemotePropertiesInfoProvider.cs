@@ -90,7 +90,7 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(int), "first_level_to_rate_game",
                     _Value => ViewSettings.firstLevelToRateGame = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(filter, typeof(float), "maze_item_transition_time",
-                    _Value => ViewSettings.mazeItemTransitionTime = Convert.ToSingle(_Value)),
+                    _Value => ViewSettings.betweenLevelTransitionTime = Convert.ToSingle(_Value)),
 
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => CommonGameSettings.firstLevelToShowAds = Convert.ToInt32(_Value)),

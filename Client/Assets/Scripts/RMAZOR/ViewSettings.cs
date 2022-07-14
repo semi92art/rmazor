@@ -25,8 +25,7 @@ namespace RMAZOR
         public float  afterRotationEnableMoveDelay;
         public int    levelsCountMain;
         public int    firstLevelToRateGame;
-        public float  mazeItemTransitionTime;
-        public float  mazeItemTransitionDelayCoefficient;
+        public float  betweenLevelTransitionTime;
         public float  spearProjectileSpeed;
         public float  spearRotationSpeed;
         public string additionalBackTexturesInUse;

@@ -32,7 +32,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             ICoordinateConverter  _CoordinateConverter,
-            IViewFullscreenTransitioner _Transitioner)
+            IRendererAppearTransitioner _Transitioner)
             : base(
                 _Model,
                 _GameTicker,

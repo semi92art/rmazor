@@ -138,17 +138,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Color: {r: 1, g: 1, b: 1, a: 1}
   Hue: 0
-  Contrast: 0.362
+  Contrast: 0
   Brightness: 0
   Saturation: 0
   Exposure: 0
-  Gamma: -0.01
+  Gamma: 0
   Sharpness: 0
-  Blur: 0.365
+  Blur: 0
   BlurMask: {fileID: 2800000, guid: d757e85365d4cba4ba68f438fefd7d3b, type: 3}
   VignetteColor: {r: 0.1137255, g: 0.019607844, b: 0.019607844, a: 1}
-  VignetteAmount: 0.084
-  VignetteSoftness: 0.447
+  VignetteAmount: 0
+  VignetteSoftness: 0.001
   material: {fileID: 2100000, guid: f04e630018f946b428a07a09856d123a, type: 2}
 --- !u!114 &4521276296573485175
 MonoBehaviour:
