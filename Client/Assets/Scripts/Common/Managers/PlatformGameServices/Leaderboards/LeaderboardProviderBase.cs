@@ -130,7 +130,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
             {
                 var scoreField = _Fields.First();
                 scoreField.SetValue(_Value).Save(true);
-                Cor.RunSync(() =>
+                Cor.Run(Cor.Action(() =>
                 {
                     var entity = new ScoresEntity
                     {
@@ -139,7 +139,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
                     };
                     var args = new ScoresEventArgs(entity);
                     ScoresChanged?.Invoke(args);
-                });
+                }));
             });
         }
     }

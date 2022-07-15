@@ -36,18 +36,21 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         }
         
         protected readonly List<ShapeRenderer> Shapes = new List<ShapeRenderer>();
-        protected          Collider2D          Coll;
-        protected          Rigidbody2D         Rigidbody { get; set; }
+        
+        protected Collider2D  Coll;
+        protected Rigidbody2D Rigidbody;
+        private   float       m_DefaultScale;
+        private   float       m_DefaultThickness;
 
         #endregion
 
         #region inject
 
-        protected IPrefabSetManager          PrefabSetManager    { get; }
+        protected IPrefabSetManager    PrefabSetManager    { get; }
         protected ICoordinateConverter CoordinateConverter { get; }
 
         protected ViewMazeBackgroundIdleItemBase(
-            IPrefabSetManager          _PrefabSetManager,
+            IPrefabSetManager    _PrefabSetManager,
             ICoordinateConverter _CoordinateConverter)
         {
             PrefabSetManager    = _PrefabSetManager;
@@ -74,10 +77,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             set => Obj.transform.SetPosXY(value);
         }
 
-        public abstract          object Clone();
-        public          abstract void   SetParams(float _Scale,  float             _Thickness);
-        public abstract          void   Init(Transform  _Parent, PhysicsMaterial2D _Material);
-        public abstract          void   SetColor(Color  _Color);
+        public virtual void SetParams(float _Scale, float _Thickness)
+        {
+            m_DefaultScale = _Scale;
+            m_DefaultThickness = _Thickness;
+        }
+        
+        public abstract object Clone();
+        public abstract void   Init(Transform  _Parent, PhysicsMaterial2D _Material);
+        public abstract void   SetColor(Color  _Color);
 
         public void SetVelocity(Vector2 _Velocity, float _AngularVelocity)
         {
@@ -89,7 +97,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            Obj.transform.SetLocalScaleXY(CoordinateConverter.Scale * Vector2.one);
+            Obj.transform.SetLocalScaleXY(m_DefaultScale * CoordinateConverter.Scale * Vector2.one);
         }
 
         #endregion

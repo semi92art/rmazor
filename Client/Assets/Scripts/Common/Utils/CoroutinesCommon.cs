@@ -135,7 +135,6 @@ namespace Common.Utils
                     return Time.time;
                 return _FixedUpdate ? _Ticker.FixedTime : _Ticker.Time;
             }
-
             float currTime = GetTime();
             float progress = _From;
             bool breaked = false;
@@ -156,12 +155,10 @@ namespace Common.Utils
                 if (_ProgressFormula != null)
                     progress = _ProgressFormula(progress);
                 _OnProgress(progress);
-                if (_Ticker == null)
-                    yield return new WaitForEndOfFrame();
-                else if (_FixedUpdate)
+                if (_FixedUpdate)
                     yield return new WaitForFixedUpdate();
-                else 
-                    yield return new WaitForSeconds(_Ticker.DeltaTime);
+                else
+                    yield return new WaitForEndOfFrame();
             }
             if (_BreakPredicate != null && _BreakPredicate())
                 breaked = true;

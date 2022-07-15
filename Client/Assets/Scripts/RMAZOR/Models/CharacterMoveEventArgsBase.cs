@@ -27,11 +27,17 @@ namespace RMAZOR.Models
 
     public class CharacterMovingStartedEventArgs : CharacterMoveEventArgsBase
     {
+        public bool StartFromPortal { get; }
+
         public CharacterMovingStartedEventArgs(
             EMazeMoveDirection _Direction,
-            V2Int _From, 
-            V2Int _To)
-            : base(_Direction, _From, _To, 0) { }
+            V2Int              _From,
+            V2Int              _To,
+            bool               _StartFromPortal)
+            : base(_Direction, _From, _To, 0)
+        {
+            StartFromPortal = _StartFromPortal;
+        }
     }
     
     public class CharacterMovingContinuedEventArgs : CharacterMoveEventArgsBase

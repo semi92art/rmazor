@@ -132,6 +132,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            CameraEffectsCustomAnimator.Init();
             CommandsProceeder.Command += OnCommand;
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
@@ -357,6 +358,7 @@ namespace RMAZOR.Views.Common
         private void OnLevelUnloaded(LevelStageArgs _Args)
         {
             var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
+            Dbg.Log("scoreEntity is null: " + (scoreEntity == null));
             Cor.Run(Cor.WaitWhile(
                 () => scoreEntity.Result == EEntityResult.Pending,
                 () =>

@@ -2,7 +2,6 @@
 using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -10,7 +9,6 @@ using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Helpers;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
@@ -117,7 +115,6 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         
         protected override void InitItems()
         {
-            const float multiplier = 0.5f;
             var physicsMaterial = PrefabSetManager.GetObject<PhysicsMaterial2D>(
                 "background",
                 "background_idle_items_physics_material");
@@ -134,6 +131,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 squareItem  .Init(Container, physicsMaterial);
                 triangleItem.Init(Container, physicsMaterial);
                 
+                const float multiplier = 0.2f;
                 float coeff = 1f + RandomGen.NextFloat() * 1f;
                 discItem    .SetParams(multiplier * coeff, 0.1f);
                 squareItem  .SetParams(3f * multiplier * coeff, 0.1f);

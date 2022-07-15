@@ -105,6 +105,11 @@ namespace RMAZOR.Views.Characters
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             m_MoveCount++;
+            if (_Args.StartFromPortal)
+            {
+                m_Tail.A = m_Tail.B = m_Tail.C = Vector3.zero;
+                m_TailBorder.A = m_TailBorder.B = m_TailBorder.C = Vector3.zero;
+            }
             m_CharacterPositionOnMoveStart = GetCharacterObjects().Transform.position;
             m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail));
             m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2));

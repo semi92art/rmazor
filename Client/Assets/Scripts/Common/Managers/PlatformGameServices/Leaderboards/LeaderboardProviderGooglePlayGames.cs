@@ -32,6 +32,28 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
 
         #region api
 
+        public override ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
+        {
+            var entity = base.GetScoreFromLeaderboard(_Key, _FromCache);
+            return entity ?? GetScoreAndroid(_Key);
+        }
+
+        public override bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
+        {
+            base.SetScoreToLeaderboard(_Key, _Value, _OnlyToCache);
+            if (!_OnlyToCache)
+                SetScoreAndroid(_Key, _Value);
+            return true;
+        }
+
+        public override bool ShowLeaderboard(ushort _Key)
+        {
+            if (!base.ShowLeaderboard(_Key))
+                return false;
+            ShowLeaderboardAndroid(_Key);
+            return true;
+        }
+
         #endregion
 
         #region nonpublic methods

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Common;
+﻿using Common;
 using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
@@ -128,7 +127,8 @@ namespace RMAZOR.Controllers
                     View.Settings, 
                     Model.LevelStaging,
                     View.Managers, 
-                    View.CommandsProceeder);
+                    View.CommandsProceeder,
+                    View.CameraProvider);
             View.Managers.DebugManager.Init();
         }
 

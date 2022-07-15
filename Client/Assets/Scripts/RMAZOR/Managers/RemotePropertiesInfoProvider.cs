@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Entities;
 using Common.Helpers;
 using Common.Managers.Advertising;
@@ -130,6 +131,12 @@ namespace RMAZOR.Managers
                             Convert.ToString(_Value), converter);
                     },
                     true),
+                new RemoteConfigPropertyInfo(filter, typeof(string), "color_grading_props_1",
+                    _Value =>
+                    {
+                        RemoteProperties.ColorGradingProps =
+                            JsonConvert.DeserializeObject<ColorGradingProps>(Convert.ToString(_Value));
+                    }, true),
 
                 new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids",
                     _Value => { },
@@ -174,6 +181,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("moving_trap_pause"),
                 CommonUtils.StringToHash("spear_projectile_speed"),
                 CommonUtils.StringToHash("inapp_notifications_list"),
+                CommonUtils.StringToHash("color_grading_props_1"),
             }.Select(_Id => (ushort) _Id)
                 .ToArray();
             return new GameDataFieldFilter(

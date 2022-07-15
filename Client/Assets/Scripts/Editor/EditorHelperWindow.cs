@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Common;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Exceptions;
@@ -238,6 +239,18 @@ namespace Editor
                     }
                 };
                 string json = JsonConvert.SerializeObject(set);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Default color grading props set", () =>
+            {
+                var colorGradingProps = new ColorGradingProps
+                {
+                    Contrast       = 0.35f,
+                    Blur           = 0.2f,
+                    Saturation     = 0.3f,
+                    VignetteAmount = 0.05f
+                };
+                string json = JsonConvert.SerializeObject(colorGradingProps);
                 CommonUtils.CopyToClipboard(json);
             });
         }

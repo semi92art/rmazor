@@ -42,6 +42,7 @@ namespace RMAZOR.Views
         IManagersGetter               Managers             { get; }
         IViewBackground               Background           { get; }
         IViewMazeAdditionalBackground AdditionalBackground { get; }
+        ICameraProvider               CameraProvider       { get; }
     }
     
     public class ViewGame : InitBase, IViewGame
@@ -63,12 +64,12 @@ namespace RMAZOR.Views
         public  IViewBackground               Background             { get; }
         public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
         private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
-
+        public  ICameraProvider               CameraProvider         { get; }
+ 
         private IViewMazeCommon             Common              { get; }
         private IViewMazeForeground         Foreground          { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IColorProvider              ColorProvider       { get; }
-        private ICameraProvider             CameraProvider      { get; }
         private IBigDialogViewer            BigDialogViewer     { get; }
         private IRendererAppearTransitioner AppearTransitioner  { get; }
 

@@ -23,7 +23,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region inject
         
         private ViewMazeBackgroundIdleItemTriangle(
-            IPrefabSetManager          _PrefabSetManager,
+            IPrefabSetManager    _PrefabSetManager,
             ICoordinateConverter _CoordinateConverter)
             : base(_PrefabSetManager, _CoordinateConverter) { }
 
@@ -69,6 +69,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             m_Border.Thickness = _Thickness * 0.5f;
             Rigidbody.mass = GetTriangleArea(m_Triangle.A, m_Triangle.B, m_Triangle.C) * _Scale;
             Obj.transform.rotation = Quaternion.Euler(0f, 0f, Random.value * 360f);
+            base.SetParams(_Scale, _Thickness);
         }
 
         #endregion

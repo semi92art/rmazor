@@ -23,7 +23,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region inject
         
         private ViewMazeBackgroundIdleItemDisc(
-            IPrefabSetManager          _PrefabSetManager,
+            IPrefabSetManager    _PrefabSetManager,
             ICoordinateConverter _CoordinateConverter) 
             : base(_PrefabSetManager, _CoordinateConverter) { }
 
@@ -68,6 +68,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             Obj.transform.SetLocalScaleXY(Vector2.one * _Scale);
             m_Border.SetThickness(_Thickness);
             Rigidbody.mass = _Scale;
+            base.SetParams(_Scale, _Thickness);
         }
 
         #endregion

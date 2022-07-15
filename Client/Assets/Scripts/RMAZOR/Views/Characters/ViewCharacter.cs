@@ -1,4 +1,5 @@
-﻿using Common.Constants;
+﻿using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
@@ -126,6 +127,8 @@ namespace RMAZOR.Views.Characters
         {
             if (!EnableMoving)
                 return;
+            var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
+            SetPosition(pos);
             m_IsMoving = true;
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
@@ -145,8 +148,12 @@ namespace RMAZOR.Views.Characters
         {
             if (!EnableMoving)
                 return;
-            if (_Args.BlockOnFinish != null && _Args.BlockOnFinish.Type == EMazeItemType.Springboard)
+            if (_Args.BlockOnFinish != null &&
+                (_Args.BlockOnFinish.Type == EMazeItemType.Springboard
+                 || _Args.BlockOnFinish.Type == EMazeItemType.Portal))
+            {
                 return;
+            }
             m_IsMoving = false;
             var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.To);
             SetPosition(pos);

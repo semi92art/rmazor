@@ -40,7 +40,8 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         public override bool SetScoreToLeaderboard(ushort _Key, long _Value, bool _OnlyToCache)
         {
             base.SetScoreToLeaderboard(_Key, _Value, _OnlyToCache);
-            SetScoreIos(_Key, _Value);
+            if (!_OnlyToCache)
+                SetScoreIos(_Key, _Value);
             return true;
         }
 

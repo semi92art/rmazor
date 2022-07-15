@@ -207,6 +207,8 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void ProceedTouchForMove(LeanFinger _Finger)
         {
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f) 
+                return;
             if (m_TouchForMoveTimer > SwipeThresholdSeconds && Mathf.Abs(m_TouchForMoveTimer) > MathUtils.Epsilon)
             {
                 m_TouchForMoveTimer = 0;
@@ -236,6 +238,8 @@ namespace RMAZOR.Views.InputConfigurators
             if (!ProceedRotation)
                 return;
             if (!m_EnableRotation)
+                return;
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f) 
                 return;
             var pos = _Finger.ScreenPosition;
             for (int i = m_TouchPositionsQueue2.Count - 1; i >= 0; i--)
@@ -362,7 +366,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         private void MoveNext(LeanFinger _Finger)
         {
-            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.8f) 
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f) 
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished) 
                 return;

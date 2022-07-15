@@ -9,7 +9,9 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
     public interface IViewMazeBackgroundIdleItemSquare : IViewMazeBackgroundIdleItem { }
     
-    public class ViewMazeBackgroundIdleItemSquare : ViewMazeBackgroundIdleItemBase, IViewMazeBackgroundIdleItemSquare
+    public class ViewMazeBackgroundIdleItemSquare : 
+        ViewMazeBackgroundIdleItemBase, 
+        IViewMazeBackgroundIdleItemSquare
     {
         #region nonpublic members
         
@@ -21,7 +23,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region inject
         
         private ViewMazeBackgroundIdleItemSquare(
-            IPrefabSetManager          _PrefabSetManager,
+            IPrefabSetManager    _PrefabSetManager,
             ICoordinateConverter _CoordinateConverter)
             : base(_PrefabSetManager, _CoordinateConverter) { }
 
@@ -67,6 +69,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             m_Border.SetThickness(0.5f * _Thickness);
             Rigidbody.mass = _Scale * _Scale;
             Obj.transform.rotation = Quaternion.Euler(0f, 0f, Random.value * 360f);
+            base.SetParams(_Scale, _Thickness);
         }
 
         #endregion

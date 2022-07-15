@@ -38,7 +38,7 @@ namespace RMAZOR.Models
     {
         #region nonpublic members
 
-        private int m_Counter;
+        private int  m_MovesCount;
 
         #endregion
 
@@ -61,7 +61,7 @@ namespace RMAZOR.Models
             Data         = _Data;
             LevelStaging = _LevelStaging;
             GameTicker   = _GameTicker;
-            Rotation = _Rotation;
+            Rotation     = _Rotation;
         }
 
         #endregion
@@ -92,17 +92,26 @@ namespace RMAZOR.Models
         public void OnPortal(PortalEventArgs _Args)
         {
             Position = _Args.Info.Pair;
-            Move(_Args.Direction);
+            MoveCore(_Args.Direction, true);
         }
 
         public void OnSpringboard(SpringboardEventArgs _Args)
         {
             Position = _Args.Info.CurrentPosition;
-            Move(_Args.Direction);
+            MoveCore(_Args.Direction, false);
         }
         
         public void Move(EMazeMoveDirection _Direction)
         {
+            MoveCore(_Direction, false);
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
+
+        private void MoveCore(EMazeMoveDirection _Direction, bool _FromPortal)
+        {           
             if (!Data.ProceedingControls)
                 return;
             if (!Alive)
@@ -112,16 +121,13 @@ namespace RMAZOR.Models
             
             var from = Position;
             var to = GetNewPosition(from, _Direction, out var blockPositionWhoStopped);
-            var args = new CharacterMovingStartedEventArgs(_Direction, from, to);
+            var args = new CharacterMovingStartedEventArgs(_Direction, from, to, _FromPortal);
             IsMoving = true;
             CharacterMoveStarted?.Invoke(args);
-            Cor.Run(MoveCharacterCore(_Direction, from, to, blockPositionWhoStopped));
+            Cor.Run(MoveCoreCoroutine(_Direction, from, to, blockPositionWhoStopped));
+            
         }
         
-        #endregion
-        
-        #region nonpublic methods
-
         private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction, out V2Int? _BlockPositionWhoStopped)
         {
             var nextPos = Position;
@@ -280,13 +286,13 @@ namespace RMAZOR.Models
             return !isPrevPortal || isStartFromPortal;
         }
         
-        private IEnumerator MoveCharacterCore(
+        private IEnumerator MoveCoreCoroutine(
             EMazeMoveDirection _Direction,
             V2Int _From,
             V2Int _To,
             V2Int? _BlockPositionWhoStopped)
         {
-            int thisCount = ++m_Counter;
+            int thisCount = ++m_MovesCount;
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             float lastProgress = 0f;
             yield return Cor.Lerp(
@@ -338,7 +344,7 @@ namespace RMAZOR.Models
                     IsMoving = false;
                     Position = _To;
                 },
-                _BreakPredicate: () => thisCount != m_Counter || !Alive,
+                _BreakPredicate: () => thisCount != m_MovesCount || !Alive,
                 _FixedUpdate: true);
         }
         

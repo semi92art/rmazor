@@ -410,7 +410,10 @@ namespace RMAZOR.Camera_Providers
                 _Duration,
                 _From,
                 _To,
-                _P => _UpdateValue((int)_P)));
+                _P =>
+                {
+                    _UpdateValue((int)_P);
+                }));
         }
         
         private void AnimateEffectParameter(

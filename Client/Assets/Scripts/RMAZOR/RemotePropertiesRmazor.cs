@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Entities;
 using Common.Helpers;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
@@ -10,6 +11,7 @@ namespace RMAZOR
         IList<MainColorsProps>        MainColorsSet         { get; set; }
         IList<AdditionalColorsProps>  BackAndFrontColorsSet { get; set; }
         IList<Triangles2TextureProps> Tria2TextureSet       { get; set; }
+        ColorGradingProps             ColorGradingProps     { get; set; }
     }
     
     public class RemotePropertiesRmazor : RemotePropertiesCommon, IRemotePropertiesRmazor 
@@ -17,5 +19,7 @@ namespace RMAZOR
         public IList<MainColorsProps>        MainColorsSet         { get; set; } = new List<MainColorsProps>();
         public IList<AdditionalColorsProps>  BackAndFrontColorsSet { get; set; } = new List<AdditionalColorsProps>();
         public IList<Triangles2TextureProps> Tria2TextureSet       { get; set; } = new List<Triangles2TextureProps>();
+        
+        public ColorGradingProps ColorGradingProps { get; set; }
     }
 }

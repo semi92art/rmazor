@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Common;
+using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
@@ -43,6 +44,7 @@ namespace SRDebuggerCustomOptions
         private static IModelLevelStaging          _levelStaging;
         private static IManagersGetter             _managers;
         private static IViewInputCommandsProceeder _commandsProceeder;
+        private static ICameraProvider             _cameraProvider;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetState()
@@ -58,6 +60,7 @@ namespace SRDebuggerCustomOptions
             _levelStaging      = SRLauncher.LevelStaging;
             _managers          = SRLauncher.Managers;
             _commandsProceeder = SRLauncher.CommandsProceeder;
+            _cameraProvider    = SRLauncher.CameraProvider;
             SRDebug.Instance.PanelVisibilityChanged += OnPanelVisibilityChanged;
         }
         
@@ -626,8 +629,31 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                
                 throw new Exception("test exception, ignore this");
+            }
+        }
+
+        [Category(CategoryCommon)]
+        public bool EnablePostProcessing
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, true);
+            }
+        }
+        
+        [Category(CategoryCommon)]
+        public bool DisablePostProcessing
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, false);
             }
         }
 

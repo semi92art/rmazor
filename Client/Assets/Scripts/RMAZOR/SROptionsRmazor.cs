@@ -1,4 +1,5 @@
-﻿using RMAZOR.Managers;
+﻿using Common.CameraProviders;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine.Events;
@@ -14,13 +15,15 @@ namespace RMAZOR
             ViewSettings                _ViewSettings,
             IModelLevelStaging          _LevelStaging,
             IManagersGetter             _Managers,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            ICameraProvider             _CameraProvider)
         {
             ModelSettings     = _ModelSettings;
             ViewSettings      = _ViewSettings;
             LevelStaging      = _LevelStaging;
             Managers          = _Managers;
             CommandsProceeder = _CommandsProceeder;
+            CameraProvider    = _CameraProvider;
             Initialized?.Invoke();
         }
         
@@ -29,5 +32,6 @@ namespace RMAZOR
         public static IModelLevelStaging          LevelStaging      { get; private set; }
         public static IManagersGetter             Managers          { get; private set; }
         public static IViewInputCommandsProceeder CommandsProceeder { get; private set; }
+        public static ICameraProvider             CameraProvider    { get; private set; }
     }
 }

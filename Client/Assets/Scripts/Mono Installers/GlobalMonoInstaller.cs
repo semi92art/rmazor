@@ -72,6 +72,7 @@ namespace Mono_Installers
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>() .AsSingle();
             Container.Bind<IUnityAnalyticsProvider>()      .To<UnityAnalyticsProvider>()       .AsSingle();
             Container.Bind<IFirebaseAnalyticsProvider>()   .To<FirebaseAnalyticsProvider>()    .AsSingle();
+            Container.Bind<IAppodealAnalyticsProvider>()   .To<AppodealAnalyticsProvider>()    .AsSingle();
             Container.Bind<IGameClient>()                  .To<GameClient>()                   .AsSingle();
 
             Container.Bind<IScoreManager>()                .To<ScoreManager>()                 .AsSingle();
