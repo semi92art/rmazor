@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if APPODEAL_3
+using System.Collections.Generic;
 using System.Linq;
 using AppodealStack.Monetization.Api;
 
@@ -25,3 +26,4 @@ namespace Common.Managers.Analytics
         }
     }
 }
+#endif

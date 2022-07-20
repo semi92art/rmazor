@@ -76,8 +76,6 @@ namespace RMAZOR.Views.Common
         private IRateGameDialogPanel             RateGameDialogPanel         { get; }
         private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
         private IViewBetweenLevelAdLoader        BetweenLevelAdLoader        { get; }
-        private ICameraProvider                  CameraProvider              { get; }
-        private IColorProvider                   ColorProvider               { get; }
         private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
 
         private ViewLevelStageController(
@@ -99,8 +97,6 @@ namespace RMAZOR.Views.Common
             IRateGameDialogPanel             _RateGameDialogPanel,
             IViewFullscreenTransitioner      _FullscreenTransitioner,
             IViewBetweenLevelAdLoader        _BetweenLevelAdLoader,
-            ICameraProvider                  _CameraProvider,
-            IColorProvider                   _ColorProvider,
             IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator)
         {
             ViewSettings                = _ViewSettings;
@@ -121,8 +117,6 @@ namespace RMAZOR.Views.Common
             RateGameDialogPanel         = _RateGameDialogPanel;
             FullscreenTransitioner      = _FullscreenTransitioner;
             BetweenLevelAdLoader        = _BetweenLevelAdLoader;
-            CameraProvider              = _CameraProvider;
-            ColorProvider               = _ColorProvider;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
         }
 
@@ -358,7 +352,6 @@ namespace RMAZOR.Views.Common
         private void OnLevelUnloaded(LevelStageArgs _Args)
         {
             var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
-            Dbg.Log("scoreEntity is null: " + (scoreEntity == null));
             Cor.Run(Cor.WaitWhile(
                 () => scoreEntity.Result == EEntityResult.Pending,
                 () =>
@@ -496,16 +489,25 @@ namespace RMAZOR.Views.Common
                                             => AnalyticIds.LevelFinished,
                 _                           => null
             };
-            if (string.IsNullOrEmpty(analyticId))
+
+            void SendLevelAnalytic()
+            {
+                if (string.IsNullOrEmpty(analyticId))
+                    return;
+                Managers.AnalyticsManager.SendAnalytic(analyticId, 
+                    new Dictionary<string, object>
+                    {
+                        {AnalyticIds.LevelIndex, _Args.LevelIndex},
+                        {AnalyticIds.LevelTime, Model.LevelStaging.LevelTime},
+                        {AnalyticIds.DiesCount, Model.LevelStaging.DiesCount},
+                        {AnalyticIds.MoneyCount, _MoneyCount}
+                    });
+            }
+            SendLevelAnalytic();
+            if (_Args.LevelStage != ELevelStage.Finished)
                 return;
-            Managers.AnalyticsManager.SendAnalytic(analyticId, 
-                new Dictionary<string, object>
-                {
-                    {AnalyticIds.LevelIndex, _Args.LevelIndex},
-                    {AnalyticIds.LevelTime, Model.LevelStaging.LevelTime},
-                    {AnalyticIds.DiesCount, Model.LevelStaging.DiesCount},
-                    {AnalyticIds.MoneyCount, _MoneyCount}
-                });
+            analyticId = AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex);
+            SendLevelAnalytic();
         }
 
         private void UnlockAchievementOnLevelFinishedIfKeyExist(LevelStageArgs _Args)

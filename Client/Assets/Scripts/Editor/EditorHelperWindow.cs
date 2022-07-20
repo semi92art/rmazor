@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using RMAZOR;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -102,6 +103,17 @@ namespace Editor
                 // });
                 // EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
                 // EditorUtilsEx.HorizontalLine(Color.gray);
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Add Admob to ios", () =>
+                    {
+                        BuildTargetChangeListener.AddGoogleAds(NamedBuildTarget.iOS);
+                    });
+                    EditorUtilsEx.GuiButtonAction("Remove Admob from ios", () =>
+                    {
+                        BuildTargetChangeListener.RemoveGoogleAds(NamedBuildTarget.iOS);
+                    });
+                });
                 var headerStyle = new GUIStyle
                 {
                     fontSize = 15,

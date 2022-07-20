@@ -19,7 +19,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems
 {
-    public class ViewMazeItemPathFilledWithAdditionalBorders : ViewMazeItemPath
+    public class ViewMazeItemPathFilledWithAdditionalBorders : ViewMazeItemPathWithAdditionalBorders
     {
         #region nonpublic members
 

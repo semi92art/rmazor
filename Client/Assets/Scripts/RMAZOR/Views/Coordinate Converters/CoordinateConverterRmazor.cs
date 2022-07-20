@@ -117,8 +117,6 @@ namespace RMAZOR.Views.Coordinate_Converters
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.Y == k);
             }
             m_CutTop = Predicate2() && !hasOtherBlocks && k >= 0;
-            
-            Dbg.Log(m_CutLeft + " " + m_CutRight + " " + m_CutBottom + " " + m_CutTop);
         }
 
         protected virtual void SetCorrectMazeSize(MazeInfo _Info)

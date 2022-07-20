@@ -18,8 +18,6 @@ namespace RMAZOR.Views.Characters
     {
         Func<ViewCharacterInfo> GetCharacterObjects { get; set; }
         void                    OnAllPathProceed(V2Int                    _LastPath);
-        void                    ShowTail(CharacterMoveEventArgsBase       _Args);
-        void                    HideTail(CharacterMovingFinishedEventArgs _Args = null);
     }
 
     public class ViewCharacterTailFake : InitBase, IViewCharacterTail

@@ -9,26 +9,31 @@ namespace Common.Managers.Analytics
     
     public class AnalyticsProvidersSet : IAnalyticsProvidersSet
     {
-        private IUnityAnalyticsProvider    UnityAnalyticsProvider    { get; }
-        private IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
-        private IAppodealAnalyticsProvider AppodealAnalyticsProvider { get; }
+        private    IUnityAnalyticsProvider    UnityAnalyticsProvider    { get; }
+        private    IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
+#if APPODEAL_3
+        [Zenject.Inject] private IAppodealAnalyticsProvider AppodealAnalyticsProvider { get; }
+#endif
 
         private AnalyticsProvidersSet(
             IUnityAnalyticsProvider    _UnityAnalyticsProvider,
-            IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider, 
-            IAppodealAnalyticsProvider _AppodealAnalyticsProvider)
+            IFirebaseAnalyticsProvider _FirebaseAnalyticsProvider)
         {
             UnityAnalyticsProvider    = _UnityAnalyticsProvider;
             FirebaseAnalyticsProvider = _FirebaseAnalyticsProvider;
-            AppodealAnalyticsProvider = _AppodealAnalyticsProvider;
         }
 
         public List<IAnalyticsProvider> GetProviders()
         {
-            return new List<IAnalyticsProvider>
+            var providers = new List<IAnalyticsProvider>();
+            providers.AddRange(new IAnalyticsProvider[]
             {
-                UnityAnalyticsProvider, FirebaseAnalyticsProvider, AppodealAnalyticsProvider
-            };
+                UnityAnalyticsProvider, FirebaseAnalyticsProvider
+            });
+#if APPODEAL_3
+            providers.Add(AppodealAnalyticsProvider);
+#endif
+            return providers;
         }
     }
 }
