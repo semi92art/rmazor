@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace GoogleMobileAds.Editor
 {
-
     internal class GoogleMobileAdsSettings : ScriptableObject
     {
         private const string MobileAdsSettingsResDir = "Assets/GoogleMobileAds/Resources";
@@ -13,69 +12,38 @@ namespace GoogleMobileAds.Editor
 
         private const string MobileAdsSettingsFileExtension = ".asset";
 
-        private static GoogleMobileAdsSettings instance;
-
-        [SerializeField]
-        private string adMobAndroidAppId = string.Empty;
-
-        [SerializeField]
-        private string adMobIOSAppId = string.Empty;
-
-        [SerializeField]
-        private bool delayAppMeasurementInit = false;
-
-        //FIXME тупой плагин обнуляет айдишники после каждого билда
-        public string GoogleMobileAdsAndroidAppId
+        internal static GoogleMobileAdsSettings LoadInstance()
         {
-            get { return "ca-app-pub-5357184552698168~9131218519"; }
+            //Read from resources.
+            var instance = Resources.Load<GoogleMobileAdsSettings>(MobileAdsSettingsFile);
 
-            set { Instance.adMobAndroidAppId = value; }
+            //Create instance if null.
+            if (instance == null)
+            {
+                Directory.CreateDirectory(MobileAdsSettingsResDir);
+                instance = ScriptableObject.CreateInstance<GoogleMobileAdsSettings>();
+                string assetPath = Path.Combine(
+                    MobileAdsSettingsResDir,
+                    MobileAdsSettingsFile + MobileAdsSettingsFileExtension);
+                AssetDatabase.CreateAsset(instance, assetPath);
+                AssetDatabase.SaveAssets();
+            }
+
+            return instance;
         }
+        
 
-        //FIXME тупой плагин обнуляет айдишники после каждого билда
-        public string GoogleMobileAdsIOSAppId
-        {
-            get { return "ca-app-pub-5357184552698168~8964338187"; }
+        [SerializeField]
+        private bool delayAppMeasurementInit;
 
-            set { Instance.adMobIOSAppId = value; }
-        }
+        public string GoogleMobileAdsAndroidAppId => "ca-app-pub-5357184552698168~9131218519";
+        public string GoogleMobileAdsIOSAppId     => "ca-app-pub-5357184552698168~8964338187";
 
         public bool DelayAppMeasurementInit
         {
-            get { return Instance.delayAppMeasurementInit; }
+            get { return delayAppMeasurementInit; }
 
-            set { Instance.delayAppMeasurementInit = value; }
-        }
-
-        public static GoogleMobileAdsSettings Instance
-        {
-            get
-            {
-                if (instance != null)
-                {
-                    return instance;
-                }
-
-                instance = Resources.Load<GoogleMobileAdsSettings>(MobileAdsSettingsFile);
-
-                if(instance != null)
-                {
-                    return instance;
-                }
-
-                Directory.CreateDirectory(MobileAdsSettingsResDir);
-
-                instance = ScriptableObject.CreateInstance<GoogleMobileAdsSettings>();
-
-                string assetPath = Path.Combine(MobileAdsSettingsResDir, MobileAdsSettingsFile);
-                string assetPathWithExtension = Path.ChangeExtension(
-                                                        assetPath, MobileAdsSettingsFileExtension);
-                AssetDatabase.CreateAsset(instance, assetPathWithExtension);
-
-                AssetDatabase.SaveAssets();
-
-                return instance;
-            }
+            set { delayAppMeasurementInit = value; }
         }
     }
 }

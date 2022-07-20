@@ -13,8 +13,8 @@ namespace Common.Managers.Advertising.AdBlocks
         protected override int ShowStyle => AppodealShowStyle.RewardedVideo;
         protected override int AdType    => AppodealAdType.RewardedVideo;
 
-        public AppodealRewardedAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker) 
-            : base(_Settings, _CommonTicker) { }
+        public AppodealRewardedAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker) 
+            : base(_GameSettings, _CommonTicker) { }
 
         public override void Init(string _AppId, string _UnitId)
         {

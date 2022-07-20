@@ -204,18 +204,17 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     
     #region APPODEAL
     
-    private static void AddAppodeal(NamedBuildTarget _Target)
+    public static void AddAppodeal(NamedBuildTarget _Target)
     {
         var scriptDefSymbols = GetScriptingDefineSymbols(_Target);
         if (!scriptDefSymbols.Contains("APPODEAL_3"))
             scriptDefSymbols.Add("APPODEAL_3");
         PlayerSettings.SetScriptingDefineSymbols(_Target, scriptDefSymbols.ToArray());
-        AddPluginFiles(Appodeal);
         _addAppodealRequest = Client.Add("https://github.com/appodeal/appodeal-unity-plugin-upm.git#feature/release-3.0.1");
         EditorApplication.update += AddAppodealProgress;
     }
 
-    private static void RemoveAppodeal(NamedBuildTarget _Target)
+    public static void RemoveAppodeal(NamedBuildTarget _Target)
     {
         var scriptDefSymbols = GetScriptingDefineSymbols(_Target);
         if (scriptDefSymbols.Contains("APPODEAL_3"))
@@ -230,6 +229,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     {
         if (!AddRequestCompletion(_addAppodealRequest))
             return;
+        AddPluginFiles(Appodeal);
         EditorApplication.update -= AddAppodealProgress;
     }
    

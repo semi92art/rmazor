@@ -18,12 +18,12 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         #region inject
         
         public LeaderboardProviderGooglePlayGames(
-            CommonGameSettings                _Settings,
+            GlobalGameSettings                _GameSettings,
             ILocalizationManager              _LocalizationManager,
             IGameClient                       _GameClient,
             IPlatformGameServiceAuthenticator _Authenticator) 
             : base(
-                _Settings,
+                _GameSettings,
                 _LocalizationManager, 
                 _GameClient, 
                 _Authenticator) { }

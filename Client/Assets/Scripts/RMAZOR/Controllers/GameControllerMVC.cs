@@ -31,16 +31,19 @@ namespace RMAZOR.Controllers
 
         #region inject
 
-        private IRemotePropertiesRmazor RemoteProperties   { get; set; }
-        public  IModelGame              Model              { get; private set; }
-        public  IViewGame               View               { get; private set; }
+        private GlobalGameSettings          GlobalGameSettings   { get; set; }
+        private IRemotePropertiesRmazor RemoteProperties { get; set; }
+        public  IModelGame              Model            { get; private set; }
+        public  IViewGame               View             { get; private set; }
 
         [Inject]
         private void Inject(
+            GlobalGameSettings          _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IModelGame              _Model,
             IViewGame               _View)
         {
+            GlobalGameSettings     = _GlobalGameSettings;
             RemoteProperties   = _RemoteProperties;
             Model              = _Model;
             View               = _View;
@@ -118,10 +121,8 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
-            if (!RemoteProperties.DebugEnabled && !Application.isEditor)
-                return;
             if (SRDebug.Instance == null)
-                SRDebug.Init();
+                return;
             SRLauncher.Init(
                     Model.Settings, 
                     View.Settings, 

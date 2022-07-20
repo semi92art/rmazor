@@ -25,18 +25,18 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
     {
         private Dictionary<ushort, string> m_LeaderboardsMap;
 
-        private   CommonGameSettings                Settings            { get; }
+        private   GlobalGameSettings                GameSettings            { get; }
         private   ILocalizationManager              LocalizationManager { get; }
         private   IGameClient                       GameClient          { get; }
         protected IPlatformGameServiceAuthenticator Authenticator       { get; }
 
         protected LeaderboardProviderBase(
-            CommonGameSettings                _Settings,
+            GlobalGameSettings                _GameSettings,
             ILocalizationManager              _LocalizationManager,
             IGameClient                       _GameClient,
             IPlatformGameServiceAuthenticator _Authenticator)
         {
-            Settings            = _Settings;
+            GameSettings            = _GameSettings;
             LocalizationManager = _LocalizationManager;
             GameClient          = _GameClient;
             Authenticator       = _Authenticator;

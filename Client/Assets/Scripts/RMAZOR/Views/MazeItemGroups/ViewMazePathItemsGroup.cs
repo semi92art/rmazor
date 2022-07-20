@@ -33,18 +33,18 @@ namespace RMAZOR.Views.MazeItemGroups
 
         #region inject
 
-        private CommonGameSettings CommonGameSettings { get; }
+        private GlobalGameSettings GlobalGameSettings { get; }
         private ViewSettings       ViewSettings       { get; }
         private IModelGame         Model              { get; }
         private IMazeItemsCreator  MazeItemsCreator   { get; }
 
         private ViewMazePathItemsGroup(
-            CommonGameSettings _CommonGameSettings,
+            GlobalGameSettings _GlobalGameSettings,
             ViewSettings      _ViewSettings,
             IModelGame        _Model,
             IMazeItemsCreator _MazeItemsCreator)
         {
-            CommonGameSettings = _CommonGameSettings;
+            GlobalGameSettings = _GlobalGameSettings;
             ViewSettings       = _ViewSettings;
             Model              = _Model;
             MazeItemsCreator   = _MazeItemsCreator;
@@ -131,7 +131,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         private void OnMoneyItemCollected()
         {
-            MoneyItemsCollectedCount += CommonGameSettings.moneyItemCoast;
+            MoneyItemsCollectedCount += GlobalGameSettings.moneyItemCoast;
         }
         
         #endregion

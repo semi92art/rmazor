@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AppodealStack.ConsentManagement.Api;
 using AppodealStack.ConsentManagement.Common;
 using AppodealStack.Monetization.Api;
 using AppodealStack.Monetization.Common;
+using Common.Helpers;
 using Common.Managers.Advertising.AdBlocks;
 using UnityEngine;
 using UnityEngine.Events;
@@ -16,6 +16,7 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public class AppodealAdsProvider : AdsProviderCommonBase, IAppodealAdsProvider
     {
+
         #region nonpublic members
 
         protected override string AppId => Application.isEditor ? string.Empty : base.AppId;
@@ -27,10 +28,12 @@ namespace Common.Managers.Advertising.AdsProviders
         
         #region inject
         
+        
         private AppodealAdsProvider(
+            GlobalGameSettings      _GlobalGameSettings,
             IAppodealInterstitialAd _InterstitialAd,
             IAppodealRewardedAd     _RewardedAd) 
-            : base(_InterstitialAd, _RewardedAd) { }
+            : base(_GlobalGameSettings, _InterstitialAd, _RewardedAd) { }
 
         #endregion
 
@@ -62,21 +65,23 @@ namespace Common.Managers.Advertising.AdsProviders
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
             m_OnSuccess = _OnSuccess;
-            Appodeal.SetTesting(TestMode);
-            Appodeal.SetLogLevel(TestMode ? AppodealLogLevel.Verbose : AppodealLogLevel.None);
+            Appodeal.SetTesting(TestMode && !GlobalGameSettings.apkForAppodeal);
+            var logLevel = TestMode || GlobalGameSettings.apkForAppodeal ? AppodealLogLevel.Verbose : AppodealLogLevel.None;
+            Appodeal.SetLogLevel(logLevel);
             Appodeal.SetChildDirectedTreatment(true);
-            Appodeal.SetAutoCache(AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, false);
-            Appodeal.Initialize(AppId, AppodealAdType.Interstitial | AppodealAdType.RewardedVideo, this);
+            const int adTypes = AppodealAdType.Interstitial | AppodealAdType.RewardedVideo;
+            Appodeal.SetAutoCache(adTypes, false);
+            Appodeal.Initialize(AppId, adTypes, this);
         }
         
         protected override void InitRewardedAd()
         {
-            RewardedAd.Init(AppId, RewardedUnitId);
+            RewardedAd.Init(AppId, null);
         }
 
         protected override void InitInterstitialAd()
         {
-            InterstitialAd.Init(AppId, InterstitialUnitId);
+            InterstitialAd.Init(AppId, null);
         }
         
         #endregion

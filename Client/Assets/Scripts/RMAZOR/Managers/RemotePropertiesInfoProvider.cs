@@ -25,20 +25,20 @@ namespace RMAZOR.Managers
         #region inject
         
         private IGameClient             GameClient         { get; }
-        private CommonGameSettings      CommonGameSettings { get; }
+        private GlobalGameSettings      GlobalGameSettings { get; }
         private ModelSettings           ModelSettings      { get; }
         private ViewSettings            ViewSettings       { get; }
         private IRemotePropertiesRmazor RemoteProperties   { get; }
 
         public RemotePropertiesInfoProvider(
             IGameClient             _GameClient,
-            CommonGameSettings      _CommonGameSettings,
+            GlobalGameSettings      _GlobalGameSettings,
             ModelSettings           _ModelSettings,
             ViewSettings            _ViewSettings,
             IRemotePropertiesRmazor _RemoteProperties)
         {
             GameClient         = _GameClient;
-            CommonGameSettings = _CommonGameSettings;
+            GlobalGameSettings = _GlobalGameSettings;
             ModelSettings      = _ModelSettings;
             ViewSettings       = _ViewSettings;
             RemoteProperties   = _RemoteProperties;
@@ -94,13 +94,13 @@ namespace RMAZOR.Managers
                     _Value => ViewSettings.betweenLevelTransitionTime = Convert.ToSingle(_Value)),
 
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
-                    _Value => CommonGameSettings.firstLevelToShowAds = Convert.ToInt32(_Value)),
+                    _Value => GlobalGameSettings.firstLevelToShowAds = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_show_ad_every_level",
-                    _Value => CommonGameSettings.showAdsEveryLevel = Convert.ToInt32(_Value)),
+                    _Value => GlobalGameSettings.showAdsEveryLevel = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(filter, typeof(long), "money_item_coast",
-                    _Value => CommonGameSettings.moneyItemCoast = Convert.ToInt32(_Value)),
+                    _Value => GlobalGameSettings.moneyItemCoast = Convert.ToInt32(_Value)),
                 new RemoteConfigPropertyInfo(filter, typeof(long), "pay_to_continue_money_count",
-                    _Value => CommonGameSettings.payToContinueMoneyCount = Convert.ToInt32(_Value)),
+                    _Value => GlobalGameSettings.payToContinueMoneyCount = Convert.ToInt32(_Value)),
 
                 new RemoteConfigPropertyInfo(filter, typeof(string), "ads_providers_infos",
                     _Value => RemoteProperties.AdsProviders =

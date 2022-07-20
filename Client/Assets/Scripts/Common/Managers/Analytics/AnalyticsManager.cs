@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common.Helpers;
+using Common.Utils;
 
 namespace Common.Managers.Analytics
 {
@@ -30,8 +31,14 @@ namespace Common.Managers.Analytics
             if (Initialized)
                 return;
             if (!RemoteProperties.DebugEnabled)
-                foreach (var provider in ProvidersSet.GetProviders())
-                    provider.Init();
+            {
+                Cor.RunSync(() =>
+                {
+                    foreach (var provider in ProvidersSet.GetProviders())
+                        provider.Init();
+                });
+            }
+
             base.Init();
         }
         
@@ -39,8 +46,11 @@ namespace Common.Managers.Analytics
         {
             // if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
             //     return;
-            foreach (var provider in ProvidersSet.GetProviders())
-                provider.SendAnalytic(_AnalyticId, _EventData);
+            Cor.RunSync(() =>
+            {
+                foreach (var provider in ProvidersSet.GetProviders())
+                    provider.SendAnalytic(_AnalyticId, _EventData);
+            });
         }
         
         #endregion

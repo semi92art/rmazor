@@ -21,15 +21,15 @@ namespace Common.Managers.Advertising.AdBlocks
         #endregion
 
         #region inject
-        
-        private CommonGameSettings Settings     { get; }
+
+        private GlobalGameSettings GameSettings { get; }
         private ICommonTicker      CommonTicker { get; }
 
         protected AppodealAdBase(
-            CommonGameSettings _Settings,
+            GlobalGameSettings _GameSettings,
             ICommonTicker      _CommonTicker)
         {
-            Settings     = _Settings;
+            GameSettings = _GameSettings;
             CommonTicker = _CommonTicker;
         }
 
@@ -57,7 +57,7 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClicked = _OnClicked;
             if (!Ready) 
                 return;
-            Appodeal.Show(ShowStyle);
+            Appodeal.Show(ShowStyle, "default");
         }
 
         public void UpdateTick()
@@ -72,12 +72,13 @@ namespace Common.Managers.Advertising.AdBlocks
             {
                 Dbg.Log("Appodeal shown action");
                 OnShown?.Invoke();
+                LoadAd();
                 DoInvokeOnShown = false;
             }
             if (!DoLoadAdWithDelay)
                 return;
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
-            if (m_LoadAdDelayTimer < Settings.adsLoadDelay) 
+            if (m_LoadAdDelayTimer < GameSettings.adsLoadDelay) 
                 return;
             LoadAd();
             m_LoadAdDelayTimer = 0f;

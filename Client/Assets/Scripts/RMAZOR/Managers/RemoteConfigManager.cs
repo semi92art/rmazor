@@ -18,18 +18,18 @@ namespace RMAZOR.Managers
 
         private IRemotePropertiesInfoProvider RemotePropertiesInfoProvider { get; }
         private IRemoteConfigProvider         RemoteConfigProvider         { get; }
-        private CommonGameSettings            CommonGameSettings           { get; }
+        private GlobalGameSettings            GlobalGameSettings           { get; }
         private IRemotePropertiesRmazor       RemoteProperties             { get; }
 
         protected RemoteConfigManager(
             IRemotePropertiesInfoProvider _RemotePropertiesInfoProvider,
             IRemoteConfigProvider         _RemoteConfigProvider,
-            CommonGameSettings            _CommonGameSettings,
+            GlobalGameSettings            _GlobalGameSettings,
             IRemotePropertiesRmazor       _RemoteProperties)
         {
             RemotePropertiesInfoProvider = _RemotePropertiesInfoProvider;
             RemoteConfigProvider         = _RemoteConfigProvider;
-            CommonGameSettings           = _CommonGameSettings;
+            GlobalGameSettings           = _GlobalGameSettings;
             RemoteProperties             = _RemoteProperties;
         }
         
@@ -155,7 +155,7 @@ namespace RMAZOR.Managers
                             if (isThisDeviceForTesting)
                                 Dbg.Log("This device is test");
                             RemoteProperties.DebugEnabled = isThisDeviceForTesting;
-                            CommonGameSettings.testAds = isThisDeviceForTesting;
+                            GlobalGameSettings.testAds = isThisDeviceForTesting;
                             m_FetchCompletedActionDone = true;
                         }));
                 }));

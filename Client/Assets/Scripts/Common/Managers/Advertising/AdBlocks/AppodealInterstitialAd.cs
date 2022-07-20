@@ -13,8 +13,8 @@ namespace Common.Managers.Advertising.AdBlocks
         protected override int ShowStyle => AppodealShowStyle.Interstitial;
         protected override int AdType    => AppodealAdType.Interstitial;
 
-        public AppodealInterstitialAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker)
-            : base(_Settings, _CommonTicker) { }
+        public AppodealInterstitialAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker)
+            : base(_GameSettings, _CommonTicker) { }
         
         public override void Init(string _AppId, string _UnitId)
         {

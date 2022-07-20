@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Common.Helpers;
 using Common.Utils;
 using GoogleMobileAds.Api;
 using UnityEngine;
@@ -42,13 +43,14 @@ namespace Common.Managers.Advertising.AdsProviders
         
         #region inject
         
-        private IAdMobInterstitialAd InterstitialAd { get; }
-        private IAdMobRewardedAd     RewardedAd     { get; }
+        private new IAdMobInterstitialAd InterstitialAd { get; }
+        private new IAdMobRewardedAd     RewardedAd     { get; }
 
         private AdMobAdsProvider(
+            GlobalGameSettings   _GlobalGameSettings,
             IAdMobInterstitialAd _InterstitialAd,
             IAdMobRewardedAd     _RewardedAd) 
-            : base(_InterstitialAd, _RewardedAd)
+            : base(_GlobalGameSettings, _InterstitialAd, _RewardedAd)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;

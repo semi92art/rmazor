@@ -2,6 +2,7 @@
 using System.Xml.Linq;
 using Common.Entities;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Utils;
 using UnityEngine.Events;
 
@@ -26,6 +27,7 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public abstract class AdsProviderBase : IAdsProvider
     {
+
         #region nonpublic members
 
         protected virtual   string AppId              => GetAdsNodeValue(Source, "app_id");
@@ -34,6 +36,17 @@ namespace Common.Managers.Advertising.AdsProviders
 
         protected bool        TestMode;
         protected XElement    AdsData;
+
+        #endregion
+
+        #region inject
+        
+        protected GlobalGameSettings GlobalGameSettings { get; }
+
+        protected AdsProviderBase(GlobalGameSettings _GlobalGameSettings)
+        {
+            GlobalGameSettings = _GlobalGameSettings;
+        }
 
         #endregion
 
@@ -58,7 +71,6 @@ namespace Common.Managers.Advertising.AdsProviders
                 Initialized = true;
             });
         }
-
 
         public abstract void LoadAd(AdvertisingType _AdvertisingType);
 
@@ -130,11 +142,6 @@ namespace Common.Managers.Advertising.AdsProviders
                 }).Value;
         }
         
-        private static bool Compare(string _S1, string _S2)
-        {
-            return _S1.EqualsIgnoreCase(_S2);
-        }
-
         protected abstract void ShowRewardedAdCore(UnityAction     _OnShown, UnityAction _OnClicked);
         protected abstract void ShowInterstitialAdCore(UnityAction _OnShown, UnityAction _OnClicked);
         

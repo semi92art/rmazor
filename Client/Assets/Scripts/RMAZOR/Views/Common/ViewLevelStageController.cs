@@ -9,7 +9,6 @@ using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Managers.Achievements;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
@@ -23,6 +22,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
+using static Common.Managers.Achievements.AchievementKeys;
 
 namespace RMAZOR.Views.Common
 {
@@ -520,19 +520,19 @@ namespace RMAZOR.Views.Common
         {
             var dict = new Dictionary<long, ushort>
             {
-                {10, AchievementKeys.Level10Finished},
-                {25, AchievementKeys.Level25Finished},
-                {50, AchievementKeys.Level50Finished},
-                {100, AchievementKeys.Level100Finished},
-                {200, AchievementKeys.Level200Finished},
-                {300, AchievementKeys.Level300Finished},
-                {400, AchievementKeys.Level400Finished},
-                {500, AchievementKeys.Level500Finished},
-                {600, AchievementKeys.Level600Finished},
-                {700, AchievementKeys.Level700Finished},
-                {800, AchievementKeys.Level800Finished},
-                {900, AchievementKeys.Level900Finished},
-                {1000, AchievementKeys.Level1000Finished},
+                {10,   Level10Finished},
+                {25,   Level25Finished},
+                {50,   Level50Finished},
+                {100,  Level100Finished},
+                {200,  Level200Finished},
+                {300,  Level300Finished},
+                {400,  Level400Finished},
+                {500,  Level500Finished},
+                {600,  Level600Finished},
+                {700,  Level700Finished},
+                {800,  Level800Finished},
+                {900,  Level900Finished},
+                {1000, Level1000Finished},
             };
             ushort achievementKey = dict.GetSafe(_LevelIndex + 1, out bool containsKey);
             if (!containsKey)

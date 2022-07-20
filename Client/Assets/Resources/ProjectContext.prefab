@@ -74,12 +74,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 457f50d7294e4b7fa90e426c0ae71616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraProvider: {fileID: 5545151479159213484, guid: 7c7d299c1edab1947b9c8f4530fa3ad0,
-    type: 3}
   companyLogo: {fileID: 7294199445613015525, guid: 48442483ae8977647ae2a26d21c0af60,
     type: 3}
-  commonGameSettings: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
+  globalGameSettings: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
   modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
   viewSettings: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
-  hapticsManager: {fileID: 8466737568279639255, guid: ca5d5ac5d00feef48b06410c253111d4,
-    type: 3}

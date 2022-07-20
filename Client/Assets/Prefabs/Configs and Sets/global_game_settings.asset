@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d5abb6e1eb81450f917a8931519f989c, type: 3}
-  m_Name: common_game_settings
+  m_Name: global_game_settings
   m_EditorClassIdentifier: 
-  adsProviders: appodeal:90;admob:5;unity_ads:5
-  adsLoadDelay: 3
+  adsLoadDelay: 10
   debugAnyway: 0
   testAds: 1
   logLevel: 5
@@ -21,4 +20,4 @@ MonoBehaviour:
   firstLevelToShowAds: 10
   payToContinueMoneyCount: 100
   moneyItemCoast: 1
-  gameId: 1
+  apkForAppodeal: 0

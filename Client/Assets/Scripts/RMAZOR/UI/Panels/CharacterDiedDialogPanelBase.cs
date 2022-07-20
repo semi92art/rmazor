@@ -58,13 +58,13 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private CommonGameSettings          CommonGameSettings   { get; }
+        private GlobalGameSettings          GlobalGameSettings   { get; }
         private IModelGame                  Model                { get; }
         private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         protected CharacterDiedDialogPanelBase(
-            CommonGameSettings          _CommonGameSettings,
+            GlobalGameSettings          _GlobalGameSettings,
             IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
@@ -80,7 +80,7 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
-            CommonGameSettings   = _CommonGameSettings;
+            GlobalGameSettings   = _GlobalGameSettings;
             Model                = _Model;
             ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder    = _CommandsProceeder;
@@ -118,7 +118,7 @@ namespace RMAZOR.UI.Panels
             m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
             m_RoundFilledBorder       = go.GetCompItem<Image>("round_filled_border");
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
-            m_TextPayMoneyCount.text  = CommonGameSettings.payToContinueMoneyCount.ToString();
+            m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have"));
             Managers.LocalizationManager.AddTextObject(
@@ -176,7 +176,7 @@ namespace RMAZOR.UI.Panels
                     m_TextMoneyCount.text = m_MoneyCount.ToString();
                     IndicateMoneyCountLoading(
                         false,
-                        m_MoneyCount >= CommonGameSettings.payToContinueMoneyCount);
+                        m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount);
                 }));
         }
 
@@ -242,7 +242,7 @@ namespace RMAZOR.UI.Panels
             var savedGame = new SavedGame
             {
                 FileName = CommonData.SavedGameFileName,
-                Money = m_MoneyCount - CommonGameSettings.payToContinueMoneyCount,
+                Money = m_MoneyCount - GlobalGameSettings.payToContinueMoneyCount,
                 Level = Model.LevelStaging.LevelIndex
             };
             Managers.ScoreManager.SaveGameProgress(savedGame, false);

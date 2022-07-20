@@ -21,7 +21,7 @@ namespace RMAZOR.UI.Panels
         #region inject
 
         private CharacterDiedDialogPanel(
-            CommonGameSettings          _CommonGameSettings,
+            GlobalGameSettings          _GlobalGameSettings,
             IModelGame                  _Model,
             IBigDialogViewer            _DialogViewer,
             IManagersGetter             _Managers,
@@ -31,7 +31,7 @@ namespace RMAZOR.UI.Panels
             IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(
-                _CommonGameSettings,
+                _GlobalGameSettings,
                 _Model,
                 _DialogViewer,
                 _Managers, 

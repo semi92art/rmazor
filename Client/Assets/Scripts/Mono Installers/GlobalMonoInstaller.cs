@@ -31,7 +31,7 @@ namespace Mono_Installers
     public class GlobalMonoInstaller : MonoInstaller
     {
         public GameObject         companyLogo;
-        public CommonGameSettings commonGameSettings;
+        public GlobalGameSettings globalGameSettings;
         public ModelSettings      modelSettings;
         public ViewSettings       viewSettings;
         
@@ -50,7 +50,7 @@ namespace Mono_Installers
             Container.Bind(typeof(IRemotePropertiesRmazor), typeof(IRemotePropertiesCommon))
                 .To<RemotePropertiesRmazor>()
                 .AsSingle();
-            Container.Bind<CommonGameSettings>()  .FromScriptableObject(commonGameSettings) .AsSingle();
+            Container.Bind<GlobalGameSettings>()  .FromScriptableObject(globalGameSettings) .AsSingle();
             Container.Bind<ModelSettings>()       .FromScriptableObject(modelSettings)      .AsSingle();
             Container.Bind<ViewSettings>()        .FromScriptableObject(viewSettings)       .AsSingle();
             Container.Bind<CompanyLogo>()         .FromComponentInNewPrefab(companyLogo)    .AsSingle();

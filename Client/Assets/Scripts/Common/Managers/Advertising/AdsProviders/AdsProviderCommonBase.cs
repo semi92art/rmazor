@@ -1,4 +1,5 @@
 ﻿using Common.Exceptions;
+using Common.Helpers;
 using Common.Managers.Advertising.AdBlocks;
 using UnityEngine.Events;
 
@@ -10,8 +11,10 @@ namespace Common.Managers.Advertising.AdsProviders
         protected readonly IAdBase RewardedAd;
         
         protected AdsProviderCommonBase(
-            IAdBase          _InterstitialAd,
-            IAdBase          _RewardedAd)
+            GlobalGameSettings _GlobalGameSettings,
+            IAdBase            _InterstitialAd,
+            IAdBase            _RewardedAd) 
+            : base(_GlobalGameSettings)
         {
             InterstitialAd = _InterstitialAd;
             RewardedAd     = _RewardedAd;

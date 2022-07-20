@@ -27,12 +27,12 @@ namespace Common.Managers
 
         #region inject
 
-        private CommonGameSettings Settings { get; }
+        private GlobalGameSettings GameSettings { get; }
         private ICommonTicker      Ticker   { get; }
 
-        public GameClient(CommonGameSettings _Settings, ICommonTicker _Ticker)
+        public GameClient(GlobalGameSettings _GameSettings, ICommonTicker _Ticker)
         {
-            Settings = _Settings;
+            GameSettings = _GameSettings;
             Ticker = _Ticker;
         }
 

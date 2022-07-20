@@ -25,16 +25,16 @@ namespace RMAZOR.Views.Common
         
         private IAdsManager         AdsManager   { get; }
         private IViewUILevelSkipper LevelSkipper { get; }
-        private CommonGameSettings  Settings     { get; }
+        private GlobalGameSettings  GameSettings     { get; }
 
         public ViewBetweenLevelAdLoader(
             IAdsManager         _AdsManager,
             IViewUILevelSkipper _LevelSkipper,
-            CommonGameSettings  _Settings)
+            GlobalGameSettings  _GameSettings)
         {
             AdsManager   = _AdsManager;
             LevelSkipper = _LevelSkipper;
-            Settings     = _Settings;
+            GameSettings     = _GameSettings;
         }
 
         #endregion
@@ -47,8 +47,8 @@ namespace RMAZOR.Views.Common
             UnityAction _OnAfterAdShown,
             UnityAction _OnAdWasNotShown)
         {
-            bool doTryToShowAd = _LevelIndex >= Settings.firstLevelToShowAds
-                                 && _LevelIndex % Settings.showAdsEveryLevel == 0
+            bool doTryToShowAd = _LevelIndex >= GameSettings.firstLevelToShowAds
+                                 && _LevelIndex % GameSettings.showAdsEveryLevel == 0
                                  && !LevelSkipper.LevelSkipped;
             if (doTryToShowAd)
             {

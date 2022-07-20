@@ -39,7 +39,7 @@ namespace Editor
         private Vector2            m_CommonScrollPos;
         private Vector2            m_CachedDataScrollPos;
         private Vector2            m_SettingsScrollPos;
-        private static CommonGameSettings _commonGameSettings;
+        private static GlobalGameSettings _globalGameSettings;
 
         [MenuItem("Tools/\u2699 Editor Helper _%h", false, 104)]
         public static void ShowWindow()
@@ -61,10 +61,10 @@ namespace Editor
 
         private void OnGUI()
         {
-            if (_commonGameSettings == null)
+            if (_globalGameSettings == null)
             {
-                _commonGameSettings =
-                    AssetDatabase.LoadAssetAtPath<CommonGameSettings>(
+                _globalGameSettings =
+                    AssetDatabase.LoadAssetAtPath<GlobalGameSettings>(
                         "Assets/Prefabs/Configs and Sets/common_game_settings.asset");
             }
             m_TabPage = GUILayout.Toolbar (
@@ -103,15 +103,28 @@ namespace Editor
                 // });
                 // EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
                 // EditorUtilsEx.HorizontalLine(Color.gray);
+                var bt = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android
+                    ? NamedBuildTarget.Android : NamedBuildTarget.iOS;
                 EditorUtilsEx.HorizontalZone(() =>
                 {
-                    EditorUtilsEx.GuiButtonAction("Add Admob to ios", () =>
+                    EditorUtilsEx.GuiButtonAction("Add Admob to this target", () =>
                     {
-                        BuildTargetChangeListener.AddGoogleAds(NamedBuildTarget.iOS);
+                        BuildTargetChangeListener.AddGoogleAds(bt);
                     });
-                    EditorUtilsEx.GuiButtonAction("Remove Admob from ios", () =>
+                    EditorUtilsEx.GuiButtonAction("Remove Admob from this target", () =>
                     {
-                        BuildTargetChangeListener.RemoveGoogleAds(NamedBuildTarget.iOS);
+                        BuildTargetChangeListener.RemoveGoogleAds(bt);
+                    });
+                });
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Add Appodeal to this target", () =>
+                    {
+                        BuildTargetChangeListener.AddAppodeal(bt);
+                    });
+                    EditorUtilsEx.GuiButtonAction("Remove Appodeal from this target", () =>
+                    {
+                        BuildTargetChangeListener.RemoveAppodeal(bt);
                     });
                 });
                 var headerStyle = new GUIStyle
@@ -283,9 +296,9 @@ namespace Editor
 
         private void ViewCommonGameSettingsTabPage()
         {
-            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<CommonGameSettings>(
+            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<GlobalGameSettings>(
                 "configs", "common_game_settings");
-            SettingsTabPageCore(settings, typeof(CommonGameSettings));
+            SettingsTabPageCore(settings, typeof(GlobalGameSettings));
         }
 
         private void SettingsTabPageCore(Object _Settings, Type _Type)
@@ -320,7 +333,7 @@ namespace Editor
         private static void CreateTestUsers(int _Count)
         {
             CommonData.Testing = true;
-            var gc = new GameClient(_commonGameSettings, new CommonTicker());
+            var gc = new GameClient(_globalGameSettings, new CommonTicker());
             const int gameId = 1;
             gc.Initialize += () =>
             {
@@ -349,7 +362,7 @@ namespace Editor
         private static void DeleteTestUsers()
         {
             CommonData.Testing = true;
-            var gc = new GameClient(_commonGameSettings, new CommonTicker());
+            var gc = new GameClient(_globalGameSettings, new CommonTicker());
             gc.Initialize += () =>
             {
                 IPacket packet = new DeleteTestUsersPacket();

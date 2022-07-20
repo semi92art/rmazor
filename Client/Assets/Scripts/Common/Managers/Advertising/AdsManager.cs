@@ -20,43 +20,46 @@ namespace Common.Managers.Advertising
         bool         RewardedAdReady     { get; }
         bool         InterstitialAdReady { get; }
         Entity<bool> ShowAds             { get; set; }
-        
-        void ShowRewardedAd(UnityAction     _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null, bool _Forced = false);
-        void ShowInterstitialAd(UnityAction _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null, bool _Forced = false);
+
+        void ShowRewardedAd(UnityAction _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null,
+                            bool        _Forced = false);
+
+        void ShowInterstitialAd(UnityAction _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null,
+                                bool        _Forced = false);
     }
-    
+
     public class AdsManager : InitBase, IAdsManager
     {
         #region nonpublic members
 
         private readonly Dictionary<string, IAdsProvider> m_Providers = new Dictionary<string, IAdsProvider>();
-        
+
         #endregion
 
         #region inject
 
-        private CommonGameSettings      GameSettings     { get; }
+        private GlobalGameSettings          GameGameSettings     { get; }
         private IRemotePropertiesCommon RemoteProperties { get; }
         private IAdsProvidersSet        AdsProvidersSet  { get; }
         private IAnalyticsManager       AnalyticsManager { get; }
 
         private AdsManager(
-            CommonGameSettings      _GameSettings,
+            GlobalGameSettings          _GameGameSettings,
             IRemotePropertiesCommon _RemoteProperties,
             IAdsProvidersSet        _AdsProvidersSet,
             IAnalyticsManager       _AnalyticsManager)
         {
-            GameSettings     = _GameSettings;
+            GameGameSettings = _GameGameSettings;
             RemoteProperties = _RemoteProperties;
-            AdsProvidersSet  = _AdsProvidersSet;
+            AdsProvidersSet = _AdsProvidersSet;
             AnalyticsManager = _AnalyticsManager;
         }
 
         #endregion
 
         #region api
-        
-        public Entity<bool> ShowAds 
+
+        public Entity<bool> ShowAds
         {
             get => GetShowAdsCached();
             set => SaveUtils.PutValue(SaveKeysCommon.DisableAds, !value.Value);
@@ -64,7 +67,7 @@ namespace Common.Managers.Advertising
 
         public bool RewardedAdReady     => m_Providers.Values.Any(_P => _P.RewardedAdReady);
         public bool InterstitialAdReady => m_Providers.Values.Any(_P => _P.InterstitialAdReady);
-        
+
         public override void Init()
         {
             if (Initialized)
@@ -80,20 +83,20 @@ namespace Common.Managers.Advertising
             bool        _Forced     = false)
         {
             var providers = (string.IsNullOrEmpty(_AdsNetwork)
-                    ? m_Providers.Values
-                    : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
-                        .Select(_Kvp => _Kvp.Value)).ToList();
+                ? m_Providers.Values
+                : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
+                    .Select(_Kvp => _Kvp.Value)).ToList();
             var readyProviders = providers
-                .Where(_P =>  _P.Initialized && _P.RewardedAdReady)
+                .Where(_P => _P.Initialized && _P.RewardedAdReady)
                 .ToList();
             if (!readyProviders.Any())
             {
                 Dbg.LogWarning("Rewarded ad was not ready to be shown.");
-                foreach (var provider in providers.Where(_P => _P.Initialized && _P.RewardedAdReady))
+                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized && !_P.RewardedAdReady))
                     provider.LoadAd(AdvertisingType.Rewarded);
                 return;
             }
-            ShowAd(providers, _OnBeforeShown, _OnShown, AdvertisingType.Rewarded, _Forced);
+            ShowAd(readyProviders, _OnBeforeShown, _OnShown, AdvertisingType.Rewarded, _Forced);
         }
 
         public void ShowInterstitialAd(
@@ -112,7 +115,7 @@ namespace Common.Managers.Advertising
             if (!readyProviders.Any())
             {
                 Dbg.LogWarning("Interstitial ad was not ready to be shown.");
-                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized && _P.InterstitialAdReady))
+                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized && !_P.InterstitialAdReady))
                     provider.LoadAd(AdvertisingType.Interstitial);
                 return;
             }
@@ -125,7 +128,7 @@ namespace Common.Managers.Advertising
 
         private void InitProviders()
         {
-            bool testMode = GameSettings.testAds;
+            bool testMode = GameGameSettings.testAds || GameGameSettings.apkForAppodeal;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             foreach (var adsProvider in AdsProvidersSet.GetProviders())
             {
@@ -161,8 +164,8 @@ namespace Common.Managers.Advertising
                 foreach (var provider in _Providers)
                 {
                     if (MathUtils.IsInRange(
-                        randValue, 
-                        showRateSumIteration / showRateSum, 
+                        randValue,
+                        showRateSumIteration / showRateSum,
                         (showRateSumIteration + provider.ShowRate) / showRateSum))
                     {
                         selectedProvider = provider;
@@ -177,10 +180,8 @@ namespace Common.Managers.Advertising
                 selectedProvider = _Providers.First(
                     _P => _P.Source == AdvertisingNetworks.Admob);
             }
-
             if (selectedProvider == null)
                 return;
-
             var eventData = new Dictionary<string, object>
             {
                 {AnalyticIds.AdSource, selectedProvider.Source},
@@ -207,7 +208,7 @@ namespace Common.Managers.Advertising
                     throw new SwitchCaseNotImplementedException(_Type);
             }
         }
-        
+
         private static Entity<bool> GetShowAdsCached()
         {
             var val = SaveUtils.GetValue(SaveKeysCommon.DisableAds);
@@ -217,6 +218,7 @@ namespace Common.Managers.Advertising
                 result.Value = !val.Value;
                 return result;
             }
+
             SaveUtils.PutValue(SaveKeysCommon.DisableAds, false);
             result.Value = true;
             return result;

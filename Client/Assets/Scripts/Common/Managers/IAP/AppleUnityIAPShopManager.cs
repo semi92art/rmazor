@@ -11,9 +11,9 @@ namespace Common.Managers.IAP
     public class AppleUnityIAPShopManager : UnityIapShopManagerBase
     {
         private IAppleExtensions   m_AppleExtensions;
-        private CommonGameSettings Settings { get; }
+        private GlobalGameSettings Settings { get; }
         
-        public AppleUnityIAPShopManager(ILocalizationManager _LocalizationManager, CommonGameSettings _Settings)
+        public AppleUnityIAPShopManager(ILocalizationManager _LocalizationManager, GlobalGameSettings _Settings)
             : base(_LocalizationManager)
         {
             Settings = _Settings;

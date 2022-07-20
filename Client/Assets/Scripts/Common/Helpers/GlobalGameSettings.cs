@@ -3,7 +3,7 @@
 namespace Common.Helpers
 {
     [CreateAssetMenu(fileName = "game_settings", menuName = "Configs and Sets/Game Settings", order = 1)]
-    public class CommonGameSettings : ScriptableObject
+    public class GlobalGameSettings : ScriptableObject
     {
         public float     adsLoadDelay;
         public bool      debugAnyway;
@@ -13,5 +13,6 @@ namespace Common.Helpers
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;
         public int       moneyItemCoast;
+        public bool      apkForAppodeal;
     }
 }

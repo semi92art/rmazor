@@ -9,7 +9,6 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Managers.Achievements;
 using Common.Managers.Advertising;
 using Common.Managers.IAP;
 using Common.Managers.PlatformGameServices;
@@ -24,15 +23,16 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
 using Zenject;
+using static Common.Managers.Achievements.AchievementKeys;
 
 namespace RMAZOR
 {
     public class ApplicationInitializerRmazor : MonoBehaviour
     {
         #region inject
-    
+
         private IRemotePropertiesCommon RemoteProperties     { get; set; }
-        private CommonGameSettings      Settings             { get; set; }
+        private GlobalGameSettings      GlobalGameSettings   { get; set; }
         private IGameClient             GameClient           { get; set; }
         private IAdsManager             AdsManager           { get; set; }
         private ILocalizationManager    LocalizationManager  { get; set; }
@@ -48,7 +48,7 @@ namespace RMAZOR
         [Inject] 
         private void Inject(
             IRemotePropertiesCommon _RemoteProperties,
-            CommonGameSettings      _Settings,
+            GlobalGameSettings          _GameSettings,
             IGameClient             _GameClient,
             IAdsManager             _AdsManager,
             ILocalizationManager    _LocalizationManager,
@@ -64,7 +64,7 @@ namespace RMAZOR
             CompanyLogo             _CompanyLogo)
         {
             RemoteProperties     = _RemoteProperties;
-            Settings             = _Settings;
+            GlobalGameSettings       = _GameSettings;
             GameClient           = _GameClient;
             AdsManager           = _AdsManager;
             LocalizationManager  = _LocalizationManager;
@@ -87,7 +87,7 @@ namespace RMAZOR
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
-            RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= Settings.debugAnyway;
+            RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
             LogAppInfo();
             yield return Cor.Delay(0.5f, CommonTicker); // для более плавной загрузки логотипа компании
             var permissionsEntity = PermissionsRequester.RequestPermissions();
@@ -153,8 +153,7 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
-            if (CommonData.DevelopmentBuild)
-                RemoteConfigManager.Initialize += SRDebug.Init;
+            RemoteConfigManager.Initialize += InitSrDebugger;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
             RemoteConfigManager.Init();
@@ -269,7 +268,7 @@ namespace RMAZOR
             CommonData.Release = true;
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
-            Dbg.LogLevel = Settings.logLevel;
+            Dbg.LogLevel = GlobalGameSettings.logLevel;
         }
 
         private void SetDefaultLanguage()
@@ -317,19 +316,28 @@ namespace RMAZOR
             bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
             return new Dictionary<ushort, string>
             {
-                {AchievementKeys.Level10Finished, ios ? "level_0010_finished" : "CgkI1IvonNkDEAIQBQ"},
-                {AchievementKeys.Level50Finished, ios ? "level_0050_finished" : "CgkI1IvonNkDEAIQCA"},
-                {AchievementKeys.Level100Finished, ios ? "level_0100_finished" : "CgkI1IvonNkDEAIQBw"},
-                {AchievementKeys.Level200Finished, ios ? "level_0200_finished" : "CgkI1IvonNkDEAIQCQ"},
-                {AchievementKeys.Level300Finished, ios ? "level_0300_finished" : "CgkI1IvonNkDEAIQCg"},
-                {AchievementKeys.Level400Finished, ios ? "level_0400_finished" : "CgkI1IvonNkDEAIQCw"},
-                {AchievementKeys.Level500Finished, ios ? "level_0500_finished" : "CgkI1IvonNkDEAIQDA"},
-                {AchievementKeys.Level600Finished, ios ? "level_0600_finished" : "CgkI1IvonNkDEAIQDQ"},
-                {AchievementKeys.Level700Finished, ios ? "level_0700_finished" : "CgkI1IvonNkDEAIQDg"},
-                {AchievementKeys.Level800Finished, ios ? "level_0800_finished" : "CgkI1IvonNkDEAIQDw"},
-                {AchievementKeys.Level900Finished, ios ? "level_0900_finished" : "CgkI1IvonNkDEAIQEA"},
-                {AchievementKeys.Level1000Finished, ios ? "level_1000_finished" : "CgkI1IvonNkDEAIQEQ"},
+                {Level10Finished, ios ? "level_0010_finished" : "CgkI1IvonNkDEAIQBQ"},
+                {Level50Finished, ios ? "level_0050_finished" : "CgkI1IvonNkDEAIQCA"},
+                {Level100Finished, ios ? "level_0100_finished" : "CgkI1IvonNkDEAIQBw"},
+                {Level200Finished, ios ? "level_0200_finished" : "CgkI1IvonNkDEAIQCQ"},
+                {Level300Finished, ios ? "level_0300_finished" : "CgkI1IvonNkDEAIQCg"},
+                {Level400Finished, ios ? "level_0400_finished" : "CgkI1IvonNkDEAIQCw"},
+                {Level500Finished, ios ? "level_0500_finished" : "CgkI1IvonNkDEAIQDA"},
+                {Level600Finished, ios ? "level_0600_finished" : "CgkI1IvonNkDEAIQDQ"},
+                {Level700Finished, ios ? "level_0700_finished" : "CgkI1IvonNkDEAIQDg"},
+                {Level800Finished, ios ? "level_0800_finished" : "CgkI1IvonNkDEAIQDw"},
+                {Level900Finished, ios ? "level_0900_finished" : "CgkI1IvonNkDEAIQEA"},
+                {Level1000Finished, ios ? "level_1000_finished" : "CgkI1IvonNkDEAIQEQ"},
             };
+        }
+        
+        private void InitSrDebugger()
+        {
+            if (GlobalGameSettings.apkForAppodeal ||
+                (RemoteProperties.DebugEnabled && !Application.isEditor))
+            {
+                SRDebug.Init();
+            }
         }
 
         #endregion
