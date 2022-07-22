@@ -3,13 +3,17 @@
 using Common.Helpers;
 using Common.Ticker;
 
-namespace Common.Managers.Advertising
+namespace Common.Managers.Advertising.AdBlocks
 {
     public interface IUnityAdsInterstitialAd : IUnityAdsAd { }
     
     public class UnityAdsInterstitialAd : UnityAdsAdBase, IUnityAdsInterstitialAd
     {
-        public UnityAdsInterstitialAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker) 
+        protected override string AdType => AdTypeInterstitial;
+        
+        public UnityAdsInterstitialAd(
+            GlobalGameSettings _Settings,
+            ICommonTicker      _CommonTicker) 
             : base(_Settings, _CommonTicker) { }
     }
 }

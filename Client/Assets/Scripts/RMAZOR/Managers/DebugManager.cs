@@ -1,6 +1,7 @@
 ﻿using System;
 using Common;
 using Common.Helpers;
+using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using Common.Settings;
@@ -26,6 +27,7 @@ namespace RMAZOR.Managers
         private IDebugSetting               DebugSetting      { get; }
         private IAdsManager                 AdsManager        { get; }
         private IScoreManager               ScoreManager      { get; }
+        private IAudioManager               AudioManager      { get; }
 
         private DebugManager(
             IRemotePropertiesRmazor     _RemoteProperties,
@@ -33,7 +35,8 @@ namespace RMAZOR.Managers
             IViewInputCommandsProceeder _CommandsProceeder,
             IDebugSetting               _DebugSetting,
             IAdsManager                 _AdsManager,
-            IScoreManager               _ScoreManager)
+            IScoreManager               _ScoreManager,
+            IAudioManager               _AudioManager)
         {
             RemoteProperties  = _RemoteProperties;
             Model             = _Model;
@@ -41,6 +44,7 @@ namespace RMAZOR.Managers
             DebugSetting      = _DebugSetting;
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
+            AudioManager      = _AudioManager;
         }
 
         #endregion
@@ -81,7 +85,7 @@ namespace RMAZOR.Managers
                     true);
                 VisibilityChanged?.Invoke(_Value);
             };
-            instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager);
+            instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager, AudioManager);
         }
     
         private static void EnableDebug(bool _Enable)

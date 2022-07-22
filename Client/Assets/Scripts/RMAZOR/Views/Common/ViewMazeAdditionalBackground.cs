@@ -65,8 +65,7 @@ namespace RMAZOR.Views.Common
         {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.Loaded:             OnLevelLoaded(_Args);   break;
-                case ELevelStage.ReadyToUnloadLevel: OnLevelReadyToUnload(); break;
+                case ELevelStage.Loaded: OnLevelLoaded(_Args);  break;
             }
         }
 
@@ -76,6 +75,7 @@ namespace RMAZOR.Views.Common
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
+            Dbg.Log("Level loaded");
             var info = Model.Data.Info;
             var groups = GeometryInitializer.GetGroups(info);
             GroupsCollected?.Invoke(groups);
@@ -84,12 +84,7 @@ namespace RMAZOR.Views.Common
                 return;
             Drawer.Appear(true);
         }
-
-        private void OnLevelReadyToUnload()
-        {
-            Drawer.Appear(false);
-        }
-
+        
         #endregion
     }
 }

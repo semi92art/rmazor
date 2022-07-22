@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using RMAZOR.Models;
@@ -30,21 +31,23 @@ namespace RMAZOR.DebugConsole
     
     public interface IDebugConsoleController
     {
-        event LogChangedHandler                 OnLogChanged;
-        IViewInputCommandsProceeder             CommandsProceeder { get; }
-        IAdsManager                             AdsManager        { get; }
-        IScoreManager                           ScoreManager      { get; }
-        IModelGame                              Model             { get; }
-        Queue<string>                           Scrollback        { get; }
-        string[]                                Log               { get; }
+        event LogChangedHandler              OnLogChanged;
+        IViewInputCommandsProceeder          CommandsProceeder { get; }
+        IAdsManager                          AdsManager        { get; }
+        IScoreManager                        ScoreManager      { get; }
+        IAudioManager                        AudioManager      { get; }
+        IModelGame                           Model             { get; }
+        Queue<string>                        Scrollback        { get; }
+        string[]                             Log               { get; }
         Dictionary<string, DebugCommandArgs> Commands          { get; }
-        List<string>                            CommandHistory    { get; }
+        List<string>                         CommandHistory    { get; }
         
         void Init(
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager, 
-            IScoreManager               _ScoreManager);
+            IScoreManager               _ScoreManager,
+            IAudioManager               _AudioManager);
         void RegisterCommand(DebugCommandArgs _DebugCommandArgs);
         void RunCommandString(string          _CommandString);
         void AppendLogLine(string             _Line);
@@ -72,10 +75,11 @@ namespace RMAZOR.DebugConsole
         #region api
         
         public event LogChangedHandler     OnLogChanged;
+        public IModelGame                  Model             { get; private set; }
         public IViewInputCommandsProceeder CommandsProceeder { get; private set; }
         public IAdsManager                 AdsManager        { get; private set; }
         public IScoreManager               ScoreManager      { get; private set; }
-        public IModelGame                  Model             { get; private set; }
+        public IAudioManager               AudioManager      { get; private set; }
 
         public string[]      Log        { get; private set; }
         public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
@@ -93,12 +97,14 @@ namespace RMAZOR.DebugConsole
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
-            IScoreManager               _ScoreManager)
+            IScoreManager               _ScoreManager,
+            IAudioManager               _AudioManager)
         {
+            Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
-            Model             = _Model;
+            AudioManager      = _AudioManager;
         }
 
         public void RegisterCommand(DebugCommandArgs _DebugCommandArgs)

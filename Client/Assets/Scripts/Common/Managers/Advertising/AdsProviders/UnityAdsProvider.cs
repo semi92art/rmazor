@@ -1,41 +1,69 @@
 ﻿#if UNITY_ADS_API
-
-using Common.Ticker;
+using System.Text;
+using Common.Helpers;
+using Common.Managers.Advertising.AdBlocks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Advertisements;
 
-namespace Common.Managers.Advertising
+namespace Common.Managers.Advertising.AdsProviders
 {
     public interface IUnityAdsProvider : IAdsProvider { }
     
-    public class UnityAdsProvider : AdsProviderCommonBase, IUnityAdsProvider, IUnityAdsInitializationListener
+    public class UnityAdsProvider : 
+        AdsProviderCommonBase, 
+        IUnityAdsProvider, 
+        IUnityAdsInitializationListener
     {
-        private IUnityAdsInterstitialAd InterstitialAd { get; }
-        private IUnityAdsRewardedAd     RewardedAd     { get; }
-    
-        public UnityAdsProvider(
+        #region nonpublic members
+
+        private UnityAction m_OnSuccess;
+        
+        #endregion
+
+        #region inject
+        
+        private UnityAdsProvider(
+            GlobalGameSettings      _GlobalGameSettings,
             IUnityAdsInterstitialAd _InterstitialAd,
             IUnityAdsRewardedAd     _RewardedAd) 
-            : base(_InterstitialAd, _RewardedAd)
+            : base(
+                _GlobalGameSettings,
+                _InterstitialAd,
+                _RewardedAd) { }
+
+        #endregion
+
+        #region api
+        
+        public override string Source              => AdvertisingNetworks.UnityAds;
+        public override bool   RewardedAdReady     => Application.isEditor || base.RewardedAdReady;
+        public override bool   InterstitialAdReady => Application.isEditor || base.InterstitialAdReady;
+        
+        public void OnInitializationComplete()
         {
-            InterstitialAd = _InterstitialAd;
-            RewardedAd     = _RewardedAd;
+            Dbg.Log("Unity Ads: Initialization completed");
+            m_OnSuccess?.Invoke();
         }
-        
-        public override string Source => AdvertisingNetworks.UnityAds;
-        
-        public override bool RewardedAdReady => 
-            Application.isEditor || (RewardedAd != null && RewardedAd.Ready);
     
-        public override bool InterstitialAdReady => 
-            Application.isEditor || (InterstitialAd != null && InterstitialAd.Ready);
-    
+        public void OnInitializationFailed(UnityAdsInitializationError _Error, string _Message)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Unity Ads: Initialization failed:");
+            sb.AppendLine($"Error: {_Error}");
+            sb.AppendLine($"Message: {_Message}");
+            Dbg.LogWarning(sb.ToString());
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
+            m_OnSuccess = _OnSuccess;
             SetMetadata();
-            Advertisement.Initialize(AppId, TestMode, false, this);
-            _OnSuccess?.Invoke();
+            Advertisement.Initialize(AppId, TestMode, this);
         }
     
         private static void SetMetadata()
@@ -50,27 +78,8 @@ namespace Common.Managers.Advertising
             metaData.Set("nonbehavioral", "true"); // This user will NOT receive personalized ads.
             Advertisement.SetMetaData(metaData);
         }
-    
-        protected override void InitRewardedAd()
-        {
-            RewardedAd.Init(AppId, RewardedUnitId);
-        }
-    
-        protected override void InitInterstitialAd()
-        {
-            InterstitialAd.Init(AppId, InterstitialUnitId);
-        }
-
-        public void OnInitializationComplete()
-        {
-            Dbg.Log($"{nameof(UnityAdsProvider)} {nameof(OnInitializationComplete)}");
-        }
-    
-        public void OnInitializationFailed(UnityAdsInitializationError _Error, string _Message)
-        {
-            Dbg.Log($"{nameof(UnityAdsProvider)} " +
-                    $"{nameof(OnInitializationFailed)}" + ": " + _Error + ": " + _Message);
-        }
+        
+        #endregion
     }
 }
 

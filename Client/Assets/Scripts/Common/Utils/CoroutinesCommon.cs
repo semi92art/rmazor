@@ -14,9 +14,15 @@ namespace Common.Utils
             yield break;
         }
     
-        public static IEnumerator WaitEndOfFrame(UnityAction _Action, uint _NumOfFrames = 1)
+        public static IEnumerator WaitNextFrame(
+            UnityAction _Action,
+            bool        _EndOfFrame = false,
+            uint        _FramesNum  = 1)
         {
-            for (uint i = 0; i < _NumOfFrames; i++)
+            yield return null;
+            for (uint i = 0; i < _FramesNum; i++)
+                yield return null;
+            if (_EndOfFrame)
                 yield return new WaitForEndOfFrame();
             _Action?.Invoke();
         }

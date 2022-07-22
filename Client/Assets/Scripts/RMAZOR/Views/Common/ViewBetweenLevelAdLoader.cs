@@ -22,10 +22,10 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region inject
-        
+
         private IAdsManager         AdsManager   { get; }
         private IViewUILevelSkipper LevelSkipper { get; }
-        private GlobalGameSettings  GameSettings     { get; }
+        private GlobalGameSettings  GameSettings { get; }
 
         public ViewBetweenLevelAdLoader(
             IAdsManager         _AdsManager,
@@ -34,7 +34,7 @@ namespace RMAZOR.Views.Common
         {
             AdsManager   = _AdsManager;
             LevelSkipper = _LevelSkipper;
-            GameSettings     = _GameSettings;
+            GameSettings = _GameSettings;
         }
 
         #endregion
@@ -54,24 +54,12 @@ namespace RMAZOR.Views.Common
             {
                 if (m_ShowRewardedOnUnload && AdsManager.RewardedAdReady)
                 {
-                    //FIXME костыль заместо временно нерабочего ShowRewardedAd(_OnBeforeAdShown, _OnAfterAdShown)
-                    {
-                        _OnBeforeAdShown?.Invoke();
-                        AdsManager.ShowRewardedAd(null, null);
-                        _OnAfterAdShown?.Invoke();
-                    }
-                    // AdsManager.ShowRewardedAd(_OnBeforeAdShown, _OnAfterAdShown);
+                    AdsManager.ShowRewardedAd(_OnBeforeAdShown, _OnAfterAdShown);
                     m_ShowRewardedOnUnload = !m_ShowRewardedOnUnload;
                 }
                 else if (!m_ShowRewardedOnUnload && AdsManager.InterstitialAdReady)
                 {
-                    //FIXME костыль заместо временно нерабочего ShowInterstitialAd(_OnBeforeAdShown, _OnAfterAdShown)
-                    {
-                        _OnBeforeAdShown?.Invoke();
-                        AdsManager.ShowInterstitialAd(null, null);
-                        _OnAfterAdShown?.Invoke();
-                    }
-                    // AdsManager.ShowInterstitialAd(_OnBeforeAdShown, _OnAfterAdShown);
+                    AdsManager.ShowInterstitialAd(_OnBeforeAdShown, _OnAfterAdShown);
                     m_ShowRewardedOnUnload = !m_ShowRewardedOnUnload;
                 }
                 else

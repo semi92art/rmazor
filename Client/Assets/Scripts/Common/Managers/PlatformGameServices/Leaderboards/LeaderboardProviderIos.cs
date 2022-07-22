@@ -10,6 +10,8 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
 {
     public class LeaderboardProviderIos : LeaderboardProviderBase
     {
+        private IRemotePropertiesCommon RemoteProperties { get; }
+
         #region nonpublic members
 
         #endregion
@@ -17,6 +19,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         #region inject
         
         public LeaderboardProviderIos(
+            IRemotePropertiesCommon           _RemoteProperties,
             GlobalGameSettings                _GameSettings,
             ILocalizationManager              _LocalizationManager,
             IGameClient                       _GameClient,
@@ -25,7 +28,10 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
                 _GameSettings,
                 _LocalizationManager, 
                 _GameClient,
-                _Authenticator) { }
+                _Authenticator)
+        {
+            RemoteProperties = _RemoteProperties;
+        }
 
         #endregion
 
@@ -59,6 +65,8 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
 
         private void SetScoreIos(ushort _Id, long _Value)
         {
+            if (RemoteProperties.DebugEnabled)
+                return;
             if (!Authenticator.IsAuthenticated)
             {
                 Dbg.LogWarning("User is not authenticated to Game Center");

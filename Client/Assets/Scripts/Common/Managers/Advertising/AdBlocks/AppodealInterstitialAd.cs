@@ -10,8 +10,9 @@ namespace Common.Managers.Advertising.AdBlocks
     
     public class AppodealInterstitialAd : AppodealAdBase, IAppodealInterstitialAd
     {
-        protected override int ShowStyle => AppodealShowStyle.Interstitial;
-        protected override int AdType    => AppodealAdType.Interstitial;
+        protected override int    ShowStyle  => AppodealShowStyle.Interstitial;
+        protected override string AdType     => AdTypeInterstitial;
+        protected override int    AppoAdType => AppodealAdType.Interstitial;
 
         public AppodealInterstitialAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker)
             : base(_GameSettings, _CommonTicker) { }
@@ -24,25 +25,22 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public void OnInterstitialLoaded(bool _IsPrecache) 
         { 
-            Dbg.Log("Appodeal: Interstitial loaded"); 
+            OnAdLoaded();
         } 
 
         public void OnInterstitialFailedToLoad() 
-        { 
-            Dbg.Log("Appodeal: Interstitial load failed"); 
-            DoLoadAdWithDelay = true;
+        {
+            OnAdFailedToLoad();
         } 
 
         public void OnInterstitialShowFailed() 
-        { 
-            Dbg.Log("Appodeal: Interstitial show failed"); 
-            DoLoadAdWithDelay = true;
+        {
+            OnAdFailedToShow();
         } 
 
         public void OnInterstitialShown() 
-        { 
-            Dbg.Log("Appodeal: Interstitial opened");
-            DoInvokeOnShown = true;
+        {
+            OnAdShown();
         } 
 
         public void OnInterstitialClosed() 
@@ -52,8 +50,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public void OnInterstitialClicked() 
         {
-            Dbg.Log("Appodeal: Interstitial clicked");
-            DoInvokeOnClicked = true;
+            OnAdClicked();
         } 
 
         public void OnInterstitialExpired() 

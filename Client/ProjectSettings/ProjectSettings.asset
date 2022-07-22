@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.6.1
+  bundleVersion: 1.6.3
   preloadedAssets:
   - {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a, type: 3}
   - {fileID: 0}
@@ -411,6 +411,24 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -438,7 +456,7 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 36
+  AndroidBundleVersionCode: 37
   AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
@@ -1068,7 +1086,7 @@ PlayerSettings:
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;AT_SUPPORT_API_ENABLED;ADMOB_API
+    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;AT_SUPPORT_API_ENABLED;ADMOB_API;UNITY_ADS_API
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture:

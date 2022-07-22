@@ -7,7 +7,6 @@ using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Exceptions;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -31,7 +30,7 @@ namespace Editor
     public class EditorHelperWindow : EditorWindow
     {
         private int                m_DailyBonusIndex;
-        private int                m_TestUsersCount = 3;
+        // private int                m_TestUsersCount = 3;
         private string             m_DebugServerUrl;
         private string             m_TestUrlCheck;
         private int                m_TabPage;
@@ -125,6 +124,17 @@ namespace Editor
                     EditorUtilsEx.GuiButtonAction("Remove Appodeal from this target", () =>
                     {
                         BuildTargetChangeListener.RemoveAppodeal(bt);
+                    });
+                });
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Add UnityAds to this target", () =>
+                    {
+                        BuildTargetChangeListener.AddUnityAds(bt);
+                    });
+                    EditorUtilsEx.GuiButtonAction("Remove UnityAds from this target", () =>
+                    {
+                        BuildTargetChangeListener.RemoveUnityAds(bt);
                     });
                 });
                 var headerStyle = new GUIStyle
@@ -276,6 +286,20 @@ namespace Editor
                     VignetteAmount = 0.05f
                 };
                 string json = JsonConvert.SerializeObject(colorGradingProps);
+                CommonUtils.CopyToClipboard(json);
+            });
+            EditorUtilsEx.GuiButtonAction("Default test device ids for admob set", () =>
+            {
+                var ids = new List<string>
+                {
+                    "FE989E63CDFFFB64D9E6A288C137E1E2",
+                    "16DB30D44D674B09110966E0648E783D",
+                    "A7BDF038439EAB9E32977E9485093F43",
+                    "B648AEC33D2557D0BFD1FD486B3E7678",
+                    "7D516587810FD383626B5C782FB4078A",
+                    "CCF954D464D11BD437D3885E0CDAE854"
+                };
+                string json = JsonConvert.SerializeObject(ids);
                 CommonUtils.CopyToClipboard(json);
             });
         }

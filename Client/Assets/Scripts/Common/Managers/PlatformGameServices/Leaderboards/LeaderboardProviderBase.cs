@@ -25,7 +25,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
     {
         private Dictionary<ushort, string> m_LeaderboardsMap;
 
-        private   GlobalGameSettings                GameSettings            { get; }
+        private   GlobalGameSettings                GameSettings        { get; }
         private   ILocalizationManager              LocalizationManager { get; }
         private   IGameClient                       GameClient          { get; }
         protected IPlatformGameServiceAuthenticator Authenticator       { get; }

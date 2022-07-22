@@ -9,6 +9,23 @@ namespace Common.Entities
         private readonly AudioSource m_Source;
 
         private bool m_OnPause;
+        
+        public AudioClipInfo(
+            AudioSource   _Source,
+            AudioClipArgs _Args)
+            : base(
+                _Args.ClipName,
+                _Args.Type, 
+                _Args.StartVolume,
+                _Args.Loop, 
+                _Args.Id,
+                _Args.AttenuationSecondsOnPlay, 
+                _Args.AttenuationSecondsOnStop)
+        {
+            m_Source = _Source;
+            Loop = _Args.Loop;
+        }
+        
         public bool OnPause
         {
             get => m_OnPause;
@@ -21,7 +38,7 @@ namespace Common.Entities
             }
         }
 
-        public float Volume
+        public float SourceVolume
         {
             get => m_Source.volume;
             set => m_Source.volume = value;
@@ -48,23 +65,7 @@ namespace Common.Entities
         {
             set => m_Source.outputAudioMixerGroup = value;
         }
-
-        public AudioClipInfo(
-            AudioSource _Source,
-            AudioClipArgs _Args)
-            : base(
-                _Args.ClipName,
-                _Args.Type, 
-                _Args.StartVolume,
-                _Args.Loop, 
-                _Args.Id,
-                _Args.AttenuationSecondsOnPlay, 
-                _Args.AttenuationSecondsOnStop)
-        {
-            m_Source = _Source;
-            Loop = _Args.Loop;
-        }
-
+        
         public void DestroySource()
         {
             m_Source.gameObject.DestroySafe();

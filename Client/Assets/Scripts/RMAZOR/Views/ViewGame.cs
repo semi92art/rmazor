@@ -2,9 +2,10 @@
 using System.Linq;
 using Common;
 using Common.CameraProviders;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
+using Common.Enums;
 using Common.Helpers;
+using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Notifications;
 using Common.Providers;
 using Common.UI;
@@ -65,13 +66,14 @@ namespace RMAZOR.Views
         public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
         private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
         public  ICameraProvider               CameraProvider         { get; }
- 
+
         private IViewMazeCommon             Common              { get; }
         private IViewMazeForeground         Foreground          { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IColorProvider              ColorProvider       { get; }
         private IBigDialogViewer            BigDialogViewer     { get; }
         private IRendererAppearTransitioner AppearTransitioner  { get; }
+        private IAdsProvidersSet            AdsProvidersSet     { get; }
 
         private ViewGame(
             IRemotePropertiesRmazor       _RemotePropertiesRmazor,
@@ -95,7 +97,8 @@ namespace RMAZOR.Views
             IBigDialogViewer              _BigDialogViewer,
             IRendererAppearTransitioner   _AppearTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground,
-            IViewFullscreenTransitioner   _FullscreenTransitioner)
+            IViewFullscreenTransitioner   _FullscreenTransitioner,
+            IAdsProvidersSet              _AdsProvidersSet)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -119,6 +122,7 @@ namespace RMAZOR.Views
             AppearTransitioner           = _AppearTransitioner;
             AdditionalBackground         = _AdditionalBackground;
             FullscreenTransitioner       = _FullscreenTransitioner;
+            AdsProvidersSet              = _AdsProvidersSet;
         }
         
         #endregion
@@ -133,6 +137,7 @@ namespace RMAZOR.Views
 
         public override void Init()
         {
+            InitAdsProvidersMuteAudioAction();
             CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
             CameraProvider.GetConverterScale = () => CoordinateConverter.Scale;
             CameraProvider.Init();
@@ -172,6 +177,29 @@ namespace RMAZOR.Views
         
         #region nonpublic methods
 
+        private void InitAdsProvidersMuteAudioAction()
+        {
+            foreach (var adsProvider in AdsProvidersSet.GetProviders())
+                adsProvider.MuteAudio = MuteAudio;
+        }
+
+        private void MuteAudio(bool _Mute)
+        {
+            var audioManager = Managers.AudioManager;
+            if (_Mute)
+            {
+                audioManager.MuteAudio(EAudioClipType.Music);
+                audioManager.MuteAudio(EAudioClipType.UiSound);
+                audioManager.MuteAudio(EAudioClipType.GameSound);
+            }
+            else
+            {
+                audioManager.UnmuteAudio(EAudioClipType.Music);
+                audioManager.UnmuteAudio(EAudioClipType.UiSound);
+                audioManager.UnmuteAudio(EAudioClipType.GameSound);
+            }
+        }
+        
         private void InitProceeders()
         {
             CoordinateConverter.GetContainer = ContainersGetter.GetContainer;
@@ -233,10 +261,10 @@ namespace RMAZOR.Views
         {
             if (!CommonData.Release)
                 return;
-            if (RemotePropertiesRmazor.Nofifications == null)
+            if (RemotePropertiesRmazor.Notifications == null)
                 return;
             var notMan = Managers.NotificationsManager;
-            var notifications = RemotePropertiesRmazor.Nofifications;
+            var notifications = RemotePropertiesRmazor.Notifications;
             notMan.OperatingMode = Application.platform == RuntimePlatform.Android
                 ? ENotificationsOperatingMode.QueueClearAndReschedule
                 : ENotificationsOperatingMode.NoQueue;

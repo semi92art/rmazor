@@ -145,7 +145,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogShow()
         {
             m_PanelShowing = true;
-            Cor.Run(Cor.WaitEndOfFrame(() =>
+            Cor.Run(Cor.WaitNextFrame(() =>
             {
                 CommandsProceeder.LockCommands(
                     new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},

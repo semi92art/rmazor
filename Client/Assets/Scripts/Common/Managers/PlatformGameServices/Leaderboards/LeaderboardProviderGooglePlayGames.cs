@@ -11,13 +11,12 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
 {
     public class LeaderboardProviderGooglePlayGames : LeaderboardProviderBase
     {
-        #region nonpublic members
-
-        #endregion
-
         #region inject
         
+        private IRemotePropertiesCommon RemoteProperties { get; }
+        
         public LeaderboardProviderGooglePlayGames(
+            IRemotePropertiesCommon           _RemoteProperties,
             GlobalGameSettings                _GameSettings,
             ILocalizationManager              _LocalizationManager,
             IGameClient                       _GameClient,
@@ -26,7 +25,10 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
                 _GameSettings,
                 _LocalizationManager, 
                 _GameClient, 
-                _Authenticator) { }
+                _Authenticator)
+        {
+            RemoteProperties = _RemoteProperties;
+        }
 
         #endregion
 
@@ -101,6 +103,8 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         
         private void SetScoreAndroid(ushort _Key, long _Value)
         {
+            if (RemoteProperties.DebugEnabled)
+                return;
             if (!Authenticator.IsAuthenticated)
             {
                 Dbg.LogWarning($"{nameof(SetScoreAndroid)}: User is not authenticated to ");

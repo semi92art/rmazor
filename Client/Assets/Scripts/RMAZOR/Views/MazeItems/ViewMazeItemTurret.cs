@@ -424,7 +424,7 @@ namespace RMAZOR.Views.MazeItems
 
         private void StopProceedingTurret()
         {
-            Cor.Run(Cor.WaitEndOfFrame(
+            Cor.Run(Cor.WaitNextFrame(
                 () =>
                 {
                     OpenBarrel(false, true, true);

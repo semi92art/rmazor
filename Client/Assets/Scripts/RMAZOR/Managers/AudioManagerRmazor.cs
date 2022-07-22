@@ -23,14 +23,14 @@ namespace RMAZOR.Managers
         private AudioManagerRmazor(
             IContainersGetter _ContainersGetter,
             IViewGameTicker   _GameTicker,
-            IUITicker         _UITicker,
+            IUITicker         _UIUiTicker,
             IMusicSetting     _MusicSetting,
             ISoundSetting     _SoundSetting,
             IPrefabSetManager _PrefabSetManager)
             : base(
                 _ContainersGetter,
                 _GameTicker,
-                _UITicker,
+                _UIUiTicker,
                 _MusicSetting,
                 _SoundSetting,
                 _PrefabSetManager) { }

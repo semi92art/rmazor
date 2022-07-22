@@ -42,9 +42,6 @@ namespace RMAZOR.Views.Common
         {
             ColorProvider.ColorChanged += OnColorChanged;
             base.Init();
-            CameraProvider.EnableEffect(ECameraEffect.AntiAliasing, true);
-            var fxaaProps = new FxaaProps {Sharpness = 2f, Threshold = 0.3f};
-            CameraProvider.SetEffectProps(ECameraEffect.AntiAliasing, fxaaProps);
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)

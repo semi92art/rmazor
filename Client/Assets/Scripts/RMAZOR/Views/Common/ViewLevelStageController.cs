@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
@@ -58,25 +56,26 @@ namespace RMAZOR.Views.Common
 
         #region inject
 
-        private ViewSettings                     ViewSettings                { get; }
-        private IViewGameTicker                  ViewGameTicker              { get; }
-        private IModelGameTicker                 ModelGameTicker             { get; }
-        private IModelGame                       Model                       { get; }
-        private IManagersGetter                  Managers                    { get; }
-        private IViewCharacter                   Character                   { get; }
-        private IViewInputCommandsProceeder      CommandsProceeder           { get; }
-        private IContainersGetter                ContainersGetter            { get; }
-        private IMazeShaker                      MazeShaker                  { get; }
-        private IDialogPanelsSet                 DialogPanelsSet             { get; }
-        private IProposalDialogViewer            ProposalDialogViewer        { get; }
-        private IViewMazeItemsGroupSet           MazeItemsGroupSet           { get; }
-        private IViewMazePathItemsGroup          PathItemsGroup              { get; }
-        private CompanyLogo                      CompanyLogo                 { get; }
-        private IViewUIGameLogo                  GameLogo                    { get; }
-        private IRateGameDialogPanel             RateGameDialogPanel         { get; }
-        private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
-        private IViewBetweenLevelAdLoader        BetweenLevelAdLoader        { get; }
-        private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
+        private ViewSettings                        ViewSettings                { get; }
+        private IViewGameTicker                     ViewGameTicker              { get; }
+        private IModelGameTicker                    ModelGameTicker             { get; }
+        private IModelGame                          Model                       { get; }
+        private IManagersGetter                     Managers                    { get; }
+        private IViewCharacter                      Character                   { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder           { get; }
+        private IContainersGetter                   ContainersGetter            { get; }
+        private IMazeShaker                         MazeShaker                  { get; }
+        private IDialogPanelsSet                    DialogPanelsSet             { get; }
+        private IProposalDialogViewer               ProposalDialogViewer        { get; }
+        private IViewMazeItemsGroupSet              MazeItemsGroupSet           { get; }
+        private IViewMazePathItemsGroup             PathItemsGroup              { get; }
+        private CompanyLogo                         CompanyLogo                 { get; }
+        private IViewUIGameLogo                     GameLogo                    { get; }
+        private IRateGameDialogPanel                RateGameDialogPanel         { get; }
+        private IViewFullscreenTransitioner         FullscreenTransitioner      { get; }
+        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader        { get; }
+        private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator { get; }
+        private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer  { get; }
 
         private ViewLevelStageController(
             ViewSettings                     _ViewSettings,
@@ -97,7 +96,7 @@ namespace RMAZOR.Views.Common
             IRateGameDialogPanel             _RateGameDialogPanel,
             IViewFullscreenTransitioner      _FullscreenTransitioner,
             IViewBetweenLevelAdLoader        _BetweenLevelAdLoader,
-            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator)
+            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator, IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
@@ -118,6 +117,7 @@ namespace RMAZOR.Views.Common
             FullscreenTransitioner      = _FullscreenTransitioner;
             BetweenLevelAdLoader        = _BetweenLevelAdLoader;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
+            AdditionalBackgroundDrawer = _AdditionalBackgroundDrawer;
         }
 
         #endregion
@@ -333,6 +333,7 @@ namespace RMAZOR.Views.Common
                 PauseGameTickers(false);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);
+                AdditionalBackgroundDrawer.Appear(false);
                 Cor.Run(Cor.WaitWhile(() =>
                 {
                     return _MazeItems.Any(_Item => _Item.AppearingState != EAppearingState.Dissapeared);

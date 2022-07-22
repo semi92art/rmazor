@@ -64,7 +64,7 @@ namespace RMAZOR.Views.Common
         private ViewSettings                ViewSettings        { get; }
         private IColorProvider              ColorProvider       { get; }
         private IContainersGetter           ContainersGetter    { get; }
-        private ICoordinateConverter  CoordinateConverter { get; }
+        private ICoordinateConverter        CoordinateConverter { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
         private IRendererAppearTransitioner Transitioner        { get; }
         
@@ -72,7 +72,7 @@ namespace RMAZOR.Views.Common
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IPrefabSetManager           _PrefabSetManager,
             IRendererAppearTransitioner _Transitioner)
         {

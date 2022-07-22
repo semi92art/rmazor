@@ -10,8 +10,9 @@ namespace Common.Managers.Advertising.AdBlocks
     
     public class AppodealRewardedAd : AppodealAdBase, IAppodealRewardedAd
     {
-        protected override int ShowStyle => AppodealShowStyle.RewardedVideo;
-        protected override int AdType    => AppodealAdType.RewardedVideo;
+        protected override int    ShowStyle  => AppodealShowStyle.RewardedVideo;
+        protected override string AdType     => AdTypeRewarded;
+        protected override int    AppoAdType => AppodealAdType.RewardedVideo;
 
         public AppodealRewardedAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker) 
             : base(_GameSettings, _CommonTicker) { }
@@ -24,35 +25,31 @@ namespace Common.Managers.Advertising.AdBlocks
         
         public void OnRewardedVideoLoaded(bool _IsPrecache) 
         { 
-            Dbg.Log("Appodeal: Video loaded"); 
+            OnAdLoaded();
         } 
         
         public void OnRewardedVideoFailedToLoad() 
-        { 
-            Dbg.Log("Appodeal: Video failed"); 
-            DoLoadAdWithDelay = true;
+        {
+            OnAdFailedToLoad();
         }
         
         public void OnRewardedVideoShowFailed() 
-        { 
-            Dbg.Log ("Appodeal: Video show failed"); 
-            DoLoadAdWithDelay = true;
+        {
+            OnAdFailedToShow();
         } 
 
         public void OnRewardedVideoShown() 
-        { 
-            Dbg.Log("Appodeal: Video shown"); 
-            DoInvokeOnShown = true;
+        {
+            OnAdShown();
         } 
 
         public void OnRewardedVideoClicked()
-        { 
-            Dbg.Log("Appodeal: Video clicked");
-            DoInvokeOnClicked = true;
+        {
+            OnAdClicked();
         } 
 
         public void OnRewardedVideoClosed(bool _Finished) 
-        { 
+        {
             Dbg.Log("Appodeal: Video closed"); 
         }
 

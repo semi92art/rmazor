@@ -12,6 +12,7 @@ using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
+using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -36,6 +37,7 @@ namespace SRDebuggerCustomOptions
         private const string CategoryHaptics    = "Haptics";
         private const string CategoryAds        = "Ads";
         private const string CategoryMonitor    = "Monitor";
+        private const string CategoryAudio      = "Audio";
 
         private static int _adsNetworkIdx;
 
@@ -337,6 +339,33 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 AppodealStack.Monetization.Api.Appodeal.ShowTestScreen();
+            }
+        }
+#endif
+        
+#if ADMOB_API
+        [Category(CategoryAds)]
+        public bool Show_Admob_Test_Screen
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                GoogleMobileAds.Api.MobileAds.OpenAdInspector(_AdInspectorError =>
+                {
+                    if (_AdInspectorError == null)
+                    {
+                        Dbg.Log("Ad inspector error is null");
+                        return;
+                    }
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Code: " + _AdInspectorError.GetCode());
+                    sb.AppendLine("Cause: " + _AdInspectorError.GetCause());
+                    sb.AppendLine("Domain: " + _AdInspectorError.GetDomain());
+                    sb.AppendLine("Message: " + _AdInspectorError.GetMessage());
+                    Dbg.LogError(sb.ToString());
+                });
             }
         }
 #endif
@@ -654,6 +683,78 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, false);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool MuteMusic
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.MuteAudio(EAudioClipType.Music);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool UnmuteMusic
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool MuteGameSounds
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.MuteAudio(EAudioClipType.GameSound);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool UnmuteGameSounds
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.UnmuteAudio(EAudioClipType.GameSound);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool MuteUiSounds
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.MuteAudio(EAudioClipType.UiSound);
+            }
+        }
+        
+        [Category(CategoryAudio)]
+        public bool UnmuteUiSounds
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.AudioManager.UnmuteAudio(EAudioClipType.UiSound);
             }
         }
 

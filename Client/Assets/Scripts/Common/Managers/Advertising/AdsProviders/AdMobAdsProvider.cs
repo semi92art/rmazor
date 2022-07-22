@@ -42,27 +42,27 @@ namespace Common.Managers.Advertising.AdsProviders
         #endregion
         
         #region inject
-        
-        private new IAdMobInterstitialAd InterstitialAd { get; }
-        private new IAdMobRewardedAd     RewardedAd     { get; }
+
+        private IRemotePropertiesCommon RemoteProperties { get; }
 
         private AdMobAdsProvider(
-            GlobalGameSettings   _GlobalGameSettings,
-            IAdMobInterstitialAd _InterstitialAd,
-            IAdMobRewardedAd     _RewardedAd) 
-            : base(_GlobalGameSettings, _InterstitialAd, _RewardedAd)
+            IRemotePropertiesCommon _RemoteProperties,
+            GlobalGameSettings      _GlobalGameSettings,
+            IAdMobInterstitialAd    _InterstitialAd,
+            IAdMobRewardedAd        _RewardedAd) 
+            : base(
+                _GlobalGameSettings, 
+                _InterstitialAd,
+                _RewardedAd)
         {
-            InterstitialAd = _InterstitialAd;
-            RewardedAd     = _RewardedAd;
+            RemoteProperties = _RemoteProperties;
         }
 
         #endregion
 
         #region api
 
-        public override string Source              => AdvertisingNetworks.Admob;
-        public override bool   RewardedAdReady     => RewardedAd.Ready;
-        public override bool   InterstitialAdReady => InterstitialAd.Ready;
+        public override string Source => AdvertisingNetworks.Admob;
 
         #endregion
 
@@ -73,6 +73,8 @@ namespace Common.Managers.Advertising.AdsProviders
             var reqConfig = new RequestConfiguration.Builder()
                 .SetTestDeviceIds(GetTestDeviceIds())
                 .build();
+            MobileAds.SetiOSAppPauseOnBackground(true);
+            MobileAds.DisableMediationInitialization();
             MobileAds.SetRequestConfiguration(reqConfig);
             MobileAds.Initialize(_InitStatus =>
             {
@@ -86,19 +88,10 @@ namespace Common.Managers.Advertising.AdsProviders
             });
         }
 
-        protected override void InitRewardedAd()
-        {
-            RewardedAd.Init(AppId, RewardedUnitId);
-        }
-
-        protected override void InitInterstitialAd()
-        {
-            InterstitialAd.Init(AppId, InterstitialUnitId);
-        }
-
         private List<string> GetTestDeviceIds()
         {
-            return AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
+            return RemoteProperties.TestDeviceIdsForAdmob ??
+                   AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
         }
 
         #endregion

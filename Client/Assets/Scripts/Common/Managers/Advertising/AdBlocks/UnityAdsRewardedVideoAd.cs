@@ -4,26 +4,26 @@ using Common.Helpers;
 using Common.Ticker;
 using UnityEngine.Advertisements;
 
-namespace Common.Managers.Advertising
+namespace Common.Managers.Advertising.AdBlocks
 {
     public interface IUnityAdsRewardedAd : IUnityAdsAd { }
     
     public class UnityAdsRewardedAd : UnityAdsAdBase, IUnityAdsRewardedAd
     {
-        public UnityAdsRewardedAd(CommonGameSettings _Settings, ICommonTicker _CommonTicker)
+        protected override string AdType => AdTypeRewarded;
+        
+        public UnityAdsRewardedAd(GlobalGameSettings _Settings, ICommonTicker _CommonTicker)
             : base(_Settings, _CommonTicker) { }
         
-        public override void OnUnityAdsShowComplete(string _PlacementId, UnityAdsShowCompletionState _ShowCompletionState)
+        public override void OnUnityAdsShowComplete(
+            string                      _PlacementId,
+            UnityAdsShowCompletionState _ShowCompletionState)
         {
-            if (!_PlacementId.Equals(UnitId)
-                || !_ShowCompletionState.Equals(UnityAdsShowCompletionState.COMPLETED)) 
+            if (!_PlacementId.Equals(UnitId)) 
                 return;
-            string message = string.Join(": ", 
-                GetType().Name, nameof(OnUnityAdsShowComplete), _PlacementId, _ShowCompletionState);
-            Dbg.Log(message);
-            DoInvokeOnShown = true;
-            Ready = false;
-            LoadAd();
+            IsReady = false;
+            OnAdShown();
+            Dbg.Log($"Completion state: {_ShowCompletionState}");
         }
     }
 }

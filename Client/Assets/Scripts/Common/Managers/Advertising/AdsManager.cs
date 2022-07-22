@@ -21,11 +21,17 @@ namespace Common.Managers.Advertising
         bool         InterstitialAdReady { get; }
         Entity<bool> ShowAds             { get; set; }
 
-        void ShowRewardedAd(UnityAction _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null,
-                            bool        _Forced = false);
+        void ShowRewardedAd(
+            UnityAction _OnBeforeShown,
+            UnityAction _OnShown,
+            string      _AdsNetwork = null,
+            bool        _Forced     = false);
 
-        void ShowInterstitialAd(UnityAction _OnBeforeShown, UnityAction _OnShown, string _AdsNetwork = null,
-                                bool        _Forced = false);
+        void ShowInterstitialAd(
+            UnityAction _OnBeforeShown,
+            UnityAction _OnShown,
+            string      _AdsNetwork = null,
+            bool        _Forced     = false);
     }
 
     public class AdsManager : InitBase, IAdsManager
@@ -44,14 +50,14 @@ namespace Common.Managers.Advertising
         private IAnalyticsManager       AnalyticsManager { get; }
 
         private AdsManager(
-            GlobalGameSettings          _GameGameSettings,
+            GlobalGameSettings      _GameGameSettings,
             IRemotePropertiesCommon _RemoteProperties,
             IAdsProvidersSet        _AdsProvidersSet,
             IAnalyticsManager       _AnalyticsManager)
         {
             GameGameSettings = _GameGameSettings;
             RemoteProperties = _RemoteProperties;
-            AdsProvidersSet = _AdsProvidersSet;
+            AdsProvidersSet  = _AdsProvidersSet;
             AnalyticsManager = _AnalyticsManager;
         }
 
@@ -136,8 +142,8 @@ namespace Common.Managers.Advertising
                     _P.Source.EqualsIgnoreCase(adsProvider.Source)) ?? new AdProviderInfo
                 {
                     Source = adsProvider.Source,
-                    Enabled = false,
-                    ShowRate = 0f
+                    Enabled = Application.isEditor,
+                    ShowRate = 1f
                 };
                 if (!info.Enabled)
                     continue;
@@ -196,6 +202,7 @@ namespace Common.Managers.Advertising
             {
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdClicked, eventData);
             }
+            Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:

@@ -12,12 +12,12 @@ using UnityEditor.PackageManager.Requests;
 public class BuildTargetChangeListener : IActiveBuildTargetChanged
 {
     #region constants
-    
-    private const string Ver39 = "v3.9";
-    private const string Ver41 = "v4.1";
-    private const string Appodeal       = "Appodeal";
-    private const string NiceVibrations      = "NiceVibrations";
-    private const string GoogleMobileAds      = "GoogleMobileAds";
+
+    private const string Ver39           = "v3.9";
+    private const string Ver41           = "v4.1";
+    private const string Appodeal        = "Appodeal";
+    private const string NiceVibrations  = "NiceVibrations";
+    private const string GoogleMobileAds = "GoogleMobileAds";
 
     #endregion
 
@@ -46,6 +46,19 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         }
     }
 
+    [InitializeOnLoadMethod]
+    public static void OnAppodealPluginImported()
+    {
+        var bt = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android
+            ? NamedBuildTarget.Android : NamedBuildTarget.iOS;
+        string defineSymbols = PlayerSettings.GetScriptingDefineSymbols(bt);
+        if (defineSymbols.Contains("APPODEAL_3"))
+        {
+            RemovePluginFiles(Appodeal);
+            AddPluginFiles(Appodeal);
+        }
+    }
+
     #endregion
 
     #region nonpublic methods
@@ -60,8 +73,8 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         var target = NamedBuildTarget.Android;
         SetNiceVibrationsPluginVersion(Ver39, target);
         AddAppodeal(target);
-        RemoveGoogleAds(target);
-        // RemoveUnityAds(target);
+        // RemoveGoogleAds(target);
+        RemoveUnityAds(target);
     }
 
     private static void ConfigureIosPlatform()
@@ -69,8 +82,8 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         var target = NamedBuildTarget.iOS;
         SetNiceVibrationsPluginVersion(Ver41, target);
         RemoveAppodeal(target);
-        AddGoogleAds(target);
-        // AddUnityAds(target);
+        // AddGoogleAds(target);
+        AddUnityAds(target);
     }
     
     private static List<string> GetScriptingDefineSymbols(NamedBuildTarget _Target)
@@ -139,7 +152,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         if (_Request.Status == StatusCode.Success)
             Dbg.Log("Installed package: " + _Request.Result.packageId + " version: " + _Request.Result.version);
         else if (_Request.Status >= StatusCode.Failure)
-            Dbg.Log(_Request.Error.message);
+            Dbg.LogError(_Request.Error.message);
         return true;
     }
     
@@ -150,7 +163,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         if (_Request.Status == StatusCode.Success)
             Dbg.Log("Uninstalled package: " + _Request.PackageIdOrName);
         else if (_Request.Status >= StatusCode.Failure)
-            Dbg.Log(_Request.Error.message);
+            Dbg.LogError(_Request.Error.message);
         return true;
     }
 
@@ -227,16 +240,13 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
 
     private static void AddAppodealProgress()
     {
-        if (!AddRequestCompletion(_addAppodealRequest))
-            return;
-        AddPluginFiles(Appodeal);
+        AddRequestCompletion(_addAppodealRequest);
         EditorApplication.update -= AddAppodealProgress;
     }
    
     private static void RemoveAppodealProgress()
     {
-        if (!RemoveRequestCompletion(_removeAppodealRequest))
-            return;
+        RemoveRequestCompletion(_removeAppodealRequest);
         EditorApplication.update -= RemoveAppodealProgress;
     }
     
@@ -266,7 +276,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
 
     #region UNITY ADS
 
-    private static void AddUnityAds(NamedBuildTarget _Target)
+    public static void AddUnityAds(NamedBuildTarget _Target)
     {
         var scriptDefSymbols = GetScriptingDefineSymbols(_Target);
         if (!scriptDefSymbols.Contains("UNITY_ADS_API"))
@@ -276,7 +286,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         EditorApplication.update += AddUnityAdsProgress;    
     }
 
-    private static void RemoveUnityAds(NamedBuildTarget _Target)
+    public static void RemoveUnityAds(NamedBuildTarget _Target)
     {
         var scriptDefSymbols = GetScriptingDefineSymbols(_Target);
         if (scriptDefSymbols.Contains("UNITY_ADS_API"))
@@ -288,15 +298,13 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     
     private static void AddUnityAdsProgress()
     {
-        if (!AddRequestCompletion(_addUnityAdsRequest))
-            return;
+        AddRequestCompletion(_addUnityAdsRequest);
         EditorApplication.update -= AddUnityAdsProgress;
     }
    
     private static void RemoveUnityAdsProgress()
     {
-        if (!RemoveRequestCompletion(_removeUnityAdsRequest))
-            return;
+        RemoveRequestCompletion(_removeUnityAdsRequest);
         EditorApplication.update -= RemoveUnityAdsProgress;
     }
 

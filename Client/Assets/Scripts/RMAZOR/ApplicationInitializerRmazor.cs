@@ -48,7 +48,7 @@ namespace RMAZOR
         [Inject] 
         private void Inject(
             IRemotePropertiesCommon _RemoteProperties,
-            GlobalGameSettings          _GameSettings,
+            GlobalGameSettings      _GameSettings,
             IGameClient             _GameClient,
             IAdsManager             _AdsManager,
             ILocalizationManager    _LocalizationManager,
@@ -64,7 +64,7 @@ namespace RMAZOR
             CompanyLogo             _CompanyLogo)
         {
             RemoteProperties     = _RemoteProperties;
-            GlobalGameSettings       = _GameSettings;
+            GlobalGameSettings   = _GameSettings;
             GameClient           = _GameClient;
             AdsManager           = _AdsManager;
             LocalizationManager  = _LocalizationManager;

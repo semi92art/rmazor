@@ -75,7 +75,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
             Content.gameObject.DestroyChildrenSafe();
             InitItems();
             InitMoneyPanel();
-            Cor.Run(Cor.WaitEndOfFrame(
+            Cor.Run(Cor.WaitNextFrame(
                 () => Content.anchoredPosition = StartContentPos));
         }
 

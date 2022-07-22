@@ -15,20 +15,20 @@ namespace Common.Managers
 {
     public interface IAudioManager : IInit
     {
-        bool IsPlaying(AudioClipArgs    _Args);
-        void InitClip(AudioClipArgs     _Args);
-        void PlayClip(AudioClipArgs     _Args);
-        void PauseClip(AudioClipArgs    _Args);
-        void UnPauseClip(AudioClipArgs  _Args);
-        void StopClip(AudioClipArgs     _Args);
-        void EnableAudio(bool           _Enable, EAudioClipType _Type);
-        void MuteAudio(EAudioClipType   _Type);
-        void UnmuteAudio(EAudioClipType _Type);
+        bool  IsPlaying(AudioClipArgs    _Args);
+        void  InitClip(AudioClipArgs     _Args);
+        void  PlayClip(AudioClipArgs     _Args);
+        void  PauseClip(AudioClipArgs    _Args);
+        void  UnPauseClip(AudioClipArgs  _Args);
+        void  StopClip(AudioClipArgs     _Args);
+        void  EnableAudio(bool           _Enable, EAudioClipType _Type);
+        void  MuteAudio(EAudioClipType   _Type);
+        void  UnmuteAudio(EAudioClipType _Type);
     }
 
     public abstract class AudioManagerCommon : InitBase, IAudioManager
     {
-         #region nonpublic members
+        #region nonpublic members
 
         private readonly AudioClipInfo[] m_ClipInfos = new AudioClipInfo[500];
         private          AudioMixer      m_Mixer;
@@ -41,7 +41,7 @@ namespace Common.Managers
         
         private IContainersGetter ContainersGetter { get; }
         private IViewGameTicker   GameTicker       { get; }
-        private IUITicker         Ticker           { get; }
+        private IUITicker         UiTicker         { get; }
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
         private IPrefabSetManager PrefabSetManager { get; }
@@ -49,14 +49,14 @@ namespace Common.Managers
         protected AudioManagerCommon(
             IContainersGetter _ContainersGetter,
             IViewGameTicker   _GameTicker,
-            IUITicker         _UITicker,
+            IUITicker         _UIUiTicker,
             IMusicSetting     _MusicSetting,
             ISoundSetting     _SoundSetting,
             IPrefabSetManager _PrefabSetManager)
         {
             ContainersGetter = _ContainersGetter;
             GameTicker       = _GameTicker;
-            Ticker           = _UITicker;
+            UiTicker         = _UIUiTicker;
             MusicSetting     = _MusicSetting;
             SoundSetting     = _SoundSetting;
             PrefabSetManager = _PrefabSetManager;
@@ -199,7 +199,7 @@ namespace Common.Managers
                     continue;
                 if (info.Type != _Type)
                     continue;
-                info.Volume = _Enable ? info.StartVolume : 0f;
+                info.SourceVolume = _Enable ? info.StartVolume : 0f;
             }
             if (!_OnStart)
                 SaveUtils.PutValue(GetSaveKeyByType(_Type), _Enable);
@@ -208,7 +208,7 @@ namespace Common.Managers
         private void PlayClipCore(AudioClipArgs _Args, AudioClipInfo _Info)
         {
             _Info.StartVolume = _Args.StartVolume;
-            _Info.Volume = SaveUtils.GetValue(GetSaveKeyByType(_Info.Type)) ? _Info.StartVolume : 0f;
+            _Info.SourceVolume = SaveUtils.GetValue(GetSaveKeyByType(_Info.Type)) ? _Info.StartVolume : 0f;
             if (_Info.OnPause)
                 _Info.OnPause = false;
             else
@@ -232,14 +232,14 @@ namespace Common.Managers
 
         private IEnumerator AttenuateCoroutine(AudioClipInfo _Info, bool _AttenuateUp)
         {
-            float startVolume = _AttenuateUp ? 0f : _Info.Volume;
-            float endVolume = !_AttenuateUp ? 0f : _Info.Volume;
+            float startVolume = _AttenuateUp ? 0f : _Info.SourceVolume;
+            float endVolume = !_AttenuateUp ? 0f : _Info.SourceVolume;
             yield return Cor.Lerp(
-                _Info.Type == EAudioClipType.UiSound ? (ITicker)Ticker : GameTicker,
+                _Info.Type == EAudioClipType.UiSound ? (ITicker)UiTicker : GameTicker,
                 _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 startVolume,
                 endVolume,
-                _Volume => _Info.Volume = _Volume,
+                _Volume => _Info.SourceVolume = _Volume,
                 () =>
                 {
                     if (!_AttenuateUp)

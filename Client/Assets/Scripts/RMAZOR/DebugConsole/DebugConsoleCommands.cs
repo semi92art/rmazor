@@ -40,10 +40,25 @@ namespace RMAZOR.DebugConsole
                 new DebugCommandArgs("run_cor",          GetRunningCoroutinesCount, "Show running coroutines count"),
                 new DebugCommandArgs("dis_rot_coms",     ShowDisabledRotationCommands, "Show disabled rotation commands on this moment"),
                 new DebugCommandArgs("dis_mov_coms",     ShowDisabledMovementCommands, "Show disabled movement commands on this moment"),
+                new DebugCommandArgs("mute_music",       MuteGameMusic, "Mute/unmute game music, true/false"),
+                new DebugCommandArgs("show_ad",          ShowAd, "Show ad rewarded/interstitial"),
             };
-
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
+        }
+
+        private static void ShowAd(string[] _Args)
+        {
+            string adType = _Args[0];
+            switch (adType)
+            {
+                case "rewarded":
+                    Controller.AdsManager.ShowRewardedAd(null, null);
+                    break;
+                case "interstitial":
+                    Controller.AdsManager.ShowInterstitialAd(null, null);
+                    break;
+            }
         }
 
         private static void Reload(string[] _Args)
@@ -265,6 +280,15 @@ namespace RMAZOR.DebugConsole
                 foreach (string gName in groupNames)
                     sb.AppendLine(gName);
             Dbg.Log(sb.ToString());
+        }
+
+        private static void MuteGameMusic(string[] _Args)
+        {
+            bool mute = Convert.ToBoolean(_Args[0]);
+            if (mute)
+                Controller.AudioManager.MuteAudio(EAudioClipType.Music);
+            else 
+                Controller.AudioManager.UnmuteAudio(EAudioClipType.Music);
         }
     }
 }

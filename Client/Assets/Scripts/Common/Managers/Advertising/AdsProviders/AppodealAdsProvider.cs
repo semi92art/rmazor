@@ -16,32 +16,31 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public class AppodealAdsProvider : AdsProviderCommonBase, IAppodealAdsProvider
     {
-
         #region nonpublic members
 
         protected override string AppId => Application.isEditor ? string.Empty : base.AppId;
 
-        private IConsent     m_Consent;
+        private IConsent    m_Consent;
         private UnityAction m_OnSuccess;
 
         #endregion
         
         #region inject
         
-        
         private AppodealAdsProvider(
             GlobalGameSettings      _GlobalGameSettings,
             IAppodealInterstitialAd _InterstitialAd,
             IAppodealRewardedAd     _RewardedAd) 
-            : base(_GlobalGameSettings, _InterstitialAd, _RewardedAd) { }
+            : base(
+                _GlobalGameSettings, 
+                _InterstitialAd, 
+                _RewardedAd) { }
 
         #endregion
 
         #region api
 
-        public override string Source              => AdvertisingNetworks.Appodeal;
-        public override bool   RewardedAdReady     => RewardedAd.Ready;
-        public override bool   InterstitialAdReady => InterstitialAd.Ready;
+        public override string Source => AdvertisingNetworks.Appodeal;
 
         public void OnInitializationFinished(List<string> _Errors)
         {
@@ -73,17 +72,7 @@ namespace Common.Managers.Advertising.AdsProviders
             Appodeal.SetAutoCache(adTypes, false);
             Appodeal.Initialize(AppId, adTypes, this);
         }
-        
-        protected override void InitRewardedAd()
-        {
-            RewardedAd.Init(AppId, null);
-        }
 
-        protected override void InitInterstitialAd()
-        {
-            InterstitialAd.Init(AppId, null);
-        }
-        
         #endregion
     }
 }

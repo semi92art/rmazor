@@ -18,6 +18,7 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public interface IAdsProvider : IAdsProviderBase
     {
+        UnityAction<bool> MuteAudio { get; set; }
         bool Initialized { get; }
         void Init(bool                      _TestMode, float _ShowRate, XElement _AdsData);
         void LoadAd(AdvertisingType         _AdvertisingType);
@@ -54,10 +55,11 @@ namespace Common.Managers.Advertising.AdsProviders
         
         public abstract string Source { get; }
 
-        public abstract bool  RewardedAdReady     { get; }
-        public abstract bool  InterstitialAdReady { get; }
-        public          float ShowRate            { get; private set; }
-        public          bool  Initialized         { get; private set; }
+        public abstract bool              RewardedAdReady     { get; }
+        public abstract bool              InterstitialAdReady { get; }
+        public          float             ShowRate            { get; private set; }
+        public          UnityAction<bool> MuteAudio           { get; set; }
+        public          bool              Initialized         { get; private set; }
 
         public void Init(bool _TestMode, float _ShowRate, XElement _AdsData)
         {

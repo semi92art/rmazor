@@ -54,7 +54,7 @@ namespace RMAZOR
         {
             m_TransitionsCount++;
             Cor.Stop(m_TextureCoroutine);
-            m_TextureCoroutine = DoTextureTransitionCore(_Appear, _Duration);
+            m_TextureCoroutine = DoTextureTransitionCoroutine(_Appear, _Duration);
             Cor.Run(m_TextureCoroutine);
         }
 
@@ -62,7 +62,7 @@ namespace RMAZOR
 
         #region nonpublic members
 
-        private IEnumerator DoTextureTransitionCore(bool _Appear, float _Duration)
+        private IEnumerator DoTextureTransitionCoroutine(bool _Appear, float _Duration)
         {
             int transitionsCount = m_TransitionsCount;
             if (_Appear)

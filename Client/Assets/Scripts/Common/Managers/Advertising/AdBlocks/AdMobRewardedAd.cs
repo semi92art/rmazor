@@ -1,6 +1,9 @@
 ﻿#if ADMOB_API
 
 using System;
+using System.Text;
+using Common.Helpers;
+using Common.Ticker;
 using UnityEngine.Events;
 using GoogleMobileAds.Api;
 
@@ -10,10 +13,29 @@ namespace Common.Managers.Advertising.AdBlocks
     
     public class AdMobRewardedAd : AdBase, IAdMobRewardedAd
     {
-        private RewardedAd  m_RewardedAd;
+        #region nonpublic members
+
+        protected override string AdSource => AdvertisingNetworks.Admob;
+        protected override string AdType   => AdTypeInterstitial;
         
-        public bool Ready => m_RewardedAd != null && m_RewardedAd.IsLoaded();
-        public void Init(string _AppId, string _UnitId)
+        private RewardedAd m_RewardedAd;
+        
+        #endregion
+
+        #region inject
+        
+        public AdMobRewardedAd(
+            GlobalGameSettings _GlobalGameSettings,
+            ICommonTicker      _CommonTicker) 
+            : base(_GlobalGameSettings, _CommonTicker) { }
+        
+        #endregion
+
+        #region api
+        
+        public override bool Ready => m_RewardedAd != null && m_RewardedAd.IsLoaded();
+        
+        public override void Init(string _AppId, string _UnitId)
         {
             m_RewardedAd = new RewardedAd(_UnitId);
             m_RewardedAd.OnAdLoaded              += OnRewardedAdLoaded;
@@ -22,57 +44,65 @@ namespace Common.Managers.Advertising.AdBlocks
             m_RewardedAd.OnAdClosed              += OnRewardedAdClosed;
             m_RewardedAd.OnUserEarnedReward      += OnRewardedAdUserEarnedReward;
             m_RewardedAd.OnAdDidRecordImpression += OnRewardedAdDidRecordImpression;
-            LoadAd();
+            base.Init(_AppId, _UnitId);
         }
         
-        public void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
         {
             OnShown = _OnShown;
             OnClicked = _OnClicked;
             m_RewardedAd.Show();
         }
 
-        public void LoadAd()
+        public override void LoadAd()
         {
             var adRequest = new AdRequest.Builder().Build();
             m_RewardedAd.LoadAd(adRequest);
         }
+
+        #endregion
+
+        #region nonpublic methods
         
         private void OnRewardedAdLoaded(object _Sender, EventArgs _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdLoaded));
+            OnAdLoaded();
         }
         
         private void OnRewardedAdFailedToLoad(object _Sender, AdFailedToLoadEventArgs _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdFailedToLoad));
-            LoadAd();
+            OnAdFailedToLoad();
+            var sb = new StringBuilder();
+            sb.AppendLine("Code: " + _E.LoadAdError.GetCode());
+            sb.AppendLine("Message: " + _E.LoadAdError.GetMessage());
+            sb.AppendLine("Domain: " + _E.LoadAdError.GetDomain());
+            sb.AppendLine("Unit Id: " + UnitId);
+            Dbg.LogWarning(sb);
         }
         
         private void OnRewardedAdPaidEvent(object _Sender, AdValueEventArgs _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdPaidEvent));
-            OnClicked?.Invoke();
+            OnAdClicked();
         }
         
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdClosed));
-            OnShown?.Invoke();
-            LoadAd();
+            OnAdShown();
         }
         
         private void OnRewardedAdDidRecordImpression(object _Sender, EventArgs _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdDidRecordImpression));
+            Dbg.Log("AdMob: Rewarded record impression");
         }
 
         private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
         {
-            Dbg.Log("AdMob: " + nameof(OnRewardedAdUserEarnedReward)
-                                  + ": amount: " + _E.Amount + 
-                                  ", type: " + _E.Type);
+            Dbg.Log("AdMob: Rewarded user earned" 
+                    + ": amount: " + _E.Amount
+                    + ", type: " + _E.Type);
         }
+
+        #endregion
     }
 }
 

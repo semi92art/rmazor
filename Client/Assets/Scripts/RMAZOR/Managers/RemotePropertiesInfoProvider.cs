@@ -106,7 +106,7 @@ namespace RMAZOR.Managers
                     _Value => RemoteProperties.AdsProviders =
                         JsonConvert.DeserializeObject<IList<AdProviderInfo>>(_Value.ToString())),
                 new RemoteConfigPropertyInfo(filter, typeof(string), "inapp_notifications_list",
-                    _Value => RemoteProperties.Nofifications =
+                    _Value => RemoteProperties.Notifications =
                         JsonConvert.DeserializeObject<IList<NotificationInfo>>(_Value.ToString())),
                 new RemoteConfigPropertyInfo(filter, typeof(string), "additional_color_props_set",
                     _Value =>
@@ -137,7 +137,13 @@ namespace RMAZOR.Managers
                         RemoteProperties.ColorGradingProps =
                             JsonConvert.DeserializeObject<ColorGradingProps>(Convert.ToString(_Value));
                     }, true),
-
+                new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids_for_admob",
+                    _Value =>
+                    {
+                        RemoteProperties.TestDeviceIdsForAdmob =
+                            JsonConvert.DeserializeObject<List<string>>(Convert.ToString(_Value));
+                    },
+                    true),
                 new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids",
                     _Value => { },
                     true),
@@ -166,6 +172,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("pay_to_continue_money_count"),
                 CommonUtils.StringToHash("mazeitems_gravityblock_speed"),
                 CommonUtils.StringToHash("mazeitems_movingtrap_speed"),
+                CommonUtils.StringToHash("test_device_ids_for_admob"),
                 CommonUtils.StringToHash("test_device_ids"),
                 CommonUtils.StringToHash("animate_path_fill"),
                 CommonUtils.StringToHash("skip_button_seconds"),

@@ -97,10 +97,11 @@ namespace RMAZOR
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
-            IScoreManager               _ScoreManager)
+            IScoreManager               _ScoreManager,
+            IAudioManager               _AudioManager)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager);
+            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager, _AudioManager);
         }
         
         public void EnableDebug(bool _Enable)

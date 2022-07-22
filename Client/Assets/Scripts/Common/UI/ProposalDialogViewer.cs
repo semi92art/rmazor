@@ -57,7 +57,7 @@ namespace Common.UI
                 "dialog_viewers",
                 "notification_viewer");
             
-            Cor.Run(Cor.WaitEndOfFrame(() =>
+            Cor.Run(Cor.WaitNextFrame(() =>
             {
                 m_DialogContainer = go.GetCompItem<RectTransform>("dialog_container");
             }));

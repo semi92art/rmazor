@@ -113,7 +113,7 @@ namespace RMAZOR.UI.Panels
         
         public override void OnDialogShow()
         {
-            Cor.Run(Cor.WaitEndOfFrame(() =>
+            Cor.Run(Cor.WaitNextFrame(() =>
             {
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             }));
