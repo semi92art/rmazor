@@ -42,7 +42,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected ViewSettings                ViewSettings        { get; }
         protected IModelGame                  Model               { get; }
-        protected ICoordinateConverter  CoordinateConverter { get; }
+        protected ICoordinateConverter        CoordinateConverter { get; }
         protected IContainersGetter           ContainersGetter    { get; }
         protected IViewGameTicker             GameTicker          { get; }
         protected IRendererAppearTransitioner Transitioner        { get; }
@@ -53,7 +53,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemBase(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,

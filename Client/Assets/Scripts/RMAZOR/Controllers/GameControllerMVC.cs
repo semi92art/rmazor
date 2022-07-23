@@ -31,19 +31,19 @@ namespace RMAZOR.Controllers
 
         #region inject
 
-        private GlobalGameSettings          GlobalGameSettings   { get; set; }
-        private IRemotePropertiesRmazor RemoteProperties { get; set; }
-        public  IModelGame              Model            { get; private set; }
-        public  IViewGame               View             { get; private set; }
+        private GlobalGameSettings      GlobalGameSettings { get; set; }
+        private IRemotePropertiesRmazor RemoteProperties   { get; set; }
+        public  IModelGame              Model              { get; private set; }
+        public  IViewGame               View               { get; private set; }
 
         [Inject]
         private void Inject(
-            GlobalGameSettings          _GlobalGameSettings,
+            GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IModelGame              _Model,
             IViewGame               _View)
         {
-            GlobalGameSettings     = _GlobalGameSettings;
+            GlobalGameSettings = _GlobalGameSettings;
             RemoteProperties   = _RemoteProperties;
             Model              = _Model;
             View               = _View;

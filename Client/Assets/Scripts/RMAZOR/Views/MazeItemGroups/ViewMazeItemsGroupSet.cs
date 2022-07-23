@@ -1,9 +1,7 @@
 ﻿using Common;
 using Common.Helpers;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ItemProceeders.Additional;
-using RMAZOR.Views.Common;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
@@ -24,7 +22,7 @@ namespace RMAZOR.Views.MazeItemGroups
         IViewMazeGravityItemsGroup     GravityItemsGroup     { get; }
         IViewMazeHammersGroup          HammersGroup          { get; }
         IViewMazeSpearsGroup           SpearsGroup           { get; }
-        IViewMazeDiodesGroup      DiodesGroup           { get; }
+        IViewMazeDiodesGroup           DiodesGroup           { get; }
         
         
         IViewMazeItemGroup[] GetGroups();
