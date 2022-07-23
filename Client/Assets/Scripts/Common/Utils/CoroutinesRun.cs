@@ -45,6 +45,15 @@ namespace Common.Utils
             _coroutineRunnerMonoBeh.mustRun = true;
         }
 
+        public static bool IsRunning(IEnumerator _Coroutine)
+        {
+            return RunningCoroutines.Contains(_Coroutine);
+        }
+
+        #endregion
+
+        #region nonpublic methods
+        
         private static IEnumerator FacadeCoroutine(IEnumerator _Coroutine)
         {
             RunningCoroutines.Add(_Coroutine);
