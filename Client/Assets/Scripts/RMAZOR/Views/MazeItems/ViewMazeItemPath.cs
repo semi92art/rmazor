@@ -1,4 +1,4 @@
-﻿using System; 
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -66,6 +66,8 @@ namespace RMAZOR.Views.MazeItems
         private float m_DashedOffset;
         
         private bool Collected => !Props.Blank && MoneyItem.IsCollected;
+
+
         
         #endregion
         
@@ -74,7 +76,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemPath(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -132,8 +134,18 @@ namespace RMAZOR.Views.MazeItems
                 return;
             MoneyItem.IsCollected = _Collect;
             MoneyItem.Collect(_Collect);
-            var col = ColorProvider.GetColor(GetPathItemColorId());
+            var col = ColorProvider.GetColor(ColorIds.PathItem);
             m_PathItem.Color = _Collect ? col.SetA(0f) : col;
+        }
+
+        public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
+        {
+
+        }
+
+        public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
+        {
+            
         }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
@@ -142,7 +154,7 @@ namespace RMAZOR.Views.MazeItems
             MoneyItem.OnLevelStageChanged(_Args);
         }
 
-        public void UpdateTick()
+        public virtual void UpdateTick()
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
@@ -185,10 +197,10 @@ namespace RMAZOR.Views.MazeItems
         protected virtual void HighlightBordersAndCorners()
         {
             var col = GetHighlightColor();
-            if (m_LeftBorderInited)        m_LeftBorder.Color        = col;
-            if (m_RightBorderInited)       m_RightBorder.Color       = col;
-            if (m_BottomBorderInited)      m_BottomBorder.Color      = col;
-            if (m_TopBorderInited)         m_TopBorder.Color         = col;
+            if (m_LeftBorderInited)      m_LeftBorder.Color        = col;
+            if (m_RightBorderInited)     m_RightBorder.Color       = col;
+            if (m_BottomBorderInited)    m_BottomBorder.Color      = col;
+            if (m_TopBorderInited)       m_TopBorder.Color         = col;
             if (BottomLeftCornerInited)  m_BottomLeftCorner.Color  = col;
             if (TopLeftCornerInited)     m_TopLeftCorner.Color     = col;
             if (TopRightCornerInited)    m_TopRightCorner.Color    = col;
@@ -247,7 +259,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == GetPathItemColorId())
+            if (_ColorId == ColorIds.PathItem)
             {
                 if (!Collected || Props.Blank || Props.IsMoneyItem)
                     m_PathItem.Color = _Color;
@@ -259,10 +271,10 @@ namespace RMAZOR.Views.MazeItems
             if (TopLeftCornerInited)     m_TopLeftCorner.Color     = _Color;
             if (TopRightCornerInited)    m_TopRightCorner.Color    = _Color;
             var borderCol = GetBorderColor();
-            if (m_LeftBorderInited)        m_LeftBorder.Color        = borderCol;
-            if (m_RightBorderInited)       m_RightBorder.Color       = borderCol;
-            if (m_BottomBorderInited)      m_BottomBorder.Color      = borderCol;
-            if (m_TopBorderInited)         m_TopBorder.Color         = borderCol;
+            if (m_LeftBorderInited)      m_LeftBorder.Color        = borderCol;
+            if (m_RightBorderInited)     m_RightBorder.Color       = borderCol;
+            if (m_BottomBorderInited)    m_BottomBorder.Color      = borderCol;
+            if (m_TopBorderInited)       m_TopBorder.Color         = borderCol;
         }
 
         private void DrawBordersAndCorners()
@@ -454,7 +466,6 @@ namespace RMAZOR.Views.MazeItems
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
             border.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
                 .SetEndCaps(LineEndCap.None)
-                .SetColor(GetBorderColor())
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetDashed(false)
                 .SetDashType(DashType.Rounded)
@@ -513,7 +524,6 @@ namespace RMAZOR.Views.MazeItems
                 .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
                 .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
-                .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(SortingOrders.PathJoint)
                 .transform.SetPosXY(pos)
                 .PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
@@ -692,7 +702,7 @@ namespace RMAZOR.Views.MazeItems
             var cornerSets = GetCornerAppearSets();
             var result = borderSets.ConcatWithDictionary(cornerSets);
             var moneyItemCol = ColorProvider.GetColor(ColorIds.MoneyItem);
-            var pathItemCol = ColorProvider.GetColor(GetPathItemColorId());
+            var pathItemCol = ColorProvider.GetColor(ColorIds.PathItem);
             if ((!_Appear || Props.Blank || Props.IsStartNode) && (_Appear || Collected)) 
                 return result;
             if (Props.IsMoneyItem)
@@ -752,12 +762,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected virtual Color GetBorderColor()
         {
-            return ColorProvider.GetColor(ColorIds.Main).SetA(0.5f);
-        }
-
-        protected virtual int GetPathItemColorId()
-        {
-            return ColorIds.PathItem;
+            return ColorProvider.GetColor(ColorIds.Main);
         }
 
         #endregion

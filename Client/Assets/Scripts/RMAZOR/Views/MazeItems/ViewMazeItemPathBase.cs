@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Common;
 using Common.Entities;
 using Common.Helpers;
@@ -7,6 +6,7 @@ using Common.Providers;
 using Common.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
@@ -17,7 +17,10 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItems
 {
-    public interface IViewMazeItemPath : IViewMazeItem
+    public interface IViewMazeItemPath : 
+        IViewMazeItem,
+        ICharacterMoveStarted, 
+        ICharacterMoveContinued
     {
         event UnityAction MoneyItemCollected;
         void              Collect(bool _Collect, bool _OnStart = false);
@@ -25,13 +28,6 @@ namespace RMAZOR.Views.MazeItems
     
     public abstract class ViewMazeItemPathBase : ViewMazeItemBase, IViewMazeItemPath
     {
-        #region nonpublic members
-
-        protected IMazeItemProceedInfo[] AllMazeItemInfos => Model.GetAllProceedInfos();
-        protected IEnumerable<V2Int>     AllPathPositions => Model.PathItemsProceeder.PathProceeds.Keys;
-
-        #endregion
-
         #region inject
         
         protected IViewMazeMoneyItem MoneyItem { get; }
@@ -39,7 +35,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemPathBase(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -66,9 +62,7 @@ namespace RMAZOR.Views.MazeItems
         #region api
         
         public event UnityAction MoneyItemCollected;
-
-        public abstract void Collect(bool _Collect, bool _OnStart = false);
-
+        
         public override bool ActivatedInSpawnPool
         {
             get => base.ActivatedInSpawnPool;
@@ -78,6 +72,10 @@ namespace RMAZOR.Views.MazeItems
                 EnableInitializedShapes(false);
             }
         }
+
+        public abstract void Collect(bool _Collect, bool _OnStart = false);
+        public abstract void OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args);
+        public abstract void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args);
 
         #endregion
 
@@ -105,7 +103,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected IMazeItemProceedInfo GetItemInfoByPositionAndType(V2Int _Position, EMazeItemType _Type)
         {
-            return AllMazeItemInfos?
+            return Model.GetAllProceedInfos()?
                 .FirstOrDefault(_Item => _Item.CurrentPosition == _Position
                                          && _Item.Type == _Type); 
         }
@@ -133,20 +131,15 @@ namespace RMAZOR.Views.MazeItems
         
         protected bool PathExist(V2Int _Position)
         {
-            return AllPathPositions.Contains(_Position);
+            return Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
         }
         
         protected bool IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType _Type)
         {
-            return AllMazeItemInfos.Any(_I =>
+            return Model.GetAllProceedInfos().Any(_I =>
                 _I.Type == _Type && _I.StartPosition == Props.Position);
         }
 
         #endregion
-
-
-
-
-
     }
 }

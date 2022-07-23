@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -19,21 +20,34 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems
 {
-    public class ViewMazeItemPathFilledWithAdditionalBorders : ViewMazeItemPathWithAdditionalBorders
+    public interface IViewMazeItemPathFilled : IViewMazeItemPath
+    {
+        void HighlightPathItem(float _Delay);
+    }
+    
+    public class ViewMazeItemPathFilledWithAdditionalBorders : 
+        ViewMazeItemPathWithAdditionalBorders, 
+        IViewMazeItemPathFilled
     {
         #region nonpublic members
 
         private Rectangle m_PathBackground;
         private Rectangle m_PassedPathBackground;
 
+        private bool        m_HighlightPathItemBackground           = true;
+        private IEnumerator m_HighlightPathItemCoroutine;
+        private float       m_HighlightPathItemCoefficient;
+        private float       m_HighlightPathItemCoefficientRaw;
+        private int         m_HighlightPathItemCoroutineNumber;
+
         #endregion
 
         #region inject
 
-        protected ViewMazeItemPathFilledWithAdditionalBorders(
+        private ViewMazeItemPathFilledWithAdditionalBorders(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -71,6 +85,38 @@ namespace RMAZOR.Views.MazeItems
             CommandsProceeder,
             MoneyItem.Clone() as IViewMazeMoneyItem);
         
+        public override void Collect(bool _Collect, bool _OnStart = false)
+        {
+            if (_OnStart && (IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal) 
+                             || IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.ShredingerBlock)))
+            {
+                if (!_Collect)
+                    return;
+                m_PassedPathBackground.enabled = false;
+                base.Collect(true, true);
+                return;
+            }
+            if (_Collect)
+                Fill();
+            else
+                m_PassedPathBackground.enabled = false;
+            base.Collect(_Collect, _OnStart);
+        }
+
+        public void HighlightPathItem(float _Delay)
+        {
+            m_HighlightPathItemCoroutine = CharacterMoveHighlightCoroutine(_Delay);
+            Cor.Run(m_HighlightPathItemCoroutine);
+        }
+
+        public override void UpdateTick()
+        {
+            if (!Initialized || !ActivatedInSpawnPool)
+                return;
+            HighlightPathItemBackground();
+            base.UpdateTick();
+        }
+
         #endregion
 
         #region nonpublic methods
@@ -107,25 +153,7 @@ namespace RMAZOR.Views.MazeItems
                     break;
             }
         }
-
-        public override void Collect(bool _Collect, bool _OnStart = false)
-        {
-            if (_OnStart && (IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal) 
-                             || IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.ShredingerBlock)))
-            {
-                if (!_Collect)
-                    return;
-                m_PassedPathBackground.enabled = false;
-                base.Collect(true, true);
-                return;
-            }
-            if (_Collect)
-                Fill();
-            else
-                m_PassedPathBackground.enabled = false;
-            base.Collect(_Collect, _OnStart);
-        }
-
+        
         private void Fill()
         {
             GetCornerRadii(out float bottomLeft, out float topLeft, 
@@ -230,11 +258,6 @@ namespace RMAZOR.Views.MazeItems
             return result;
         }
 
-        protected override Color GetBorderColor()
-        {
-            return ColorProvider.GetColor(ColorIds.Main);
-        }
-
         protected override void OnAppearStart(bool _Appear)
         {
             base.OnAppearStart(_Appear);
@@ -242,6 +265,61 @@ namespace RMAZOR.Views.MazeItems
                 return;
             if (m_PassedPathBackground.IsNotNull())
                 m_PassedPathBackground.enabled = false;
+        }
+
+        private void HighlightPathItemBackground()
+        {
+            if (!MoneyItem.IsCollected)
+                return;
+            if (!m_HighlightPathItemBackground)
+                return;
+            var col = ColorProvider
+                .GetColor(ColorIds.PathFill)
+                .SetA(ViewSettings.filledPathAlpha);
+            Color.RGBToHSV(col, out float h1, out float s1, out float v1);
+            Color.RGBToHSV(m_PassedPathBackground.Color, out _, out _, out float v2);
+            const float highlightAmplitude = 0.3f;
+            if (v1 < 1f - highlightAmplitude)
+            {
+                v1 += m_HighlightPathItemCoefficient * highlightAmplitude;
+                if (v2 > v1 && m_HighlightPathItemCoefficientRaw < 0.5f)
+                    return;
+            }
+            else
+            {
+                v1 -= m_HighlightPathItemCoefficient * highlightAmplitude;
+                if (v2 < v1 && m_HighlightPathItemCoefficientRaw < 0.5f)
+                    return;
+            }
+            col = Color.HSVToRGB(h1, s1, v1);
+            m_PassedPathBackground.SetColor(col);
+        }
+        
+        private IEnumerator CharacterMoveHighlightCoroutine(float _Delay)
+        {
+            yield return Cor.Delay(_Delay, GameTicker);
+            yield return Cor.Delay(0.08f, GameTicker);
+            int num = ++m_HighlightPathItemCoroutineNumber;
+            yield return Cor.Lerp(
+                GameTicker,
+                ViewSettings.pathItemCharMoveHighlightTime,
+                _OnProgress: _P =>
+                {
+                    m_HighlightPathItemCoefficient = _P < 0.5f ? 2f * _P : 2f * (1f - _P);
+                    m_HighlightPathItemCoefficientRaw = _P;
+                },
+                _OnFinishEx: (_Broken, _Progress) =>
+                {
+                    if (!_Broken || !Model.PathItemsProceeder.AllPathsProceeded) 
+                        return;
+                    m_HighlightPathItemBackground = false;
+                    m_HighlightPathItemCoefficient = 0f;
+                    m_PassedPathBackground.Color = ColorProvider
+                        .GetColor(ColorIds.PathFill)
+                        .SetA(ViewSettings.filledPathAlpha);
+                },
+                _BreakPredicate: () => num != m_HighlightPathItemCoroutineNumber 
+                                       || Model.PathItemsProceeder.AllPathsProceeded);
         }
 
         #endregion

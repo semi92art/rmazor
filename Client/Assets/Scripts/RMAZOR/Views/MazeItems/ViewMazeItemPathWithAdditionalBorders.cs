@@ -38,7 +38,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemPathWithAdditionalBorders(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,

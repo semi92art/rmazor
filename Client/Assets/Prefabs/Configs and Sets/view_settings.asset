@@ -40,3 +40,4 @@ MonoBehaviour:
   animatePathFill: 1
   animatePathFillTime: 0.2
   cameraSpeed: 0.1
+  pathItemCharMoveHighlightTime: 0.3

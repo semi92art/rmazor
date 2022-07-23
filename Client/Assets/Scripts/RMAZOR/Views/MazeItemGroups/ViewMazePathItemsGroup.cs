@@ -5,7 +5,6 @@ using Common.Entities;
 using Common.Helpers;
 using Common.SpawnPools;
 using RMAZOR.Models;
-using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
@@ -15,7 +14,8 @@ namespace RMAZOR.Views.MazeItemGroups
     public interface IViewMazePathItemsGroup :
         IInit,
         IOnLevelStageChanged,
-        ICharacterMoveStarted
+        ICharacterMoveStarted,
+        ICharacterMoveContinued
     {
         int                     MoneyItemsCollectedCount { get; }
         List<IViewMazeItemPath> PathItems                { get; }
@@ -35,17 +35,20 @@ namespace RMAZOR.Views.MazeItemGroups
 
         private GlobalGameSettings GlobalGameSettings { get; }
         private ViewSettings       ViewSettings       { get; }
+        private ModelSettings      ModelSettings      { get; }
         private IModelGame         Model              { get; }
         private IMazeItemsCreator  MazeItemsCreator   { get; }
 
         private ViewMazePathItemsGroup(
             GlobalGameSettings _GlobalGameSettings,
-            ViewSettings      _ViewSettings,
-            IModelGame        _Model,
-            IMazeItemsCreator _MazeItemsCreator)
+            ViewSettings       _ViewSettings,
+            ModelSettings      _ModelSettings,
+            IModelGame         _Model,
+            IMazeItemsCreator  _MazeItemsCreator)
         {
             GlobalGameSettings = _GlobalGameSettings;
             ViewSettings       = _ViewSettings;
+            ModelSettings      = _ModelSettings;
             Model              = _Model;
             MazeItemsCreator   = _MazeItemsCreator;
         }
@@ -77,11 +80,11 @@ namespace RMAZOR.Views.MazeItemGroups
             {
                 case ELevelStage.Loaded:
                 {
+                    m_FirstMoveDone = false;
                     DeactivateAllPaths();
                     MazeItemsCreator.InitPathItems(Model.Data.Info, m_PathsPool);
                     PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
-                    if (ViewSettings.collectStartPathItemOnLevelLoaded)
-                        CollectStartPathItem();
+                    CollectStartPathItemIfWasNot(false);
                     break;
                 }
                 case ELevelStage.ReadyToUnloadLevel:
@@ -94,9 +97,22 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            if (!m_FirstMoveDone && !ViewSettings.collectStartPathItemOnLevelLoaded)
-                CollectStartPathItem();
-            m_FirstMoveDone = true;
+            CollectStartPathItemIfWasNot(true);
+            var pathItems = RmazorUtils.GetFullPath(_Args.From, _Args.To)
+                .Select(_Pos => PathItems.First(_Item => _Item.Props.Position == _Pos));
+            int k = 0;
+            foreach (var item in pathItems)
+            {
+                if (item is IViewMazeItemPathFilled itemFilled)
+                    itemFilled.HighlightPathItem(++k / ModelSettings.characterSpeed);
+                item.OnCharacterMoveStarted(_Args);
+            }
+        }
+        
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
+        {
+            foreach (var item in PathItems)
+                item.OnCharacterMoveContinued(_Args);
         }
 
         #endregion
@@ -115,7 +131,6 @@ namespace RMAZOR.Views.MazeItemGroups
                 item.MoneyItemCollected -= OnMoneyItemCollected;
                 item.MoneyItemCollected += OnMoneyItemCollected;
             }
-            
             m_PathsPool.AddRange(pathItems);
         }
         
@@ -124,16 +139,22 @@ namespace RMAZOR.Views.MazeItemGroups
             m_PathsPool.DeactivateAll();
         }
         
-        private void CollectStartPathItem()
+        private void CollectStartPathItemIfWasNot(bool _CheckOnMoveStarted)
         {
-            PathItems.First(_P => _P.Props.IsStartNode).Collect(true);
+            if ((_CheckOnMoveStarted && m_FirstMoveDone) || ViewSettings.collectStartPathItemOnLevelLoaded)
+                return;
+            PathItems
+                .First(_P => _P.Props.IsStartNode)
+                .Collect(true);
+            if (_CheckOnMoveStarted)
+                m_FirstMoveDone = true;
         }
 
         private void OnMoneyItemCollected()
         {
             MoneyItemsCollectedCount += GlobalGameSettings.moneyItemCoast;
         }
-        
+
         #endregion
     }
 }
