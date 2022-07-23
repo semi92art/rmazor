@@ -46,6 +46,14 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+    - main: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
     - main: {r: 0.20000002, g: 0.227451, b: 0.34901962, a: 1}
       bacground1: {r: 0.8490566, g: 0.4285333, b: 0.61575264, a: 1}
       bacground2: {r: 0.30210927, g: 0.37880954, b: 0.6886792, a: 1}
@@ -54,22 +62,6 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
-    - main: {r: 0.24528301, g: 0.068262726, b: 0.08223804, a: 1}
-      bacground1: {r: 0, g: 0.52156866, b: 0.74509805, a: 1}
-      bacground2: {r: 0.6156863, g: 0.16862746, b: 0.2, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-    - main: {r: 1, g: 1, b: 1, a: 1}
-      bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
-      inUse: 0
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 0
-      characterBorderFillType: 1
     - main: {r: 1, g: 0, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.16037738, g: 0, b: 0, a: 1}
@@ -78,18 +70,18 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
+    - main: {r: 0.24528301, g: 0.068262726, b: 0.08223804, a: 1}
+      bacground1: {r: 0, g: 0.52156866, b: 0.74509805, a: 1}
+      bacground2: {r: 0.6156863, g: 0.16862746, b: 0.2, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
     - main: {r: 1, g: 0.97083825, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.14150941, g: 0.13561319, b: 0, a: 1}
-      inUse: 0
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 0
-      characterBorderFillType: 1
-    - main: {r: 0.018880606, g: 1, b: 0, a: 1}
-      bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.0027747196, g: 0.14150941, b: 0, a: 1}
-      inUse: 0
+      inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
@@ -118,3 +110,27 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 0
+    - main: {r: 0.018880606, g: 1, b: 0, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.0027747196, g: 0.14150941, b: 0, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+    - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
+      bacground1: {r: 1, g: 0.65839326, b: 0.41037738, a: 1}
+      bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+    - main: {r: 1, g: 0.6277604, b: 0, a: 1}
+      bacground1: {r: 0.16112542, g: 0.18867922, b: 0.11836951, a: 1}
+      bacground2: {r: 0.1647059, g: 0.4124149, b: 0.48235294, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
