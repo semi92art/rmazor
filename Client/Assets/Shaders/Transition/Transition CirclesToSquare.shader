@@ -1,9 +1,10 @@
-﻿Shader "RMAZOR/Transition/Circles To Square" {
+﻿//https://www.shadertoy.com/view/WsdSzr
+Shader "RMAZOR/Transition/Circles To Square" {
     Properties {
         _Color1 ("Color", Color) = (0,0,0,1)
         _MainTex ("Texture", 2D) = "white" {}
         _TransitionValue("Transition Value", Range(0, 1)) = 0
-    	[IntRange]_NumLines("Lines Count", Range(2, 10)) = 4
+    	_Scale("Scale", Range(0.1, 10)) = 1
     }
     SubShader {
 		Tags { 
@@ -29,21 +30,21 @@
 			}
 
 			fixed4 _Color1, _EdgesColor;
-			float _TransitionValue;
-			float _NumLines;
+			float _TransitionValue, _Scale;
 
 			fixed4 frag (v2f i) : SV_Target {
 				float2 pos = i.uv;
 				pos.x *= screen_ratio();
-			    pos *= 16.;
-			    float t = fmod(_TransitionValue*.4, 2.) - 1.;
-			    
-			    float c = sin(pos.x) * cos(pos.y);  //Basis of effect
-				fixed3 col = fixed3(0, 0, 0);
-
-				c = smoothstep(0.,16./_ScreenParams.y, c - t );
-			    return fixed4(c,c*.6,c*.3,1.);
-
+			    pos *= 64. / _Scale;
+				float tv = 1.0 - _TransitionValue;
+				tv = tv * 2.049 - .05;
+			    float t = fmod(tv, 2.) - 1.;
+			    float c = sin(pos.x) * cos(pos.y);
+				fixed4 col = fixed4(0,0,0,0);
+				c = smoothstep(0.,64./_ScreenParams.y, c - t);
+				fixed4 frag_col = lerp(col,_Color1,c);
+				frag_col.rgb *= (1.0 - c);
+			    return frag_col;
 			}
 			ENDCG
 		}

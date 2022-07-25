@@ -1,12 +1,23 @@
-﻿Shader "RMAZOR/Transition/TriaHex" {
+﻿//https://www.shadertoy.com/view/WsdSzr
+Shader "RMAZOR/Transition/Metaballs" {
     Properties {
-        _BackgroundColor ("Background Color", Color) = (0,0,0,1)
-        _EdgesColor("Edges Color", Color) = (1,1,1,1)
-        _Scale("Scale", Range(1, 10)) = 3
-        _TransitionValue1("Transition Value 1", Range(0, 1)) = 0
-        _TransitionValue2("Transition Value 2", Range(0, 1)) = 0
+        _Color1 ("Color", Color) = (0,0,0,1)
+        _MainTex ("Texture", 2D) = "white" {}
+        _TransitionValue("Transition Value", Range(0, 1)) = 0
+    	_Ball1Phase1("Ball 1 Phase1", Range(-3.14, 3.14)) = 0 
+    	_Ball2Phase1("Ball 2 Phase1", Range(-3.14, 3.14)) = 0 
+    	_Ball3Phase1("Ball 3 Phase1", Range(-3.14, 3.14)) = 0 
+    	_Ball1Phase("Ball 1 Phase", Range(0, 3.14)) = 0 
+    	_Ball2Phase("Ball 2 Phase", Range(0, 3.14)) = 0 
+    	_Ball3Phase("Ball 3 Phase", Range(0, 3.14)) = 0 
+    	_Ball1Amp("Ball 1 Amplitude", Range(100, 5000)) = 200 
+    	_Ball2Amp("Ball 2 Amplitude", Range(100, 5000)) = 200
+    	_Ball3Amp("Ball 3 Amplitude", Range(100, 5000)) = 200 
+		_Ball1Size("Ball 1 Size", Range(100, 5000)) = 200
+    	_Ball2Size("Ball 2 Size", Range(100, 5000)) = 200 
+    	_Ball3Size("Ball 3 Size", Range(100, 5000)) = 200 
     }
-    	SubShader {
+    SubShader {
 		Tags { 
 			"Queue"             = "Transparent-1"
 			"IgnoreProjector"   = "True" 
@@ -29,83 +40,59 @@
 				return vert_default(v);
 			}
 
-			fixed4 _BackgroundColor, _EdgesColor;
-			float _Scale, _TransitionValue1, _TransitionValue2;
-			
-			float line_distance(in float2 p, in float2 a, in float2 b) {
-			    float2 pa = p - a, ba = b - a;
-				float h = clamp(dot(pa,ba) / dot(ba,ba), 0., 1.);	
-				return length(pa - ba * h);
+			fixed4 _Color1, _EdgesColor;
+			float _TransitionValue;
+			float _Ball1Phase, _Ball2Phase, _Ball3Phase;
+			float _Ball1Phase1, _Ball2Phase1, _Ball3Phase1;
+			float _Ball1Amp, _Ball2Amp, _Ball3Amp;
+			float _Ball1Size, _Ball2Size, _Ball3Size;
+
+			float blob(in float2 p, in float2 o, in float r) {
+			    p -= o;
+			    return r * r / dot(p, p);
 			}
 
-			bool right_side(in float2 p, in float2 a, in float2 b) {
-				float tv = .5 * (1 - _TransitionValue1);
-			    return (p.x-a.x)*(b.y-a.y)-(p.y-a.y)*(b.x-a.x) > tv;
-			}
-  
-            fixed4 frag (v2f i) : SV_Target {
-       			float2 pos = i.uv;
-       			pos.x *= screen_ratio();
-            	pos.x *= -1.;
-                float s32 = sqrt(3.) / 2.;
-            	float2 uv = _Scale * pos;
-            	
-			    // Tile vertically~diagonally along a triangle edge:
-			    // uv.y/s32 is the V coordinate in a UV frame shaped like /_
-			    uv -= floor(uv.y / s32) * float2(.5, s32);
-			    // And tile by 1 horizontally
-			    uv.x = uv.x - floor(uv.x);
-			    
-			    // Look at the three triangle edges individually.
-			    // Here's the horizontal _ one that becomes / when t==1
-            	float tv = _TransitionValue2 * .5;
-			    float2 orig = float2(0, 0);
-			    float2 end = tv * float2(.5, s32) + float2(1 - tv, 0);
-			    
-			    // Distance to the line, and are we on its right side
-			    float dist1 = line_distance(uv, orig, end);
-			    bool right1 = right_side(uv, orig, end);
-			    
-			    // Transform uv into the second edge's local frame
-			    float2 uv2 = uv - float2(1, 0);
-			    uv2 = float2(-.5 * uv2.x + s32 * uv2.y, -s32 * uv2.x - .5 * uv2.y);
-			    // Then same computation
-			    float dist2 = line_distance(uv2, orig, end);
-			    bool right2 = right_side(uv2, orig, end);
-       
-			    // Transform into the third edge's frame
-			    float2 uv3 = uv - float2(.5, s32);
-			    uv3 = float2(-.5 * uv3.x - s32 * uv3.y, s32 * uv3.x - .5 * uv3.y);
-			    // And again
-			    float dist3 = line_distance(uv3, orig, end);
-			    bool right3 = right_side(uv3, orig, end);
-			    
-			    // Background
-			    fixed4 frag_color = _BackgroundColor;
-            	frag_color *= _BackgroundColor.a;
-            	fixed4 edges_color = _EdgesColor;
-            	edges_color *= _EdgesColor.a;
-       
-			    // Inside triangles
-			    if ((right1 && right2 && right3) || (!right1 && !right2 && !right3))
-			        frag_color = fixed4(0, 0, 0, 0);
-			    // Triangle edges
-			    // Truncated
-			    dist1 = !right3 && right2 ? 10 : dist1;
-			    dist2 = !right1 && right3 ? 10 : dist2;
-			    dist3 = !right2 && right1 ? 10 : dist3;
-       
-			    float distToTriangle = min(min(dist1, dist2), dist3);
-       	
-			    // Anti-aliasing
-			    frag_color = lerp(
-			    	frag_color,
-			    	edges_color,
-			    	smoothstep(2 * _Scale / _ScreenParams.y, 0, distToTriangle));
+			bool point_in(in float2 p) {
+			    float2 center = 0.5 * _ScreenParams.xy;
+				float tv = _TransitionValue * 10;
+			    float t1 = tv * _Ball1Phase + _Ball1Phase1;
+				float t2 = tv * _Ball2Phase + _Ball2Phase1;
+				float t3 = tv * _Ball3Phase + _Ball3Phase1;
+			    float c1 = cos(t1), s1 = sin(t1);
+			    float c2 = cos(t2), s2 = sin(t2);
+			    float c3 = cos(t3), s3 = sin(t3);
 
-            	return frag_color;
-            }
-            ENDCG
-        }
+			    float2 mb1 = center + float2(c2, s1) * _Ball1Amp * screen_ratio();
+			    float2 mb2 = center + float2(c1, s3) * _Ball2Amp * screen_ratio();
+			    float2 mb3 = center + float2(c3, s2) * _Ball3Amp * screen_ratio();
+
+				float b1s = (_Ball1Size + 300) * _TransitionValue;
+				float b2s = (_Ball2Size + 300) * _TransitionValue;
+				float b3s = (_Ball3Size + 300) * _TransitionValue;
+				
+			    float blob1 = blob(p, mb1, b1s);
+			    float blob2 = blob(p, mb2, b2s);
+			    float blob3 = blob(p, mb3, b3s);
+
+			    float d = blob1 + blob2 + blob3;
+			    return d > 0.5;
+			}
+
+			fixed4 frag (v2f i) : SV_Target {
+				const float aa = 10;
+				float2 pos = i.uv * _ScreenParams.xy;
+				fixed4 frag_col = fixed4(0,0,0,0);
+			    for (float k = 0.0; k < aa; k++) {
+			        for (float j=0.0; j < aa; j++) {
+			            frag_col += float(point_in(pos + float2(k, j) / aa));
+			        }
+			    }
+			    frag_col /= aa * aa;
+				frag_col.rgb = _Color1.rgb;
+				frag_col.rgb *= frag_col.a;
+			    return frag_col;
+			}
+			ENDCG
+		}
     }
 }
