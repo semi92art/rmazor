@@ -26,11 +26,12 @@ namespace RMAZOR.UI.Panels
     {
         #region private members
 
-        private List<object>        m_Items;
-        private UnityAction<object> m_OnSelect;
-        private string              m_DefaultValue;
-        private RectTransform       m_Content;
-        private ToggleGroup         m_ToggleGroup;
+        private List<object>            m_Items;
+        private UnityAction<object>     m_OnSelect;
+        private string                  m_DefaultValue;
+        private RectTransform           m_Content;
+        private ToggleGroup             m_ToggleGroup;
+        private SimpleUiDialogPanelView m_PanelView;
         
         #endregion
 
@@ -74,6 +75,13 @@ namespace RMAZOR.UI.Panels
                 CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();
             m_Content = sp.GetCompItem<RectTransform>("content");
+            m_PanelView = sp.GetCompItem<SimpleUiDialogPanelView>("panel");
+            m_PanelView.Init(
+                Ticker,
+                ColorProvider,
+                Managers.AudioManager,
+                Managers.LocalizationManager, 
+                Managers.PrefabSetManager);
             InitItems();
             PanelObject = sp.RTransform();
         }

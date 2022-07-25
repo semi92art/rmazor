@@ -240,12 +240,20 @@ namespace Mono_Installers
 
         private void BindTextureProviders()
         {
+            Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoTextureProviderCirclesToSquares>().AsSingle();
             Container.Bind<IViewMazeBackgroundTextureController>().To<ViewMazeBackgroundTextureController>()        .AsSingle();
+            
             Container.Bind<IFullscreenTextureProviderTriangles2>().To<FullscreenTriangles2TextureProvider>()        .AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProvideTriaHex>()  .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>().AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>().To<FullscreenTransitionTextureProviderCircles>() .AsSingle();
-            // Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>() .AsSingle();
-            Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoSingleCircleTextureProvider>().AsSingle();
+            
+            Container.Bind<IFullscreenTextureProviderMetaBalls1>().To<FullscreenTextureProviderMetaBalls1>() .AsSingle();
+            Container.Bind<IFullscreenTextureProviderMetaBalls2>().To<FullscreenTextureProviderMetaBalls2>() .AsSingle();
+            Container.Bind<IFullscreenTextureProviderMetaBalls3>().To<FullscreenTextureProviderMetaBalls3>() .AsSingle();
+            Container.Bind<IFullscreenTextureProviderMetaBalls4>().To<FullscreenTextureProviderMetaBalls4>() .AsSingle();
+            Container.Bind<IFullscreenTextureProviderMetaBalls5>().To<FullscreenTextureProviderMetaBalls5>() .AsSingle();
+            
+            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProviderCirclesToSquares>().AsSingle();
         }
 
         private void BindOther()

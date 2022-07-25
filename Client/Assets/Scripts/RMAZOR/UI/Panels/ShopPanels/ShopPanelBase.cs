@@ -15,7 +15,6 @@ using RMAZOR.UI.PanelItems.Shop_Items;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace RMAZOR.UI.Panels.ShopPanels
 {
     public abstract class ShopPanelBase<T> : DialogPanelBase where T : ShopItemBase
@@ -34,10 +33,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
         protected abstract string            PanelItemPrefabName { get; }
         protected abstract RectTransformLite ShopItemRectLite    { get; }
 
-        protected RectTransform   Content;
-        private   RectTransform   m_Panel;
-        private   TextMeshProUGUI m_MoneyText;
-        private   Image           m_MoneyIcon;
+        protected RectTransform           Content;
+        private   RectTransform           m_Panel;
+        private   TextMeshProUGUI         m_MoneyText;
+        private   Image                   m_MoneyIcon;
+        private   SimpleUiDialogPanelView m_PanelView;
 
         #endregion
 
@@ -71,6 +71,13 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 PanelPrefabName);
             m_Panel = sp.GetCompItem<RectTransform>("panel");
             Content = sp.GetCompItem<RectTransform>("content");
+            m_PanelView = sp.GetCompItem<SimpleUiDialogPanelView>("panel");
+            m_PanelView.Init(
+                Ticker,
+                ColorProvider, 
+                Managers.AudioManager,
+                Managers.LocalizationManager,
+                Managers.PrefabSetManager);
             PanelObject = sp.RTransform();
             Content.gameObject.DestroyChildrenSafe();
             InitItems();

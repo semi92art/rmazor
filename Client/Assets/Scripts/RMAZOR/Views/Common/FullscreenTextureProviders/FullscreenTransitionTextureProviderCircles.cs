@@ -16,7 +16,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "between_level_texture_material_circles";
+        protected override string MaterialAssetName => "transition_texture_material_circles";
         
         private static readonly int   EdgesColorId = Shader.PropertyToID("_EdgesColor");
         private static readonly Color EdgesColor   = new Color(0.72f, 0.72f, 0.72f);

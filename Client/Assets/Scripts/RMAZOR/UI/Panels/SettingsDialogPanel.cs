@@ -33,8 +33,9 @@ namespace RMAZOR.UI.Panels
         
         #region private members
 
-        private RectTransform m_MiniButtonsContent;
-        private RectTransform m_SettingsContent;
+        private RectTransform           m_MiniButtonsContent;
+        private RectTransform           m_SettingsContent;
+        private SimpleUiDialogPanelView m_PanelView;
         
         private readonly RectTransformLite m_SettingItemRectLite = new RectTransformLite
         {
@@ -96,6 +97,13 @@ namespace RMAZOR.UI.Panels
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
             m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");
+            m_PanelView = sp.GetCompItem<SimpleUiDialogPanelView>("panel");
+            m_PanelView.Init(
+                Ticker,
+                ColorProvider,
+                Managers.AudioManager,
+                Managers.LocalizationManager,
+                Managers.PrefabSetManager);
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();

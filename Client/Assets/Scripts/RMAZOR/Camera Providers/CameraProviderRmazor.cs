@@ -25,18 +25,19 @@ namespace RMAZOR.Camera_Providers
         
         #region nonpublic members
 
-        protected bool      LevelCameraInitialized;
-        protected Transform LevelCameraTr;
         protected Camera    LevelCamera;
-        protected bool      FollowTransformIsNotNull;
+        protected Transform LevelCameraTr;
         private   Transform m_FollowTr;
+        protected bool      LevelCameraInitialized;
+        protected bool      FollowTransformIsNotNull;
         
-        private   FastDOF             m_DepthOfField;
-        private   FastGlitch          m_FastGlitch;
-        private   ChromaticAberration m_ChromaticAberration;
-        private   ColorGrading        m_ColorGrading;
-        private   Pixellate           m_Pixelate;
-        private   FXAA                m_Fxaa;
+        private FastDOF             m_DepthOfField;
+        private FastGlitch          m_FastGlitch;
+        private ChromaticAberration m_ChromaticAberration;
+        private ColorGrading        m_ColorGrading;
+        private Pixellate           m_Pixelate;
+        private FXAA                m_Fxaa;
+        private FastBloom           m_FastBloom;
 
         #endregion
 
@@ -160,6 +161,22 @@ namespace RMAZOR.Camera_Providers
                     if (props!.Density.HasValue) m_Pixelate.Dencity = props.Density.Value;
                 }
                     break;
+                case ECameraEffect.Bloom:
+                {
+                    if (!(_Args is BloomProps props))
+                    {
+                        ShowTypeError<BloomProps>();
+                        break;
+                    }
+                    if (props!.SetIterations.HasValue) m_FastBloom.SetBloomIterations = props.SetIterations.Value;
+                    if (props.Iterations.HasValue)     m_FastBloom.BloomIterations    = props.Iterations.Value;
+                    if (props.Diffusion.HasValue)      m_FastBloom.BloomDiffusion     = props.Diffusion.Value;
+                    if (props.Color.HasValue)          m_FastBloom.BloomColor         = props.Color.Value;
+                    if (props.Amount.HasValue)         m_FastBloom.BloomAmount        = props.Amount.Value;
+                    if (props.Threshold.HasValue)      m_FastBloom.BloomThreshold     = props.Threshold.Value;
+                    if (props.Softness.HasValue)       m_FastBloom.BloomSoftness      = props.Softness.Value;
+                }
+                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Effect);
             }
@@ -276,6 +293,27 @@ namespace RMAZOR.Camera_Providers
                         AnimateEffectParameter(_V => m_Pixelate.Dencity = _V, from.Density.Value, to.Density.Value, _Duration);
                 }
                     break;
+                case ECameraEffect.Bloom:
+                {
+                    if (!(_From is BloomProps from) || !(_To is BloomProps to))
+                    {
+                        ShowTypeError<BloomProps>();
+                        break;
+                    }
+                    if (from.Iterations.HasValue && to.Iterations.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomIterations = _V, from.Iterations.Value, to.Iterations.Value, _Duration);
+                    if (from.Diffusion.HasValue && to.Diffusion.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomDiffusion = _V, from.Diffusion.Value, to.Diffusion.Value, _Duration);
+                    if (from.Color.HasValue && to.Color.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomColor = _V, from.Color.Value, to.Color.Value, _Duration);
+                    if (from.Amount.HasValue && to.Amount.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomAmount = _V, from.Amount.Value, to.Amount.Value, _Duration);
+                    if (from.Threshold.HasValue && to.Threshold.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomThreshold = _V, from.Threshold.Value, to.Threshold.Value, _Duration);
+                    if (from.Softness.HasValue && to.Softness.HasValue)
+                        AnimateEffectParameter(_V => m_FastBloom.BloomSoftness = _V, from.Softness.Value, to.Softness.Value, _Duration);
+                }
+                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Effect);
             }
@@ -291,6 +329,7 @@ namespace RMAZOR.Camera_Providers
                 ECameraEffect.ChromaticAberration => m_ChromaticAberration.enabled,
                 ECameraEffect.AntiAliasing        => m_Fxaa.enabled,
                 ECameraEffect.Pixelate            => m_Pixelate.enabled,
+                ECameraEffect.Bloom               => m_FastBloom.enabled,
                 _                                 => throw new SwitchCaseNotImplementedException(_Effect)
             };
         }
@@ -305,6 +344,7 @@ namespace RMAZOR.Camera_Providers
                 case ECameraEffect.ChromaticAberration: m_ChromaticAberration.enabled = _Enabled; break;
                 case ECameraEffect.AntiAliasing:        m_Fxaa.enabled                = _Enabled; break;
                 case ECameraEffect.Pixelate:            m_Pixelate.enabled            = _Enabled; break;
+                case ECameraEffect.Bloom:               m_FastBloom.enabled           = _Enabled; break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Effect);
             }
@@ -344,6 +384,7 @@ namespace RMAZOR.Camera_Providers
             InitColorGrading();
             InitFxaa();
             InitPixelate();
+            InitBloom();
         }
 
         private void InitDepthOfField()
@@ -383,6 +424,12 @@ namespace RMAZOR.Camera_Providers
         {
             m_Pixelate = LevelCamera.GetCompItem<Pixellate>("pixelate");
             m_Pixelate.enabled = false;
+        }
+        
+        private void InitBloom()
+        {
+            m_FastBloom = LevelCamera.GetCompItem<FastBloom>("bloom");
+            m_FastBloom.enabled = false;
         }
 
         private void AnimateEffectParameter(

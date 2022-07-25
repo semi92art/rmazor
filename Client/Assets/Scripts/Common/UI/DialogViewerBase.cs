@@ -97,7 +97,7 @@ namespace Common.UI
             while (Ticker.Time < currTime + _Time)
             {
                 float timeCoeff = (currTime + _Time - Ticker.Time) / _Time;
-                float blurAmount = 1 - timeCoeff;
+                float blurAmount = (1 - timeCoeff) * 0.3f;
                 CameraProvider.SetEffectProps(
                     ECameraEffect.DepthOfField, new FastDofProps {BlurAmount = blurAmount});
                 yield return new WaitForEndOfFrame();

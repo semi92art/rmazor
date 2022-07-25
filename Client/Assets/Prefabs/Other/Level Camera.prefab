@@ -11,12 +11,13 @@ GameObject:
   - component: {fileID: 4521276296573485171}
   - component: {fileID: 4521276296573485170}
   - component: {fileID: 4521276296573485169}
-  - component: {fileID: 4521276296573485172}
   - component: {fileID: 4521276296573485161}
+  - component: {fileID: 4521276296573485172}
   - component: {fileID: 4521276296573485160}
   - component: {fileID: 4521276296573485175}
   - component: {fileID: 4521276296573485173}
   - component: {fileID: 4521276296573485174}
+  - component: {fileID: 1040064967773165828}
   - component: {fileID: 4521276296573485162}
   m_Layer: 0
   m_Name: Level Camera
@@ -91,6 +92,22 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4521276296573485168}
   m_Enabled: 1
+--- !u!114 &4521276296573485161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4521276296573485168}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03be9a71a24ff0a459c7634f0f9c2db6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 07971bc9e5aba204db7209ee604c97bb, type: 2}
+  ChromaticGlitch: 0
+  FrameGlitch: 0
+  PixelGlitch: 0
 --- !u!114 &4521276296573485172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,22 +125,6 @@ MonoBehaviour:
   Focus: 1.77
   Aperture: 1
   material: {fileID: 2100000, guid: 8a8fee1fa68f4d34f8089a0c2bf8fa7c, type: 2}
---- !u!114 &4521276296573485161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4521276296573485168}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03be9a71a24ff0a459c7634f0f9c2db6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: 07971bc9e5aba204db7209ee604c97bb, type: 2}
-  ChromaticGlitch: 0
-  FrameGlitch: 0
-  PixelGlitch: 0
 --- !u!114 &4521276296573485160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Dencity: 0
   material: {fileID: 2100000, guid: 42277257495ad594b92e03dcbd716b1d, type: 2}
+--- !u!114 &1040064967773165828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4521276296573485168}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4faf46d9ae41f1c46892997a804c20af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SetBloomIterations: 1
+  BloomIterations: 5
+  BloomDiffusion: 1
+  BloomColor: {r: 1, g: 1, b: 1, a: 1}
+  BloomAmount: 1
+  BloomThreshold: 1
+  BloomSoftness: 0
+  material: {fileID: 2100000, guid: 6ced9dc3165b9bd439f57ddcee8abac6, type: 2}
 --- !u!114 &4521276296573485162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225,3 +246,5 @@ MonoBehaviour:
       name: pixelate
     - item: {fileID: 4521276296573485168}
       name: fxaa
+    - item: {fileID: 4521276296573485168}
+      name: bloom

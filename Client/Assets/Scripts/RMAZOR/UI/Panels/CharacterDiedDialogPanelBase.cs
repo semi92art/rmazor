@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Common;
 using Common.CameraProviders;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
@@ -144,6 +145,15 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogShow()
         {
+            CameraProvider.EnableEffect(ECameraEffect.Glitch, true);
+            var props = new FastGlitchProps
+            {
+                ChromaticGlitch = 0.03f,
+                FrameGlitch = 0.03f,
+                PixelGlitch = 0.3f
+            };
+            CameraProvider.SetEffectProps(ECameraEffect.Glitch, props);
+            
             m_PanelShowing = true;
             Cor.Run(Cor.WaitNextFrame(() =>
             {
@@ -182,6 +192,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogHide()
         {
+            CameraProvider.EnableEffect(ECameraEffect.Glitch, false);
             m_PanelShowing = true;
             CommandsProceeder.UnlockCommands(
                 new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
@@ -267,6 +278,7 @@ namespace RMAZOR.UI.Panels
                     }
                     void RaiseLoadFirstLevelInGroupCommand()
                     {
+                        CommonData.DoNotShowAdsAfterDeathAndReturnToPrevLevel = true;
                         CommandsProceeder.RaiseCommand(
                             EInputCommand.ReadyToUnloadLevel,
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 

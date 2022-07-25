@@ -20,16 +20,16 @@ namespace Editor
     {
         private static ColorsEditorHelperWindow _instance;
 
-        private IColorProvider                        m_ColorProvider;
-        private MainColorsSetScriptableObject         m_MainColorsPropsSetScrObj;
+        private IColorProvider                      m_ColorProvider;
+        private MainColorsSetScriptableObject       m_MainColorsPropsSetScrObj;
         private AdditionalColorsSetScriptableObject m_AdditionalColorsPropsSetScrObj;
         private AdditionalColorsPropsSet            m_AdditionalColorsPropsSet;
-        private MainColorsPropsSet                    m_MainColorsPropsSet;
-        private Color?                                m_UiColor;
-        private Color                                 m_UiColorCheck;
-        private bool                                  m_ChangeOnlyHueUi = true;
-        private int                                   m_CurrSetIdx;
-    
+        private MainColorsPropsSet                  m_MainColorsPropsSet;
+        private Color?                              m_UiColor;
+        private Color                               m_UiColorCheck;
+        private bool                                m_ChangeOnlyHueUi = true;
+        private int                                 m_CurrSetIdx;
+
         [MenuItem("Tools/Colors Helper _%&c", false, 102)]
         public static void ShowWindow()
         {
@@ -124,7 +124,8 @@ namespace Editor
             };
             foreach (int id in coloIds)
             {
-                var item = m_MainColorsPropsSet.FirstOrDefault(_Item => ColorIds.GetColorIdByName(_Item.name) == id);
+                var item = m_MainColorsPropsSet.FirstOrDefault(
+                    _Item => ColorIds.GetColorIdByName(_Item.name) == id);
                 if (item == null) 
                     continue;
                 var col = item.color;
@@ -168,15 +169,16 @@ namespace Editor
                 Dbg.LogError("Color provider is null");
                 return;
             }
-            var setItem = m_AdditionalColorsPropsSet[m_CurrSetIdx];
-            m_ColorProvider.SetColor(ColorIds.Main, setItem.main);
-            m_ColorProvider.SetColor(ColorIds.Background1, setItem.bacground1);
-            m_ColorProvider.SetColor(ColorIds.Background2, setItem.bacground2);
-            m_ColorProvider.SetColor(ColorIds.PathItem, setItem.GetColor(setItem.pathItemFillType));
-            m_ColorProvider.SetColor(ColorIds.PathBackground, setItem.GetColor(setItem.pathBackgroundFillType));
-            m_ColorProvider.SetColor(ColorIds.PathFill, setItem.GetColor(setItem.pathFillFillType));
-            m_ColorProvider.SetColor(ColorIds.Character2, setItem.GetColor(setItem.characterBorderFillType));
-            Dbg.Log("Color set index: " + m_CurrSetIdx);
+            var props = m_AdditionalColorsPropsSet[m_CurrSetIdx];
+            m_ColorProvider.SetColor(ColorIds.Main, props.main);
+            m_ColorProvider.SetColor(ColorIds.Background1, props.bacground1);
+            m_ColorProvider.SetColor(ColorIds.Background2, props.bacground2);
+            m_ColorProvider.SetColor(ColorIds.PathItem, props.GetColor(props.pathItemFillType));
+            m_ColorProvider.SetColor(ColorIds.PathBackground, props.GetColor(props.pathBackgroundFillType));
+            m_ColorProvider.SetColor(ColorIds.PathFill, props.GetColor(props.pathFillFillType));
+            m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
+            m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType).SetA(0.7f));
+            CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
         }
 
         private void SetNextOrPreviousAdditionalColorSet(bool _Previous)

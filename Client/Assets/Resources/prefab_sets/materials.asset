@@ -39,11 +39,29 @@ MonoBehaviour:
       name: single_circle_background
       bundle: 0
     - item: {fileID: 2100000, guid: c502415a64babfc4eb8e22341c02f6e6, type: 2}
-      name: between_level_texture_material_lines
+      name: transition_texture_material_lines
       bundle: 0
-    - item: {fileID: 2100000, guid: c502415a64babfc4eb8e22341c02f6e6, type: 2}
-      name: between_level_texture_material_circles
+    - item: {fileID: 2100000, guid: afb34e80db91395458d229f0ae343723, type: 2}
+      name: transition_texture_material_circles
       bundle: 0
     - item: {fileID: 2100000, guid: fa08a47d2377063498fff8f9dd14e0ec, type: 2}
-      name: between_level_texture_material_tria_hex
+      name: transition_texture_material_tria_hex
+      bundle: 0
+    - item: {fileID: 2100000, guid: 7594f54b2bc73ec4dbb633d864e17ea0, type: 2}
+      name: transition_texture_material_circles_to_squares
+      bundle: 0
+    - item: {fileID: 2100000, guid: 1ad2fa8caf1b61e438c956e81f3f7f2d, type: 2}
+      name: transition_texture_material_metaballs_1
+      bundle: 0
+    - item: {fileID: 2100000, guid: 41e4b30b7fd943748a6cb1eca30772a5, type: 2}
+      name: transition_texture_material_metaballs_2
+      bundle: 0
+    - item: {fileID: 2100000, guid: 06bca38a9dcb08c42a9749e60693c6b1, type: 2}
+      name: transition_texture_material_metaballs_3
+      bundle: 0
+    - item: {fileID: 2100000, guid: 17d7dcfb6ea509848b02d40ead4b1264, type: 2}
+      name: transition_texture_material_metaballs_4
+      bundle: 0
+    - item: {fileID: 2100000, guid: 93701f83e50e848459b920348e8ce67b, type: 2}
+      name: transition_texture_material_metaballs_5
       bundle: 0

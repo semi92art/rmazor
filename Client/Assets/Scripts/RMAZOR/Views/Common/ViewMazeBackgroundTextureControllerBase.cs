@@ -2,6 +2,7 @@
 using System.Linq;
 using Common;
 using Common.CameraProviders;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -19,7 +20,8 @@ namespace RMAZOR.Views.Common
             out Color _Previous1,
             out Color _Previous2,
             out Color _Next1,
-            out Color _Next2);
+            out Color _Next2,
+            out BloomPropsAlt _BloomProps);
     }
 
     public abstract class ViewMazeBackgroundTextureControllerBase 
@@ -36,6 +38,8 @@ namespace RMAZOR.Views.Common
             BackCol2Prev,
             BackCol1Next,
             BackCol2Next;
+
+        private BloomPropsAlt m_BloomPropsAlt;
 
         #endregion
 
@@ -75,19 +79,21 @@ namespace RMAZOR.Views.Common
         }
 
         public void GetBackgroundColors(
-            out Color _Current1,
-            out Color _Current2,
-            out Color _Previous1,
-            out Color _Previous2,
-            out Color _Next1, 
-            out Color _Next2)
+            out Color         _Current1,
+            out Color         _Current2,
+            out Color         _Previous1,
+            out Color         _Previous2,
+            out Color         _Next1,
+            out Color         _Next2,
+            out BloomPropsAlt _BloomProps)
         {
-            _Current1  = BackCol1Current;
-            _Current2  = BackCol2Current;
-            _Previous1 = BackCol1Prev;
-            _Previous2 = BackCol2Prev;
-            _Next1     = BackCol1Next;
-            _Next2     = BackCol2Next;
+            _Current1   = BackCol1Current;
+            _Current2   = BackCol2Current;
+            _Previous1  = BackCol1Prev;
+            _Previous2  = BackCol2Prev;
+            _Next1      = BackCol1Next;
+            _Next2      = BackCol2Next;
+            _BloomProps = m_BloomPropsAlt;
         }
 
         #endregion
@@ -113,15 +119,16 @@ namespace RMAZOR.Views.Common
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
-            var setItem = colorsSet[setItemIdx];
+            var props = colorsSet[setItemIdx];
             return _ColorId switch
             {
-                ColorIds.Background1    => setItem.bacground1,
-                ColorIds.Background2    => setItem.bacground2,
-                ColorIds.PathItem       => setItem.GetColor(setItem.pathItemFillType),
-                ColorIds.PathBackground => setItem.GetColor(setItem.pathBackgroundFillType),
-                ColorIds.PathFill       => setItem.GetColor(setItem.pathFillFillType),
-                ColorIds.Character2     => setItem.GetColor(setItem.characterBorderFillType),
+                ColorIds.Background1    => props.bacground1,
+                ColorIds.Background2    => props.bacground2,
+                ColorIds.PathItem       => props.GetColor(props.pathItemFillType),
+                ColorIds.PathBackground => props.GetColor(props.pathBackgroundFillType),
+                ColorIds.PathFill       => props.GetColor(props.pathFillFillType),
+                ColorIds.Character2     => props.GetColor(props.characterBorderFillType),
+                ColorIds.UiBackground   => props.GetColor(props.uiBackgroundFillType).SetA(0.7f),
                 _                       => Color.magenta
             };
         }
@@ -132,6 +139,7 @@ namespace RMAZOR.Views.Common
             ColorProvider.SetColor(ColorIds.PathFill, GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathBackground, GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
             ColorProvider.SetColor(ColorIds.Character2,  GetBackgroundColor(ColorIds.Character2, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.UiBackground,  GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
             const int idx1 = ColorIds.Background1;
             const int idx2 = ColorIds.Background2;
             BackCol1Current = GetBackgroundColor(idx1, _LevelIndex);
@@ -142,6 +150,11 @@ namespace RMAZOR.Views.Common
             BackCol2Next = GetBackgroundColor(idx2, _LevelIndex + 1);
             ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
+            
+            var colorsSet = m_BackAndFrontColorsSetItemsLight;
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int setItemIdx = group % colorsSet.Count;
+            m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
         }
 
         #endregion

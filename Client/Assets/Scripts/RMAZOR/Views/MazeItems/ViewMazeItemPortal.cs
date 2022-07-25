@@ -13,9 +13,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
 using UnityEngine;
@@ -155,6 +153,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
                     .SetType(DiscType.Arc)
+                    .SetArcEndCaps(ArcEndCap.Round)
                     .SetColor(GetMainColor())
                     .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f);
                 m_Orbits.Add(orbit);

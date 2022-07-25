@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿using Common;
+using Common.Helpers;
 using Common.Managers.Advertising;
 using UnityEngine.Events;
 
@@ -49,7 +50,9 @@ namespace RMAZOR.Views.Common
         {
             bool doTryToShowAd = _LevelIndex >= GameSettings.firstLevelToShowAds
                                  && _LevelIndex % GameSettings.showAdsEveryLevel == 0
-                                 && !LevelSkipper.LevelSkipped;
+                                 && !LevelSkipper.LevelSkipped
+                                 && !CommonData.DoNotShowAdsAfterDeathAndReturnToPrevLevel;
+            CommonData.DoNotShowAdsAfterDeathAndReturnToPrevLevel = false;
             if (doTryToShowAd)
             {
                 if (m_ShowRewardedOnUnload && AdsManager.RewardedAdReady)

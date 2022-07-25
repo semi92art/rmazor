@@ -17,21 +17,24 @@ namespace RMAZOR.Views.Common
     {
         #region inject
         
-        private ViewSettings            ViewSettings     { get; }
-        private IRemotePropertiesRmazor RemoteProperties { get; }
-        private ICameraProvider         CameraProvider   { get; }
-        private IColorProvider          ColorProvider    { get; }
+        private ViewSettings                         ViewSettings                { get; }
+        private IRemotePropertiesRmazor              RemoteProperties            { get; }
+        private ICameraProvider                      CameraProvider              { get; }
+        private IColorProvider                       ColorProvider               { get; }
+        private IViewMazeBackgroundTextureController BackgroundTextureController { get; }
 
         public ViewCameraEffectsCustomAnimator(
-            ViewSettings            _ViewSettings,
-            IRemotePropertiesRmazor _RemoteProperties,
-            ICameraProvider         _CameraProvider,
-            IColorProvider          _ColorProvider)
+            ViewSettings                         _ViewSettings,
+            IRemotePropertiesRmazor              _RemoteProperties,
+            ICameraProvider                      _CameraProvider,
+            IColorProvider                       _ColorProvider,
+            IViewMazeBackgroundTextureController _BackgroundTextureController)
         {
-            ViewSettings     = _ViewSettings;
-            RemoteProperties = _RemoteProperties;
-            CameraProvider   = _CameraProvider;
-            ColorProvider    = _ColorProvider;
+            ViewSettings                = _ViewSettings;
+            RemoteProperties            = _RemoteProperties;
+            CameraProvider              = _CameraProvider;
+            ColorProvider               = _ColorProvider;
+            BackgroundTextureController = _BackgroundTextureController;
         }
 
         #endregion
@@ -40,19 +43,48 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+#if UNITY_EDITOR
+            CommonDataRmazor.CameraEffectsCustomAnimator = this;
+#endif
             ColorProvider.ColorChanged += OnColorChanged;
+            CameraProvider.EnableEffect(ECameraEffect.Bloom, true);
+            var props = new BloomProps
+            {
+                SetIterations = true,
+                Iterations = 5,
+                Diffusion = 0.6f,
+                Color = Color.white,
+                Amount = 0.5f,
+                Threshold = 0.1f,
+                Softness = 0f
+            };
+            CameraProvider.SetEffectProps(ECameraEffect.Bloom, props);
             base.Init();
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             SetColorGradingProps(_Args);
+            SetBloomProps(_Args);
         }
 
         public void AnimateCameraEffectsOnBetweenLevelTransition(bool _Appear)
         {
             AnimateColorGradingPropsOnBetweenLevel(_Appear);
         }
+        
+        #if UNITY_EDITOR
+
+        public void SetBloom(BloomPropsAlt _BloomPropsAlt)
+        {
+            var props = _BloomPropsAlt.ToBloomProps(out bool enableBloom);
+            CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
+            if (!enableBloom)
+                return;
+            CameraProvider.SetEffectProps(ECameraEffect.Bloom, props);
+        }
+        
+        #endif
 
         #endregion
 
@@ -94,6 +126,25 @@ namespace RMAZOR.Views.Common
                 cgPropsFrom, 
                 cgPropsTo, 
                 ViewSettings.betweenLevelTransitionTime);
+        }
+
+        private void SetBloomProps(LevelStageArgs _Args)
+        {
+            if (_Args.LevelStage != ELevelStage.Loaded)
+                return;
+            BackgroundTextureController.GetBackgroundColors(
+                out _,
+                out _,
+                out _, 
+                out _, 
+                out _, 
+                out _ ,
+                out BloomPropsAlt bloomPropsAlt);
+            var props = bloomPropsAlt.ToBloomProps(out bool enableBloom);
+            CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
+            if (!enableBloom)
+                return;
+            CameraProvider.SetEffectProps(ECameraEffect.Bloom, props);
         }
 
         #endregion

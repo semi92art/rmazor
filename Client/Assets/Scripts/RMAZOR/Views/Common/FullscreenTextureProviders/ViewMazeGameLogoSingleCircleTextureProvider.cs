@@ -22,7 +22,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "between_level_texture_material_circles";
+        protected override string MaterialAssetName => "transition_texture_material_circles";
 
         
         #endregion

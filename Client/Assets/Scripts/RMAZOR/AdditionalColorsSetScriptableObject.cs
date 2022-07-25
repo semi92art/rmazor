@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.CameraProviders.Camera_Effects_Props;
 using Common.Helpers;
 using Common.Helpers.Attributes;
 using Newtonsoft.Json;
@@ -25,6 +26,9 @@ namespace RMAZOR
         [JsonProperty("F2")] public EBackAndFrontColorType pathBackgroundFillType;
         [JsonProperty("F3")] public EBackAndFrontColorType pathFillFillType;
         [JsonProperty("F4")] public EBackAndFrontColorType characterBorderFillType;
+        [JsonProperty("F5")] public EBackAndFrontColorType uiBackgroundFillType;
+
+        public BloomPropsAlt bloom;
 
         public Color GetColor(EBackAndFrontColorType _Type)
         {

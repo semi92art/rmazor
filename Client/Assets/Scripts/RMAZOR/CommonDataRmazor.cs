@@ -1,4 +1,9 @@
-﻿$HEADER$namespace $NAMESPACE$
+﻿using RMAZOR.Views.Common;
+
+namespace RMAZOR
 {
-  public class $CLASS$ {$END$}
+    public class CommonDataRmazor
+    {
+        public static ViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator;
+    }
 }

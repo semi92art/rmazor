@@ -22,6 +22,14 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.5
+        color: {r: 0.35686275, g: 0.23137255, b: 0.83137256, a: 1}
+        amount: 9
+        threshold: 1.5
+        softness: 0.9
     - main: {r: 0.09371662, g: 0.15529047, b: 0.24528301, a: 1}
       bacground1: {r: 0.6037736, g: 0.35701874, b: 0.21929511, a: 1}
       bacground2: {r: 0.15592737, g: 0.27917007, b: 0.4528302, a: 1}
@@ -30,6 +38,14 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.5
+        color: {r: 1, g: 0, b: 0.4509804, a: 1}
+        amount: 9
+        threshold: 1.5
+        softness: 0.9
     - main: {r: 0.16862746, g: 0.13725491, b: 0.08627451, a: 1}
       bacground1: {r: 0.7075472, g: 0.56872857, b: 0.3037113, a: 1}
       bacground2: {r: 0.4433962, g: 0.3487012, b: 0.21124065, a: 1}
@@ -38,22 +54,46 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
-    - main: {r: 0.20784315, g: 0.20784315, b: 0.20784315, a: 1}
-      bacground1: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 1}
-      bacground2: {r: 0.58431375, g: 0.58431375, b: 0.58431375, a: 1}
-      inUse: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.5
+        color: {r: 0, g: 0.21568628, b: 1, a: 1}
+        amount: 9
+        threshold: 1.5
+        softness: 0.9
+    - main: {r: 0, g: 0, b: 0, a: 1}
+      bacground1: {r: 0.5754717, g: 0.5754717, b: 0.5754717, a: 1}
+      bacground2: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
+      inUse: 1
       pathItemFillType: 2
       pathBackgroundFillType: 1
-      pathFillFillType: 2
+      pathFillFillType: 0
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 1, g: 0, b: 0, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.8
     - main: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.0754717, g: 0.0754717, b: 0.0754717, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
     - main: {r: 0.20000002, g: 0.227451, b: 0.34901962, a: 1}
       bacground1: {r: 0.8490566, g: 0.4285333, b: 0.61575264, a: 1}
       bacground2: {r: 0.30210927, g: 0.37880954, b: 0.6886792, a: 1}
@@ -62,14 +102,30 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
     - main: {r: 1, g: 0, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.16037738, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.63, g: 0.12923077, b: 0.12923077, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 1
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 0, g: 0.3137255, b: 1, a: 1}
+        amount: 9.56
+        threshold: 1.39
+        softness: 0.85
     - main: {r: 0.24528301, g: 0.068262726, b: 0.08223804, a: 1}
       bacground1: {r: 0, g: 0.52156866, b: 0.74509805, a: 1}
       bacground2: {r: 0.6156863, g: 0.16862746, b: 0.2, a: 1}
@@ -78,46 +134,78 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 1, g: 0.2783019, b: 0.95188683, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
     - main: {r: 1, g: 0.97083825, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.14150941, g: 0.13561319, b: 0, a: 1}
+      bacground2: {r: 0.62445, g: 0.6313726, b: 0.12941176, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 1
+      uiBackgroundFillType: 2
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
     - main: {r: 0, g: 0.50665617, b: 1, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0, g: 0.08113208, b: 0.16037738, a: 1}
+      bacground2: {r: 0.12941176, g: 0.378086, b: 0.6313726, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 1
-    - main: {r: 1, g: 0, b: 0.8454194, a: 1}
-      bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.16037738, g: 0, b: 0.15846539, a: 1}
-      inUse: 0
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 0
-      characterBorderFillType: 1
+      uiBackgroundFillType: 2
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 1, g: 0.08614111, b: 0, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
     - main: {r: 0, g: 0.13062407, b: 0.18867922, a: 1}
-      bacground1: {r: 0.30588236, g: 0.58431375, b: 0.45255527, a: 1}
-      bacground2: {r: 0.6917748, g: 0.7264151, b: 0.30495727, a: 1}
+      bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
+      bacground2: {r: 0.7930287, g: 0.8396226, b: 0.34456214, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 1, g: 0, b: 0.5571456, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
     - main: {r: 0.018880606, g: 1, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.0027747196, g: 0.14150941, b: 0, a: 1}
+      bacground2: {r: 0.10922168, g: 0.3490566, b: 0.07738519, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
+      uiBackgroundFillType: 2
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 1, g: 0, b: 0, a: 0}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
     - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
       bacground1: {r: 1, g: 0.65839326, b: 0.41037738, a: 1}
       bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
@@ -126,11 +214,27 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
     - main: {r: 1, g: 0.6277604, b: 0, a: 1}
       bacground1: {r: 0.16112542, g: 0.18867922, b: 0.11836951, a: 1}
       bacground2: {r: 0.1647059, g: 0.4124149, b: 0.48235294, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 1
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 0.87843144, g: 0.65882355, b: 0.019607844, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9

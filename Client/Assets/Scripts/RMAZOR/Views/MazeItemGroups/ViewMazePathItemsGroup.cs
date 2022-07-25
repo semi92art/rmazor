@@ -99,7 +99,8 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             CollectStartPathItemIfWasNot(true);
             var pathItems = RmazorUtils.GetFullPath(_Args.From, _Args.To)
-                .Select(_Pos => PathItems.First(_Item => _Item.Props.Position == _Pos));
+                .Select(_Pos => PathItems.First(
+                    _Item => _Item.Props.Position == _Pos && _Item.ActivatedInSpawnPool));
             int k = 0;
             foreach (var item in pathItems)
             {

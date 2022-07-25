@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.CameraProviders;
+﻿using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -8,28 +7,21 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
-    public interface IViewMazeGameLogoTextureProvider : IInit
-    {
-        void Activate(bool            _Active);
-        void SetTransitionValue(float _Value);
-        void SetColor(Color           _Color);
-    }
-    
-    public class ViewMazeGameLogoSingleCircleTextureProvider 
+    public class ViewMazeGameLogoTextureProviderCirclesToSquares 
         : FullscreenTransitionTextureProviderSimpleBase,
           IViewMazeGameLogoTextureProvider
     {
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "transition_texture_material_circles";
+        protected override string MaterialAssetName => "transition_texture_material_circles_to_squares";
 
         
         #endregion
 
         #region inject
 
-        private ViewMazeGameLogoSingleCircleTextureProvider(
+        private ViewMazeGameLogoTextureProviderCirclesToSquares(
             IPrefabSetManager _PrefabSetManager, 
             IContainersGetter _ContainersGetter,
             ICameraProvider   _CameraProvider,

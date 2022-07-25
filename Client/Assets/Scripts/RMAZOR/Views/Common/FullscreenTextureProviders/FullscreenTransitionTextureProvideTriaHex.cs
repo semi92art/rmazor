@@ -19,7 +19,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
-        protected override string MaterialAssetName => "between_level_texture_material_tria_hex";
+        protected override string MaterialAssetName => "transition_texture_material_tria_hex";
 
         private static readonly int   BackgroundColorId  = Shader.PropertyToID("_BackgroundColor");
         private static readonly int   EdgesColorId       = Shader.PropertyToID("_EdgesColor");

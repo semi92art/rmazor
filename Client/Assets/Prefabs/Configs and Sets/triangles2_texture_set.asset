@@ -15,20 +15,6 @@ MonoBehaviour:
   set:
     array:
     - inUse: 1
-      size: 98.3
-      ratio: 55.8
-      a: 0.5
-      b: 0.5
-      c: 0
-      d: 0.494
-      e: 0.815
-      f: 11
-      smooth: 1
-      mirror: 1
-      trunc: 0
-      truncColor2: 0
-      direction: 0.4
-    - inUse: 1
       size: 84.1
       ratio: 20.4
       a: 0.98
@@ -57,20 +43,6 @@ MonoBehaviour:
       truncColor2: 0
       direction: 0.33
     - inUse: 1
-      size: 51.1
-      ratio: 1
-      a: 0.09
-      b: 0.274
-      c: 0.1
-      d: 0.542
-      e: 0.345
-      f: 9
-      smooth: 1
-      mirror: 1
-      trunc: 1
-      truncColor2: 1
-      direction: 0.59
-    - inUse: 1
       size: 12.2
       ratio: 11.6
       a: -0.58
@@ -84,20 +56,6 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.34
-    - inUse: 1
-      size: 51.1
-      ratio: 1
-      a: -1.15
-      b: 0.244
-      c: 0.1
-      d: 0.542
-      e: 0.345
-      f: 9
-      smooth: 1
-      mirror: 1
-      trunc: 1
-      truncColor2: 0
-      direction: 0.86
     - inUse: 1
       size: 100
       ratio: 40.4
@@ -151,8 +109,8 @@ MonoBehaviour:
       f: 20
       smooth: 1
       mirror: 1
-      trunc: 1
-      truncColor2: 1
+      trunc: 0
+      truncColor2: 0
       direction: 0
     - inUse: 1
       size: 100
@@ -174,6 +132,34 @@ MonoBehaviour:
       a: -0.16
       b: 0.042
       c: 0.9
+      d: 1
+      e: 0.5
+      f: 4
+      smooth: 1
+      mirror: 1
+      trunc: 1
+      truncColor2: 1
+      direction: 0.301
+    - inUse: 1
+      size: 31
+      ratio: 6.8
+      a: -0.87
+      b: 0.042
+      c: 0.9
+      d: 1
+      e: 0.5
+      f: 4
+      smooth: 1
+      mirror: 1
+      trunc: 1
+      truncColor2: 1
+      direction: 0.301
+    - inUse: 1
+      size: 31
+      ratio: 6.8
+      a: -0.87
+      b: 0.139
+      c: -2.4
       d: 1
       e: 0.5
       f: 4
@@ -210,3 +196,17 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: 0.741
+    - inUse: 1
+      size: 8.8
+      ratio: 10.8
+      a: 0.13
+      b: 0.148
+      c: 0.66
+      d: 0.189
+      e: 0.275
+      f: 9
+      smooth: 1
+      mirror: 0
+      trunc: 0
+      truncColor2: 1
+      direction: 0.665

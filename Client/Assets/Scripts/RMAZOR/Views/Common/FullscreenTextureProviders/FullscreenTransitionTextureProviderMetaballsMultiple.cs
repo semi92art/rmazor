@@ -6,29 +6,38 @@ using RMAZOR.Models;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
-    public class FullscreenTransitionTextureProviderMultiple : FullscreenTransitionTextureProviderBase
+    public class FullscreenTransitionTextureProviderMetaBallsMultiple : FullscreenTransitionTextureProviderBase
     {
-        private IModelGame                                  Model   { get; }
-        private IFullscreenTransitionTextureProviderTriaHex TriaHex { get; }
-        private IFullscreenTransitionTextureProviderCircles Circles { get; }
+        private IModelGame                           Model      { get; }
+        private IFullscreenTextureProviderMetaBalls1 MetaBalls1 { get; }
+        private IFullscreenTextureProviderMetaBalls2 MetaBalls2 { get; }
+        private IFullscreenTextureProviderMetaBalls3 MetaBalls3 { get; }
+        private IFullscreenTextureProviderMetaBalls4 MetaBalls4 { get; }
+        private IFullscreenTextureProviderMetaBalls5 MetaBalls5 { get; }
 
-        public FullscreenTransitionTextureProviderMultiple(
-            IPrefabSetManager                           _PrefabSetManager,
-            IContainersGetter                           _ContainersGetter,
-            ICameraProvider                             _CameraProvider,
-            IColorProvider                              _ColorProvider,
-            IModelGame                                  _Model,
-            IFullscreenTransitionTextureProviderTriaHex _TriaHex,
-            IFullscreenTransitionTextureProviderCircles _Circles) 
+        public FullscreenTransitionTextureProviderMetaBallsMultiple(
+            IPrefabSetManager                    _PrefabSetManager,
+            IContainersGetter                    _ContainersGetter,
+            ICameraProvider                      _CameraProvider,
+            IColorProvider                       _ColorProvider,
+            IModelGame                           _Model,
+            IFullscreenTextureProviderMetaBalls1 _MetaBalls1,
+            IFullscreenTextureProviderMetaBalls2 _MetaBalls2,
+            IFullscreenTextureProviderMetaBalls3 _MetaBalls3,
+            IFullscreenTextureProviderMetaBalls4 _MetaBalls4,
+            IFullscreenTextureProviderMetaBalls5 _MetaBalls5) 
             : base(
                 _PrefabSetManager, 
                 _ContainersGetter, 
                 _CameraProvider, 
                 _ColorProvider)
         {
-            Model   = _Model;
-            TriaHex = _TriaHex;
-            Circles = _Circles;
+            Model      = _Model;
+            MetaBalls1 = _MetaBalls1;
+            MetaBalls2 = _MetaBalls2;
+            MetaBalls3 = _MetaBalls3;
+            MetaBalls4 = _MetaBalls4;
+            MetaBalls5 = _MetaBalls5;
         }
 
         protected override int    SortingOrder      => default;
@@ -36,15 +45,21 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         public override void Init()
         {
-            TriaHex.Init();
-            Circles.Init();
+            MetaBalls1.Init();
+            MetaBalls2.Init();
+            MetaBalls3.Init();
+            MetaBalls4.Init();
+            MetaBalls5.Init();
             RaiseInitialization();
         }
 
         public override void Activate(bool _Active)
         {
-            TriaHex.Activate(false);
-            Circles.Activate(false);
+            MetaBalls1.Activate(false);
+            MetaBalls2.Activate(false);
+            MetaBalls3.Activate(false);
+            MetaBalls4.Activate(false);
+            MetaBalls5.Activate(false);
             GetProvider().Activate(true);
         }
 
@@ -55,13 +70,15 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         private IFullscreenTransitionTextureProvider GetProvider()
         {
-            int group = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
-            int mod = group % 2;
-            return mod switch
+            long levelIndexInGroup = RmazorUtils.GetIndexInGroup(Model.LevelStaging.LevelIndex);
+            return levelIndexInGroup switch
             {
-                0 => TriaHex,
-                1 => Circles,
-                _ => null
+                0 => MetaBalls1,
+                1 => MetaBalls2,
+                2 => MetaBalls3,
+                3 => MetaBalls4,
+                4 => MetaBalls5,
+                _ => MetaBalls1
             };
         }
     }

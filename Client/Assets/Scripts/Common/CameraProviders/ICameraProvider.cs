@@ -10,7 +10,8 @@ namespace Common.CameraProviders
         ColorGrading,
         ChromaticAberration,
         AntiAliasing,
-        Pixelate
+        Pixelate,
+        Bloom
     }
     
     public interface ICameraEffectProps { }
