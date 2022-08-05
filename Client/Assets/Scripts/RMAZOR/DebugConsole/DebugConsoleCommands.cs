@@ -53,10 +53,10 @@ namespace RMAZOR.DebugConsole
             switch (adType)
             {
                 case "rewarded":
-                    Controller.AdsManager.ShowRewardedAd(null, null);
+                    Controller.AdsManager.ShowRewardedAd();
                     break;
                 case "interstitial":
-                    Controller.AdsManager.ShowInterstitialAd(null, null);
+                    Controller.AdsManager.ShowInterstitialAd();
                     break;
             }
         }

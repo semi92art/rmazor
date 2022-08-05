@@ -16,8 +16,8 @@ MonoBehaviour:
   debugAnyway: 0
   testAds: 1
   logLevel: 5
-  showAdsEveryLevel: 3
-  firstLevelToShowAds: 10
+  showAdsEveryLevel: 2
+  firstLevelToShowAds: 0
   payToContinueMoneyCount: 100
   moneyItemCoast: 1
   apkForAppodeal: 0

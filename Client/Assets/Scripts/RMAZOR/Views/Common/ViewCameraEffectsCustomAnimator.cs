@@ -47,18 +47,8 @@ namespace RMAZOR.Views.Common
             CommonDataRmazor.CameraEffectsCustomAnimator = this;
 #endif
             ColorProvider.ColorChanged += OnColorChanged;
+            
             CameraProvider.EnableEffect(ECameraEffect.Bloom, true);
-            var props = new BloomProps
-            {
-                SetIterations = true,
-                Iterations = 5,
-                Diffusion = 0.6f,
-                Color = Color.white,
-                Amount = 0.5f,
-                Threshold = 0.1f,
-                Softness = 0f
-            };
-            CameraProvider.SetEffectProps(ECameraEffect.Bloom, props);
             base.Init();
         }
 
@@ -109,7 +99,7 @@ namespace RMAZOR.Views.Common
                 Contrast       = 0.35f,
                 Blur           = 0.2f,
                 Saturation     = 0f,
-                VignetteAmount = 0.05f
+                VignetteAmount = 0f
             };
             colorGradingProps.VignetteColor = ColorProvider.GetColor(ColorIds.PathFill);
             CameraProvider.SetEffectProps(ECameraEffect.ColorGrading, colorGradingProps);

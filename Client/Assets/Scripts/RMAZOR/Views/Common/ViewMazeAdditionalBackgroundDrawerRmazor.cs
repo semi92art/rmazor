@@ -56,6 +56,7 @@ namespace RMAZOR.Views.Common
 
         private readonly List<Sprite>   m_TextureSprites = new List<Sprite>();
         private          SpriteRenderer m_TextureRendererBack;
+        private          Disc           m_OuterCircle;
 
         #endregion
 
@@ -67,14 +68,16 @@ namespace RMAZOR.Views.Common
         private ICoordinateConverter        CoordinateConverter { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
         private IRendererAppearTransitioner Transitioner        { get; }
-        
+        private IModelGame                  Model               { get; }
+
         private ViewMazeAdditionalBackgroundDrawerRmazor(
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
             ICoordinateConverter        _CoordinateConverter,
             IPrefabSetManager           _PrefabSetManager,
-            IRendererAppearTransitioner _Transitioner)
+            IRendererAppearTransitioner _Transitioner,
+            IModelGame                  _Model)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -82,6 +85,7 @@ namespace RMAZOR.Views.Common
             CoordinateConverter = _CoordinateConverter;
             PrefabSetManager    = _PrefabSetManager;
             Transitioner        = _Transitioner;
+            Model               = _Model;
         }
 
         #endregion
@@ -101,6 +105,7 @@ namespace RMAZOR.Views.Common
         public void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
         {
             DeactivateAll();
+            UpdateOuterCircle();
             foreach (var group in _Groups)
                 DrawBordersForGroup(group);
             foreach (var group in _Groups)
@@ -148,18 +153,55 @@ namespace RMAZOR.Views.Common
         
         private void InitPools()
         {
+            InitOuterCircle();
             InitBordersPool();
             InitCornersPool();
         }
 
+        private void InitOuterCircle()
+        {
+            var go = new GameObject("Additional Outer Circle");
+            go.SetParent(Container);
+            m_OuterCircle = go.AddComponent<Disc>()
+                .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
+                .SetType(DiscType.Ring)
+                .SetDashed(true)
+                .SetDashSnap(DashSnapping.Off)
+                .SetDashType(DashType.Rounded)
+                .SetMatchDashSpacingToDashSize(false)
+                .SetDashSpacing(0.25f)
+                .SetDashSize(16f);
+            m_OuterCircle.enabled = false;
+        }
+
+        private void UpdateOuterCircle()
+        {
+            //TODO надо доделать этот ебучий круг
+             // bool isThisMazeRotating = Model
+             //     .GetAllProceedInfos()
+             //     .Any(_Inf => RmazorUtils.GravityItemTypes.ContainsAlt(_Inf.Type));
+             m_OuterCircle.enabled = false;
+             // if (!isThisMazeRotating)
+             //     return;
+             // var mazeBounds = CoordinateConverter.GetMazeBounds();
+             // m_OuterCircle.transform.position = mazeBounds.center;
+             // float radius = Mathf.Max(Model.Data.Info.Size.X, Model.Data.Info.Size.Y)
+             //                * CoordinateConverter.Scale
+             //                * 0.5f
+             //                * Mathf.Sqrt(2f);
+             // m_OuterCircle.SetRadius(radius)
+             //     .SetColor(ColorProvider.GetColor(ColorIds.Main).SetA(0.7f))
+             //     .SetThickness(0.5f * CoordinateConverter.Scale);
+        }
+        
         private void InitBordersPool()
         {
             for (int i = 0; i < BordersPoolCount; i++)
             {
                 var go = new GameObject("Additional Background Border");
                 go.SetParent(Container);
-                var border = go.AddComponent<Line>();
-                border.SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
+                var border = go.AddComponent<Line>()
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
                     .SetEndCaps(LineEndCap.None);
                 m_Borders.Add(border);
             }
@@ -240,6 +282,7 @@ namespace RMAZOR.Views.Common
         
         private void DeactivateAll()
         {
+            m_OuterCircle.enabled = false;
             m_TextureRenderers    .DeactivateAll();
             m_TextureRendererMasks.DeactivateAll();
             m_Borders             .DeactivateAll();

@@ -15,14 +15,14 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         void SetProperties(Triangles2TextureProps _Item);
     }
     
-    public class FullscreenTriangles2TextureProvider :
+    public class FullscreenTextureProviderTriangles2 :
         FullscreenTextureProviderBase,
         IFullscreenTextureProviderTriangles2
     {
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string MaterialAssetName => "triangles2_background";
+        protected override string MaterialAssetName => "background_triangles_2";
 
         private static readonly int
             SizeId        = Shader.PropertyToID("_Size"),
@@ -42,7 +42,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         #region inject
 
-        private FullscreenTriangles2TextureProvider(
+        private FullscreenTextureProviderTriangles2(
             IPrefabSetManager _PrefabSetManager, 
             IContainersGetter _ContainersGetter, 
             ICameraProvider   _CameraProvider, 

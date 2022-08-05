@@ -41,6 +41,7 @@ namespace RMAZOR.Views.MazeItems
         private Rectangle m_PathItem;
         private Line      m_LeftBorder,       m_RightBorder,       m_BottomBorder,  m_TopBorder;
         private Disc      m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner;
+        private Line      m_BlankHatch1,      m_BlankHatch2;
         
         private bool 
             m_LeftBorderInited, 
@@ -226,10 +227,31 @@ namespace RMAZOR.Views.MazeItems
                 .SetCornerRadius(CoordinateConverter.Scale * ViewSettings.CornerRadius)
                 .SetThickness(CoordinateConverter.Scale * ViewSettings.LineThickness * 0.5f)
                 .SetSortingOrder(SortingOrders.Path);
+            m_BlankHatch1 = Object.AddComponentOnNewChild<Line>("Blank Hatch 1", out _)
+                .SetEndCaps(LineEndCap.None)
+                .SetDashed(true)
+                .SetDashSnap(DashSnapping.Off)
+                .SetMatchDashSpacingToDashSize(true)
+                .SetDashType(DashType.Angled)
+                .SetDashSpace(DashSpace.FixedCount)
+                .SetDashSize(6f)
+                .SetDashShapeModifier(-1f)
+                .SetSortingOrder(SortingOrders.Path);
+            m_BlankHatch2 = Object.AddComponentOnNewChild<Line>("Blank Hatch 2", out _)
+                .SetEndCaps(LineEndCap.None)
+                .SetDashed(true)
+                .SetDashSnap(DashSnapping.Off)
+                .SetMatchDashSpacingToDashSize(true)
+                .SetDashType(DashType.Angled)
+                .SetDashSpace(DashSpace.FixedCount)
+                .SetDashSize(6f)
+                .SetDashShapeModifier(1f)
+                .SetSortingOrder(SortingOrders.Path);
         }
 
         protected override void UpdateShape()
         {
+            float scale = CoordinateConverter.Scale;
             if (Props.IsMoneyItem)
             {
                 if (MoneyItem.Renderers.Any(_R => _R.IsNull()))
@@ -241,11 +263,22 @@ namespace RMAZOR.Views.MazeItems
             else
             {
                 MoneyItem.Active = false;
-                m_PathItem.Width = m_PathItem.Height = CoordinateConverter.Scale * 0.4f;
-                m_PathItem.CornerRadius = ViewSettings.CornerRadius * CoordinateConverter.Scale * 2f;
+                m_PathItem.Width = m_PathItem.Height = scale * 0.4f;
+                m_PathItem.CornerRadius = ViewSettings.CornerRadius * scale * 2f;
             }
+            m_BlankHatch1.enabled = m_BlankHatch2.enabled = Props.Blank;
             if (Props.Blank)
+            {
                 Collect(true, true);
+                m_BlankHatch1
+                    .SetStart(Vector2.left * 0.5f * scale)
+                    .SetEnd(Vector2.right * 0.5f * scale)
+                    .SetThickness(scale);
+                m_BlankHatch2
+                    .SetStart(Vector2.left * 0.5f * scale)
+                    .SetEnd(Vector2.right * 0.5f * scale)
+                    .SetThickness(scale);
+            }
             if (ViewSettings.collectStartPathItemOnLevelLoaded 
                 && Model.PathItemsProceeder.PathProceeds[Props.Position])
                 Collect(true, true);
@@ -266,6 +299,8 @@ namespace RMAZOR.Views.MazeItems
             }
             if (_ColorId != ColorIds.Main) 
                 return;
+            m_BlankHatch1.Color = m_BlankHatch2.Color = _Color.SetA(0.25f);
+            
             if (BottomLeftCornerInited)  m_BottomLeftCorner.Color  = _Color;
             if (BottomRightCornerInited) m_BottomRightCorner.Color = _Color;
             if (TopLeftCornerInited)     m_TopLeftCorner.Color     = _Color;
@@ -685,6 +720,10 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnAppearStart(bool _Appear)
         {
+            // if (!Props.Blank && _Appear)
+            // {
+            //     m_BlankHatch.enabled = false;
+            // }
             if (!_Appear && Collected 
                 || _Appear && (Props.Blank || Props.IsStartNode))
             {
@@ -703,6 +742,9 @@ namespace RMAZOR.Views.MazeItems
             var result = borderSets.ConcatWithDictionary(cornerSets);
             var moneyItemCol = ColorProvider.GetColor(ColorIds.MoneyItem);
             var pathItemCol = ColorProvider.GetColor(ColorIds.PathItem);
+            var mainCol = ColorProvider.GetColor(ColorIds.Main);
+            if (Props.Blank)
+                result.Add(new [] {m_BlankHatch1, m_BlankHatch2}, () => mainCol.SetA(0.25f));
             if ((!_Appear || Props.Blank || Props.IsStartNode) && (_Appear || Collected)) 
                 return result;
             if (Props.IsMoneyItem)

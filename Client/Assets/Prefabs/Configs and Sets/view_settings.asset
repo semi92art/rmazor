@@ -28,15 +28,15 @@ MonoBehaviour:
   topScreenOffset: 10
   moveSwipeThreshold: 0.1
   afterRotationEnableMoveDelay: 0.1
-  levelsCountMain: 360
+  levelsCountMain: 420
   firstLevelToRateGame: 4
   betweenLevelTransitionTime: 1
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
   additionalBackTexturesInUse: 1
-  filledPathAlpha: 1
+  filledPathAlpha: 0
   additionalBackgroundAlpha: 0.5
-  skipLevelSeconds: 100
+  skipLevelSeconds: 10
   animatePathFill: 1
   animatePathFillTime: 0.2
   cameraSpeed: 0.1

@@ -4,6 +4,7 @@ using Common;
 using Common.Entities;
 using Common.Helpers;
 using Common.SpawnPools;
+using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
@@ -17,7 +18,6 @@ namespace RMAZOR.Views.MazeItemGroups
         ICharacterMoveStarted,
         ICharacterMoveContinued
     {
-        int                     MoneyItemsCollectedCount { get; }
         List<IViewMazeItemPath> PathItems                { get; }
         void                    OnPathProceed(V2Int _PathItem);
     }
@@ -28,6 +28,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private SpawnPool<IViewMazeItemPath> m_PathsPool;
         private bool                         m_FirstMoveDone;
+        private long                         m_CurrentLevelMoney;
         
         #endregion
 
@@ -38,29 +39,30 @@ namespace RMAZOR.Views.MazeItemGroups
         private ModelSettings      ModelSettings      { get; }
         private IModelGame         Model              { get; }
         private IMazeItemsCreator  MazeItemsCreator   { get; }
+        private IMoneyCounter      MoneyCounter       { get; }
 
         private ViewMazePathItemsGroup(
             GlobalGameSettings _GlobalGameSettings,
             ViewSettings       _ViewSettings,
             ModelSettings      _ModelSettings,
             IModelGame         _Model,
-            IMazeItemsCreator  _MazeItemsCreator)
+            IMazeItemsCreator  _MazeItemsCreator,
+            IMoneyCounter      _MoneyCounter)
         {
             GlobalGameSettings = _GlobalGameSettings;
             ViewSettings       = _ViewSettings;
             ModelSettings      = _ModelSettings;
             Model              = _Model;
             MazeItemsCreator   = _MazeItemsCreator;
+            MoneyCounter       = _MoneyCounter;
         }
         
         #endregion
         
         #region api
 
-        public int                     MoneyItemsCollectedCount { get; private set; }
-        public List<IViewMazeItemPath> PathItems                { get; private set; }
-
-
+        public List<IViewMazeItemPath> PathItems { get; private set; }
+        
         public override void Init()
         {
             if (m_PathsPool == null)
@@ -87,8 +89,15 @@ namespace RMAZOR.Views.MazeItemGroups
                     CollectStartPathItemIfWasNot(false);
                     break;
                 }
+                case ELevelStage.Finished:
+                    MoneyCounter.CurrentLevelMoney = m_CurrentLevelMoney;
+                    MoneyCounter.CurrentLevelGroupMoney += m_CurrentLevelMoney;
+                    break;
                 case ELevelStage.ReadyToUnloadLevel:
-                    MoneyItemsCollectedCount = 0;
+                    m_CurrentLevelMoney = 0;
+                    MoneyCounter.CurrentLevelMoney = 0;
+                    if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
+                        MoneyCounter.CurrentLevelGroupMoney = 0;
                     break;
             }
             foreach (var item in PathItems)
@@ -153,7 +162,7 @@ namespace RMAZOR.Views.MazeItemGroups
 
         private void OnMoneyItemCollected()
         {
-            MoneyItemsCollectedCount += GlobalGameSettings.moneyItemCoast;
+            m_CurrentLevelMoney += GlobalGameSettings.moneyItemCoast;
         }
 
         #endregion

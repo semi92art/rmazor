@@ -27,7 +27,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             IAudioManager               _AudioManager,
             ILocalizationManager        _LocalizationManager,
             IPrefabSetManager           _PrefabSetManager,
-            IBigDialogViewer            _UiDialogViewer,
+            IDialogViewer           _UiDialogViewer,
             string                      _TitleLocalizationKey,
             Func<string>                _Value,
             UnityAction<object>         _OnSelect,

@@ -54,3 +54,6 @@ tut_descr_hammer = Novo bloco: martelo!
 tut_descr_spear = Nova armadilha: lança!
 tut_descr_diode = Novo bloco: Uma maneira!
 we_need_comment = Vamos melhorar o jogo e precisamos do seu feedback para isso
+reward = recompensa
+multiply = multiplicar
+skip = pular

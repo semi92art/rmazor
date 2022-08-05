@@ -22,16 +22,20 @@ namespace Common.Managers.Advertising
         Entity<bool> ShowAds             { get; set; }
 
         void ShowRewardedAd(
-            UnityAction _OnBeforeShown,
-            UnityAction _OnShown,
-            string      _AdsNetwork = null,
-            bool        _Forced     = false);
+            UnityAction _OnBeforeShown = null,
+            UnityAction _OnShown       = null,
+            UnityAction _OnClicked     = null,
+            string      _AdsNetwork    = null,
+            bool        _Forced        = false,
+            bool        _Skippable     = true);
 
         void ShowInterstitialAd(
-            UnityAction _OnBeforeShown,
-            UnityAction _OnShown,
-            string      _AdsNetwork = null,
-            bool        _Forced     = false);
+            UnityAction _OnBeforeShown = null,
+            UnityAction _OnShown       = null,
+            UnityAction _OnClicked     = null,
+            string      _AdsNetwork    = null,
+            bool        _Forced        = false,
+            bool        _Skippable     = true);
     }
 
     public class AdsManager : InitBase, IAdsManager
@@ -44,7 +48,7 @@ namespace Common.Managers.Advertising
 
         #region inject
 
-        private GlobalGameSettings          GameGameSettings     { get; }
+        private GlobalGameSettings      GameGameSettings { get; }
         private IRemotePropertiesCommon RemoteProperties { get; }
         private IAdsProvidersSet        AdsProvidersSet  { get; }
         private IAnalyticsManager       AnalyticsManager { get; }
@@ -85,8 +89,10 @@ namespace Common.Managers.Advertising
         public void ShowRewardedAd(
             UnityAction _OnBeforeShown,
             UnityAction _OnShown,
+            UnityAction _OnClicked,
             string      _AdsNetwork = null,
-            bool        _Forced     = false)
+            bool        _Forced     = false,
+            bool        _Skippable  = true)
         {
             var providers = (string.IsNullOrEmpty(_AdsNetwork)
                 ? m_Providers.Values
@@ -102,14 +108,23 @@ namespace Common.Managers.Advertising
                     provider.LoadAd(AdvertisingType.Rewarded);
                 return;
             }
-            ShowAd(readyProviders, _OnBeforeShown, _OnShown, AdvertisingType.Rewarded, _Forced);
+            ShowAd(
+                readyProviders,
+                _OnBeforeShown, 
+                _OnShown,
+                _OnClicked, 
+                AdvertisingType.Rewarded,
+                _Forced,
+                _Skippable);
         }
 
         public void ShowInterstitialAd(
             UnityAction _OnBeforeShown,
             UnityAction _OnShown,
+            UnityAction _OnClicked,
             string      _AdsNetwork = null,
-            bool        _Forced     = false)
+            bool        _Forced     = false,
+            bool        _Skippable  = true)
         {
             var providers = (string.IsNullOrEmpty(_AdsNetwork)
                 ? m_Providers.Values
@@ -125,7 +140,14 @@ namespace Common.Managers.Advertising
                     provider.LoadAd(AdvertisingType.Interstitial);
                 return;
             }
-            ShowAd(readyProviders, _OnBeforeShown, _OnShown, AdvertisingType.Interstitial, _Forced);
+            ShowAd(
+                readyProviders,
+                _OnBeforeShown,
+                _OnShown,
+                _OnClicked, 
+                AdvertisingType.Interstitial,
+                _Forced,
+                _Skippable);
         }
 
         #endregion
@@ -156,8 +178,10 @@ namespace Common.Managers.Advertising
             IReadOnlyCollection<IAdsProvider> _Providers,
             UnityAction                       _OnBeforeShown,
             UnityAction                       _OnShown,
+            UnityAction                       _OnClicked,
             AdvertisingType                   _Type,
-            bool                              _Forced)
+            bool                              _Forced,
+            bool                              _Skippable)
         {
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
@@ -200,16 +224,17 @@ namespace Common.Managers.Advertising
             }
             void OnClicked()
             {
+                _OnClicked?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdClicked, eventData);
             }
             Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
-                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, ShowAds, _Forced);
+                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, ShowAds, _Forced, _Skippable);
                     break;
                 case AdvertisingType.Rewarded:
-                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, ShowAds, _Forced);
+                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, ShowAds, _Forced, _Skippable);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

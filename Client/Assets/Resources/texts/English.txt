@@ -54,3 +54,6 @@ tut_descr_hammer = New block: Hammer!
 tut_descr_spear = New trap: Spear!
 tut_descr_diode = New block: One Way!
 we_need_comment = we will improve the game and we need your feedback for this
+reward = reward
+multiply = multiply
+skip = skip

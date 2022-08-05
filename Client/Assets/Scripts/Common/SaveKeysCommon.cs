@@ -8,21 +8,22 @@ namespace Common
 {
     public static class SaveKeysCommon
     {
-        private static SaveKey<bool>      _gameWasRated;
-        private static SaveKey<bool>      _settingNotificationsOn;
-        private static SaveKey<bool>      _settingHapticsOn;
-        private static SaveKey<bool>      _settingSoundOn;
-        private static SaveKey<bool>      _settingMusicOn;
-        private static SaveKey<bool?>     _disableAds;
-        private static SaveKey<bool>      _lastDbConnectionSuccess;
-        private static SaveKey<bool>      _notFirstLaunch;
-        private static SaveKey<bool>      _debugUtilsOn;
-        private static SaveKey<int?>      _accountId;               
-        private static SaveKey<string>    _login;        
-        private static SaveKey<string>    _passwordHash;
-        private static SaveKey<int?>      _previousAccountId; 
-        private static SaveKey<DateTime>  _timeSinceLastIapReviewDialogShown;
-        private static SaveKey<List<int>> _boughtPurchaseIds;  
+        private static SaveKey<bool>         _gameWasRated;
+        private static SaveKey<bool>         _settingNotificationsOn;
+        private static SaveKey<bool>         _settingHapticsOn;
+        private static SaveKey<bool>         _settingSoundOn;
+        private static SaveKey<bool>         _settingMusicOn;
+        private static SaveKey<bool?>        _disableAds;
+        private static SaveKey<bool>         _lastDbConnectionSuccess;
+        private static SaveKey<bool>         _notFirstLaunch;
+        private static SaveKey<bool>         _debugUtilsOn;
+        private static SaveKey<int?>         _accountId;               
+        private static SaveKey<string>       _login;        
+        private static SaveKey<string>       _passwordHash;
+        private static SaveKey<int?>         _previousAccountId; 
+        private static SaveKey<DateTime>     _timeSinceLastIapReviewDialogShown;
+        private static SaveKey<List<int>>    _boughtPurchaseIds;
+        private static SaveKey<List<string>> _debugConsoleCommandsHistory;
         
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
@@ -34,37 +35,39 @@ namespace Common
         {
             if (Application.isEditor)
             {
-                _gameWasRated = null;
-                _settingNotificationsOn = null;
-                _settingHapticsOn = null;
-                _settingSoundOn = null;
-                _settingMusicOn = null;
-                _disableAds = null;
-                _lastDbConnectionSuccess = null;
-                _notFirstLaunch = null;
-                _debugUtilsOn = null;
-                _accountId = null;
-                _login = null;
-                _passwordHash = null;
-                _previousAccountId = null;
+                _gameWasRated                      = null;
+                _settingNotificationsOn            = null;
+                _settingHapticsOn                  = null;
+                _settingSoundOn                    = null;
+                _settingMusicOn                    = null;
+                _disableAds                        = null;
+                _lastDbConnectionSuccess           = null;
+                _notFirstLaunch                    = null;
+                _debugUtilsOn                      = null;
+                _accountId                         = null;
+                _login                             = null;
+                _passwordHash                      = null;
+                _previousAccountId                 = null;
                 _timeSinceLastIapReviewDialogShown = null;
-                _boughtPurchaseIds = null;
+                _boughtPurchaseIds                 = null;
+                _debugConsoleCommandsHistory       = null;
             }
-            SaveUtils.PutValue(GameWasRated,             SaveUtils.GetValue(GameWasRated),             true);
-            SaveUtils.PutValue(SettingNotificationsOn,   SaveUtils.GetValue(SettingNotificationsOn),   true);
-            SaveUtils.PutValue(SettingHapticsOn,         SaveUtils.GetValue(SettingHapticsOn),       true);
-            SaveUtils.PutValue(SettingSoundOn,          SaveUtils.GetValue(SettingSoundOn),          true);
-            SaveUtils.PutValue(SettingMusicOn,          SaveUtils.GetValue(SettingMusicOn),          true);
-            SaveUtils.PutValue(DisableAds,              SaveUtils.GetValue(DisableAds),              true);
-            SaveUtils.PutValue(LastDbConnectionSuccess, SaveUtils.GetValue(LastDbConnectionSuccess), true);
-            SaveUtils.PutValue(NotFirstLaunch,          SaveUtils.GetValue(NotFirstLaunch),          true);
-            SaveUtils.PutValue(DebugUtilsOn,            SaveUtils.GetValue(DebugUtilsOn),            true);
-            SaveUtils.PutValue(AccountId,               SaveUtils.GetValue(AccountId),               true);
-            SaveUtils.PutValue(Login,                   SaveUtils.GetValue(Login),                   true);
-            SaveUtils.PutValue(PasswordHash,            SaveUtils.GetValue(PasswordHash),            true);
-            SaveUtils.PutValue(PreviousAccountId,       SaveUtils.GetValue(PreviousAccountId),       true);
+            SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               true);
+            SaveUtils.PutValue(SettingNotificationsOn,      SaveUtils.GetValue(SettingNotificationsOn),     true);
+            SaveUtils.PutValue(SettingHapticsOn,            SaveUtils.GetValue(SettingHapticsOn),           true);
+            SaveUtils.PutValue(SettingSoundOn,              SaveUtils.GetValue(SettingSoundOn),             true);
+            SaveUtils.PutValue(SettingMusicOn,              SaveUtils.GetValue(SettingMusicOn),             true);
+            SaveUtils.PutValue(DisableAds,                  SaveUtils.GetValue(DisableAds),                 true);
+            SaveUtils.PutValue(LastDbConnectionSuccess,     SaveUtils.GetValue(LastDbConnectionSuccess),    true);
+            SaveUtils.PutValue(NotFirstLaunch,              SaveUtils.GetValue(NotFirstLaunch),             true);
+            SaveUtils.PutValue(DebugUtilsOn,                SaveUtils.GetValue(DebugUtilsOn),               true);
+            SaveUtils.PutValue(AccountId,                   SaveUtils.GetValue(AccountId),                  true);
+            SaveUtils.PutValue(Login,                       SaveUtils.GetValue(Login),                      true);
+            SaveUtils.PutValue(PasswordHash,                SaveUtils.GetValue(PasswordHash),               true);
+            SaveUtils.PutValue(PreviousAccountId,           SaveUtils.GetValue(PreviousAccountId),          true);
+            SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          true);
+            SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory), true);
             SaveUtils.PutValue(TimeSinceLastIapReviewDialogShown, SaveUtils.GetValue(TimeSinceLastIapReviewDialogShown),  true);
-            SaveUtils.PutValue(BoughtPurchaseIds,        SaveUtils.GetValue(BoughtPurchaseIds),        true);
         }
 
         public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
@@ -77,14 +80,14 @@ namespace Common
             return saveKey;
         }
         
-        public static SaveKey<bool> GameWasRated => 
+        public static SaveKey<bool> GameWasRated               => 
             _gameWasRated ??= new SaveKey<bool>(nameof(GameWasRated));
-        public static SaveKey<bool> SettingNotificationsOn =>
+        public static SaveKey<bool> SettingNotificationsOn     =>
             _settingNotificationsOn ??= new SaveKey<bool>(nameof(SettingNotificationsOn));
-        public static SaveKey<bool> SettingHapticsOn => 
+        public static SaveKey<bool> SettingHapticsOn           => 
             _settingHapticsOn ??= new SaveKey<bool>(nameof(SettingHapticsOn));
-        public static SaveKey<bool>  SettingSoundOn           
-            => _settingSoundOn ??= new SaveKey<bool>(nameof(SettingSoundOn));
+        public static SaveKey<bool> SettingSoundOn             => 
+            _settingSoundOn ??= new SaveKey<bool>(nameof(SettingSoundOn));
         public static SaveKey<bool>  SettingMusicOn            => 
             _settingMusicOn ??= new SaveKey<bool>(nameof(SettingMusicOn));
         public static SaveKey<bool?>  DisableAds               =>
@@ -109,8 +112,10 @@ namespace Common
             new SaveKey<string>(nameof(AppVersion));
         public static SaveKey<DateTime> TimeSinceLastIapReviewDialogShown => 
             _timeSinceLastIapReviewDialogShown ??= new SaveKey<DateTime>(nameof(TimeSinceLastIapReviewDialogShown));
-        public static SaveKey<List<int>> BoughtPurchaseIds => 
+        public static SaveKey<List<int>> BoughtPurchaseIds     => 
             _boughtPurchaseIds ??= new SaveKey<List<int>>(nameof(BoughtPurchaseIds));
+        public static SaveKey<List<string>> DebugConsoleCommandsHistory =>
+            _debugConsoleCommandsHistory ??= new SaveKey<List<string>>(nameof(DebugConsoleCommandsHistory));
         
         public static SaveKey<uint> BundleVersion(string _BundleName)
         {

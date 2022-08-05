@@ -47,13 +47,13 @@ namespace Common.Managers.Advertising.AdsProviders
 
         private AdMobAdsProvider(
             IRemotePropertiesCommon _RemoteProperties,
-            GlobalGameSettings      _GlobalGameSettings,
             IAdMobInterstitialAd    _InterstitialAd,
-            IAdMobRewardedAd        _RewardedAd) 
+            IAdMobRewardedAd        _RewardedAd,
+            IAdMobRewardedAd        _RewardedAdNonSkippable) 
             : base(
-                _GlobalGameSettings, 
                 _InterstitialAd,
-                _RewardedAd)
+                _RewardedAd,
+                _RewardedAdNonSkippable)
         {
             RemoteProperties = _RemoteProperties;
         }

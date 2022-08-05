@@ -58,28 +58,28 @@ namespace RMAZOR.Views.UI
 
         #region inject
 
-        private IModelGame                  Model                { get; }
-        private IPrefabSetManager           PrefabSetManager     { get; }
-        private IContainersGetter           ContainersGetter     { get; }
-        private ICoordinateConverter  CoordinateConverter  { get; }
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private ICameraProvider             CameraProvider       { get; }
-        private IColorProvider              ColorProvider        { get; }
-        private IViewGameTicker             Ticker               { get; }
-        private IProposalDialogViewer       ProposalDialogViewer { get; }
-        private ITutorialDialogPanel        TutorialDialogPanel  { get; }
-        private IViewUIGameLogo             GameLogo             { get; }
+        private IModelGame                  Model                   { get; }
+        private IPrefabSetManager           PrefabSetManager        { get; }
+        private IContainersGetter           ContainersGetter        { get; }
+        private ICoordinateConverter        CoordinateConverter     { get; }
+        private IViewInputCommandsProceeder CommandsProceeder       { get; }
+        private ICameraProvider             CameraProvider          { get; }
+        private IColorProvider              ColorProvider           { get; }
+        private IViewGameTicker             Ticker                  { get; }
+        private IDialogViewersController    DialogViewersController { get; }
+        private ITutorialDialogPanel        TutorialDialogPanel     { get; }
+        private IViewUIGameLogo             GameLogo                { get; }
 
         private ViewUITutorial(
             IModelGame                  _Model,
             IPrefabSetManager           _PrefabSetManager,
             IContainersGetter           _ContainersGetter,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
             IViewGameTicker             _Ticker,
-            IProposalDialogViewer       _ProposalDialogViewer,
+            IDialogViewersController    _DialogViewersController,
             ITutorialDialogPanel        _TutorialDialogPanel,
             IViewUIGameLogo             _GameLogo)
         {
@@ -91,7 +91,7 @@ namespace RMAZOR.Views.UI
             CameraProvider       = _CameraProvider;
             ColorProvider        = _ColorProvider;
             Ticker               = _Ticker;
-            ProposalDialogViewer = _ProposalDialogViewer;
+            DialogViewersController = _DialogViewersController;
             TutorialDialogPanel  = _TutorialDialogPanel;
             GameLogo             = _GameLogo;
         }
@@ -219,7 +219,8 @@ namespace RMAZOR.Views.UI
                 () =>
                 {
                     TutorialDialogPanel.LoadPanel();
-                    ProposalDialogViewer.Show(TutorialDialogPanel, 3f);
+                    var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+                    dv.Show(TutorialDialogPanel, 3f);
                     SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
                 }));
         }

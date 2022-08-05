@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Common.Constants;
 using Common.Helpers;
 using Common.Utils;
 
@@ -44,8 +45,8 @@ namespace Common.Managers.Analytics
         
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
-            // if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
-            //     return;
+            if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
+                return;
             Cor.RunSync(() =>
             {
                 foreach (var provider in ProvidersSet.GetProviders())

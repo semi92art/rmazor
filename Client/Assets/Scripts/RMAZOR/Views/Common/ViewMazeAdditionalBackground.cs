@@ -75,7 +75,6 @@ namespace RMAZOR.Views.Common
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            Dbg.Log("Level loaded");
             var info = Model.Data.Info;
             var groups = GeometryInitializer.GetGroups(info);
             GroupsCollected?.Invoke(groups);

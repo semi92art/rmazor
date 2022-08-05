@@ -24,13 +24,13 @@ namespace Common.Managers.Advertising.AdsProviders
         #region inject
         
         private UnityAdsProvider(
-            GlobalGameSettings      _GlobalGameSettings,
             IUnityAdsInterstitialAd _InterstitialAd,
-            IUnityAdsRewardedAd     _RewardedAd) 
+            IUnityAdsRewardedAd     _RewardedAd,
+            IUnityAdsRewardedAd     _RewardedAdNonSkippable) 
             : base(
-                _GlobalGameSettings,
                 _InterstitialAd,
-                _RewardedAd) { }
+                _RewardedAd,
+                _RewardedAdNonSkippable) { }
 
         #endregion
 

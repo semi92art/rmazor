@@ -82,6 +82,9 @@ namespace Mono_Installers
             Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
             Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()           .AsSingle();
             
+#if UNITY_ANDROID
+            Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
+#endif
             if (Application.isEditor)
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
@@ -140,18 +143,18 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()        .To<MazeInfoValidator>()            .AsSingle();
 #if ADMOB_API
             Container.Bind<IAdMobAdsProvider>()         .To<AdMobAdsProvider>()             .AsSingle();
-            Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsSingle();
-            Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsSingle();
+            Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsTransient();
+            Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsTransient();
 #endif
 #if UNITY_ADS_API
             Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
-            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
-            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
+            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsTransient();
+            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsTransient();
 #endif
 #if APPODEAL_3
             Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
-            Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
-            Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
+            Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsTransient();
+            Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsTransient();
 #endif
             Container.Bind<IAdsProvidersSet>().To<AdsProvidersSet>().AsSingle();
             Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();

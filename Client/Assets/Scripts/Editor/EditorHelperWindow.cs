@@ -126,6 +126,7 @@ namespace Editor
                         BuildTargetChangeListener.RemoveAppodeal(bt);
                     });
                 });
+
                 EditorUtilsEx.HorizontalZone(() =>
                 {
                     EditorUtilsEx.GuiButtonAction("Add UnityAds to this target", () =>
@@ -137,6 +138,13 @@ namespace Editor
                         BuildTargetChangeListener.RemoveUnityAds(bt);
                     });
                 });
+                EditorUtilsEx.HorizontalLine();
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Copy Appodeal settings from backup", BuildTargetChangeListener.CopyAppodealSettingsFromBackup);
+                    EditorUtilsEx.GuiButtonAction("Remove Appodeal settings", BuildTargetChangeListener.RemoveAppodealSettingsFolder);
+                });
+                EditorUtilsEx.HorizontalLine();
                 var headerStyle = new GUIStyle
                 {
                     fontSize = 15,

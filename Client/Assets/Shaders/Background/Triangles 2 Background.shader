@@ -3,6 +3,7 @@ Shader "RMAZOR/Background/Triangles 2" {
 		_Color1 ("Color 1", Color) = (0,0,0,1)
 		_Color2 ("Color 2", Color) = (1,1,1,1)
         _Size ("Size", Range(1, 100)) = 1
+    	_ParallaxSize ("Parallax Size", Range(1, 10)) = 1
         _Ratio("Ratio", Range(1, 100)) = 1.224744
         _A("A", Range(-2, 2)) = 0
         _B("B", Range(0, 0.5)) = 0
@@ -36,9 +37,10 @@ Shader "RMAZOR/Background/Triangles 2" {
             #pragma vertex vert
             #pragma fragment frag
             #include "../Common.cginc"
+            #include "Parallax.cginc"
 
 			fixed4 _Color1,_Color2;
-            float _Size, _Ratio, _A, _B, _C, _D, _E, _F, _Direction, _AnimationSpeed, _AnimationRange;
+            float _Size, _Ratio, _A, _B, _C, _D, _E, _F, _Direction, _AnimationSpeed, _AnimationRange, _ParallaxSize;
             bool _Smooth, _Mirror, _Trunc, _TruncColor2;
 
             float rand(float2 co) {
@@ -87,15 +89,19 @@ Shader "RMAZOR/Background/Triangles 2" {
                 pos /= _Size * 0.02f;
                 float2 triang = get_triangle_coords(pos);
             	float lerp_coeff = rand(triang);
+            	fixed4 frag_col;
             	if (_Smooth)
             	{
             		if (_Trunc && !_TruncColor2)
-						return lerp_coeff < _E ? _Color1 : lerp_colors(lerp_coeff);
+						frag_col = lerp_coeff < _E ? _Color1 : lerp_colors(lerp_coeff);
             		if (_Trunc && _TruncColor2)
-						return lerp_coeff < _E ? lerp_colors(lerp_coeff) : _Color2;
-            		return lerp_colors(lerp_coeff);
+						frag_col = lerp_coeff < _E ? lerp_colors(lerp_coeff) : _Color2;
+            		else
+						frag_col = lerp_colors(lerp_coeff);
             	}
-            	return lerp_coeff < _E ? _Color1 : _Color2;
+            	else
+					frag_col = lerp_coeff < _E ? _Color1 : _Color2;
+            	return frag_col + parallax_color(i, _ParallaxSize, _Color1, _Color2);
             }
             
             ENDCG

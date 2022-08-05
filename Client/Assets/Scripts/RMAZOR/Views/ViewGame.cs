@@ -71,7 +71,7 @@ namespace RMAZOR.Views
         private IViewMazeForeground         Foreground          { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IColorProvider              ColorProvider       { get; }
-        private IBigDialogViewer            BigDialogViewer     { get; }
+        private IFullscreenDialogViewer            FullscreenDialogViewer     { get; }
         private IRendererAppearTransitioner AppearTransitioner  { get; }
         private IAdsProvidersSet            AdsProvidersSet     { get; }
 
@@ -94,7 +94,7 @@ namespace RMAZOR.Views
             ICoordinateConverter          _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
-            IBigDialogViewer              _BigDialogViewer,
+            IFullscreenDialogViewer              _FullscreenDialogViewer,
             IRendererAppearTransitioner   _AppearTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground,
             IViewFullscreenTransitioner   _FullscreenTransitioner,
@@ -118,7 +118,7 @@ namespace RMAZOR.Views
             CoordinateConverter          = _CoordinateConverter;
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
-            BigDialogViewer              = _BigDialogViewer;
+            FullscreenDialogViewer              = _FullscreenDialogViewer;
             AppearTransitioner           = _AppearTransitioner;
             AdditionalBackground         = _AdditionalBackground;
             FullscreenTransitioner       = _FullscreenTransitioner;
@@ -244,7 +244,7 @@ namespace RMAZOR.Views
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();
-            BigDialogViewer.OnClosed = () =>
+            FullscreenDialogViewer.OnClosed = () =>
             {
                 CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
             };

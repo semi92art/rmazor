@@ -11,6 +11,8 @@ using Common.Helpers;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
+using Lean.Touch;
+using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -66,7 +68,7 @@ namespace RMAZOR.Views.Common
         private IContainersGetter                   ContainersGetter            { get; }
         private IMazeShaker                         MazeShaker                  { get; }
         private IDialogPanelsSet                    DialogPanelsSet             { get; }
-        private IProposalDialogViewer               ProposalDialogViewer        { get; }
+        private IDialogViewersController            DialogViewersController     { get; }
         private IViewMazeItemsGroupSet              MazeItemsGroupSet           { get; }
         private IViewMazePathItemsGroup             PathItemsGroup              { get; }
         private CompanyLogo                         CompanyLogo                 { get; }
@@ -76,27 +78,34 @@ namespace RMAZOR.Views.Common
         private IViewBetweenLevelAdLoader           BetweenLevelAdLoader        { get; }
         private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator { get; }
         private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer  { get; }
+        private IFinishLevelGroupDialogPanel        FinishLevelGroupDialogPanel { get; }
+        private IViewInputTouchProceeder            TouchProceeder              { get; }
+        private IMoneyCounter                       MoneyCounter                { get; }
 
         private ViewLevelStageController(
-            ViewSettings                     _ViewSettings,
-            IViewGameTicker                  _ViewGameTicker,
-            IModelGameTicker                 _ModelGameTicker,
-            IModelGame                       _Model,
-            IManagersGetter                  _Managers,
-            IViewCharacter                   _Character,
-            IViewInputCommandsProceeder      _CommandsProceeder,
-            IContainersGetter                _ContainersGetter,
-            IMazeShaker                      _MazeShaker,
-            IDialogPanelsSet                 _DialogPanelsSet,
-            IProposalDialogViewer            _ProposalDialogViewer,
-            IViewMazeItemsGroupSet           _MazeItemsGroupSet,
-            IViewMazePathItemsGroup          _PathItemsGroup,
-            CompanyLogo                      _CompanyLogo,
-            IViewUIGameLogo                  _GameLogo,
-            IRateGameDialogPanel             _RateGameDialogPanel,
-            IViewFullscreenTransitioner      _FullscreenTransitioner,
-            IViewBetweenLevelAdLoader        _BetweenLevelAdLoader,
-            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator, IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer)
+            ViewSettings                        _ViewSettings,
+            IViewGameTicker                     _ViewGameTicker,
+            IModelGameTicker                    _ModelGameTicker,
+            IModelGame                          _Model,
+            IManagersGetter                     _Managers,
+            IViewCharacter                      _Character,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IContainersGetter                   _ContainersGetter,
+            IMazeShaker                         _MazeShaker,
+            IDialogPanelsSet                    _DialogPanelsSet,
+            IDialogViewersController            _DialogViewersController,
+            IViewMazeItemsGroupSet              _MazeItemsGroupSet,
+            IViewMazePathItemsGroup             _PathItemsGroup,
+            CompanyLogo                         _CompanyLogo,
+            IViewUIGameLogo                     _GameLogo,
+            IRateGameDialogPanel                _RateGameDialogPanel,
+            IViewFullscreenTransitioner         _FullscreenTransitioner,
+            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewCameraEffectsCustomAnimator    _CameraEffectsCustomAnimator,
+            IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer, 
+            IFinishLevelGroupDialogPanel        _FinishLevelGroupDialogPanel,
+            IViewInputTouchProceeder            _TouchProceeder,
+            IMoneyCounter                       _MoneyCounter)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
@@ -108,7 +117,7 @@ namespace RMAZOR.Views.Common
             ContainersGetter            = _ContainersGetter;
             MazeShaker                  = _MazeShaker;
             DialogPanelsSet             = _DialogPanelsSet;
-            ProposalDialogViewer        = _ProposalDialogViewer;
+            DialogViewersController     = _DialogViewersController;
             MazeItemsGroupSet           = _MazeItemsGroupSet;
             PathItemsGroup              = _PathItemsGroup;
             CompanyLogo                 = _CompanyLogo;
@@ -117,7 +126,10 @@ namespace RMAZOR.Views.Common
             FullscreenTransitioner      = _FullscreenTransitioner;
             BetweenLevelAdLoader        = _BetweenLevelAdLoader;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
-            AdditionalBackgroundDrawer = _AdditionalBackgroundDrawer;
+            AdditionalBackgroundDrawer  = _AdditionalBackgroundDrawer;
+            FinishLevelGroupDialogPanel = _FinishLevelGroupDialogPanel;
+            TouchProceeder              = _TouchProceeder;
+            MoneyCounter                = _MoneyCounter;
         }
 
         #endregion
@@ -126,6 +138,8 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            MoneyCounter.Init();
+            TouchProceeder.Tap += OnTapScreenAction;
             CameraEffectsCustomAnimator.Init();
             CommandsProceeder.Command += OnCommand;
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
@@ -154,18 +168,30 @@ namespace RMAZOR.Views.Common
         {
             PauseGameTickers(_Args.LevelStage == ELevelStage.Paused);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
-            CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
             ProceedMazeItems(_Args);
             ProceedOther(_Args);
             ProceedSounds(_Args);
+            CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
         }
 
         #endregion
 
         #region nonpublic methods
-        
+
+        private void OnTapScreenAction(LeanFinger _Finger)
+        {
+            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f)
+                return;
+            if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
+                return;
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            var cp = dv.CurrentPanel;
+            if (cp == null || cp.Category != EUiCategory.FinishGroup)
+                CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
+        }
+
         private void OnBetweenLevelTransitionFinished(bool _Appear)
         {
             if (!_Appear)
@@ -283,41 +309,12 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
-            bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
-            if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
-                SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
-            
-            if (PathItemsGroup.MoneyItemsCollectedCount <= 0)
-                return;
-            var savedGameEntity = Managers.ScoreManager.
-                GetSavedGameProgress(CommonData.SavedGameFileName, true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}, " +
-                                       $"castSuccess: {castSuccess}, " +
-                                       $"_Value: {savedGameEntity.Value}");
-                        return;
-                    }
-                    long newMoneyCount = savedGame.Money + PathItemsGroup.MoneyItemsCollectedCount;
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = CommonData.SavedGameFileName,
-                        Money = newMoneyCount,
-                        Level = _Args.LevelIndex
-                    };
-                    SendLevelAnalyticEvent(_Args, newMoneyCount);
-                    Managers.ScoreManager.SaveGameProgress(
-                        newSavedGame, false);
-                }));
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
+            UpdateMoneyInBank(_Args);
+            CheckForAllLevelsPassed(_Args.LevelIndex);
+            CheckForLevelGroupFinished(_Args.LevelIndex);
         }
-
+        
         private void OnReadyToUnloadLevel(
             LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems)
@@ -425,9 +422,61 @@ namespace RMAZOR.Views.Common
                     {
                         var panel = DialogPanelsSet.CharacterDiedDialogPanel;
                         panel.LoadPanel();
-                        ProposalDialogViewer.Show(panel, 3f);
+                        var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+                        dv.Show(panel, 3f);
                     }
                 });
+        }
+        
+        private void CheckForAllLevelsPassed(long _LevelIndex)
+        {
+            bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
+            if (!allLevelsPassed && _LevelIndex + 1 >= ViewSettings.levelsCountMain)
+                SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
+        }
+
+        private void UpdateMoneyInBank(LevelStageArgs _Args)
+        {
+            if (MoneyCounter.CurrentLevelMoney <= 0)
+                return;
+            var savedGameEntity = Managers.ScoreManager.
+                GetSavedGameProgress(CommonData.SavedGameFileName, true);
+            Cor.Run(Cor.WaitWhile(
+                () => savedGameEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
+                    {
+                        Dbg.LogWarning("Failed to load saved game: " +
+                                       $"_Result: {savedGameEntity.Result}, " +
+                                       $"castSuccess: {castSuccess}, " +
+                                       $"_Value: {savedGameEntity.Value}");
+                        return;
+                    }
+                    long newMoneyCount = savedGame.Money + MoneyCounter.CurrentLevelMoney;
+                    var newSavedGame = new SavedGame
+                    {
+                        FileName = CommonData.SavedGameFileName,
+                        Money = newMoneyCount,
+                        Level = _Args.LevelIndex
+                    };
+                    SendLevelAnalyticEvent(_Args, newMoneyCount);
+                    Managers.ScoreManager.SaveGameProgress(
+                        newSavedGame, false);
+                }));
+        }
+
+        private void CheckForLevelGroupFinished(long _LevelIndex)
+        {
+            if (!RmazorUtils.IsLastLevelInGroup(_LevelIndex))
+                return;
+            BetweenLevelAdLoader.ShowAd = false;
+            if (MoneyCounter.CurrentLevelGroupMoney == 0)
+                return;
+            FinishLevelGroupDialogPanel.LoadPanel();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            dv.Show(FinishLevelGroupDialogPanel);
         }
         
         private void PauseGameTickers(bool _Pause)

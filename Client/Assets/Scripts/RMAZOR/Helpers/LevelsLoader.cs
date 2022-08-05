@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;

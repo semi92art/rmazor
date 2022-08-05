@@ -53,18 +53,19 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ViewSettings                ViewSettings        { get; }
-        private IModelGame                  Model               { get; }
-        private IViewInputCommandsProceeder CommandsProceeder   { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private IPrefabSetManager           PrefabSetManager    { get; }
-        private IHapticsManager             HapticsManager      { get; }
-        private IViewInputTouchProceeder    TouchProceeder      { get; }
-        private ICameraProvider             CameraProvider      { get; }
-        private ILocalizationManager        LocalizationManager { get; }
-        private IAdsManager                 AdsManager          { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private IViewGameTicker             GameTicker          { get; }
+        private ViewSettings                ViewSettings         { get; }
+        private IModelGame                  Model                { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IContainersGetter           ContainersGetter     { get; }
+        private IPrefabSetManager           PrefabSetManager     { get; }
+        private IHapticsManager             HapticsManager       { get; }
+        private IViewInputTouchProceeder    TouchProceeder       { get; }
+        private ICameraProvider             CameraProvider       { get; }
+        private ILocalizationManager        LocalizationManager  { get; }
+        private IAdsManager                 AdsManager           { get; }
+        private IColorProvider              ColorProvider        { get; }
+        private IViewGameTicker             GameTicker           { get; }
+        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
 
         private ViewUILevelSkipperButton(
             ViewSettings                _ViewSettings,
@@ -78,7 +79,8 @@ namespace RMAZOR.Views.Common
             ILocalizationManager        _LocalizationManager,
             IAdsManager                 _AdsManager,
             IColorProvider              _ColorProvider,
-            IViewGameTicker             _GameTicker)
+            IViewGameTicker             _GameTicker,
+            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
         {
             ViewSettings        = _ViewSettings;
             Model               = _Model;
@@ -92,6 +94,7 @@ namespace RMAZOR.Views.Common
             AdsManager          = _AdsManager;
             ColorProvider       = _ColorProvider;
             GameTicker          = _GameTicker;
+            BetweenLevelAdLoader = _BetweenLevelAdLoader;
         }
 
         #endregion
@@ -109,13 +112,14 @@ namespace RMAZOR.Views.Common
         public void SkipLevel()
         {
             LevelSkipped = true;
-            AdsManager.ShowRewardedAd(null, () =>
+            AdsManager.ShowRewardedAd(_OnShown: () =>
             {
                 CommandsProceeder.RaiseCommand(
                     EInputCommand.FinishLevel, 
                     new object[] {"skip"}, 
                     true);
             });
+            BetweenLevelAdLoader.ShowAd = false;
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -160,11 +164,15 @@ namespace RMAZOR.Views.Common
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            switch (_ColorId)
-            {
-                case ColorIds.UiBorder:     m_Border.color = _Color;     break;
-                case ColorIds.UiBackground: m_Background.color = _Color; break;
-            }
+            Cor.Run(Cor.WaitWhile(() => !m_Initialized,
+                () =>
+                {
+                    switch (_ColorId)
+                    {
+                        case ColorIds.UiBorder:     m_Border.color = _Color;     break;
+                        case ColorIds.UiBackground: m_Background.color = _Color; break;
+                    }
+                }));
         }
         
         private void OnSkipLevelButtonPressed()
@@ -201,7 +209,6 @@ namespace RMAZOR.Views.Common
         
         private IEnumerator ShowButtonCountdownCoroutine()
         {
-            Dbg.Log(nameof(ShowButtonCountdownCoroutine));
             yield return Cor.Delay(ViewSettings.skipLevelSeconds, 
                 GameTicker,
                 () =>

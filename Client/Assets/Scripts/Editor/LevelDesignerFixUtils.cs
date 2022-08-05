@@ -5,6 +5,7 @@ using Common.Entities;
 using Common.Extensions;
 using RMAZOR.Models.MazeInfos;
 
+// ReSharper disable once CheckNamespace
 namespace RMAZOR.Editor
 {
     public partial class LevelDesignerEditor
@@ -225,19 +226,19 @@ namespace RMAZOR.Editor
         [FixUtil(FixUtilColor.Blue)]
         public void SortLevels()
         {
-            var levels = HeapReorderableList.LevelsCached;
+            var levels = LevelsList.Levels;
             var levelsTutorial = levels.GetRange(0, 43);
             var levelsToSort = levels.GetRange(44, levels.Count - 44);
             levelsToSort.Shuffle();
             var sortedLevels = levelsTutorial.Concat(levelsToSort).ToList();
-            HeapReorderableList.LevelsCached = HeapReorderableList.LevelsCached = sortedLevels;
+            LevelsList.Levels = LevelsList.Levels = sortedLevels;
             LevelsList.Save();
         }
         
         [FixUtil(FixUtilColor.Blue)]
         public void FixMazeSizes()
         {
-            var levels = HeapReorderableList.LevelsCached;
+            var levels = LevelsList.Levels;
             foreach (var level in levels)
             {
                 var mazeItems = level.MazeItems.ToList();
@@ -248,7 +249,7 @@ namespace RMAZOR.Editor
                 maxY = System.Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
                 level.Size = new V2Int(maxX, maxY);
             }
-            HeapReorderableList.LevelsCached = levels;
+            LevelsList.Levels = levels;
             LevelsList.Save();
         }
     }

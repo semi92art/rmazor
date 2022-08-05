@@ -196,6 +196,8 @@ namespace Editor
 
         private void DisplayColors()
         {
+            if (m_MainColorsPropsSet == null)
+                LoadSets();
             GUILayout.Label("Main Colors Set:");
             foreach (var item in m_MainColorsPropsSet)
             {

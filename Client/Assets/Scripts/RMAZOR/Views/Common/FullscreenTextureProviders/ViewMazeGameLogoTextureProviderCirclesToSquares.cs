@@ -15,7 +15,6 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground;
         protected override string MaterialAssetName => "transition_texture_material_circles_to_squares";
-
         
         #endregion
 
@@ -36,7 +35,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         
         #region api
 
-        public override void SetTransitionValue(float _Value)
+        public override void SetTransitionValue(float _Value, bool _Appear)
         {
             Material.SetFloat(TransitionValueId, _Value);
         }

@@ -74,7 +74,7 @@ namespace RMAZOR
                 _Appear ? 1f : 0f,
                 _P =>
                 {
-                    TextureProvider.SetTransitionValue(_P);
+                    TextureProvider.SetTransitionValue(_P, _Appear);
                 },
                 () =>
                 {

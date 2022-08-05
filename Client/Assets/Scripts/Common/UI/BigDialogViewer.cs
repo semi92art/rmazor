@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common.CameraProviders;
 using Common.Constants;
@@ -7,6 +6,7 @@ using Common.Entities;
 using Common.Entities.UI;
 using Common.Enums;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
@@ -19,23 +19,24 @@ using Object = UnityEngine.Object;
 
 namespace Common.UI
 {
-    public interface IBigDialogViewer : IDialogViewerBase
+    public interface IFullscreenDialogViewer : IDialogViewer
     {
-        void        Show(IDialogPanel _ItemTo, bool _HidePrevious = true);
         UnityAction OnClosed { get; set; }
     }
 
-    public class BigDialogViewerFake : IBigDialogViewer
+    public class FullscreenDialogViewerFake : InitBase, IFullscreenDialogViewer
     {
-        public IDialogPanel  CurrentPanel => null;
-        public RectTransform Container                                              => null;
-        public Func<bool>    IsOtherDialogViewersShowing                            { get; set; }
-        public void          Init(RectTransform _Parent)                            { }
-        public void          Show(IDialogPanel  _ItemTo, bool _HidePrevious = true) { }
-        public UnityAction   OnClosed { get; set; }
+        public IDialogPanel      CurrentPanel              => null;
+        public RectTransform     Container                 => null;
+        public System.Func<bool> OtherDialogViewersShowing { get; set; }
+        public UnityAction       OnClosed                  { get; set; }
+
+        public void Back(UnityAction   _OnFinish = null) { }
+
+        public void Show(IDialogPanel _PanelTo, float _AnimationSpeed = 1, bool _HidePrevious = true) { }
     }
     
-    public class BigDialogViewer : DialogViewerBase, IBigDialogViewer, IAction, IUpdateTick
+    public class FullscreenDialogViewer : DialogViewerBase, IFullscreenDialogViewer, IAction, IUpdateTick
     {
         #region types
 
@@ -81,16 +82,18 @@ namespace Common.UI
 
         #region inject
 
-        private IAudioManager  AudioManager  { get; }
-        private IColorProvider ColorProvider { get; }
+        private IAudioManager       AudioManager  { get; }
+        private IColorProvider      ColorProvider { get; }
 
-        private BigDialogViewer(
+        private FullscreenDialogViewer(
+            IViewUICanvasGetter         _CanvasGetter,
             IAudioManager               _AudioManager,
             IUITicker                   _Ticker,
             IColorProvider              _ColorProvider,
             ICameraProvider             _CameraProvider,
             IPrefabSetManager           _PrefabSetManager)
             : base(
+                _CanvasGetter,
                 _CameraProvider,
                 _Ticker, 
                 _PrefabSetManager)
@@ -108,11 +111,12 @@ namespace Common.UI
         public          UnityAction   Action    { get; set; }
         public          UnityAction   OnClosed    { get; set; }
 
-        public override void Init(RectTransform _Parent)
+        public override void Init()
         {
+            var parent = CanvasGetter.GetCanvas().RTransform();
             var go = PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    _Parent,
+                    parent,
                     RectTransformLite.FullFill),
                 "dialog_viewers",
                 "dialog_viewer");
@@ -131,22 +135,27 @@ namespace Common.UI
                 CloseAll();
             });
             ColorProvider.ColorChanged += OnColorChanged;
+            base.Init();
         }
         
-        public void Show(IDialogPanel _ItemTo, bool _HidePrevious = true)
+        public override void Show(IDialogPanel _PanelTo, float _AnimationSpeed = 1f, bool _HidePrevious = true)
         {
             CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
-            CurrentPanel = _ItemTo;
+            CurrentPanel = _PanelTo;
             m_CloseButton.transform.SetAsLastSibling();
-            ShowCore(_ItemTo, _HidePrevious, false);
+            ShowCore(_PanelTo, _AnimationSpeed, _HidePrevious);
         }
-
-
-
-
+        
+        public override void Back(UnityAction _OnFinish = null)
+        {
+            throw new System.NotSupportedException();
+        }
+        
         public virtual void UpdateTick()
         {
-            if (IsOtherDialogViewersShowing != null && IsOtherDialogViewersShowing())
+            if (!Initialized)
+                return;
+            if (OtherDialogViewersShowing())
                 return;
             if (LeanInput.GetDown(KeyCode.Space))
                 CloseAll();
@@ -166,14 +175,15 @@ namespace Common.UI
         
         private void ShowCore(
             IDialogPanel _PanelTo,
-            bool _HidePrevious,
-            bool _GoBack)
+            float        _AnimationSpeed = 1f,
+            bool         _HidePrevious = false,
+            bool         _GoBack = false)
         {
             var panelFrom = !m_PanelStack.Any() ? null : m_PanelStack.Peek();
             if (panelFrom == null && _PanelTo == FakePanel)
                 return;
             var panelFromObj = panelFrom?.PanelObject;
-            var panelToObj = _PanelTo == FakePanel ? null : _PanelTo.PanelObject;
+            var panelToObj = _PanelTo.PanelObject;
             if (panelFrom != null && panelFromObj.IsNotNull() && _HidePrevious)
             {
                 panelFrom.AppearingState = EAppearingState.Dissapearing;
@@ -181,33 +191,42 @@ namespace Common.UI
                 if (!m_GraphicsAlphas.ContainsKey(instId))
                     m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelFromObj));
                 Cor.Run(DoTransparentTransition(
-                    panelFromObj, m_GraphicsAlphas[instId].Alphas, TransitionTime,
+                    panelFromObj,
+                    m_GraphicsAlphas[instId].Alphas,
+                    TransitionTime / _AnimationSpeed,
                     true,
                     () =>
                     {
-                        if (_PanelTo == FakePanel && (IsOtherDialogViewersShowing == null || !IsOtherDialogViewersShowing()))
+                        if (_PanelTo == FakePanel && OtherDialogViewersShowing())
                             CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                         panelFrom.AppearingState = EAppearingState.Dissapeared;
                         if (!_GoBack)
                             return;
                         Object.Destroy(panelFromObj.gameObject);
+                        var canvas = CanvasGetter.GetCanvas();
+                        if (canvas.enabled && !OtherDialogViewersShowing() && panelToObj.IsNull())
+                            canvas.enabled = false; 
                     }));
             }
             if (panelToObj.IsNotNull())
             {
                 CurrentPanel = _PanelTo;
+                var canvas = CanvasGetter.GetCanvas();
+                if (!canvas.enabled)
+                    canvas.enabled = true;
                 _PanelTo.AppearingState = EAppearingState.Appearing;
                 int instId = panelToObj!.GetInstanceID();
                 if (!m_GraphicsAlphas.ContainsKey(instId))
                     m_GraphicsAlphas.Add(instId, new GraphicAlphas(panelToObj));
                 Cor.Run(DoTransparentTransition(
-                    panelToObj, m_GraphicsAlphas[instId].Alphas, TransitionTime,
+                    panelToObj,
+                    m_GraphicsAlphas[instId].Alphas,
+                    TransitionTime / _AnimationSpeed,
                     false, 
                     () =>
                     {
                         _PanelTo.AppearingState = EAppearingState.Appeared;
                     }));
-                _PanelTo.OnDialogEnable();
             }
             FinishShowing(panelFrom, _PanelTo, _GoBack, panelToObj);
         }
@@ -248,16 +267,16 @@ namespace Common.UI
                 Object.Destroy(pan.PanelObject.gameObject);
             }
             m_PanelStack.Push(lastPanel);
-            ShowCore(FakePanel, true, true);
+            ShowCore(FakePanel, _HidePrevious: true, _GoBack: true);
             OnClosed?.Invoke();
         }
         
         private void ClearGraphicsAlphas()
         {
-            foreach (var item in m_GraphicsAlphas.ToArray())
+            foreach ((int key, var value) in m_GraphicsAlphas.ToArray())
             {
-                if (item.Value.Alphas.All(_A => _A.Key.IsNull()))
-                    m_GraphicsAlphas.Remove(item.Key);
+                if (value.Alphas.All(_A => _A.Key.IsNull()))
+                    m_GraphicsAlphas.Remove(key);
             }
         }
 

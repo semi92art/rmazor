@@ -114,6 +114,24 @@ namespace Common.Extensions
             return _Disc;
         }
 
+        public static Disc SetColorMode(this Disc _Disc, Disc.DiscColorMode _ColorMode)
+        {
+            _Disc.ColorMode = _ColorMode;
+            return _Disc;
+        }
+
+        public static Disc SetColorInner(this Disc _Disc, Color _Color)
+        {
+            _Disc.ColorInner = _Color;
+            return _Disc;
+        }
+
+        public static Disc SetColorOuter(this Disc _Disc, Color _Color)
+        {
+            _Disc.ColorOuter = _Color;
+            return _Disc;
+        }
+
         public static Disc SetArcEndCaps(this Disc _Disc, ArcEndCap _ArcEndCap)
         {
             _Disc.ArcEndCaps = _ArcEndCap;

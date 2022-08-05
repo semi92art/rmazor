@@ -46,17 +46,22 @@ namespace RMAZOR
         [SerializeField] private int            loadedLevelHeapIndex = -1;
         [SerializeField] private bool           fastMode;
         [SerializeField] private int            page = 1;
+        [SerializeField] private List<MazeInfo> levelsCached;
 
         #endregion
 
         #region api
 
-        public        UnityAction<int> OnSelect;
-        public static List<MazeInfo>   LevelsCached;
-        
-        public List<MazeInfo> Levels        => LevelsCached.ToList();
-        public int            SelectedIndex => (page - 1) * LevelsOnPage + List.index;
-        public int            Count         => LevelsCached.Count;
+        public UnityAction<int> OnSelect;
+
+        public List<MazeInfo> Levels
+        {
+            get => levelsCached;
+            set => levelsCached = value;
+        }
+
+        public int SelectedIndex => (page - 1) * LevelsOnPage + List.index;
+        public int Count         => levelsCached.Count;
 
         public HeapReorderableList(
             int              _GameId,
@@ -65,17 +70,17 @@ namespace RMAZOR
         {
             gameId = _GameId;
             heapIndex = _HeapIndex;
-            LevelsCached = GetLevelsSaver().LoadHeapLevels(_GameId, _HeapIndex).Levels;
+            levelsCached = GetLevelsSaver().LoadHeapLevels(_GameId, _HeapIndex).Levels;
             OnSelect = _OnSelect;
             InitFilters();
             ReloadList();
         }
-
+        
         public void ReloadList()
         {
             if (filters.NullOrEmpty())
                 InitFilters();
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             var levelsOnPage = Enumerable.Range(
                     (page - 1) * LevelsOnPage,
                     Math.Min(LevelsOnPage, lvls.Count - (page - 1) * LevelsOnPage))
@@ -97,16 +102,14 @@ namespace RMAZOR
                     selectedIndexCheck = _List.index;
                     OnSelect?.Invoke(_List.index);
                 },
-                onChangedCallback = _List => SaveHeap(_List.list.Cast<MazeInfo>().ToList()),
+                onChangedCallback = _List => OnReorderableListChanged(_List.list.Cast<MazeInfo>().ToList()),
                 drawElementCallback = OnDrawElementCallback
             };
         }
         
-        public bool NeedToReload(bool _Log = false)
+        public bool NeedToReload()
         {
             bool needToReload = List == null || filters == null;
-            if (_Log)
-                Dbg.Log($"{List == null}; {filters == null}");
             if (needToReload) 
                 return true;
             try
@@ -127,30 +130,35 @@ namespace RMAZOR
 
         public void Insert(int _Index, MazeInfo _Info)
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             lvls?.Insert(_Index, _Info);
             ReloadList();
         }
 
         public void Add(MazeInfo _Info)
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             lvls?.Add(_Info);
             ReloadList();
         }
 
-        public void Reload(int _GameId, int _HeapIndex)
+        public void Reload(int _GameId, int _HeapIndex, bool _Forced = false)
         {
+            if (levelsCached != null && levelsCached.Any() && gameId > 0 && heapIndex > 0 && !_Forced)
+            {
+                ReloadList();
+                return;
+            }
             gameId = _GameId;
             heapIndex = _HeapIndex;
-            LevelsCached = GetLevelsSaver().LoadHeapLevels(gameId, heapIndex).Levels;
+            levelsCached = GetLevelsSaver().LoadHeapLevels(gameId, heapIndex).Levels;
             page = 1;
             ReloadList();
         }
 
         public void Delete(int _Index)
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             if (lvls == null)
             {
                 Dbg.LogError("Failed to delete level");
@@ -165,13 +173,13 @@ namespace RMAZOR
 
         public void Save()
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, lvls);
         }
 
         public void Save(MazeInfo _Info, int _Index)
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             _Info.AdditionalInfo.Arguments = lvls[_Index]?.AdditionalInfo.Arguments;
             _Info.AdditionalInfo.Comment = lvls[_Index]?.AdditionalInfo.Comment;
             lvls[_Index] = _Info;
@@ -187,7 +195,7 @@ namespace RMAZOR
 
         public void NextPage()
         {
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             page = Math.Min(page + 1, lvls.Count / LevelsOnPage + 1);
             ReloadList();
         }
@@ -196,9 +204,14 @@ namespace RMAZOR
 
         #region nonpublic methods
 
-        private void SaveHeap(List<MazeInfo> _Levels)
+        private void OnReorderableListChanged(IReadOnlyList<MazeInfo> _Levels)
         {
-            GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, _Levels);
+            for (int i = 0; i < _Levels.Count; i++)
+            {
+                int i1 = LevelsOnPage * (page - 1) + i;
+                levelsCached[i1] = _Levels[i];
+            }
+            GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, levelsCached);
         }
 
         private void InitFilters()
@@ -217,7 +230,7 @@ namespace RMAZOR
             float x, y, w;
             Rect UpdateRect() { return new Rect(x, y, w, LineHeight); }
             (x, y, w) = (_Rect.x, _Rect.y, _Rect.width * 0.5f);
-            var lvls = LevelsCached;
+            var lvls = levelsCached;
             EditorGUI.LabelField(UpdateRect(), $"Levels in heap: {lvls.Count}");
             x = _Rect.width * 0.5f;
             fastMode = EditorGUI.Toggle(UpdateRect(), "Fast mode", fastMode);

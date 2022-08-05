@@ -34,7 +34,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         
         #region api
 
-        public override void SetTransitionValue(float _Value)
+        public override void SetTransitionValue(float _Value, bool _Appear)
         {
             Material.SetFloat(TransitionValueId, _Value);
         }

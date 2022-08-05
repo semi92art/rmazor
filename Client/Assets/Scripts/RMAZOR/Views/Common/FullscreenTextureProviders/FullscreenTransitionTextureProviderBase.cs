@@ -13,10 +13,12 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
     public interface IFullscreenTransitionTextureProvider : IInit
     {
         void Activate(bool            _Active);
-        void SetTransitionValue(float _Value);
+        void SetTransitionValue(float _Value, bool _Appear);
     }
     
-    public abstract class FullscreenTransitionTextureProviderBase : InitBase, IFullscreenTransitionTextureProvider
+    public abstract class FullscreenTransitionTextureProviderBase 
+        : InitBase, 
+          IFullscreenTransitionTextureProvider
     {
         #region nonpublic members
         
@@ -58,9 +60,9 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             InitTexture();
             base.Init();
         }
-        
+
         public abstract void Activate(bool            _Active);
-        public abstract void SetTransitionValue(float _Value);
+        public abstract void SetTransitionValue(float _Value, bool _Appear);
 
         #endregion
 

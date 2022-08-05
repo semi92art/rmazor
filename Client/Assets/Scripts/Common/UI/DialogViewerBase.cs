@@ -5,6 +5,7 @@ using System.Linq;
 using Common.CameraProviders;
 using Common.CameraProviders.Camera_Effects_Props;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
@@ -14,29 +15,39 @@ using UnityEngine.UI;
 
 namespace Common.UI
 {
-    public abstract class DialogViewerBase : IDialogViewerBase
+    public abstract class DialogViewerBase : InitBase, IDialogViewer
     {
-        protected IDialogPanel FakePanel = new DialogPanelFake();
-        
-        protected ICameraProvider   CameraProvider   { get; }
-        private   IUITicker         Ticker           { get; }
-        protected IPrefabSetManager PrefabSetManager { get; }
+        protected readonly IDialogPanel FakePanel = new DialogPanelFake();
+
+        protected IViewUICanvasGetter CanvasGetter     { get; }
+        protected ICameraProvider     CameraProvider   { get; }
+        private   IUITicker           Ticker           { get; }
+        protected IPrefabSetManager   PrefabSetManager { get; }
         
         protected DialogViewerBase(
-            ICameraProvider _CameraProvider,
-            IUITicker _Ticker,
-            IPrefabSetManager _PrefabSetManager)
+            IViewUICanvasGetter _CanvasGetter,
+            ICameraProvider     _CameraProvider,
+            IUITicker           _Ticker,
+            IPrefabSetManager   _PrefabSetManager)
         {
-            CameraProvider = _CameraProvider;
-            Ticker = _Ticker;
+            CanvasGetter     = _CanvasGetter;
+            CameraProvider   = _CameraProvider;
+            Ticker           = _Ticker;
             PrefabSetManager = _PrefabSetManager;
         }
+
+        public          IDialogPanel              CurrentPanel              { get; protected set; }
+        public abstract RectTransform             Container                 { get; }
+        public          Func<bool>                OtherDialogViewersShowing { get; set; }
         
-        public          IDialogPanel  CurrentPanel                { get; protected set; }
-        public abstract RectTransform Container                   { get; }
-        public          Func<bool>    IsOtherDialogViewersShowing { get; set; }
-        
-        public abstract void Init(RectTransform _Parent);
+        public abstract void Back(UnityAction   _OnFinish                      = null);
+        public abstract void Show(IDialogPanel  _PanelTo, float _AnimationSpeed = 1, bool _HidePrevious = true);
+
+        public override void Init()
+        {
+            Ticker.Register(this);
+            base.Init();
+        }
         
         protected IEnumerator DoTransparentTransition(
             RectTransform _Item,

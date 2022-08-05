@@ -44,15 +44,15 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #region inject
 
         protected ShopPanelBase(
-            IManagersGetter  _Managers,
-            IUITicker        _Ticker,
-            IBigDialogViewer _DialogViewer,
-            ICameraProvider  _CameraProvider,
-            IColorProvider   _ColorProvider) 
+            IManagersGetter          _Managers,
+            IUITicker                _Ticker,
+            IDialogViewersController _DialogViewersController,
+            ICameraProvider          _CameraProvider,
+            IColorProvider           _ColorProvider) 
             : base(
                 _Managers,
                 _Ticker,
-                _DialogViewer,
+                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider) { }
 
@@ -63,9 +63,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
         public override void LoadPanel()
         {
             base.LoadPanel();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
             var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    DialogViewer.Container,
+                    dv.Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels,
                 PanelPrefabName);

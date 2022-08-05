@@ -54,3 +54,6 @@ tut_descr_hammer = Nuevo bloque: ¡Hammer!
 tut_descr_spear = Nueva trampa: lanza!
 tut_descr_diode = Nuevo bloque: ¡Una forma!
 we_need_comment = Mejoraremos el juego y necesitamos sus comentarios para esto
+reward = premio
+multiply = multiplicar
+skip = saltar

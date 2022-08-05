@@ -13,7 +13,7 @@ namespace Common.Utils
 {
     public static class CommonUtils
     {
-        private static object @lock = new object();
+        private static readonly object Lock = new object();
         
         public static RuntimePlatform Platform 
         { 
@@ -94,7 +94,7 @@ namespace Common.Utils
         {
 #if UNITY_EDITOR
             EditorUtility.DisplayDialog(_Title, _Text, "OK");
-// #elif UNITY_ANDROID
+// #elif UNITY_ANDROID // TODO нахуя я это закоментил? я не помню
             var message = new SA.Android.App.AN_AlertDialog(SA.Android.App.AN_DialogTheme.Material)
             {
                 Title = _Title,
@@ -132,7 +132,7 @@ namespace Common.Utils
             Application.RequestAdvertisingIdentifierAsync(
                 (_AdvertisingId, _Success, _Error) =>
                 {
-                    lock (@lock)
+                    lock (Lock)
                     {
                         if (result.Result != EEntityResult.Pending)
                             return;
@@ -156,7 +156,7 @@ namespace Common.Utils
                         }
                     });
 #elif UNITY_IOS
-                    lock (@lock)
+                    lock (Lock)
                     {
                         result.Result = EEntityResult.Fail;
                     }

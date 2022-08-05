@@ -212,7 +212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4faf46d9ae41f1c46892997a804c20af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SetBloomIterations: 1
+  SetBloomIterations: 0
   BloomIterations: 5
   BloomDiffusion: 1
   BloomColor: {r: 1, g: 1, b: 1, a: 1}

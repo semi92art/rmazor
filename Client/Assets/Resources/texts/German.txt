@@ -54,3 +54,6 @@ tut_descr_hammer = Neuer Block: Hammer!
 tut_descr_spear = Neue Falle: Speer!
 tut_descr_diode = Neuer Block: Ein Weg!
 we_need_comment = Wir werden das Spiel verbessern und brauchen Ihr Feedback dafür
+reward = belohnen
+multiply = multiplizieren
+skip = überspringen

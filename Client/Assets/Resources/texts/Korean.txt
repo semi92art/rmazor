@@ -54,3 +54,6 @@ tut_descr_hammer = 새로운 블록 : 망치!
 tut_descr_spear = 새로운 함정 : 스피어!
 tut_descr_diode = 새로운 블록 : 한 가지 방법!
 we_need_comment = 우리는 게임을 개선 할 것이며 이것에 대한 귀하의 피드백이 필요합니다.
+reward = 보상
+multiply = 곱하다
+skip = 건너 뛰기

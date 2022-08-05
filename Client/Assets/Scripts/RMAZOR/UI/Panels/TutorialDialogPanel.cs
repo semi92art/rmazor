@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Common;
+﻿using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
@@ -11,7 +10,6 @@ using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
-using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -60,13 +58,18 @@ namespace RMAZOR.UI.Panels
         public TutorialDialogPanel(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
-            IBigDialogViewer            _DialogViewer,
+            IDialogViewersController    _DialogViewersController,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
             IProposalDialogViewer       _ProposalDialogViewer,
             IContainersGetter           _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder) 
-            : base(_Managers, _Ticker, _DialogViewer, _CameraProvider, _ColorProvider)
+            : base(
+                _Managers, 
+                _Ticker,
+                _DialogViewersController,
+                _CameraProvider,
+                _ColorProvider)
         {
             ProposalDialogViewer = _ProposalDialogViewer;
             ContainersGetter     = _ContainersGetter;
@@ -79,6 +82,7 @@ namespace RMAZOR.UI.Panels
         
         public override EUiCategory Category      => EUiCategory.Tutorial;
         public override bool        AllowMultiple => false;
+        public override Animator    Animator      => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.isPrepared;
 
@@ -116,31 +120,30 @@ namespace RMAZOR.UI.Panels
             panel.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             m_Description = go.GetCompItem<TextMeshProUGUI>("description");
             m_ButtonClose = go.GetCompItem<Button>("button_close");
-            m_Animator        = go.GetCompItem<Animator>("animator");
+            m_Animator    = go.GetCompItem<Animator>("animator");
             var locInfo = new LocalizableTextObjectInfo(m_Description, ETextType.MenuUI, m_Info.TextLocalizationKey);
             Managers.LocalizationManager.AddTextObject(locInfo);
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
             m_VideoPlayer.Play();
         }
 
-        public override void OnDialogShow()
+        public override void OnDialogStartAppearing()
         {
-            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(ITutorialDialogPanel));
-            m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
-            m_Animator.SetTrigger(AnimKeys.Anim);
+            CommandsProceeder.LockCommands(
+                RmazorUtils.MoveAndRotateCommands, 
+                nameof(ITutorialDialogPanel));
+            base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogHide()
+        public override void OnDialogDisappeared()
         {
-            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(ITutorialDialogPanel));
+            CommandsProceeder.UnlockCommands(
+                RmazorUtils.MoveAndRotateCommands, 
+                nameof(ITutorialDialogPanel));
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
-        }
-        
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return RmazorUtils.MoveAndRotateCommands;
+            base.OnDialogDisappeared();
         }
 
         #endregion

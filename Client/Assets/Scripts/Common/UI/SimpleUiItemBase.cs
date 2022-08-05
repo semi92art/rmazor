@@ -2,6 +2,7 @@
 using System.Linq;
 using Common.Constants;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
@@ -12,7 +13,7 @@ using UnityEngine.UI;
 
 namespace Common.UI
 {
-    public abstract class SimpleUiItemBase : MonoBehaviour
+    public abstract class SimpleUiItemBase : MonoBehInitBase, IUpdateTick
     {
         #region serialized fields
 
@@ -26,7 +27,7 @@ namespace Common.UI
         #region nonpublic members
 
         private   IAudioManager        AudioManager        { get; set; }
-        private   IUITicker            Ticker              { get; set; }
+        protected IUITicker            Ticker              { get; set; }
         protected IColorProvider       ColorProvider       { get; private set; }
         protected IPrefabSetManager    PrefabSetManager    { get; private set; }
         protected ILocalizationManager LocalizationManager { get; private set; }
@@ -44,29 +45,44 @@ namespace Common.UI
         
         public bool Highlighted { get; set; }
         
-        #endregion
-        
-        #region nonpublic methods
-
         public virtual void Init(
             IUITicker            _UITicker,
             IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
             IPrefabSetManager    _PrefabSetManager,
-            bool                _AutoFont = true)
+            bool                 _AutoFont = true)
         {
             Ticker              = _UITicker;
             ColorProvider       = _ColorProvider;
             AudioManager        = _AudioManager;
             LocalizationManager = _LocalizationManager;
             PrefabSetManager    = _PrefabSetManager;
+            
+            Ticker.Register(this);
             ColorProvider.ColorChanged += OnColorChanged;
             CheckIfSerializedItemsNotNull();
             SetColorsOnInit();
             foreach (var text in texts.Where(_Text => _Text.IsNotNull()))
                 LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(text, ETextType.MenuUI));
+            base.Init();
         }
+        
+        public virtual void UpdateTick()
+        {
+            if (Ticker.Pause)
+                return;
+            if (!Highlighted)
+                return;
+            const float amplitude = 1f;
+            const float period = 1f;
+            float lerpVal = MathUtils.TriangleWave(Ticker.Time, period, amplitude) + amplitude;
+            border.color = Color.Lerp(m_BorderDefaultColor, m_BorderHighlightedColor, lerpVal);
+        }
+        
+        #endregion
+        
+        #region nonpublic methods
 
         protected virtual void CheckIfSerializedItemsNotNull()
         {
@@ -131,24 +147,15 @@ namespace Common.UI
 
         #region engine methods
 
-        private void Update()
-        {
-            if (Ticker.Pause)
-                return;
-            if (!Highlighted)
-                return;
-            const float amplitude = 1f;
-            const float period = 1f;
-            float lerpVal = MathUtils.TriangleWave(Ticker.Time, period, amplitude) + amplitude;
-            border.color = Color.Lerp(m_BorderDefaultColor, m_BorderHighlightedColor, lerpVal);
-        }
-
         protected virtual void OnDestroy()
         {
+            Ticker?.Unregister(this);
             if (ColorProvider != null)
                 ColorProvider.ColorChanged -= OnColorChanged;
         }
 
         #endregion
+
+
     }
 }

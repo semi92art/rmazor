@@ -57,7 +57,7 @@ namespace Common.Managers.IAP
                 
                 yield break;
             }
-            Application.OpenURL("market://details?id=" + Application.productName);
+            Application.OpenURL("market://details?id=" + Application.identifier);
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
         }
     }

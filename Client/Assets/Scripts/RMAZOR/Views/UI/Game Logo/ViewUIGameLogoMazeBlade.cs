@@ -230,7 +230,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
             LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
-            LogoTextureProvider.SetTransitionValue(1f);
+            LogoTextureProvider.SetTransitionValue(1f, true);
             yield return Cor.Delay(0.5f, GameTicker);
             SetColors(ColorProvider.GetColor(ColorIds.UI));
             ShowGameLogo(ShowTime);
@@ -254,7 +254,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             yield return Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
-                _OnProgress: _P => LogoTextureProvider.SetTransitionValue(1f - _P), 
+                _OnProgress: _P => LogoTextureProvider.SetTransitionValue(1f - _P, false), 
                 _OnFinish: () =>
                 {
                     LockGameplayAndUiCommands(false);

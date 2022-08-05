@@ -288,6 +288,14 @@ namespace RMAZOR
             return index;
         }
 
+        public static bool IsLastLevelInGroup(long _LevelIndex)
+        {
+            int groupIdx = GetGroupIndex(_LevelIndex);
+            int levelsInGroup = GetLevelsInGroup(groupIdx);
+            int indexInGroup = GetIndexInGroup(_LevelIndex);
+            return levelsInGroup == indexInGroup + 1;
+        }
+
         #endregion
     }
 }

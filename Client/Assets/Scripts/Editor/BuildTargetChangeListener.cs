@@ -46,19 +46,6 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         }
     }
 
-    [InitializeOnLoadMethod]
-    public static void OnAppodealPluginImported()
-    {
-        var bt = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android
-            ? NamedBuildTarget.Android : NamedBuildTarget.iOS;
-        string defineSymbols = PlayerSettings.GetScriptingDefineSymbols(bt);
-        if (defineSymbols.Contains("APPODEAL_3"))
-        {
-            RemovePluginFiles(Appodeal);
-            AddPluginFiles(Appodeal);
-        }
-    }
-
     #endregion
 
     #region nonpublic methods
@@ -72,18 +59,12 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     {
         var target = NamedBuildTarget.Android;
         SetNiceVibrationsPluginVersion(Ver39, target);
-        AddAppodeal(target);
-        // RemoveGoogleAds(target);
-        RemoveUnityAds(target);
     }
 
     private static void ConfigureIosPlatform()
     {
         var target = NamedBuildTarget.iOS;
         SetNiceVibrationsPluginVersion(Ver41, target);
-        RemoveAppodeal(target);
-        // AddGoogleAds(target);
-        AddUnityAds(target);
     }
     
     private static List<string> GetScriptingDefineSymbols(NamedBuildTarget _Target)
@@ -233,10 +214,22 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         if (scriptDefSymbols.Contains("APPODEAL_3"))
             scriptDefSymbols.Remove("APPODEAL_3");
         PlayerSettings.SetScriptingDefineSymbols(_Target, scriptDefSymbols.ToArray());
-        RemovePluginFiles(Appodeal);
+        RemoveAppodealSettingsFolder();
         _removeAppodealRequest = Client.Remove("com.appodeal.appodeal-unity-plugin-upm");
         EditorApplication.update += RemoveAppodealProgress;
     }
+
+    public static void CopyAppodealSettingsFromBackup()
+    {
+        AddPluginFiles(Appodeal);
+    }
+
+    public static void RemoveAppodealSettingsFolder()
+    {
+        RemovePluginFiles(Appodeal);
+    }
+    
+    
 
     private static void AddAppodealProgress()
     {
@@ -309,31 +302,4 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     }
 
     #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    
-    
-
-    
-
-    
-
-
-    
-
-
-
 }

@@ -10,10 +10,11 @@ namespace RMAZOR.UI.Panels
         public bool            AllowMultiple  => false;
         public EAppearingState AppearingState { get; set; }
         public RectTransform   PanelObject    => null;
-        
+        public Animator        Animator       => null;
+
         public void LoadPanel()      { }
-        public void OnDialogShow()   { }
-        public void OnDialogHide()   { }
-        public void OnDialogEnable() { }
+        public void OnDialogAppeared()   { }
+        public void OnDialogDissapearing()   { }
+        public void OnDialogStartAppearing() { }
     }
 }

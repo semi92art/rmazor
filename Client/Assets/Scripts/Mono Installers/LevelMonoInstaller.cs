@@ -5,6 +5,7 @@ using Common.Providers;
 using Common.UI;
 using RMAZOR;
 using RMAZOR.Controllers;
+using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.InputSchedulers;
@@ -106,7 +107,7 @@ namespace Mono_Installers
             Container.Bind<IViewInputTouchProceeder>().To<ViewInputTouchProceeder>().AsSingle();
 
             Container.Bind<IViewMazeAdditionalBackground>()      .To<ViewMazeAdditionalBackground>()      .AsSingle();
-            Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItems>()       .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItemsFake>()       .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
@@ -136,10 +137,10 @@ namespace Mono_Installers
             switch (CommonData.GameId)
             {
                 case GameIds.RMAZOR:
-                    Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
+                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
                     break;
                 case GameIds.ZMAZOR:
-                    Container.Bind<IViewMazeItemPath>()    .To<ViewMazeItemPathWithAdditionalBorders>().AsSingle();
+                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathWithAdditionalBorders>().AsSingle();
                     break;
             }
             Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
@@ -189,25 +190,27 @@ namespace Mono_Installers
 
         private void BindUiCommon()
         {
+            Container.Bind<IViewUICanvasGetter>()        .To<ViewUICanvasGetter>()            .AsSingle();
             if (!CommonData.Release)
             {
-                Container.Bind<IViewUI>()                .To<ViewUIProt>()             .AsSingle();
-                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControlsProt>() .AsSingle();
-                Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoFake>()     .AsSingle();
-                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>().AsSingle();
+                Container.Bind<IViewUI>()                .To<ViewUIProt>()                    .AsSingle();
+                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControlsProt>()        .AsSingle();
+                Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoFake>()            .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()        .AsSingle();
             }
             else
             {
-                Container.Bind<IViewUI>()                .To<ViewUI>()                 .AsSingle();
-                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControls>()     .AsSingle();
-                Container.Bind<IViewUIPrompt>()          .To<ViewUIPrompt>()           .AsSingle();
-                Container.Bind<IViewUICongratsMessage>() .To<ViewUICongratsMessage>()  .AsSingle();
-                Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoMazeBlade>().AsSingle();
-                Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()      .AsSingle();
+                
+                Container.Bind<IViewUI>()                .To<ViewUI>()                        .AsSingle();
+                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControls>()            .AsSingle();
+                Container.Bind<IViewUIPrompt>()          .To<ViewUIPrompt>()                  .AsSingle();
+                Container.Bind<IViewUICongratsMessage>() .To<ViewUICongratsMessage>()         .AsSingle();
+                Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoMazeBlade>()       .AsSingle();
+                Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()             .AsSingle();
                 Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
-                Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()       .AsSingle();
-                Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()         .AsSingle();
-                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>().AsSingle();
+                Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
+                Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
             }
         }
 
@@ -215,56 +218,63 @@ namespace Mono_Installers
         {
             if (!CommonData.Release)
             {
-                Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewerFake>().AsSingle();
-                Container.Bind<IBigDialogViewer>()           .To<BigDialogViewerFake>()     .AsSingle();
-                Container.Bind<IDialogPanelsSet>()           .To<DialogPanelsSetFake>()     .AsSingle();
-                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanelFake>() .AsSingle();
+                Container.Bind<IDialogViewersController>()    .To<DialogViewersControllerFake>()    .AsSingle();
+                Container.Bind<IProposalDialogViewer>()       .To<ProposalDialogViewerFake>()       .AsSingle();
+                Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewerFake>()     .AsSingle();
+                Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSetFake>()            .AsSingle();
+                Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
+                Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanelFake>().AsSingle();
             }
             else
             {
-                Container.Bind<IBigDialogViewer>()           .To<BigDialogViewer>()         .AsSingle();
-                Container.Bind<IProposalDialogViewer>()      .To<ProposalDialogViewer>()    .AsSingle();
-                Container.Bind<IDialogPanelsSet>()           .To<DialogPanelsSet>()         .AsSingle();
+                Container.Bind<IDialogViewersController>()    .To<DialogViewersController>()        .AsSingle();
+                Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewer>()         .AsSingle();
+                Container.Bind<IProposalDialogViewer>()       .To<ProposalDialogViewer>()           .AsSingle();
+                Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSet>()                .AsSingle();
                 
-                Container.Bind<IRateGameDialogPanel>()       .To<RateGameDialogPanel>()     .AsSingle();
-                Container.Bind<ITutorialDialogPanel>()       .To<TutorialDialogPanel>()     .AsSingle();
-                Container.Bind<ISettingSelectorDialogPanel>().To<SettingsSelectorPanel>()   .AsSingle();
-                Container.Bind<IShopDialogPanel>()           .To<ShopPanel>()               .AsSingle();
-                Container.Bind<IShopMoneyDialogPanel>()      .To<ShopMoneyPanel>()          .AsSingle();
-                Container.Bind<IShopHeadsDialogPanel>()      .To<ShopHeadsPanel>()          .AsSingle();
-                Container.Bind<IShopTailsDialogPanel>()      .To<ShopTailsPanel>()          .AsSingle();
-                Container.Bind<ISettingDialogPanel>()        .To<SettingsDialogPanel>()     .AsSingle();
-                Container.Bind<ICharacterDiedDialogPanel>()  .To<CharacterDiedDialogPanel>().AsSingle();
+                Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanel>()            .AsSingle();
+                Container.Bind<ITutorialDialogPanel>()        .To<TutorialDialogPanel>()            .AsSingle();
+                Container.Bind<ISettingSelectorDialogPanel>() .To<SettingsSelectorPanel>()          .AsSingle();
+                Container.Bind<IShopDialogPanel>()            .To<ShopPanel>()                      .AsSingle();
+                Container.Bind<ISettingDialogPanel>()         .To<SettingsDialogPanel>()            .AsSingle();
+                Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
+                Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanel>()    .AsSingle();
             }
         }
 
         private void BindTextureProviders()
         {
-            Container.Bind<IViewMazeGameLogoTextureProvider>()    .To<ViewMazeGameLogoTextureProviderCirclesToSquares>().AsSingle();
-            Container.Bind<IViewMazeBackgroundTextureController>().To<ViewMazeBackgroundTextureController>()        .AsSingle();
-            
-            Container.Bind<IFullscreenTextureProviderTriangles2>().To<FullscreenTriangles2TextureProvider>()        .AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProviderTriaHex>().To<FullscreenTransitionTextureProvideTriaHex>().AsSingle();
-            Container.Bind<IFullscreenTransitionTextureProviderCircles>().To<FullscreenTransitionTextureProviderCircles>() .AsSingle();
-            
-            Container.Bind<IFullscreenTextureProviderMetaBalls1>().To<FullscreenTextureProviderMetaBalls1>() .AsSingle();
-            Container.Bind<IFullscreenTextureProviderMetaBalls2>().To<FullscreenTextureProviderMetaBalls2>() .AsSingle();
-            Container.Bind<IFullscreenTextureProviderMetaBalls3>().To<FullscreenTextureProviderMetaBalls3>() .AsSingle();
-            Container.Bind<IFullscreenTextureProviderMetaBalls4>().To<FullscreenTextureProviderMetaBalls4>() .AsSingle();
-            Container.Bind<IFullscreenTextureProviderMetaBalls5>().To<FullscreenTextureProviderMetaBalls5>() .AsSingle();
-            
-            Container.Bind<IFullscreenTransitionTextureProvider>().To<FullscreenTransitionTextureProviderCirclesToSquares>().AsSingle();
+            Container.Bind<IViewMazeGameLogoTextureProvider>()   
+                .To<ViewMazeGameLogoTextureProviderCirclesToSquares>()
+                .AsSingle();
+            Container.Bind<IViewMazeBackgroundTextureController>()
+                .To<ViewMazeBackgroundTextureController>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderTriangles2>()
+                .To<FullscreenTextureProviderTriangles2>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderSolidColor>()
+                .To<FullscreenTextureProviderSolidColor>()
+                .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProviderCircles>()
+                .To<FullscreenTransitionTextureProviderCircles>()
+                .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProvider>()
+                .To<FullscreenTransitionTextureProviderPlayground>()
+                .AsSingle();
         }
 
         private void BindOther()
         {
-            Container.Bind<IGameController>().To<GameControllerMVC>().AsSingle();
-            Container.Bind<IDebugManager>()  .To<DebugManager>()  .AsSingle();
-            Container.Bind<IManagersGetter>().To<ManagersGetter>().AsSingle();
+            Container.Bind<IGameController>()          .To<GameControllerMVC>()       .AsSingle();
+            Container.Bind<IDebugManager>()            .To<DebugManager>()            .AsSingle();
+            Container.Bind<IManagersGetter>()          .To<ManagersGetter>()          .AsSingle();
+            Container.Bind<IViewBetweenLevelAdLoader>().To<ViewBetweenLevelAdLoader>().AsSingle();
+            Container.Bind<IMoneyCounter>()            .To<MoneyCounter>()            .AsSingle();
+            
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()
                 .AsSingle();
-            Container.Bind<IViewBetweenLevelAdLoader>().To<ViewBetweenLevelAdLoader>().AsSingle();
         }
     }
 }

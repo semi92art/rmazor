@@ -54,3 +54,6 @@ tut_descr_hammer = 新しいブロック：ハンマー！
 tut_descr_spear = 新しいトラップ：槍！
 tut_descr_diode = 新しいブロック：片道！
 we_need_comment = 私たちはゲームを改善し、これにあなたのフィードバックが必要です
+reward = 褒美
+multiply = かける
+skip = スキップ

@@ -45,25 +45,22 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public RateGameDialogPanel(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
-            IBigDialogViewer            _DialogViewer,
+            IDialogViewersController    _DialogViewersController,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
-            IProposalDialogViewer       _ProposalDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _Managers, 
                 _Ticker, 
-                _DialogViewer, 
+                _DialogViewersController, 
                 _CameraProvider,
                 _ColorProvider)
         {
-            ProposalDialogViewer = _ProposalDialogViewer;
             CommandsProceeder    = _CommandsProceeder;
         }
 
@@ -73,6 +70,7 @@ namespace RMAZOR.UI.Panels
 
         public override EUiCategory Category      => EUiCategory.RateGame;
         public override bool        AllowMultiple => false;
+        public override Animator    Animator      => m_Animator;
 
         public bool CanBeClosed
         {
@@ -83,9 +81,10 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    ProposalDialogViewer.Container,
+                    dv.Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "rate_game_panel");
             PanelObject = go.RTransform();
@@ -110,22 +109,22 @@ namespace RMAZOR.UI.Panels
             if (closeButtonAnimator.IsNotNull())
                 closeButtonAnimator.enabled = false;
         }
-        
-        public override void OnDialogShow()
+
+        public override void OnDialogStartAppearing()
         {
             Cor.Run(Cor.WaitNextFrame(() =>
             {
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             }));
-            m_Animator.speed = ProposalDialogViewer.AnimationSpeed;
-            m_Animator.SetTrigger(AnimKeys.Anim);
             m_ButtonClose.SetGoActive(false);
             Cor.Run(OnPanelStartAnimationFinished());
+            base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogHide()
+        public override void OnDialogDisappeared()
         {
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
+            base.OnDialogDisappeared();
         }
 
         public void SetDialogTitle(string _Text)
@@ -151,13 +150,15 @@ namespace RMAZOR.UI.Panels
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton2Pressed);
             Managers.ShopManager.RateGame(false);
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
-            ProposalDialogViewer.Back();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            dv.Back();
             
         }
 
         private void OnCloseButtonClick()
         {
-            ProposalDialogViewer.Back();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            dv.Back();
         }
 
         private static IEnumerable<EInputCommand> GetCommandsToLock()

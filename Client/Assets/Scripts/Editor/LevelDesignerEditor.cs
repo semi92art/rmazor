@@ -20,6 +20,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using LD = RMAZOR.LevelDesigner;
 
+// ReSharper disable once CheckNamespace
 namespace RMAZOR.Editor
 {
     public partial class LevelDesignerEditor : EditorWindow
@@ -47,10 +48,8 @@ namespace RMAZOR.Editor
             set => Des.levelsList = value;
         }
         
-
-        private static int _levelDesignerHeapIndexCheck;
         
-
+        private static int _levelDesignerHeapIndexCheck;
         private static int _levelDesignerGameIdCheck;
 
         private Vector2  m_HeapScroll;
@@ -64,7 +63,7 @@ namespace RMAZOR.Editor
         [MenuItem("Tools/Level Designer", false, 101)]
         public static void ShowWindow()
         {
-            var window = GetWindow<LevelDesignerEditor>("Level Designer");
+            var window = GetWindow<LevelDesignerEditor>(nameof(LevelDesignerEditor).WithSpaces());
             window.minSize = new Vector2(300, 200);
         }
 
@@ -75,6 +74,8 @@ namespace RMAZOR.Editor
             int startHeapIndex = SaveUtilsInEditor.GetValue(saveKey);
             if (startHeapIndex == default)
                 SaveUtilsInEditor.PutValue(saveKey, 1);
+            if (LD.LevelDesignerHeapIndex > 0 && _levelDesignerHeapIndexCheck == 0)
+                _levelDesignerHeapIndexCheck = LD.LevelDesignerHeapIndex;
         }
 
         private void OnEnable()
@@ -109,6 +110,7 @@ namespace RMAZOR.Editor
         {
             if (SceneManager.GetActiveScene().name == SceneNames.Prototyping)
             {
+                SetReorderableLevelsListOnSelectAction();
                 ReloadReorderableLevels();
                 m_TabPage = GUILayout.Toolbar (m_TabPage, new [] {"Levels", "Fix Utils"});
                 switch (m_TabPage)
@@ -165,32 +167,35 @@ namespace RMAZOR.Editor
                 LevelDesigner.Instance.loadedLevelIndex,
                 LevelDesigner.Instance.loadedLevelHeapIndex);
         }
-        
-        private void ReloadReorderableLevels(bool _Forced = false)
+
+        private static void SetReorderableLevelsListOnSelectAction()
         {
-            LevelsList.OnSelect = _SelectedIndex =>
+            if (LevelsList == null || LevelsList.OnSelect != null)
+                return;
+            LevelsList!.OnSelect = _SelectedIndex =>
             {
                 SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
-            };                    
+            };
+        }
+        
+        private static void ReloadReorderableLevels(bool _Forced = false)
+        {
             if (!_Forced && LevelsList != null && !LevelsList.NeedToReload())
                 return;
-            static void ReInitLevelsList()
+            if (LevelsList == null)
             {
                 LevelsList = new HeapReorderableList(
                     LD.LevelDesignerGameId,
                     LD.LevelDesignerHeapIndex, _SelectedIndex =>
-                {
-                    SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
-                });
+                    {
+                        SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerSelectedLevel, _SelectedIndex);
+                    });
             }
-            if (LevelsList == null)
-            {
-                ReInitLevelsList();
-            }
-            else if (LevelsList.NeedToReload() || _Forced)
+            else if ((LevelsList.NeedToReload() || _Forced) 
+                     && SceneManager.GetActiveScene().name == SceneNames.Prototyping)
             {
                 LevelsList.gameId = LD.LevelDesignerGameId;
-                LevelsList.Reload(LevelsList.gameId, LD.LevelDesignerHeapIndex);
+                LevelsList.Reload(LevelsList.gameId, LD.LevelDesignerHeapIndex, _Forced);
             }
             else
             {
@@ -206,7 +211,7 @@ namespace RMAZOR.Editor
         }
         
         
-        private void SaveLevel(int _HeapIndex, int _LevelIndex)
+        private static void SaveLevel(int _HeapIndex, int _LevelIndex)
         {
             if (_LevelIndex == -1)
                 return;
@@ -242,7 +247,7 @@ namespace RMAZOR.Editor
             });
         }
         
-        private void AddEmptyLevel()
+        private static void AddEmptyLevel()
         {
             var idx = LevelsList.SelectedIndex;
             var size = Des.GetEnteredMazeSize();
@@ -378,11 +383,11 @@ namespace RMAZOR.Editor
                 if (isThisHeapStart1 != isThisHeapStart)
                     SaveUtilsInEditor.PutValue(SaveKeysInEditor.StartHeapIndex, isThisHeapStart1 ? LD.LevelDesignerHeapIndex : 1);
             });
-            if (LevelDesigner.LevelDesignerHeapIndex != _levelDesignerHeapIndexCheck || LD.LevelDesignerGameId != _levelDesignerGameIdCheck)
+            if (LD.LevelDesignerHeapIndex != _levelDesignerHeapIndexCheck || LD.LevelDesignerGameId != _levelDesignerGameIdCheck)
                 ReloadReorderableLevels(true);
             _levelDesignerHeapIndexCheck = LD.LevelDesignerHeapIndex;
-            _levelDesignerGameIdCheck = LevelDesigner.LevelDesignerGameId;
-            if (LevelDesigner.Instance.loadedLevelIndex >= 0 && LevelDesigner.Instance.loadedLevelHeapIndex >= 0)
+            _levelDesignerGameIdCheck = LD.LevelDesignerGameId;
+            if (LD.Instance.loadedLevelIndex >= 0 && LD.Instance.loadedLevelHeapIndex >= 0)
             {
                 EditorUtilsEx.HorizontalZone(() =>
                 {

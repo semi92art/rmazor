@@ -26,11 +26,11 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: b23a06e09bc686841bd63aee189a2564, type: 2}
       name: trap_react_spikes_material
       bundle: 0
-    - item: {fileID: 2100000, guid: 43dc65d468299d1449428e04b69370cf, type: 2}
-      name: triangles_background
+    - item: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
+      name: background_solid_color
       bundle: 0
     - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
-      name: triangles2_background
+      name: background_triangles_2
       bundle: 0
     - item: {fileID: 2100000, guid: 257d6236a55738249aded0c5e51e3814, type: 2}
       name: solid_background
@@ -50,18 +50,6 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: 7594f54b2bc73ec4dbb633d864e17ea0, type: 2}
       name: transition_texture_material_circles_to_squares
       bundle: 0
-    - item: {fileID: 2100000, guid: 1ad2fa8caf1b61e438c956e81f3f7f2d, type: 2}
-      name: transition_texture_material_metaballs_1
-      bundle: 0
-    - item: {fileID: 2100000, guid: 41e4b30b7fd943748a6cb1eca30772a5, type: 2}
-      name: transition_texture_material_metaballs_2
-      bundle: 0
-    - item: {fileID: 2100000, guid: 06bca38a9dcb08c42a9749e60693c6b1, type: 2}
-      name: transition_texture_material_metaballs_3
-      bundle: 0
-    - item: {fileID: 2100000, guid: 17d7dcfb6ea509848b02d40ead4b1264, type: 2}
-      name: transition_texture_material_metaballs_4
-      bundle: 0
-    - item: {fileID: 2100000, guid: 93701f83e50e848459b920348e8ce67b, type: 2}
-      name: transition_texture_material_metaballs_5
+    - item: {fileID: 2100000, guid: 938a544d0afd3b34aa3384c1d799e7d5, type: 2}
+      name: transition_texture_material_playground
       bundle: 0

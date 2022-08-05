@@ -18,11 +18,11 @@ namespace RMAZOR.Views.InputConfigurators
 {
     public interface IViewInputTouchProceeder : IInit, IOnLevelStageChanged
     {
-        event UnityAction<Vector2> OnTap;
-        bool                       ProceedRotation { get; set; }
-        bool                       AreFingersOnScreen(int                   _Count);
-        Vector2                    GetFingerPosition(int                    _Index);
-        void                       OnRotationFinished(MazeRotationEventArgs _Args);
+        event UnityAction<LeanFinger> Tap;
+        bool                          ProceedRotation { set; }
+        bool                          AreFingersOnScreen(int                   _Count);
+        Vector2                       GetFingerPosition(int                    _Index);
+        void                          OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
     public class ViewInputTouchProceeder : InitBase, IViewInputTouchProceeder
@@ -79,8 +79,8 @@ namespace RMAZOR.Views.InputConfigurators
 
         #region api
 
-        public event UnityAction<Vector2> OnTap;
-        public bool                       ProceedRotation { get; set; }
+        public event UnityAction<LeanFinger> Tap;
+        public bool                          ProceedRotation { get; set; }
         
         public override void Init()
         {
@@ -92,10 +92,6 @@ namespace RMAZOR.Views.InputConfigurators
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.LevelStage == ELevelStage.Paused)
-                m_LeanFingerTap.OnFinger.RemoveListener(MoveNext);
-            else if (_Args.PreviousStage == ELevelStage.Paused)
-                m_LeanFingerTap.OnFinger.AddListener(MoveNext);
             if (_Args.LevelStage != ELevelStage.ReadyToStart || _Args.PreviousStage != ELevelStage.Loaded) 
                 return;
             if (RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos()))
@@ -360,17 +356,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         protected virtual void OnTapCore(LeanFinger _Finger)
         {
-            OnTap?.Invoke(_Finger.ScreenPosition);
-            MoveNext(_Finger);
-        }
-
-        private void MoveNext(LeanFinger _Finger)
-        {
-            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f) 
-                return;
-            if (Model.LevelStaging.LevelStage != ELevelStage.Finished) 
-                return;
-            CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
+            Tap?.Invoke(_Finger);
         }
         
         private void LockCommandsOnRotationStarted()

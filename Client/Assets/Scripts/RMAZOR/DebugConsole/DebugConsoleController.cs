@@ -4,6 +4,7 @@ using Common;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
+using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 
@@ -15,8 +16,6 @@ namespace RMAZOR.DebugConsole
 
     public class DebugCommandArgs
     {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        // ReSharper disable once MemberCanBePrivate.Global
         public string         Command     { get; }
         public CommandHandler Handler     { get; }
         public string         Description { get; }
@@ -86,8 +85,7 @@ namespace RMAZOR.DebugConsole
         
         public Dictionary<string, DebugCommandArgs> Commands { get; } = new Dictionary<string, DebugCommandArgs>();
 
-        // ReSharper disable once CollectionNeverQueried.Local
-        public List<string> CommandHistory { get; } = new List<string>();
+        public List<string> CommandHistory { get; private set; }
         public void RaiseLogChangedEvent(string[] _Args)
         {
             OnLogChanged?.Invoke(_Args);
@@ -105,6 +103,7 @@ namespace RMAZOR.DebugConsole
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
             AudioManager      = _AudioManager;
+            LoadCommandsHistory();
         }
 
         public void RegisterCommand(DebugCommandArgs _DebugCommandArgs)
@@ -141,7 +140,7 @@ namespace RMAZOR.DebugConsole
                     numArgs);
             }
             RunCommand(commandSplit[0].ToLower(), args);
-            CommandHistory.Add(_CommandString);
+            SaveCommandToHistory(_CommandString);
         }
 
         #endregion
@@ -185,6 +184,18 @@ namespace RMAZOR.DebugConsole
             return new string(parmCharsArr).Split(
                 new[] { ' ' },
                 StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        private void SaveCommandToHistory(string _Command)
+        {
+            CommandHistory.Add(_Command);
+            SaveUtils.PutValue(SaveKeysCommon.DebugConsoleCommandsHistory, CommandHistory);
+            
+        }
+
+        private void LoadCommandsHistory()
+        {
+            CommandHistory = SaveUtils.GetValue(SaveKeysCommon.DebugConsoleCommandsHistory) ?? new List<string>();
         }
 
         #endregion

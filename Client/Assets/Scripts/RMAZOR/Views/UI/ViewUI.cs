@@ -1,8 +1,6 @@
 ﻿using System;
 using Common;
 using Common.Constants;
-using Common.Enums;
-using Common.Extensions;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
@@ -19,35 +17,32 @@ namespace RMAZOR.Views.UI
     {
         #region inject
 
-        private ViewSettings                ViewSettings         { get; }
-        private IModelGame                  Model                { get; }
-        private IUITicker                   Ticker               { get; }
-        private IBigDialogViewer            BigDialogViewer      { get; }
-        private IProposalDialogViewer       ProposalDialogViewer { get; }
-        private IDialogPanelsSet            DialogPanelsSet      { get; }
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private IManagersGetter             Managers             { get; }
+        private IDialogViewersController    DialogViewersController { get; }
+        private ViewSettings                ViewSettings            { get; }
+        private IModelGame                  Model                   { get; }
+        private IUITicker                   Ticker                  { get; }
+        private IDialogPanelsSet            DialogPanelsSet         { get; }
+        private IViewInputCommandsProceeder CommandsProceeder       { get; }
+        private IManagersGetter             Managers                { get; }
 
         private ViewUI(
+            IDialogViewersController    _DialogViewersController,
+            IViewUIGameControls         _GameControls,
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IUITicker                   _UITicker,
-            IBigDialogViewer            _BigDialogViewer,
-            IProposalDialogViewer       _ProposalDialogViewer,
             IDialogPanelsSet            _DialogPanelsSet,
-            IViewUIGameControls         _GameControls,
             IViewInputCommandsProceeder _CommandsProceeder,
             IManagersGetter             _Managers)
             : base(_GameControls)
         {
-            ViewSettings         = _ViewSettings;
-            Model                = _Model;
-            Ticker               = _UITicker;
-            BigDialogViewer      = _BigDialogViewer;
-            ProposalDialogViewer = _ProposalDialogViewer;
-            DialogPanelsSet      = _DialogPanelsSet;
-            CommandsProceeder    = _CommandsProceeder;
-            Managers             = _Managers;
+            DialogViewersController = _DialogViewersController;
+            ViewSettings            = _ViewSettings;
+            Model                   = _Model;
+            Ticker                  = _UITicker;
+            DialogPanelsSet         = _DialogPanelsSet;
+            CommandsProceeder       = _CommandsProceeder;
+            Managers                = _Managers;
         }
 
         #endregion
@@ -58,22 +53,7 @@ namespace RMAZOR.Views.UI
         {
             Ticker.Register(this);
             CommandsProceeder.Command += OnCommand;
-            CreateCanvas();
-            var parent = Canvas.RTransform();
-            BigDialogViewer.Init(parent);
-            ProposalDialogViewer.Init(parent);
-            BigDialogViewer.IsOtherDialogViewersShowing = () =>
-            {
-                var panel = ProposalDialogViewer.CurrentPanel;
-                return panel != null && 
-                       panel.AppearingState != EAppearingState.Dissapeared;
-            };
-            ProposalDialogViewer.IsOtherDialogViewersShowing = () =>
-            {
-                var panel = BigDialogViewer.CurrentPanel;
-                return panel != null && 
-                       panel.AppearingState != EAppearingState.Dissapeared;
-            };
+            DialogViewersController.Init();
             GameControls.Init();
             DialogPanelsSet.Init();
             base.Init();
@@ -81,18 +61,19 @@ namespace RMAZOR.Views.UI
         
         private void OnCommand(EInputCommand _Key, object[] _Args)
         {
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
             switch (_Key)
             {
                 case EInputCommand.SettingsMenu:
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
                     DialogPanelsSet.SettingDialogPanel.LoadPanel();
-                    BigDialogViewer.Show(DialogPanelsSet.SettingDialogPanel);
+                    dv.Show(DialogPanelsSet.SettingDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.ShopMenu:
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
-                    DialogPanelsSet.ShopMoneyDialogPanel.LoadPanel();
-                    BigDialogViewer.Show(DialogPanelsSet.ShopMoneyDialogPanel);
+                    DialogPanelsSet.ShopDialogPanel.LoadPanel();
+                    dv.Show(DialogPanelsSet.ShopDialogPanel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
@@ -146,8 +127,9 @@ namespace RMAZOR.Views.UI
             }
             else
             {
+                var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
                 DialogPanelsSet.RateGameDialogPanel.LoadPanel();
-                ProposalDialogViewer.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
+                dv.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
             }
         }
 

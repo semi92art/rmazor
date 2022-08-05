@@ -34,10 +34,8 @@ namespace RMAZOR.Views.MazeItems
         private Rectangle m_PathBackground;
         private Rectangle m_PassedPathBackground;
 
-        private bool        m_HighlightPathItemBackground = true;
         private IEnumerator m_HighlightPathItemCoroutine;
         private float       m_HighlightPathItemCoefficient;
-        private float       m_HighlightPathItemCoefficientPrev;
         private float       m_HighlightPathItemCoefficientRaw;
         private int         m_HighlightPathItemCoroutineNumber;
 
@@ -106,6 +104,7 @@ namespace RMAZOR.Views.MazeItems
 
         public void HighlightPathItem(float _Delay)
         {
+            Cor.Stop(m_HighlightPathItemCoroutine);
             m_HighlightPathItemCoroutine = CharacterMoveHighlightCoroutine(_Delay);
             Cor.Run(m_HighlightPathItemCoroutine);
         }
@@ -116,12 +115,6 @@ namespace RMAZOR.Views.MazeItems
                 return;
             HighlightPathItemBackground();
             base.UpdateTick();
-        }
-
-        public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
-        {
-            m_HighlightPathItemBackground = true;
-            base.OnCharacterMoveStarted(_Args);
         }
 
         #endregion
@@ -270,15 +263,8 @@ namespace RMAZOR.Views.MazeItems
 
         private void HighlightPathItemBackground()
         {
-            if (m_HighlightPathItemCoefficient < MathUtils.Epsilon
-                && m_HighlightPathItemCoefficient < m_HighlightPathItemCoefficientPrev
-                && m_HighlightPathItemCoroutine == null)
-            {
-                m_HighlightPathItemBackground = false;
-            }
-            m_HighlightPathItemCoefficientPrev = m_HighlightPathItemCoefficient;
             if (!GetCanHighlightCommonPredicate()
-                || !m_HighlightPathItemBackground)
+                || m_HighlightPathItemCoroutine == null)
             {
                 return;
             }
@@ -307,6 +293,7 @@ namespace RMAZOR.Views.MazeItems
         {
             yield return Cor.Delay(_Delay, GameTicker);
             yield return Cor.Delay(0.07f, GameTicker);
+            m_PassedPathBackground.SetSortingOrder(SortingOrders.PathBackground + 2);
             int num = ++m_HighlightPathItemCoroutineNumber;
             yield return Cor.Lerp(
                 GameTicker,
@@ -318,16 +305,12 @@ namespace RMAZOR.Views.MazeItems
                 },
                 _OnFinishEx: (_Broken, _Progress) =>
                 {
-                    if (!_Broken) 
-                        return;
-                    if (!GetCanHighlightCommonPredicate())
-                    {
-                        m_PassedPathBackground.Color = ColorProvider
-                            .GetColor(ColorIds.PathFill)
-                            .SetA(ViewSettings.filledPathAlpha);
-                    }
-                    m_HighlightPathItemCoefficient = 0f;
-                    m_HighlightPathItemCoefficientPrev = 0f;
+                    var col = ColorProvider.GetColor(ColorIds.PathFill);
+                    col = GetPathFillColorCorrected(col);
+                    m_PassedPathBackground.SetColor(col)
+                        .SetSortingOrder(SortingOrders.PathBackground + 1);
+                    if (!_Broken)
+                        m_HighlightPathItemCoroutine = null;
                 },
                 _BreakPredicate: () => num != m_HighlightPathItemCoroutineNumber
                                        || !GetCanHighlightCommonPredicate());
@@ -348,8 +331,7 @@ namespace RMAZOR.Views.MazeItems
         {
             return ActivatedInSpawnPool
                    && MoneyItem.IsCollected
-                   && Model.Character.Alive
-                   && !Model.PathItemsProceeder.AllPathsProceeded;
+                   && Model.Character.Alive;
         }
 
         #endregion

@@ -25,7 +25,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         private static readonly int
             Color1Id = Shader.PropertyToID("_Color1"),
             Color2Id = Shader.PropertyToID("_Color2");
-        protected static readonly int DirectionId = Shader.PropertyToID("_Direction");
+        protected static readonly int DirectionId       = Shader.PropertyToID("_Direction");
 
         private IEnumerator m_LastCoroutine;
 
@@ -66,7 +66,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             Cor.Run(m_LastCoroutine);
         }
 
-        public override void SetTransitionValue(float _Value)
+        public override void SetTransitionValue(float _Value, bool _Appear)
         {
             throw new System.NotSupportedException();
         }

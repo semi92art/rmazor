@@ -38,15 +38,15 @@ namespace RMAZOR.UI.Panels
         #region inject
         
         private SettingsSelectorPanel(
-            IBigDialogViewer _DialogViewer,
-            IManagersGetter  _Managers,
-            IUITicker        _UITicker,
-            ICameraProvider  _CameraProvider,
-            IColorProvider   _ColorProvider) 
+            IManagersGetter          _Managers,
+            IUITicker                _UITicker,
+            IDialogViewersController _DialogViewersController,
+            ICameraProvider          _CameraProvider,
+            IColorProvider           _ColorProvider) 
             : base(
                 _Managers, 
                 _UITicker,
-                _DialogViewer,
+                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider) { }
         
@@ -68,9 +68,10 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
             var sp = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    DialogViewer.Container,
+                    dv.Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_selector_panel");
             m_ToggleGroup = sp.AddComponent<ToggleGroup>();

@@ -32,34 +32,29 @@ Shader "RMAZOR/Background/Squigly Circled Wave" {
             }
 
             fixed4 frag(v2f i) : SV_Target {
-                float tau = 2. * PI;
-                //Scaling
-                float2 pos = i.uv;
-                float2 scaled = (pos * _ScreenParams.xy * 2. - _ScreenParams.xy) / (_ScreenParams.y * 1.7 * screen_ratio());
-                float t = 2. / _ScreenParams.y;
-                //Info
-                float l = length(scaled);
-                float angle = atan2(scaled.y, scaled.x) + PI; //[-Pi,Pi]->[0,2Pi]
-                float wave = fmod(_TimeAlt * 2., tau); //[0,2Pi]
-                //Background
-                fixed3 color = _Color;
-                //Calculating
-                float angle_difference = abs(wave - angle);
-                float distance_to_wave = min(angle_difference, tau - angle_difference);
-                float final_multiplier = pow(max(1., distance_to_wave), -4.);
-                //Rings
-                float ring1 = .40 + .03 * cos(angle * 7.) * final_multiplier;
-                float ring2 = .385 + .03 * cos(angle * 7. + tau / 3.) * final_multiplier;
-                float ring3 = .37 + .03 * cos(angle * 7. - tau / 3.) * final_multiplier;
-                //Drawing
-                fixed3 color_ring1 = _Ring1Color.rgb;
-                fixed3 color_ring2 = _Ring2Color.rgb;
-                fixed3 color_ring3 = _Ring3Color.rgb;
-                color = lerp(color, color_ring1, smoothstep(.01 + t, .01, abs(ring1 - l)));
-                color = lerp(color, color_ring2, smoothstep(.01 + t, .01, abs(ring2 - l)));
-                color = lerp(color, color_ring3, smoothstep(.01 + t, .01, abs(ring3 - l)));
-                //Final
-                return fixed4(color, 1.);
+	            float radius = 0.4 * screen_ratio();
+				float lineWidth = 5.0; // in pixels
+				float glowSize = 3; // in pixels
+			    
+			    float pixelSize = 1.0/min(_ScreenParams.x, _ScreenParams.y);
+				lineWidth *= pixelSize;
+				glowSize *= pixelSize;
+			    glowSize *= 2.0;
+			    
+  				float2 uv = i.uv - float2(.5,.5);
+			    uv.x *= screen_ratio();
+			    
+			    float len = length(uv);
+				float angle = atan2(uv.y, uv.x);
+			    
+				float fallOff = frac(-0.5*(angle/PI)-_TimeAlt*0.5);
+			    
+			    lineWidth = (lineWidth-pixelSize)*0.5*fallOff;
+				float c = smoothstep(pixelSize, 0.0, abs(radius - len) - lineWidth)*fallOff;
+				c += smoothstep(glowSize*fallOff, 0.0, abs(radius - len) - lineWidth)*fallOff*0.5;    
+			   
+				fixed4 frag_col = fixed4(c,c,c,c);
+            	return frag_col + _Color;
             }
             ENDCG
         }

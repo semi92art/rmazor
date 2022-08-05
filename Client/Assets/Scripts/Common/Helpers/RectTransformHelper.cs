@@ -28,22 +28,17 @@ namespace Common.Helpers
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-            
             var rTr = m_RectTransformHelper.RTransform();
             var anchMin = rTr.anchorMin;
             var anchMax = rTr.anchorMax;
             var anchPos = rTr.anchoredPosition;
             var pivot = rTr.pivot;
             var sizeDelta = rTr.sizeDelta;
-
-            
             GUILayout.Space(5);
             GUILayout.Label($"Anchor:\t\t {anchMin.x}  {anchMin.y}  {anchMax.x}  {anchMax.y}", m_Bold);
             GUILayout.Space(5);
-
             GUILayout.Label("\t\tX:\tY:", m_Bold);
             GUILayout.Space(5);
-            
             string anchPosXstr = Mathf.FloorToInt(anchPos.x * 10f) % 10 == 0 ? $"{anchPos.x:F0}" : $"{anchPos.x:F1}";
             string anchPosYstr = Mathf.FloorToInt(anchPos.y * 10f) % 10 == 0 ? $"{anchPos.y:F0}" : $"{anchPos.y:F1}";
             GUILayout.Label($"Anch.position:\t {anchPosXstr}\t{anchPosYstr}", m_Bold);
@@ -56,8 +51,6 @@ namespace Common.Helpers
             string sizeDeltaYstr = Mathf.FloorToInt(sizeDelta.y * 10f) % 10 == 0 ? $"{sizeDelta.y:F0}" : $"{sizeDelta.y:F1}";
             GUILayout.Label($"Size Delta:\t {sizeDeltaXstr}\t{sizeDeltaYstr}", m_Bold);
             GUILayout.Space(5);
- 
-
             if (GUILayout.Button("Copy to clipboard"))
             {
                 var sb = new StringBuilder();
@@ -70,7 +63,6 @@ namespace Common.Helpers
             
                 CommonUtils.CopyToClipboard(sb.ToString());
             }
-
             GUILayout.Space(5);
             GUILayout.Label("Additional info:", m_Bold);
             GUILayout.Space(5);

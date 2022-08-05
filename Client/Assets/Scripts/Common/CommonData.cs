@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Common.CameraProviders.Camera_Effects_Props;
 using Firebase;
 using UnityEngine;
 
@@ -9,7 +8,6 @@ namespace Common
     {
         public const string SavedGameFileName = "main_save";
 
-        public static bool DoNotShowAdsAfterDeathAndReturnToPrevLevel;
         public static bool LoadNextLevelAutomatically;
         public static int  GameId;
         public static bool DevelopmentBuild;

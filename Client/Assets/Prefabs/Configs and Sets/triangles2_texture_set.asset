@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - inUse: 1
+    - inUse: 0
       size: 84.1
       ratio: 20.4
       a: 0.98
@@ -28,7 +28,7 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: -0.19
-    - inUse: 1
+    - inUse: 0
       size: 71.7
       ratio: 38.1
       a: 0.98
@@ -43,7 +43,7 @@ MonoBehaviour:
       truncColor2: 0
       direction: 0.33
     - inUse: 1
-      size: 12.2
+      size: 4
       ratio: 11.6
       a: -0.58
       b: 0.446
@@ -56,8 +56,8 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.34
-    - inUse: 1
-      size: 100
+    - inUse: 0
+      size: 50
       ratio: 40.4
       a: 2
       b: 0.244
@@ -70,7 +70,7 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: -0.33
-    - inUse: 1
+    - inUse: 0
       size: 58
       ratio: 12.7
       a: -0.2
@@ -85,7 +85,7 @@ MonoBehaviour:
       truncColor2: 0
       direction: 0.75
     - inUse: 1
-      size: 17.5
+      size: 6.4
       ratio: 22.7
       a: -2
       b: 0.021
@@ -98,7 +98,7 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0.92
-    - inUse: 1
+    - inUse: 0
       size: 62.8
       ratio: 100
       a: -2
@@ -113,7 +113,7 @@ MonoBehaviour:
       truncColor2: 0
       direction: 0
     - inUse: 1
-      size: 100
+      size: 50
       ratio: 100
       a: -1.069
       b: 0.069
@@ -126,7 +126,7 @@ MonoBehaviour:
       trunc: 0
       truncColor2: 0
       direction: 0
-    - inUse: 1
+    - inUse: 0
       size: 31
       ratio: 6.8
       a: -0.16
@@ -140,7 +140,7 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: 0.301
-    - inUse: 1
+    - inUse: 0
       size: 31
       ratio: 6.8
       a: -0.87
@@ -154,7 +154,7 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: 0.301
-    - inUse: 1
+    - inUse: 0
       size: 31
       ratio: 6.8
       a: -0.87
@@ -182,7 +182,7 @@ MonoBehaviour:
       trunc: 1
       truncColor2: 1
       direction: -1
-    - inUse: 1
+    - inUse: 0
       size: 14.3
       ratio: 8.7
       a: -0.9
@@ -197,7 +197,7 @@ MonoBehaviour:
       truncColor2: 1
       direction: 0.741
     - inUse: 1
-      size: 8.8
+      size: 10
       ratio: 10.8
       a: 0.13
       b: 0.148

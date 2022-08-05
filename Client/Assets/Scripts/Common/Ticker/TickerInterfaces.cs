@@ -1,10 +1,58 @@
 ﻿namespace Common.Ticker
 {
-    public interface IUpdateTick { void UpdateTick(); }
-    public interface IFixedUpdateTick {void FixedUpdateTick(); }
-    public interface ILateUpdateTick { void LateUpdateTick(); }
-    public interface IDrawGizmosTick { void DrawGizmosTick(); }
-    public interface IApplicationPause { void OnApplicationPause(bool _Pause); }
-    public interface IApplicationFocus { void OnApplicationFocus(bool _Focus); }
-    public interface IDestroy { void OnDestroy(); }
+    public interface IUpdateTick
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void UpdateTick();
+    }
+
+    public interface IFixedUpdateTick
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void FixedUpdateTick();
+    }
+
+    public interface ILateUpdateTick
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void LateUpdateTick();
+    }
+
+    public interface IDrawGizmosTick
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void DrawGizmosTick();
+    }
+
+    public interface IApplicationPause
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void OnApplicationPause(bool _Pause);
+    }
+
+    public interface IApplicationFocus
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void OnApplicationFocus(bool _Focus);
+    }
+
+    public interface IDestroy
+    {
+        /// <summary>
+        /// Do not call manually!!!
+        /// </summary>
+        void OnDestroy();
+    }
 }

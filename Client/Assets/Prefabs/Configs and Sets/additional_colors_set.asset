@@ -49,7 +49,7 @@ MonoBehaviour:
     - main: {r: 0.16862746, g: 0.13725491, b: 0.08627451, a: 1}
       bacground1: {r: 0.7075472, g: 0.56872857, b: 0.3037113, a: 1}
       bacground2: {r: 0.4433962, g: 0.3487012, b: 0.21124065, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -65,7 +65,7 @@ MonoBehaviour:
     - main: {r: 0, g: 0, b: 0, a: 1}
       bacground1: {r: 0.5754717, g: 0.5754717, b: 0.5754717, a: 1}
       bacground2: {r: 0.3301887, g: 0.3301887, b: 0.3301887, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 2
       pathBackgroundFillType: 1
       pathFillFillType: 0
@@ -97,7 +97,7 @@ MonoBehaviour:
     - main: {r: 0.20000002, g: 0.227451, b: 0.34901962, a: 1}
       bacground1: {r: 0.8490566, g: 0.4285333, b: 0.61575264, a: 1}
       bacground2: {r: 0.30210927, g: 0.37880954, b: 0.6886792, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -113,7 +113,7 @@ MonoBehaviour:
     - main: {r: 1, g: 0, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.63, g: 0.12923077, b: 0.12923077, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -144,11 +144,11 @@ MonoBehaviour:
         softness: 0.9
     - main: {r: 1, g: 0.97083825, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.62445, g: 0.6313726, b: 0.12941176, a: 1}
-      inUse: 1
+      bacground2: {r: 0.12640995, g: 0.128, b: 0.026236024, a: 1}
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 2
+      pathFillFillType: 0
       characterBorderFillType: 1
       uiBackgroundFillType: 2
       bloom:
@@ -161,7 +161,7 @@ MonoBehaviour:
     - main: {r: 0, g: 0.50665617, b: 1, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.12941176, g: 0.378086, b: 0.6313726, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -174,7 +174,7 @@ MonoBehaviour:
         amount: 10
         threshold: 1.4
         softness: 0.9
-    - main: {r: 0, g: 0.13062407, b: 0.18867922, a: 1}
+    - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
       bacground2: {r: 0.7930287, g: 0.8396226, b: 0.34456214, a: 1}
       inUse: 1
@@ -193,7 +193,7 @@ MonoBehaviour:
     - main: {r: 0.018880606, g: 1, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.10922168, g: 0.3490566, b: 0.07738519, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
@@ -238,3 +238,19 @@ MonoBehaviour:
         amount: 10
         threshold: 1.4
         softness: 0.9
+    - main: {r: 0.019607821, g: 0.48998562, b: 0.8784314, a: 1}
+      bacground1: {r: 0.3679245, g: 0, b: 0.3679245, a: 1}
+      bacground2: {r: 0.14755142, g: 0, b: 0.1509434, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 1
+        diffusion: 0.3
+        color: {r: 0.019607821, g: 0.48185894, b: 0.8784314, a: 1}
+        amount: 10
+        threshold: 1.3
+        softness: 1

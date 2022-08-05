@@ -56,7 +56,6 @@ namespace SRDebuggerCustomOptions
 
         private static void SRLauncherOnInitialized()
         {
-            Dbg.Log(nameof(SRLauncherOnInitialized));
             _modelSettings     = SRLauncher.ModelSettings;
             _viewSettings      = SRLauncher.ViewSettings;
             _levelStaging      = SRLauncher.LevelStaging;
@@ -305,10 +304,9 @@ namespace SRDebuggerCustomOptions
                     return;
                 string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowRewardedAd(
-                    null,
-                    () => Dbg.Log("Rewarded ad was shown."),
-                    adsNetworkName,
-                    true);
+                    _OnShown: () => Dbg.Log("Rewarded ad was shown."),
+                    _AdsNetwork: adsNetworkName,
+                    _Forced: true);
             }
         }
 
@@ -322,10 +320,9 @@ namespace SRDebuggerCustomOptions
                     return;
                 string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowInterstitialAd(
-                    null,
-                    () => Dbg.Log("Interstitial ad was shown."),
-                    adsNetworkName,
-                    true);
+                    _OnShown: () => Dbg.Log("Interstitial ad was shown."),
+                    _AdsNetwork: adsNetworkName,
+                    _Forced: true);
             }
         }
         

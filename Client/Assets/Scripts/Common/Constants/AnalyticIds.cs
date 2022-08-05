@@ -20,6 +20,7 @@ namespace Common.Constants
         public const string RestorePurchasesButtonPressed      = "restore_purchases_button_pressed";
         public const string WatchAdInCharacterDiedPanelPressed = "watch_ad_in_character_died_panel_pressed";
         public const string WatchAdInShopPanelPressed          = "watch_ad_in_shop_panel_pressed";
+        public const string WatchAdInFinishGroupPanelPressed   = "watch_ad_in_finish_group_panel_pressed";
         
         public const string TestAnalytic      = "test_analytic";
         public const string LevelReadyToStart = "level_ready_to_start";

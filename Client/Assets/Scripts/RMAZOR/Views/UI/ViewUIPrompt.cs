@@ -9,14 +9,22 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Helpers;
 using RMAZOR.Models;
 using TMPro;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
 {
+    public enum EPromptType
+    {
+        SwipeToStart,
+        TapToNext
+    }
+    
     public interface IViewUIPrompt : IOnLevelStageChanged, IInitViewUIItem
     {
+        void ShowPrompt(EPromptType           _PromptType);
         void OnTutorialStarted(ETutorialType  _Type);
         void OnTutorialFinished(ETutorialType _Type);
     }
@@ -63,6 +71,7 @@ namespace RMAZOR.Views.UI
         private IColorProvider          ColorProvider       { get; }
         private IPrefabSetManager       PrefabSetManager    { get; }
         private IViewUIRotationControls RotationControls    { get; }
+        private IMoneyCounter           MoneyCounter        { get; }
 
         private ViewUIPrompt(
             IModelGame              _Model,
@@ -72,7 +81,8 @@ namespace RMAZOR.Views.UI
             ICameraProvider         _CameraProvider,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager,
-            IViewUIRotationControls _RotationControls)
+            IViewUIRotationControls _RotationControls,
+            IMoneyCounter           _MoneyCounter)
         {
             Model               = _Model;
             GameTicker          = _GameTicker;
@@ -82,6 +92,7 @@ namespace RMAZOR.Views.UI
             ColorProvider       = _ColorProvider;
             PrefabSetManager    = _PrefabSetManager;
             RotationControls    = _RotationControls;
+            MoneyCounter = _MoneyCounter;
         }
 
         #endregion
@@ -111,7 +122,9 @@ namespace RMAZOR.Views.UI
                     HidePrompt();             
                     break;
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
-                    ShopPromptTapToNext();   
+                    if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) && MoneyCounter.CurrentLevelGroupMoney > 0)
+                        break;
+                    ShopPromptTapToNext();
                     break;
                 case ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused 
                                                          || _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel:
@@ -136,7 +149,17 @@ namespace RMAZOR.Views.UI
             if (m_RunShowPromptCoroutine)
                 Cor.Run(ShowPromptCoroutine());
         }
-        
+
+        public void ShowPrompt(EPromptType _PromptType)
+        {
+            switch (_PromptType)
+            {
+                case EPromptType.SwipeToStart: ShowPromptSwipeToStart(); break;
+                case EPromptType.TapToNext:    ShopPromptTapToNext();    break;
+                default: throw new SwitchCaseNotImplementedException(_PromptType);
+            }
+        }
+
         public void OnTutorialStarted(ETutorialType _Type)
         {
             m_InTutorial = true;

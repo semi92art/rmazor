@@ -27,14 +27,16 @@ namespace RMAZOR.Views.Common
         #region inject
 
         private IFullscreenTextureProviderTriangles2 Triangles2TextureProvider { get; }
+        private IFullscreenTextureProviderSolidColor TextureProviderSolidColor { get; }
         private IViewGameTicker                      Ticker                    { get; }
         private IViewMazeBackgroundIdleItems         IdleItems                 { get; }
 
         private ViewMazeBackgroundTextureController(
             IRemotePropertiesRmazor              _RemoteProperties,
-            IFullscreenTextureProviderTriangles2 _Triangles2TextureProvider,
-            IPrefabSetManager                    _PrefabSetManager,
             IColorProvider                       _ColorProvider,
+            IPrefabSetManager                    _PrefabSetManager,
+            IFullscreenTextureProviderTriangles2 _Triangles2TextureProvider,
+            IFullscreenTextureProviderSolidColor _TextureProviderSolidColor,
             IViewGameTicker                      _Ticker,
             IViewMazeBackgroundIdleItems         _IdleItems) 
             : base(
@@ -42,9 +44,10 @@ namespace RMAZOR.Views.Common
                 _ColorProvider, 
                 _PrefabSetManager)
         {
+            Triangles2TextureProvider = _Triangles2TextureProvider;
+            TextureProviderSolidColor = _TextureProviderSolidColor;
             Ticker                    = _Ticker;
             IdleItems                 = _IdleItems;
-            Triangles2TextureProvider = _Triangles2TextureProvider;
         }
 
         #endregion
@@ -55,6 +58,7 @@ namespace RMAZOR.Views.Common
         {
             Ticker.Register(this);
             Triangles2TextureProvider .Init();
+            TextureProviderSolidColor .Init();
             IdleItems                 .Init();
             base.Init();
         }
@@ -126,19 +130,23 @@ namespace RMAZOR.Views.Common
 
         private void ActivateTexturePropertiesSet(long _LevelIndex, out IFullscreenTextureProvider _Provider)
         {
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int idx = group % m_TextureSetItems.Count;
-            var setItem = m_TextureSetItems[idx];
+            _Provider = TextureProviderSolidColor;
+            TextureProviderSolidColor.Activate(true);
             Triangles2TextureProvider.Activate(false);
-            switch (setItem)
-            {
-                case Triangles2TextureProps triangles2Props:
-                    Triangles2TextureProvider.Activate(true);
-                    Triangles2TextureProvider.SetProperties(triangles2Props);
-                    _Provider = Triangles2TextureProvider;
-                    break;
-                default: throw new SwitchCaseNotImplementedException(setItem);
-            }
+
+            // int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            // int idx = group % m_TextureSetItems.Count;
+            // var setItem = m_TextureSetItems[idx];
+            // Triangles2TextureProvider.Activate(false);
+            // switch (setItem)
+            // {
+            //     case Triangles2TextureProps triangles2Props:
+            //         Triangles2TextureProvider.Activate(true);
+            //         Triangles2TextureProvider.SetProperties(triangles2Props);
+            //         _Provider = Triangles2TextureProvider;
+            //         break;
+            //     default: throw new SwitchCaseNotImplementedException(setItem);
+            // }
         }
 
         private static int GetProviderIndex(IFullscreenTextureProvider _Provider)
@@ -146,6 +154,7 @@ namespace RMAZOR.Views.Common
             return _Provider switch
             {
                 IFullscreenTextureProviderTriangles2 => 1,
+                IFullscreenTextureProviderSolidColor => 1,
                 _ => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }

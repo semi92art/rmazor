@@ -306,7 +306,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   background: {fileID: 415750425331080085}
   logoRend: {fileID: 8237432859546149964}
-  loadingText: {fileID: 7351110937236037334}
 --- !u!1001 &516315699410719944
 PrefabInstance:
   m_ObjectHideFlags: 0

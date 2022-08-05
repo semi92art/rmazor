@@ -17,6 +17,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Settings;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
+using RMAZOR.Views.UI;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels
@@ -64,7 +65,7 @@ namespace RMAZOR.UI.Panels
         private SettingsDialogPanel(
             IRemotePropertiesRmazor     _RemoteProperties,
             ISettingSelectorDialogPanel _SelectorPanel,
-            IBigDialogViewer            _DialogViewer,
+            IDialogViewersController    _DialogViewersController,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
             ISettingsGetter             _SettingsGetter,
@@ -73,7 +74,7 @@ namespace RMAZOR.UI.Panels
             : base(
                 _Managers,
                 _UITicker,
-                _DialogViewer,
+                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider)
         {
@@ -92,8 +93,9 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel()
         {
             base.LoadPanel();
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
             var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(DialogViewer.Container, RectTransformLite.FullFill),
+                UIUtils.UiRectTransform(dv.Container, RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
             m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
             m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");
@@ -196,7 +198,7 @@ namespace RMAZOR.UI.Panels
                 Managers.AudioManager,
                 Managers.LocalizationManager,
                 Managers.PrefabSetManager,
-                DialogViewer,
+                DialogViewersController.GetViewer(EDialogViewerType.Fullscreen),
                 _Setting.TitleKey,
                 () => typeof(T) == typeof(ELanguage) ?
                     LocalizationUtils.GetLanguageTitle(ConvertValue<ELanguage>(_Setting.Get())) 
@@ -367,7 +369,7 @@ namespace RMAZOR.UI.Panels
             return Managers.PrefabSetManager.GetObject<Sprite>(PrefabSetName, _Key);
         }
 
-        private T ConvertValue<T>(object _Value)
+        private static T ConvertValue<T>(object _Value)
         {
             if (typeof(T).IsEnum)
                 return (T) Enum.Parse(typeof(T), _Value.ToString());

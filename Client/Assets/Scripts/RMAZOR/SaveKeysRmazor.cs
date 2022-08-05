@@ -17,6 +17,7 @@ namespace RMAZOR
         private static SaveKey<bool> _movementTutorialFinished;
         private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
         private static SaveKey<int>  _ratePanelShowsCount;
+        private static SaveKey<long> _currentLevelGroupMoney;
 
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
@@ -27,11 +28,13 @@ namespace RMAZOR
                 _movementTutorialFinished       = null;
                 _mazeItemsTutorialsFinished     = null;
                 _moneyFromServerLoadedFirstTime = null;
+                _currentLevelGroupMoney         = null;
             }
             SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          true);
             SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
             SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
+            SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney), true);
             var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
             foreach (var mazeItemType in mazeItemTypes)
             {
@@ -48,6 +51,8 @@ namespace RMAZOR
             _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(SavedGameFromServerLoadedAtLeastOnce));
         public static SaveKey<int>  RatePanelShowsCount      =>
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
+        public static SaveKey<long> CurrentLevelGroupMoney =>
+            _currentLevelGroupMoney ??= new SaveKey<long>(nameof(CurrentLevelGroupMoney));
 
         public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
         {
@@ -59,6 +64,5 @@ namespace RMAZOR
             _mazeItemsTutorialsFinished.SetSafe(_Type, saveKey);
             return saveKey;
         }
-
     }
 }

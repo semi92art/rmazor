@@ -9,21 +9,17 @@ namespace Common.UI
         bool            AllowMultiple  { get; }
         EAppearingState AppearingState { get; set; }
         RectTransform   PanelObject    { get; }
+        Animator        Animator       { get; }
         void            LoadPanel();
-        void            OnDialogShow();
-        void            OnDialogHide();
-        void            OnDialogEnable();
     }
     
     public class DialogPanelFake : IDialogPanel
     {
-        public EUiCategory     Category         => EUiCategory.Fake;
-        public bool            AllowMultiple    => false;
-        public EAppearingState AppearingState   { get; set; } = EAppearingState.Dissapeared;
-        public RectTransform   PanelObject      => null;
-        public void            LoadPanel()      { }
-        public void            OnDialogShow()   { }
-        public void            OnDialogHide()   { }
-        public void            OnDialogEnable() { }
+        public EUiCategory     Category       => EUiCategory.Fake;
+        public bool            AllowMultiple  => false;
+        public EAppearingState AppearingState { get; set; } = EAppearingState.Dissapeared;
+        public RectTransform   PanelObject    => null;
+        public Animator        Animator       => null;
+        public void            LoadPanel()    { }
     }
 }
