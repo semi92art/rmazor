@@ -1,5 +1,4 @@
-﻿// https://www.shadertoy.com/view/MtBSWR
-Shader "RMAZOR/Background/Squigly Circled Wave" {
+﻿Shader "RMAZOR/Background/Loading Indicator" {
     Properties {
         _Color ("Background", Color) = (1,1,1,1)
         _Ring1Color("Ring 1", Color) = (1,1,1,1)

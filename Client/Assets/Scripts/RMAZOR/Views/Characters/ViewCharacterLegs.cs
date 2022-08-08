@@ -128,7 +128,7 @@ namespace RMAZOR.Views.Characters
 
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            if (!Model.Character.Alive)
+            if (!Model.Character.Alive || Model.PathItemsProceeder.AllPathsProceeded)
                 return;
             ActivateShapes(true);
             SetLegsTransform(_Args.Direction);
@@ -155,8 +155,6 @@ namespace RMAZOR.Views.Characters
         
         public void Appear(bool _Appear)
         {
-            if (_Appear)
-                ActivateShapes(true);
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             var charCol = ColorProvider.GetColor(ColorIds.Character);
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);

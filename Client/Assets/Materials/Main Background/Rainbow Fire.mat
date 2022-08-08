@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Squigly Circled Wave
-  m_Shader: {fileID: 4800000, guid: 13432746e6a64fd7a88d49a3d2a71602, type: 3}
+  m_Name: Rainbow Fire
+  m_Shader: {fileID: 4800000, guid: 0c82cf2935a942409ccbdfe2b055c5f0, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHABLEND_ON
@@ -65,9 +65,12 @@ Material:
     - _DetailNormalMapScale: 1
     - _Direction: 1
     - _DstBlend: 10
+    - _Gc1: 0.5
+    - _Gc2: 0.5
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
+    - _Gradient: 0
     - _Metallic: 0
     - _Mode: 2
     - _OcclusionStrength: 1

@@ -13,10 +13,6 @@ namespace RMAZOR.Views.Characters
     
     public class ViewParticleSpark : ViewParticleBase, IViewParticleSpark
     {
-        #region types
-
-        #endregion
-
         #region serialized fields
 
         private bool m_Activated;
