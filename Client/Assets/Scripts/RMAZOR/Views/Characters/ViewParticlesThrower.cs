@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System;
+using Common;
 using Common.Exceptions;
 using Common.Helpers;
 using Common.SpawnPools;
@@ -9,9 +10,10 @@ namespace RMAZOR.Views.Characters
     public enum EParticleType
     {
         Bubbles,
+        Sparks
     }
     
-    public interface IViewParticlesThrower : IInit
+    public interface IViewParticlesThrower : IInit, ICloneable
     {
         EParticleType ParticleType { get; set; }
         void          SetPoolSize(int       _PoolSize);
@@ -22,23 +24,35 @@ namespace RMAZOR.Views.Characters
     
     public class ViewParticlesThrower : InitBase, IViewParticlesThrower
     {
+        #region constants
+
+        private const int DefaultPoolSize = 10;
+
+        #endregion
+        
         #region nonpublic members
 
-        private int m_PoolSize = 10;
+        private int   m_PoolSize = DefaultPoolSize;
         private float m_ThrowTime;
         
         private readonly SpawnPool<IViewParticleBubble> m_PoolBubbles =
             new SpawnPool<IViewParticleBubble>();
+        private readonly SpawnPool<IViewParticleSpark> m_PoolSparks =
+            new SpawnPool<IViewParticleSpark>();
 
         #endregion
 
         #region inject
         
         private IViewParticleBubble ParticleBubble { get; }
-        
-        private ViewParticlesThrower(IViewParticleBubble _ParticleBubble)
+        private IViewParticleSpark  ParticleSpark  { get; }
+
+        private ViewParticlesThrower(
+            IViewParticleBubble _ParticleBubble,
+            IViewParticleSpark  _ParticleSpark)
         {
             ParticleBubble = _ParticleBubble;
+            ParticleSpark  = _ParticleSpark;
         }
 
         #endregion
@@ -51,6 +65,8 @@ namespace RMAZOR.Views.Characters
             base.Init();
         }
         
+        public object Clone() => new ViewParticlesThrower(ParticleBubble, ParticleSpark);
+
         public EParticleType ParticleType { get; set; }
 
         public void SetPoolSize(int _PoolSize)
@@ -83,6 +99,10 @@ namespace RMAZOR.Views.Characters
                     particle = m_PoolBubbles.FirstInactive;
                     m_PoolBubbles.Activate((IViewParticleBubble)particle);
                     break;
+                case EParticleType.Sparks:
+                    particle = m_PoolSparks.FirstInactive;
+                    m_PoolSparks.Activate((IViewParticleSpark)particle);
+                    break;
                 default:
                     throw new SwitchCaseNotImplementedException(ParticleType);
             }
@@ -100,8 +120,12 @@ namespace RMAZOR.Views.Characters
                 var bubble = (IViewParticleBubble)ParticleBubble.Clone();
                 bubble.Init();
                 m_PoolBubbles.Add(bubble);
+                var spark = (IViewParticleSpark) ParticleSpark.Clone();
+                spark.Init();
+                m_PoolSparks.Add(spark);
             }
             m_PoolBubbles.DeactivateAll();
+            m_PoolSparks.DeactivateAll();
         }
         
         #endregion

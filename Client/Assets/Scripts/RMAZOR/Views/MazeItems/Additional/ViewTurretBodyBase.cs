@@ -44,7 +44,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             IViewGameTicker             _GameTicker,
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IRendererAppearTransitioner _Transitioner)
         {
             Model               = _Model;

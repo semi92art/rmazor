@@ -7,6 +7,7 @@ using Common.Helpers;
 using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
 
@@ -27,16 +28,26 @@ namespace RMAZOR.Views.Characters
         
         protected abstract IEnumerable<ShapeRenderer> MainShapes   { get; }
         protected abstract IEnumerable<ShapeRenderer> BorderShapes { get; }
+        
+        protected Transform   Transform;
+        protected Rigidbody2D Rb;
 
         #endregion
 
         #region inject
+
+        protected IContainersGetter    ContainersGetter    { get; }
+        protected ICoordinateConverter CoordinateConverter { get; }
+        protected IViewGameTicker      Ticker              { get; }
         
-        protected IViewGameTicker Ticker { get; }
-        
-        protected ViewParticleBase(IViewGameTicker _Ticker)
+        protected ViewParticleBase(
+            IContainersGetter    _ContainersGetter,
+            ICoordinateConverter _CoordinateConverter,
+            IViewGameTicker      _Ticker)
         {
-            Ticker = _Ticker;
+            ContainersGetter    = _ContainersGetter;
+            CoordinateConverter = _CoordinateConverter;
+            Ticker              = _Ticker;
         }
 
         #endregion
@@ -90,7 +101,19 @@ namespace RMAZOR.Views.Characters
 
         public abstract object Clone();
 
-        public abstract void Throw(Vector2 _Position, Vector2 _Speed, float _Scale, float _ThrowTime);
+        public virtual void Throw(
+            Vector2 _Position,
+            Vector2 _Speed,
+            float   _Scale,
+            float   _ThrowTime)
+        {
+            Transform.position = _Position;
+            Transform.SetLocalScaleXY(Vector2.one * _Scale);
+            Rb.velocity = _Speed;
+            ActivatedInSpawnPool = true;
+            Cor.Run(SetColorsOnThrowCoroutine(_ThrowTime)
+                .ContinueWith(() => ActivatedInSpawnPool = false));
+        }
 
         #endregion
 

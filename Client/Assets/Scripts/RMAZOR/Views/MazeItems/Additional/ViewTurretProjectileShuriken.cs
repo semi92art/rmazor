@@ -7,6 +7,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
+using Common.SpawnPools;
 using Common.Utils;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;
@@ -14,7 +15,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
-    public interface IViewTurretProjectile : ICloneable, IAppear, IInit
+    public interface IViewTurretProjectile : ICloneable, IAppear, IInit, IActivated
     {
         IViewTurretProjectileTail Tail                { get; }
         Transform                 ContainerTransform  { get; }
@@ -38,11 +39,13 @@ namespace RMAZOR.Views.MazeItems.Additional
         private SpriteRenderer    m_BorderRenderer;
         private SpriteRenderer    m_MainRenderer;
         private bool              m_Fake;
+        private bool              m_Activated;
         
         #endregion
 
         #region inject
-        
+
+        private ViewSettings                ViewSettings     { get; }
         private IContainersGetter           ContainersGetter { get; }
         private IPrefabSetManager           PrefabSetManager { get; }
         private IColorProvider              ColorProvider    { get; }
@@ -68,11 +71,22 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         #region api
 
-        private ViewSettings              ViewSettings        { get; }
-        public  IViewTurretProjectileTail Tail                { get; }
-        public  Transform                 ContainerTransform  => m_Projectile.transform;
-        public  Transform                 ProjectileTransform => m_MainRenderer.transform;
-        public  EAppearingState           AppearingState      { get; private set; }
+        public bool Activated
+        {
+            get => m_Activated;
+            set
+            {
+                m_Activated = value;
+                if (value)
+                    return;
+                m_MainRenderer.enabled = false;
+                m_BorderRenderer.enabled = false;
+            }
+        }
+        public IViewTurretProjectileTail Tail                { get; }
+        public EAppearingState           AppearingState      { get; private set; }
+        public Transform                 ContainerTransform  => m_Projectile.transform;
+        public Transform                 ProjectileTransform => m_MainRenderer.transform;
 
         public object Clone() => new ViewTurretProjectileShuriken(
             ViewSettings,
@@ -143,7 +157,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 case ColorIds.MazeItem1:
                     m_MainRenderer.color = _Color;
                     break;
-                case ColorIds.Main:
+                case ColorIds.Character2:
                     m_BorderRenderer.color = _Color;
                     break;
             }
@@ -160,7 +174,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             m_BorderRenderer = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
             m_MainRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
             m_MainRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-            m_BorderRenderer.color = ColorProvider.GetColor(ColorIds.Main);
+            m_BorderRenderer.color = ColorProvider.GetColor(ColorIds.Character2);
             m_MainRenderer.maskInteraction = SpriteMaskInteraction.None;
             m_BorderRenderer.maskInteraction = SpriteMaskInteraction.None;
         }

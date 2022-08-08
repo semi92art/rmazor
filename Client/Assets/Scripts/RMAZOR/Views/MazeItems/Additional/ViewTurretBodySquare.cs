@@ -31,7 +31,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             IViewGameTicker             _GameTicker,
             ViewSettings                _ViewSettings,
             IColorProvider              _ColorProvider,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IRendererAppearTransitioner _Transitioner)
             : base(
                 _Model,
@@ -44,7 +44,18 @@ namespace RMAZOR.Views.MazeItems.Additional
         #endregion
 
         #region api
-        
+
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                base.ActivatedInSpawnPool = value;
+                if (!ActivatedInSpawnPool)
+                    m_Body.enabled = false;
+            }
+        }
+
         public override object Clone()
         {
             return new ViewTurretBodySquare(
@@ -92,7 +103,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 .SetMatchDashSpacingToDashSize(false)
                 .SetDashSize(0.5f)
                 .SetDashSnap(DashSnapping.Tiling)
-                .SetDashType(DashType.Rounded);
+                .SetDashType(DashType.Basic);
         }
 
         protected override void UpdateShape()
