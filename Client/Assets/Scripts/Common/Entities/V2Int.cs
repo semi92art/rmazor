@@ -13,20 +13,21 @@ namespace Common.Entities
         [JsonProperty, SerializeField] private int x;
         [JsonProperty, SerializeField] private int y;
 
-        [JsonConstructor] public V2Int(int _X, int _Y) { x = _X; y = _Y; }
-        public V2Int(Vector2Int _V) { x = _V.x; y = _V.y; }
-        public static V2Int operator -(V2Int _V)               => new V2Int(-_V.x, -_V.y);
-        public static V2Int operator +(V2Int _A, V2Int _B)     => new V2Int(_A.x + _B.x, _A.y + _B.y);
-        public static Vector2 operator +(V2Int _A, Vector2 _B) => new Vector2(_A.x + _B.x, _A.y + _B.y);
-        public static Vector2 operator +(Vector2 _A, V2Int _B) => new Vector2(_A.x + _B.x, _A.y + _B.y);
-        public static V2Int operator -(V2Int _A, V2Int _B)     => new V2Int(_A.x - _B.x, _A.y - _B.y);
-        public static V2Int operator *(V2Int _A, V2Int _B)     => new V2Int(_A.x * _B.x, _A.y * _B.y);
-        public static Vector2 operator *(float _A, V2Int _B)   => new Vector2(_A * _B.x, _A * _B.y);
-        public static V2Int operator *(int _A, V2Int _B)       => new V2Int(_A * _B.x, _A * _B.y);
-        public static V2Int operator *(V2Int _A, int _B)       => new V2Int(_A.x * _B, _A.y * _B);
-        public static V2Int operator /(V2Int _A, int _B)       => new V2Int(_A.x / _B, _A.y / _B);
-        public static bool operator ==(V2Int _Lhs, V2Int _Rhs) => _Lhs.x == _Rhs.x && _Lhs.y == _Rhs.y;
-        public static bool operator !=(V2Int _Lhs, V2Int _Rhs) => !(_Lhs == _Rhs);
+        [JsonConstructor] public V2Int(int       _X, int _Y) { x = _X; y = _Y; }
+        public V2Int(Vector2Int                  _V) { x = _V.x; y = _V.y; }
+        public static V2Int operator -(V2Int     _V)                 => new V2Int(-_V.x, -_V.y);
+        public static V2Int operator +(V2Int     _A,   V2Int   _B)   => new V2Int(_A.x + _B.x, _A.y + _B.y);
+        public static Vector2 operator +(V2Int   _A,   Vector2 _B)   => new Vector2(_A.x + _B.x, _A.y + _B.y);
+        public static Vector2 operator +(Vector2 _A,   V2Int   _B)   => new Vector2(_A.x + _B.x, _A.y + _B.y);
+        public static V2Int operator -(V2Int     _A,   V2Int   _B)   => new V2Int(_A.x - _B.x, _A.y - _B.y);
+        public static V2Int operator *(V2Int     _A,   V2Int   _B)   => new V2Int(_A.x * _B.x, _A.y * _B.y);
+        public static Vector2 operator *(float   _A,   V2Int   _B)   => new Vector2(_A * _B.x, _A * _B.y);
+        public static Vector2 operator *(V2Int   _B,   float   _A)   => new Vector2(_A * _B.x, _A * _B.y);
+        public static V2Int operator *(int       _A,   V2Int   _B)   => new V2Int(_A * _B.x, _A * _B.y);
+        public static V2Int operator *(V2Int     _A,   int     _B)   => new V2Int(_A.x * _B, _A.y * _B);
+        public static V2Int operator /(V2Int     _A,   int     _B)   => new V2Int(_A.x / _B, _A.y / _B);
+        public static bool operator ==(V2Int     _Lhs, V2Int   _Rhs) => _Lhs.x == _Rhs.x && _Lhs.y == _Rhs.y;
+        public static bool operator !=(V2Int     _Lhs, V2Int   _Rhs) => !(_Lhs == _Rhs);
         
         public              bool    Equals(V2Int  _Other) => x == _Other.x && y == _Other.y;
         public override     bool    Equals(object _Obj)   => _Obj is V2Int other && Equals(other);

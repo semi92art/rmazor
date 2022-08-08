@@ -33,7 +33,7 @@ namespace RMAZOR.Views.Characters
         
         public abstract ViewCharacterInfo GetObjects();
         public abstract void              OnRotationFinished(MazeRotationEventArgs                   _Args);
-        public abstract void              OnAllPathProceed(V2Int                                     _LastPath);
+        public abstract void              OnPathCompleted(V2Int                                     _LastPath);
         public abstract void              OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args);
         public abstract void              OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args);
         public abstract void              OnCharacterMoveFinished(CharacterMovingFinishedEventArgs   _Args);

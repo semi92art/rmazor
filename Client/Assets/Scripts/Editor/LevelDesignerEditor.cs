@@ -194,12 +194,12 @@ namespace RMAZOR.Editor
             else if ((LevelsList.NeedToReload() || _Forced) 
                      && SceneManager.GetActiveScene().name == SceneNames.Prototyping)
             {
-                LevelsList.gameId = LD.LevelDesignerGameId;
-                LevelsList.Reload(LevelsList.gameId, LD.LevelDesignerHeapIndex, _Forced);
+                LevelsList.GameId = LD.LevelDesignerGameId;
+                LevelsList.Reload(LevelsList.GameId, LD.LevelDesignerHeapIndex, _Forced);
             }
             else
             {
-                LevelsList.Reload(LevelsList.gameId, LD.LevelDesignerHeapIndex);
+                LevelsList.Reload(LevelsList.GameId, LD.LevelDesignerHeapIndex);
             }
             if (LD.Instance.loadedLevelIndex != -1)
             {
@@ -269,7 +269,7 @@ namespace RMAZOR.Editor
         private static void ShowFixUtilsTabPage()
         {
             var t = typeof(LevelDesignerEditor);
-            var methods = t.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+            var methods = t.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var method in methods.Where(_M => _M.HasAttribute(typeof(FixUtilAttribute))))
             {
                 var attr = method.GetAttribute<FixUtilAttribute>();

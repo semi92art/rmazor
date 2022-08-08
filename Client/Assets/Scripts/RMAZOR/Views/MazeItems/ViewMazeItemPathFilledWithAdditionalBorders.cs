@@ -22,6 +22,7 @@ namespace RMAZOR.Views.MazeItems
 {
     public interface IViewMazeItemPathFilled : IViewMazeItemPath
     {
+        bool HighlightEnabled { get; set; }
         void HighlightPathItem(float _Delay);
     }
     
@@ -83,7 +84,18 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder,
             MoneyItem.Clone() as IViewMazeMoneyItem);
-        
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            base.OnLevelStageChanged(_Args);
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                    HighlightEnabled = true;
+                    break;
+            }
+        }
+
         public override void Collect(bool _Collect, bool _OnStart = false)
         {
             if (_OnStart && (IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal) 
@@ -101,6 +113,8 @@ namespace RMAZOR.Views.MazeItems
                 m_PassedPathBackground.enabled = false;
             base.Collect(_Collect, _OnStart);
         }
+
+        public bool HighlightEnabled { get; set; }
 
         public void HighlightPathItem(float _Delay)
         {
@@ -131,6 +145,7 @@ namespace RMAZOR.Views.MazeItems
         {
             base.UpdateShape();
             UpdateBackgroundShape();
+            HighlightEnabled = true;
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -307,7 +322,8 @@ namespace RMAZOR.Views.MazeItems
                 {
                     var col = ColorProvider.GetColor(ColorIds.PathFill);
                     col = GetPathFillColorCorrected(col);
-                    m_PassedPathBackground.SetColor(col)
+                    m_PassedPathBackground
+                        .SetColor(col)
                         .SetSortingOrder(SortingOrders.PathBackground + 1);
                     if (!_Broken)
                         m_HighlightPathItemCoroutine = null;
@@ -331,7 +347,7 @@ namespace RMAZOR.Views.MazeItems
         {
             return ActivatedInSpawnPool
                    && MoneyItem.IsCollected
-                   && Model.Character.Alive;
+                   && HighlightEnabled;
         }
 
         #endregion

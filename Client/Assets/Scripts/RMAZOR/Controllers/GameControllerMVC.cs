@@ -3,7 +3,6 @@ using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
-using UnityEngine;
 using Zenject;
 
 namespace RMAZOR.Controllers
@@ -31,22 +30,16 @@ namespace RMAZOR.Controllers
 
         #region inject
 
-        private GlobalGameSettings      GlobalGameSettings { get; set; }
-        private IRemotePropertiesRmazor RemoteProperties   { get; set; }
-        public  IModelGame              Model              { get; private set; }
-        public  IViewGame               View               { get; private set; }
+        public IModelGame Model { get; private set; }
+        public IViewGame  View  { get; private set; }
 
         [Inject]
         private void Inject(
-            GlobalGameSettings      _GlobalGameSettings,
-            IRemotePropertiesRmazor _RemoteProperties,
-            IModelGame              _Model,
-            IViewGame               _View)
+            IModelGame _Model,
+            IViewGame  _View)
         {
-            GlobalGameSettings = _GlobalGameSettings;
-            RemoteProperties   = _RemoteProperties;
-            Model              = _Model;
-            View               = _View;
+            Model = _Model;
+            View  = _View;
         }
 
         #endregion
@@ -63,15 +56,16 @@ namespace RMAZOR.Controllers
             
             Model.Init();
 
-            Model.PathItemsProceeder.AllPathsProceededEvent += View.Character.OnAllPathProceed;
-            Model.PathItemsProceeder.AllPathsProceededEvent += View.LevelStageController.OnAllPathProceed;
-            Model.PathItemsProceeder.PathProceedEvent       += View.PathItemsGroup.OnPathProceed;
-            Model.MazeRotation.RotationStarted              += View.MazeRotation.OnRotationStarted;
-            Model.MazeRotation.RotationFinished             += View.MazeRotation.OnRotationFinished;
-            Model.MazeRotation.RotationFinished             += View.TouchProceeder.OnRotationFinished;
+            Model.PathItemsProceeder.PathCompleted     += View.Character.OnPathCompleted;
+            Model.PathItemsProceeder.PathCompleted     += View.LevelStageController.OnPathCompleted;
+            Model.PathItemsProceeder.PathCompleted     += View.PathItemsGroup.OnPathCompleted;
+            Model.PathItemsProceeder.PathProceedEvent  += View.PathItemsGroup.OnPathProceed;
+            Model.MazeRotation.RotationStarted         += View.MazeRotation.OnRotationStarted;
+            Model.MazeRotation.RotationFinished        += View.MazeRotation.OnRotationFinished;
+            Model.MazeRotation.RotationFinished        += View.TouchProceeder.OnRotationFinished;
             
             var mItemProcs = Model.ModelItemsProceedersSet;
-            var vItemGrps = View.MazeItemsGroupSet;
+            var vItemGrps   = View.MazeItemsGroupSet;
             
             mItemProcs.GravityItemsProceeder.MazeItemMoveStarted   += vItemGrps.GravityItemsGroup.OnMazeItemMoveStarted;
             mItemProcs.GravityItemsProceeder.MazeItemMoveStarted   += View.UI.GameControls.OnMazeItemMoveStarted;

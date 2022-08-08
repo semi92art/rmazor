@@ -22,52 +22,68 @@ namespace RMAZOR
     [InitializeOnLoad]
     public class LevelDesigner : MonoBehaviour
     {
-        public static int LevelDesignerHeapIndex
-        {
-            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerHeapIndex);
-            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
-        }
-        
-        public static int LevelDesignerGameId
-        {
-            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerGameId);
-            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerGameId, value);
-        }
-        
-        private static LevelDesigner _instance;
-        public static LevelDesigner Instance => _instance.IsNotNull() ?
-            _instance : _instance = FindObjectOfType<LevelDesigner>();
+        #region singleton
 
-        [HideInInspector] public int                    width;
-        [HideInInspector] public int                    height;
+        public static LevelDesigner Instance =>
+            _instance.IsNotNull() ? _instance : _instance = FindObjectOfType<LevelDesigner>();
+
+        private static LevelDesigner _instance;
+
+        #endregion
+
+        #region serialized fields
+
         [HideInInspector] public HeapReorderableList    levelsList;
-        [HideInInspector] public string                 pathLengths;
-        [HideInInspector] public float                  aParam;
-        [HideInInspector] public bool                   valid;
         [SerializeField]  public List<ViewMazeItemProt> maze;
-        [HideInInspector] public V2Int                  size;
-        [HideInInspector] public int                    loadedLevelGameId    = -1;
-        [HideInInspector] public int                    loadedLevelIndex     = -1;
-        [HideInInspector] public int                    loadedLevelHeapIndex = -1;
-        [HideInInspector] public GameObject             mazeObject;
-        public static            UnityAction            SceneUnloaded;
+
+        [HideInInspector] public int        width;
+        [HideInInspector] public int        height;
+        [HideInInspector] public string     pathLengths;
+        [HideInInspector] public float      aParam;
+        [HideInInspector] public bool       valid;
+        [HideInInspector] public V2Int      size;
+        [HideInInspector] public int        loadedLevelGameId    = -1;
+        [HideInInspector] public int        loadedLevelIndex     = -1;
+        [HideInInspector] public int        loadedLevelHeapIndex = -1;
+        [HideInInspector] public GameObject mazeObject;
+
+        #endregion
+
+        #region nonpublic members
 
         private static MazeInfo MazeInfo
         {
             get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerMazeInfo);
             set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerMazeInfo, value);
         }
-        
-        [RuntimeInitializeOnLoadMethod]
-        public static void ResetState()
-        {
-            _instance = null;
-        }
+
+
+        #endregion
+
+        #region static ctor
 
         static LevelDesigner()
         {
             EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+        }
+
+        #endregion
+
+        #region api
+
+        public static UnityAction SceneUnloaded;
+
+        public static int LevelDesignerHeapIndex
+        {
+            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerHeapIndex);
+            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
+        }
+
+        public static int LevelDesignerGameId
+        {
+            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerGameId);
+            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerGameId, value);
         }
 
         public MazeInfo GetLevelInfoFromScene()
@@ -77,26 +93,28 @@ namespace RMAZOR
             foreach (Transform mazeObj in mazeObject.transform)
             {
                 var mazeItem = mazeObj.gameObject.GetComponent<ViewMazeItemProt>();
-                if (mazeItem.IsNotNull()) 
+                if (mazeItem.IsNotNull())
                     maze.Add(mazeItem);
             }
+
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
                 Dbg.LogWarning("Maze must contain start item");
             var pathItems = maze
                 .Where(_Item => _Item.Props.IsNode && !_Item.Props.IsStartNode)
-                .Select(_Item => new PathItem{Blank = _Item.Props.Blank, Position = _Item.Props.Position})
+                .Select(_Item => new PathItem {Blank = _Item.Props.Blank, Position = _Item.Props.Position})
                 .ToList();
             if (protItemStart.IsNotNull())
             {
                 pathItems.Insert(
-                    0, 
+                    0,
                     new PathItem
                     {
                         Blank = protItemStart!.Props.Blank,
                         Position = protItemStart!.Props.Position
                     });
             }
+
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
@@ -105,8 +123,9 @@ namespace RMAZOR
             int maxY = mazeProtItems.Any() ? mazeProtItems.Max(_Item => _Item.Position.Y + 1) : 0;
             maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
             var mazeSize = new V2Int(maxX, maxY);
-            return new MazeInfo{
-                Size =  mazeSize,
+            return new MazeInfo
+            {
+                Size = mazeSize,
                 PathItems = pathItems,
                 MazeItems = mazeProtItems
                     .SelectMany(_Item =>
@@ -133,7 +152,11 @@ namespace RMAZOR
         {
             return new V2Int(width, height);
         }
-        
+
+        #endregion
+
+        #region nonpublic methods
+
         private static void OnPlayModeStateChanged(PlayModeStateChange _Change)
         {
             if (!SceneManager.GetActiveScene().name.Contains(SceneNames.Prototyping))
@@ -152,7 +175,6 @@ namespace RMAZOR
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
                     Cor.Run(LoadSceneLevel());
-                    // EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
                     break;
                 case PlayModeStateChange.ExitingPlayMode:
                     break;
@@ -160,11 +182,11 @@ namespace RMAZOR
                     throw new SwitchCaseNotImplementedException(_Change);
             }
         }
-        
+
         private static IEnumerator LoadSceneLevel()
         {
             var @params = new LoadSceneParameters(LoadSceneMode.Single);
-            var op =  SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+            var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
             while (!op.isDone)
                 yield return null;
         }
@@ -181,9 +203,9 @@ namespace RMAZOR
         {
             if (_Scene.name != SceneNames.Level)
                 return;
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             EditorApplication.playModeStateChanged += OnSceneUnloaded;
-            #endif
+#endif
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             var controller = GameControllerMVC.CreateInstance();
             controller.Initialize += () =>
@@ -195,7 +217,37 @@ namespace RMAZOR
             controller.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
+
+        #endregion
+
+        #region engine methods
+
+        [RuntimeInitializeOnLoadMethod]
+        public static void ResetState()
+        {
+            _instance = null;
+        }
+
+        #endregion
     }
 }
+        
+
+        
+
+
+
+
+
+
+
+        
+
+
+
+
+        
+        
+        
 
 #endif

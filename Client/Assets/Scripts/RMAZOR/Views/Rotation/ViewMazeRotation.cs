@@ -5,7 +5,6 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Characters;
-using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.Events;
 

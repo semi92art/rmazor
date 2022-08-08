@@ -127,7 +127,7 @@ namespace RMAZOR.Views.MazeItems
                 ColorProvider.ColorChanged += OnColorChanged;
                 Object = new GameObject(ObjectName);
                 InitShape();
-                base.Init();
+                Init();
             }
             Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));

@@ -119,7 +119,7 @@ namespace RMAZOR.Views.Characters
             m_MoveDirection = null;
         }
 
-        public void OnAllPathProceed(V2Int _LastPos)
+        public void OnPathCompleted(V2Int _LastPos)
         {
             m_FromPos = null;
             ThrowParticlesOnCharacterDisappear(false, _LastPos);

@@ -1,17 +1,20 @@
-﻿// ReSharper disable UnusedMember.Global
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Common;
 using Common.Entities;
 using Common.Extensions;
 using RMAZOR.Models.MazeInfos;
-
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMember.Local
 // ReSharper disable once CheckNamespace
+
 namespace RMAZOR.Editor
 {
     public partial class LevelDesignerEditor
     {
         [FixUtil]
-        public void FindEmptyLevels()
+        private void FindEmptyLevels()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -29,7 +32,7 @@ namespace RMAZOR.Editor
         }
 
         [FixUtil]
-        public void FindLevelsWithPortalsInvalid()
+        private void FindLevelsWithPortalsInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -51,7 +54,7 @@ namespace RMAZOR.Editor
         }
 
         [FixUtil]
-        public void FindLevelsWithTurretsInvalid()
+        private void FindLevelsWithTurretsInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -73,7 +76,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil]
-        public void FindLevelsWithReactsTrapsInvalid()
+        private void FindLevelsWithReactsTrapsInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -95,7 +98,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil]
-        public void FindLevelsWithMovingTrapsInvalid()
+        private void FindLevelsWithMovingTrapsInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -134,7 +137,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil]
-        public void FindLevelsWithGravityBlocksInvalid()
+        private void FindLevelsWithGravityBlocksInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -159,7 +162,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil]
-        public void FindLevelsWithMazeSizeInvalid()
+        private void FindLevelsWithMazeSizeInvalid()
         {
             bool errors = false;
             var levels = LevelsList.Levels;
@@ -183,7 +186,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil(FixUtilColor.Blue)]
-        public void FixTrapsMoving()
+        private void FixTrapsMoving()
         {
             var levels = LevelsList.Levels;
             bool errors = false;
@@ -224,7 +227,7 @@ namespace RMAZOR.Editor
         }
 
         [FixUtil(FixUtilColor.Blue)]
-        public void SortLevels()
+        private void SortLevels()
         {
             var levels = LevelsList.Levels;
             var levelsTutorial = levels.GetRange(0, 43);
@@ -236,7 +239,7 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil(FixUtilColor.Blue)]
-        public void FixMazeSizes()
+        private void FixMazeSizes()
         {
             var levels = LevelsList.Levels;
             foreach (var level in levels)
@@ -251,6 +254,34 @@ namespace RMAZOR.Editor
             }
             LevelsList.Levels = levels;
             LevelsList.Save();
+        }
+
+        [FixUtil]
+        private void FindDuplicatedMazes()
+        {
+            var duplicatedLevelIndicesList = new List<System.Tuple<int, int>>();
+            var levels = LevelsList.Levels;
+            for (int i = 0; i < levels.Count; i++)
+            {
+                var iLevel = levels[i];
+                for (int j = i + 1; j < levels.Count; j++)
+                {
+                    var jLevel = levels[j];
+                    if (iLevel != jLevel)
+                        continue;
+                    duplicatedLevelIndicesList.Add(new System.Tuple<int, int>(i, j));
+                }
+            }
+            if (!duplicatedLevelIndicesList.Any())
+            {
+                Dbg.Log("Duplicated levels were not found.");
+                return;
+            }
+            var sb = new StringBuilder();
+            sb.AppendLine("Found duplicated levels:");
+            foreach (var duplIndices in duplicatedLevelIndicesList)
+                sb.AppendLine($"{duplIndices.Item1} and {duplIndices.Item2}");
+            Dbg.LogWarning(sb.ToString());
         }
     }
 }

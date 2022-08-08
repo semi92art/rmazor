@@ -19,8 +19,8 @@ namespace RMAZOR.Views.Utils
             MoneyItem                    = Path + 150,
             GameUI                       = Path + 1000,
             Character                    = Path + 1500,
-            GameLogoBackground           = Path + 1600,
-            GameLogoForeground           = Path + 1601;
+            GameLogoBackground           = Path + 1700,
+            GameLogoForeground           = Path + 1701;
 
         public static int GetBlockSortingOrder(EMazeItemType _Type)
         {
@@ -31,14 +31,15 @@ namespace RMAZOR.Views.Utils
                     return Path + 151;
                 case EMazeItemType.Block:
                     return Path + 152;
+                case EMazeItemType.Diode:
+                    return Path + 153;
                 case EMazeItemType.Portal:
                 case EMazeItemType.TrapIncreasing:
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
                 case EMazeItemType.Springboard:
-                case EMazeItemType.Diode:
-                    return Path + 153;
+                    return Path + 154;
                 case EMazeItemType.Turret:
                     return Path + 200;
                 case EMazeItemType.TrapReact:

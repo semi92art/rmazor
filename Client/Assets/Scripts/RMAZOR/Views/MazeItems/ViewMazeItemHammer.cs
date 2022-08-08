@@ -17,7 +17,6 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -42,7 +41,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region nonpublic members
 
-        protected override string              ObjectName => "Hammer Block";
+        protected override string ObjectName => "Hammer Block";
         
         private List<ShapeRenderer> m_MainShapes;
         private List<ShapeRenderer> m_AdditionalShapes;
@@ -68,7 +67,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemHammer(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -98,6 +97,12 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
 
+        public override void Init()
+        {
+            InitParticlesThrower();
+            base.Init();
+        }
+
         public override object Clone() => 
             new ViewMazeItemHammer(
                 ViewSettings,
@@ -111,7 +116,7 @@ namespace RMAZOR.Views.MazeItems
                 CommandsProceeder,
                 PrefabSetManager,
                 Shaker,
-                ParticlesThrower);
+                ParticlesThrower.Clone() as IViewParticlesThrower);
         
         public Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
         
@@ -168,7 +173,6 @@ namespace RMAZOR.Views.MazeItems
             m_Side1 = go.GetCompItem<Transform>("side_1");
             m_Side2 = go.GetCompItem<Transform>("side_2");
             m_Collider = go.GetCompItem<Collider2D>("collider");
-            InitParticlesThrower();
         }
 
         private void InitParticlesThrower()
@@ -358,7 +362,7 @@ namespace RMAZOR.Views.MazeItems
             for (int i = 0; i < ParticlesThrowerSize; i++)
             {
                 float orthDirCoeff = i % 2 == 0 ? 1f : -1f;
-                var throwSpeed = new Vector2(
+                var speedVector = new Vector2(
                     GetDirectSpeedAddict(moveDir.x),
                     GetDirectSpeedAddict(moveDir.y)) 
                 + new Vector2((UnityEngine.Random.value - 0.5f),
@@ -367,7 +371,7 @@ namespace RMAZOR.Views.MazeItems
                 var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff * orthCoeff2;
                 var pos = (Vector2)sideTr.position + orthDir * (UnityEngine.Random.value * 0.8f);
                 float randScale = 0.2f + 0.15f * UnityEngine.Random.value;
-                ParticlesThrower.ThrowParticle(pos, throwSpeed, randScale, 0.15f);
+                ParticlesThrower.ThrowParticle(pos, speedVector, randScale, 0.15f);
             }
         }
 

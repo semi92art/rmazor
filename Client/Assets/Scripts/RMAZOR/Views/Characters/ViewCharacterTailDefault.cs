@@ -76,8 +76,8 @@ namespace RMAZOR.Views.Characters
         }
 
         public Func<ViewCharacterInfo> GetCharacterObjects { get; set; }
-
-        public void OnAllPathProceed(V2Int _LastPath)
+        
+        public void OnPathCompleted(V2Int _LastPath)
         {
             HideTail();
         }

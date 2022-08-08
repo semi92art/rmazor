@@ -38,15 +38,15 @@ namespace RMAZOR
         #region serialized fields
 
         [SerializeField] private SerializableDictionary<EMazeItemType, bool> filters;
-        
-        public                   int            gameId;
-        [SerializeField] public  int            heapIndex;
-        [SerializeField] private int            selectedIndexCheck   = -1;
-        [SerializeField] private int            loadedLevelIndex     = -1;
-        [SerializeField] private int            loadedLevelHeapIndex = -1;
-        [SerializeField] private bool           fastMode;
-        [SerializeField] private int            page = 1;
-        [SerializeField] private List<MazeInfo> levelsCached;
+        [SerializeField] private List<MazeInfo>                              levelsCached;
+
+        [SerializeField] private int  gameId;
+        [SerializeField] private int  heapIndex;
+        [SerializeField] private int  selectedIndexCheck   = -1;
+        [SerializeField] private int  loadedLevelIndex     = -1;
+        [SerializeField] private int  loadedLevelHeapIndex = -1;
+        [SerializeField] private bool fastMode;
+        [SerializeField] private int  page = 1;
 
         #endregion
 
@@ -54,6 +54,12 @@ namespace RMAZOR
 
         public UnityAction<int> OnSelect;
 
+        public int GameId
+        {
+            get => gameId;
+            set => gameId = value;
+        }
+        
         public List<MazeInfo> Levels
         {
             get => levelsCached;
@@ -94,7 +100,7 @@ namespace RMAZOR
                 false,
                 false)
             {
-                headerHeight = LineHeight * 2f + LineHeight * filters.Count,
+                headerHeight = LineHeight * 2f + LineHeight * filters.Count * 0.5f,
                 drawElementBackgroundCallback = OnDrawElementBackgroundCallback,
                 drawHeaderCallback = OnDrawHeaderCallback,
                 onSelectCallback = _List =>
@@ -216,13 +222,13 @@ namespace RMAZOR
 
         private void InitFilters()
         {
-            var fltrs = Enum.GetValues(typeof(EMazeItemType))
+            var filterKeys = Enum.GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
                 .Except(new[] {EMazeItemType.Block})
                 .ToList();
             filters = new SerializableDictionary<EMazeItemType, bool>();
-            foreach (var filter in fltrs)
-                filters.Add(filter, true);
+            foreach (var filterKey in filterKeys)
+                filters.Add(filterKey, true);
         }
         
         private void OnDrawHeaderCallback(Rect _Rect)
@@ -234,21 +240,41 @@ namespace RMAZOR
             EditorGUI.LabelField(UpdateRect(), $"Levels in heap: {lvls.Count}");
             x = _Rect.width * 0.5f;
             fastMode = EditorGUI.Toggle(UpdateRect(), "Fast mode", fastMode);
-            foreach (var filter in filters
-                .ToList()
-                .Select(_Kvp => _Kvp.Key))
+            var filterKeys = Enum.GetValues(typeof(EMazeItemType))
+                .Cast<EMazeItemType>()
+                .Except(new[] {EMazeItemType.Block})
+                .ToList();
+            for (int i = 0; i < filterKeys.Count; i++)
             {
-                (x, y, w) = (_Rect.x, y + LineHeight, 20f);
-                EditorGUI.DrawRect(UpdateRect(), FilterColors[filter]);
-                (x, w) = (x + w, 20f);
-                filters[filter] = EditorGUI.Toggle(UpdateRect(), filters[filter]);
-                (x, w) = (x + w, 100f);
-                EditorGUI.LabelField(UpdateRect(), filter.ToString());
-                (x, w) = (x + w, 100f);
-                int levelsWithThisFilterCount = Levels
-                    .Count(_Level => _Level.MazeItems
-                        .Any(_Item => _Item.Type == filter));
-                EditorGUI.LabelField(UpdateRect(), $"Count: {levelsWithThisFilterCount}");
+                var key = filterKeys[i];
+                if (i % 2 == 0)
+                {
+                    (x, y, w) = (_Rect.x, y + LineHeight, 20f);
+                    EditorGUI.DrawRect(UpdateRect(), FilterColors[key]);
+                    (x, w) = (x + w, 20f);
+                    filters[key] = EditorGUI.Toggle(UpdateRect(), filters[key]);
+                    (x, w) = (x + w, 100f);
+                    EditorGUI.LabelField(UpdateRect(), key.ToString());
+                    (x, w) = (x + w, 100f);
+                    int levelsWithThisFilterCount = Levels
+                        .Count(_Level => _Level.MazeItems
+                            .Any(_Item => _Item.Type == key));
+                    EditorGUI.LabelField(UpdateRect(), $"Count: {levelsWithThisFilterCount}");
+                }
+                else
+                {
+                    (x, w) = (_Rect.x + 220f, 20f);
+                    EditorGUI.DrawRect(UpdateRect(), FilterColors[key]);
+                    (x, w) = (x + w, 20f);
+                    filters[key] = EditorGUI.Toggle(UpdateRect(), filters[key]);
+                    (x, w) = (x + w, 100f);
+                    EditorGUI.LabelField(UpdateRect(), key.ToString());
+                    (x, w) = (x + w, 100f);
+                    int levelsWithThisFilterCount = Levels
+                        .Count(_Level => _Level.MazeItems
+                            .Any(_Item => _Item.Type == key));
+                    EditorGUI.LabelField(UpdateRect(), $"Count: {levelsWithThisFilterCount}");
+                }
             }
         }
         
@@ -308,7 +334,7 @@ namespace RMAZOR
                 {
                     const float w1 = 2f * 40f - 10f;
                     EditorGUI.DrawRect(new Rect(
-                        _Rect.x + 40f + _Rect.width - 3f * 40f + w1 / filters.Count * k,
+                        _Rect.x + 40f + 5f + _Rect.width - 3f * 40f + w1 / filters.Count * k,
                         _Rect.y,
                         w1 / filters.Count,
                         LineHeight), FilterColors[filter]);
@@ -345,7 +371,7 @@ namespace RMAZOR
             {EMazeItemType.Springboard,      Color.black},
             {EMazeItemType.Hammer,           new Color(1f, 0.54f, 0.55f)},
             {EMazeItemType.Spear,            new Color(0.05f, 0.05f, 0.37f)},
-            {EMazeItemType.Diode,            new Color(0.71f, 0.46f, 0.51f)},
+            {EMazeItemType.Diode,            new Color(0.37f, 0.07f, 0.25f)},
         };
         
         private static LevelsSaver GetLevelsSaver()

@@ -20,7 +20,7 @@ namespace RMAZOR.Models.ItemProceeders
         bool                     AllPathsProceeded { get; }
         Dictionary<V2Int, bool>  PathProceeds      { get; }
         event PathProceedHandler PathProceedEvent;
-        event PathProceedHandler AllPathsProceededEvent;
+        event PathProceedHandler PathCompleted;
         void ProceedPathItem(V2Int _PathItem);
     }
     
@@ -51,7 +51,7 @@ namespace RMAZOR.Models.ItemProceeders
         public bool                         AllPathsProceeded { get; private set; }
         public Dictionary<V2Int, bool>      PathProceeds      { get; private set; }
         public event PathProceedHandler     PathProceedEvent;
-        public event PathProceedHandler     AllPathsProceededEvent;
+        public event PathProceedHandler     PathCompleted;
         public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { get; set; }
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
@@ -107,7 +107,7 @@ namespace RMAZOR.Models.ItemProceeders
                     return;
             }
             AllPathsProceeded = true;
-            AllPathsProceededEvent?.Invoke(_PathItem);
+            PathCompleted?.Invoke(_PathItem);
         }
         
         #endregion

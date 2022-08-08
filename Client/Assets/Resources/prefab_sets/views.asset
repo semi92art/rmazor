@@ -37,9 +37,9 @@ MonoBehaviour:
         type: 3}
       name: trap_increasing
       bundle: 0
-    - item: {fileID: 1560829925993726868, guid: c2c1f5da866cb11419b2a869e97445e1,
+    - item: {fileID: 1560829925993726868, guid: 8e3201c751929644b87043a76a29233a,
         type: 3}
-      name: character_death
+      name: character_legs
       bundle: 0
     - item: {fileID: 21300000, guid: 9e9b57a1039f2d14c940fa36dfe59f1d, type: 3}
       name: trap_react_spikes_sprite

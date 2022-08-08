@@ -26,10 +26,9 @@ using static Common.Managers.Achievements.AchievementKeys;
 
 namespace RMAZOR.Views.Common
 {
-    public interface IViewLevelStageController : IOnLevelStageChanged, IInit
+    public interface IViewLevelStageController : IOnLevelStageChanged, IInit, IOnPathCompleted
     {
         void RegisterProceeders(List<IOnLevelStageChanged> _Proceeder, int _ExecuteOrder);
-        void OnAllPathProceed(V2Int                        _LastPath);
     }
 
     public class ViewLevelStageController : InitBase, IViewLevelStageController
@@ -158,7 +157,7 @@ namespace RMAZOR.Views.Common
                 dict[_ExecuteOrder] = _Proceeders;
         }
 
-        public void OnAllPathProceed(V2Int _LastPath)
+        public void OnPathCompleted(V2Int _LastPath)
         {
             if (CommonData.Release)
                 Model.LevelStaging.FinishLevel();

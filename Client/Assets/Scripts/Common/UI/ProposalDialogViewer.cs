@@ -129,6 +129,7 @@ namespace Common.UI
                         CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                     Object.Destroy(panel.PanelObject.gameObject);
                     _OnFinish?.Invoke();
+                    CurrentPanel = null;
                 }));
             panel.AppearingState = EAppearingState.Dissapearing;
         }

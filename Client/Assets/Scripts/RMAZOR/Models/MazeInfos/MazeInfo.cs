@@ -39,8 +39,7 @@ namespace RMAZOR.Models.MazeInfos
             get => additionalInfo;
             set => additionalInfo = value;
         }
-
-
+        
         public override int GetHashCode()
         {
             unchecked
@@ -48,6 +47,8 @@ namespace RMAZOR.Models.MazeInfos
                 int hash = 17;
                 hash = hash * 23 + Size.GetHashCode();
                 foreach (var item in MazeItems)
+                    hash = hash * 23 + item.GetHashCode();
+                foreach (var item in PathItems)
                     hash = hash * 23 + item.GetHashCode();
                 return hash;
             }

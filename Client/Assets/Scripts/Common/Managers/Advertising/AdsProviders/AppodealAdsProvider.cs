@@ -16,6 +16,8 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public class AppodealAdsProvider : AdsProviderCommonBase, IAppodealAdsProvider
     {
+        private GlobalGameSettings GlobalGameSettings { get; }
+
         #region nonpublic members
 
         protected override string AppId => Application.isEditor ? string.Empty : base.AppId;
@@ -26,15 +28,19 @@ namespace Common.Managers.Advertising.AdsProviders
         #endregion
         
         #region inject
-        
+
         private AppodealAdsProvider(
             GlobalGameSettings      _GlobalGameSettings,
             IAppodealInterstitialAd _InterstitialAd,
-            IAppodealRewardedAd     _RewardedAd) 
+            IAppodealRewardedAd     _RewardedAd,
+            IAppodealRewardedAd     _RewardedAdNonSkippable)
             : base(
-                _GlobalGameSettings, 
-                _InterstitialAd, 
-                _RewardedAd) { }
+                _InterstitialAd,
+                _RewardedAd,
+                _RewardedAdNonSkippable)
+        {
+            GlobalGameSettings = _GlobalGameSettings;
+        }
 
         #endregion
 

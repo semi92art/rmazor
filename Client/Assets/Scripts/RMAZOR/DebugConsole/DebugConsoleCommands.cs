@@ -24,24 +24,86 @@ namespace RMAZOR.DebugConsole
         {
             var commandArgsList = new List<DebugCommandArgs>
             {
-                new DebugCommandArgs("help",             Help, "Print command list."),
-                new DebugCommandArgs("restart",          Restart, "Restart game."),
-                new DebugCommandArgs("load",             Load, "Reload specified level."),
-                new DebugCommandArgs("reload",           Reload, "Reload current level."),
-                new DebugCommandArgs("clc",              ClearConsole, "Clear console."),
-                new DebugCommandArgs("set_lang",         SetLanguage, "set language"),
-                new DebugCommandArgs("target_fps",       SetTargetFps, "Set target frame rate"),
-                new DebugCommandArgs("enable_ads",       EnableAds, "Enable or disable advertising (true/false)"),
-                new DebugCommandArgs("load_level",       LoadLevel, "Load level by index"),
-                new DebugCommandArgs("set_money",        SetMoney, "Set money count"),
-                new DebugCommandArgs("rate_game_panel",  ShowRateGamePanel, "Show rate game panel"),
-                new DebugCommandArgs("int_conn",         InternetConnectionAvailable, "Check if internet connection available"),
-                new DebugCommandArgs("show_money",       ShowMoney, "Show money"),
-                new DebugCommandArgs("run_cor",          GetRunningCoroutinesCount, "Show running coroutines count"),
-                new DebugCommandArgs("dis_rot_coms",     ShowDisabledRotationCommands, "Show disabled rotation commands on this moment"),
-                new DebugCommandArgs("dis_mov_coms",     ShowDisabledMovementCommands, "Show disabled movement commands on this moment"),
-                new DebugCommandArgs("mute_music",       MuteGameMusic, "Mute/unmute game music, true/false"),
-                new DebugCommandArgs("show_ad",          ShowAd, "Show ad rewarded/interstitial"),
+                new DebugCommandArgs(
+                    "help",             
+                    Help, 
+                    "Print command list."),
+                new DebugCommandArgs(
+                    "restart",         
+                    Restart, 
+                    "Restart game."),
+                new DebugCommandArgs(
+                    "load",           
+                    Load, 
+                    "Reload specified level."),
+                new DebugCommandArgs(
+                    "reload",        
+                    Reload, 
+                    "Reload current level."),
+                new DebugCommandArgs(
+                    "clc",            
+                    ClearConsole, 
+                    "Clear console."),
+                new DebugCommandArgs(
+                    "set_lang",    
+                    SetLanguage, 
+                    "set language"),
+                new DebugCommandArgs(
+                    "target_fps",    
+                    SetTargetFps, 
+                    "Set target frame rate"),
+                new DebugCommandArgs(
+                    "enable_ads",  
+                    EnableAds, 
+                    "Enable or disable advertising (true/false)"),
+                new DebugCommandArgs(
+                    "load_level",   
+                    LoadLevel, 
+                    "Load level by index"),
+                new DebugCommandArgs(
+                    "load_next_level",   
+                    LoadNextLevel, 
+                    "Load next level"),
+                new DebugCommandArgs(
+                    "load_prev_level",   
+                    LoadPreviousLevel, 
+                    "Load previous level"),
+                new DebugCommandArgs(
+                    "set_money",   
+                    SetMoney, 
+                    "Set money count"),
+                new DebugCommandArgs(
+                    "rate_game_panel",
+                    ShowRateGamePanel, 
+                    "Show rate game panel"),
+                new DebugCommandArgs(
+                    "int_conn",     
+                    InternetConnectionAvailable,
+                    "Check if internet connection available"),
+                new DebugCommandArgs(
+                    "show_money",    
+                    ShowMoney,
+                    "Show money"),
+                new DebugCommandArgs(
+                    "run_cor",     
+                    GetRunningCoroutinesCount,
+                    "Show running coroutines count"),
+                new DebugCommandArgs(
+                    "dis_rot_coms",
+                        ShowDisabledRotationCommands,
+                    "Show disabled rotation commands on this moment"),
+                new DebugCommandArgs(
+                    "dis_mov_coms",
+                    ShowDisabledMovementCommands, 
+                    "Show disabled movement commands on this moment"),
+                new DebugCommandArgs(
+                    "mute_music",    
+                    MuteGameMusic, 
+                    "Mute/unmute game music, true/false"),
+                new DebugCommandArgs(
+                    "show_ad",      
+                    ShowAd, 
+                    "Show ad rewarded/interstitial"),
             };
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
@@ -190,12 +252,27 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine("Wrong. Need level index!");
                 return;
             }
+            levelIndex -= 1;
             Controller.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object [] { levelIndex - 1 },
+                new object [] { levelIndex },
                 true);
         }
 
+        private static void LoadNextLevel(string[] _Args)
+        {
+            Controller.CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
+        }
+        
+        private static void LoadPreviousLevel(string[] _Args)
+        {
+            long levelIndex = Controller.Model.LevelStaging.LevelIndex - 1;
+            Controller.CommandsProceeder.RaiseCommand(
+                EInputCommand.LoadLevelByIndex, 
+                new object [] { levelIndex },
+                true);
+        }
+        
         private static void SetMoney(string[] _Args)
         {
             if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int moneyCount))

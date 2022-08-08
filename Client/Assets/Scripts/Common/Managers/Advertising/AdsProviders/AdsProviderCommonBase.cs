@@ -48,16 +48,19 @@ namespace Common.Managers.Advertising.AdsProviders
         
         protected override void InitRewardedAd()
         {
+            m_RewardedAd.Skippable = true;
             m_RewardedAd.Init(AppId, RewardedUnitId);
         }
         
         protected override void InitRewardedAdNonSkippable()
         {
+            m_RewardedNonSkippableAd.Skippable = false;
             m_RewardedNonSkippableAd.Init(AppId, RewardedNonSkippableUnitId);
         }
     
         protected override void InitInterstitialAd()
         {
+            m_InterstitialAd.Skippable = true;
             m_InterstitialAd.Init(AppId, InterstitialUnitId);
         }
         

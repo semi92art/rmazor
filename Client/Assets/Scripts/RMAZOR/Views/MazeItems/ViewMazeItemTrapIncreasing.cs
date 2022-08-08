@@ -15,7 +15,6 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -305,8 +304,10 @@ namespace RMAZOR.Views.MazeItems
                 break;
             }
             if (death)
+            {
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
                     new object[] { CoordinateConverter.ToLocalCharacterPosition(cPos) });
+            }
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

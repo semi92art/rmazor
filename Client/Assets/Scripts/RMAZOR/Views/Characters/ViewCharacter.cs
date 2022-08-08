@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Constants;
+﻿using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
@@ -38,15 +37,17 @@ namespace RMAZOR.Views.Characters
 
         private   IViewCharacterHead          Head              { get; }
         protected IViewCharacterTail          Tail              { get; }
+        private   IViewCharacterLegs          Legs              { get; }
         private   IViewCharacterEffector      Effector          { get; }
         private   IManagersGetter             Managers          { get; }
         private   IMazeShaker                 MazeShaker        { get; }
         private   IViewInputCommandsProceeder CommandsProceeder { get; }
         protected IViewGameTicker             ViewGameTicker    { get; }
 
-        protected ViewCharacter(
+        private ViewCharacter(
             IViewCharacterHead          _Head,
             IViewCharacterTail          _Tail,
+            IViewCharacterLegs          _Legs,
             IViewCharacterEffector      _Effector,
             ICoordinateConverter        _CoordinateConverter,
             IModelGame                  _Model,
@@ -62,6 +63,7 @@ namespace RMAZOR.Views.Characters
         {
             Head              = _Head;
             Tail              = _Tail;
+            Legs              = _Legs;
             Effector          = _Effector;
             Managers          = _Managers;
             MazeShaker        = _MazeShaker;
@@ -83,6 +85,7 @@ namespace RMAZOR.Views.Characters
                 m_Activated        = value;
                 Head.Activated     = value;
                 Tail.Activated     = value;
+                Legs.Activated     = value;
                 Effector.Activated = value;
             }
         }
@@ -100,8 +103,10 @@ namespace RMAZOR.Views.Characters
                 Managers.AudioManager.InitClip(args);
             }
             Tail.GetCharacterObjects = GetObjects;
+            Legs.GetCharacterObjects = GetObjects;
             Head.Init();
             Tail.Init();
+            Legs.Init();
             MazeShaker.Init();
             base.Init();
         }
@@ -116,11 +121,12 @@ namespace RMAZOR.Views.Characters
             Head.OnRotationFinished(_Args);
         }
 
-        public override void OnAllPathProceed(V2Int _LastPath)
+        public override void OnPathCompleted(V2Int _LastPath)
         {
-            Head.OnAllPathProceed(_LastPath);
-            Tail.OnAllPathProceed(_LastPath);
-            Effector.OnAllPathProceed(_LastPath);
+            Head.OnPathCompleted(_LastPath);
+            Tail.OnPathCompleted(_LastPath);
+            Legs.OnPathCompleted(_LastPath);
+            Effector.OnPathCompleted(_LastPath);
         }
 
         public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
@@ -132,6 +138,7 @@ namespace RMAZOR.Views.Characters
             m_IsMoving = true;
             Head.OnCharacterMoveStarted(_Args);
             Tail.OnCharacterMoveStarted(_Args);
+            Legs.OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
             CommandsProceeder.LockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
         }
@@ -142,6 +149,7 @@ namespace RMAZOR.Views.Characters
                 return;
             m_NewPosition = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
             Tail.OnCharacterMoveContinued(_Args);
+            Legs.OnCharacterMoveContinued(_Args);
         }
 
         public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
@@ -160,6 +168,7 @@ namespace RMAZOR.Views.Characters
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
             Head.OnCharacterMoveFinished(_Args);
             Tail.OnCharacterMoveFinished(_Args);
+            Legs.OnCharacterMoveFinished(_Args);
             Effector.OnCharacterMoveFinished(_Args);
             Cor.Run(MazeShaker.HitMazeCoroutine(_Args));
             int randClipId = 1 + Mathf.FloorToInt(AudioCharacterEndMoveCount * Random.value);
@@ -176,7 +185,8 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
-                    SetDefaultPosition();
+                    if (_Args.PreviousStage == ELevelStage.CharacterKilled)
+                        SetDefaultPosition();
                     EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
@@ -188,6 +198,7 @@ namespace RMAZOR.Views.Characters
             }
             Head.OnLevelStageChanged(_Args);
             Tail.OnLevelStageChanged(_Args);
+            Legs.OnLevelStageChanged(_Args);
             Effector.OnLevelStageChanged(_Args);
             MazeShaker.OnLevelStageChanged(_Args);
         }
@@ -195,6 +206,7 @@ namespace RMAZOR.Views.Characters
         public override void Appear(bool _Appear)
         {
             Head.Appear(_Appear);
+            Legs.Appear(_Appear);
         }
 
         #endregion
@@ -223,7 +235,7 @@ namespace RMAZOR.Views.Characters
             return new AudioClipArgs($"character_end_move_{_Index}", EAudioClipType.GameSound);
         }
         
-        protected void SetPosition(Vector2 _Position)
+        private void SetPosition(Vector2 _Position)
         {
             ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
         }

@@ -2,6 +2,7 @@
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
 using UnityEngine;
@@ -110,15 +111,12 @@ namespace RMAZOR.Views.Coordinate_Converters
 
         public Vector2 ToLocalMazeItemPosition(Vector2 _Point)
         {
-            return ToLocalMazePosition(_Point)
-                .PlusX(ScaleValue * 0.5f);
+            return ToLocalMazePosition(_Point + Vector2.right * .5f);
         }
 
         public Vector2 ToLocalCharacterPosition(Vector2 _Point)
         {
-            return ToLocalMazePosition(_Point)
-                .PlusX(ScaleValue * 0.5f)
-                .PlusY(ScaleValue * 0.5f);
+            return ToLocalMazePosition(_Point + Vector2.one * .5f);
         }
 
         #endregion

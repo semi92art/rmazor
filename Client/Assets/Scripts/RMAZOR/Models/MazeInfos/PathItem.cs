@@ -24,5 +24,16 @@ namespace RMAZOR.Models.MazeInfos
             get => blank;
             set => blank = value;
         }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + Position.GetHashCode();
+                hash = hash * 23 + Blank.GetHashCode();
+                return hash;
+            }
+        }
     }
 }

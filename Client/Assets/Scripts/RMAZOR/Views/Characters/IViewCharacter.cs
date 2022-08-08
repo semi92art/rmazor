@@ -14,10 +14,10 @@ namespace RMAZOR.Views.Characters
         ICharacterMoveStarted,
         ICharacterMoveContinued,
         ICharacterMoveFinished,
+        IOnPathCompleted,
         IAppear
     {
         ViewCharacterInfo GetObjects();
         void              OnRotationFinished(MazeRotationEventArgs _Args);
-        void              OnAllPathProceed(V2Int                   _LastPath);
     }
 }

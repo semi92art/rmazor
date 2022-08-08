@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -23,13 +22,14 @@ namespace RMAZOR.Views.MazeItems
     public partial class ViewMazeItemProt : MonoBehaviour, IViewMazeItem
     {
         #region serialized fields
+
+        [SerializeField] private ViewMazeItemProps props;
+        [SerializeField] private float             scale;
         
-        [SerializeField]                  private ViewMazeItemProps       props;
-        [SerializeField, HideInInspector] private ShapeRenderer           shape;
-        [SerializeField, HideInInspector] private SpriteRenderer          hint;
-        [SerializeField, HideInInspector] private V2Int                   mazeSize;
+        [SerializeField, HideInInspector] private ShapeRenderer                     shape;
+        [SerializeField, HideInInspector] private SpriteRenderer                    hint;
+        [SerializeField, HideInInspector] private V2Int                             mazeSize;
         [SerializeField, HideInInspector] private CoordinateConverterRmazorInEditor converter;
-        [SerializeField]                  private float                   scale;
         
         #endregion
 

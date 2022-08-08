@@ -16,7 +16,8 @@ namespace RMAZOR.Views.MazeItemGroups
         IInit,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
-        ICharacterMoveContinued
+        ICharacterMoveContinued,
+        IOnPathCompleted
     {
         List<IViewMazeItemPath> PathItems                { get; }
         void                    OnPathProceed(V2Int _PathItem);
@@ -25,23 +26,23 @@ namespace RMAZOR.Views.MazeItemGroups
     public class ViewMazePathItemsGroup : InitBase, IViewMazePathItemsGroup
     {
         #region nonpublic members
-        
-        private SpawnPool<IViewMazeItemPath> m_PathsPool;
-        private bool                         m_FirstMoveDone;
-        private long                         m_CurrentLevelMoney;
+
+        protected SpawnPool<IViewMazeItemPath> PathsPool;
+        private   bool                         m_FirstMoveDone;
+        private   long                         m_CurrentLevelMoney;
         
         #endregion
 
         #region inject
 
-        private GlobalGameSettings GlobalGameSettings { get; }
-        private ViewSettings       ViewSettings       { get; }
-        private ModelSettings      ModelSettings      { get; }
-        private IModelGame         Model              { get; }
-        private IMazeItemsCreator  MazeItemsCreator   { get; }
-        private IMoneyCounter      MoneyCounter       { get; }
+        protected GlobalGameSettings GlobalGameSettings { get; }
+        protected ViewSettings       ViewSettings       { get; }
+        protected ModelSettings      ModelSettings      { get; }
+        protected IModelGame         Model              { get; }
+        protected IMazeItemsCreator  MazeItemsCreator   { get; }
+        protected IMoneyCounter      MoneyCounter       { get; }
 
-        private ViewMazePathItemsGroup(
+        protected ViewMazePathItemsGroup(
             GlobalGameSettings _GlobalGameSettings,
             ViewSettings       _ViewSettings,
             ModelSettings      _ModelSettings,
@@ -65,7 +66,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public override void Init()
         {
-            if (m_PathsPool == null)
+            if (PathsPool == null)
                 InitPoolsOnStart();
             base.Init();
         }
@@ -76,7 +77,7 @@ namespace RMAZOR.Views.MazeItemGroups
             item.Collect(true);
         }
 
-        public void OnLevelStageChanged(LevelStageArgs _Args)
+        public virtual void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.LevelStage)
             {
@@ -84,8 +85,8 @@ namespace RMAZOR.Views.MazeItemGroups
                 {
                     m_FirstMoveDone = false;
                     DeactivateAllPaths();
-                    MazeItemsCreator.InitPathItems(Model.Data.Info, m_PathsPool);
-                    PathItems = m_PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
+                    MazeItemsCreator.InitPathItems(Model.Data.Info, PathsPool);
+                    PathItems = PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
                     CollectStartPathItemIfWasNot(false);
                     break;
                 }
@@ -104,7 +105,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 item.OnLevelStageChanged(_Args);
         }
         
-        public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
+        public virtual void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             CollectStartPathItemIfWasNot(true);
             var pathItems = RmazorUtils.GetFullPath(_Args.From, _Args.To)
@@ -124,6 +125,10 @@ namespace RMAZOR.Views.MazeItemGroups
             foreach (var item in PathItems)
                 item.OnCharacterMoveContinued(_Args);
         }
+        
+        public virtual void OnPathCompleted(V2Int _LastPath)
+        {
+        }
 
         #endregion
         
@@ -131,7 +136,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private void InitPoolsOnStart()
         {
-            m_PathsPool = new SpawnPool<IViewMazeItemPath>();
+            PathsPool = new SpawnPool<IViewMazeItemPath>();
             var pathItems = Enumerable
                 .Range(0, ViewSettings.pathItemsCount)
                 .Select(_ => MazeItemsCreator.CloneDefaultPath())
@@ -141,12 +146,12 @@ namespace RMAZOR.Views.MazeItemGroups
                 item.MoneyItemCollected -= OnMoneyItemCollected;
                 item.MoneyItemCollected += OnMoneyItemCollected;
             }
-            m_PathsPool.AddRange(pathItems);
+            PathsPool.AddRange(pathItems);
         }
         
         private void DeactivateAllPaths()
         {
-            m_PathsPool.DeactivateAll();
+            PathsPool.DeactivateAll();
         }
         
         private void CollectStartPathItemIfWasNot(bool _CheckOnMoveStarted)
@@ -166,5 +171,7 @@ namespace RMAZOR.Views.MazeItemGroups
         }
 
         #endregion
+
+
     }
 }

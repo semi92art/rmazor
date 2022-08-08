@@ -1,6 +1,5 @@
-﻿using Common.Entities;
+﻿using Common;
 using Common.SpawnPools;
-using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ItemProceeders.Additional;
 
 namespace RMAZOR.Views.Characters
@@ -9,8 +8,6 @@ namespace RMAZOR.Views.Characters
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
-        ICharacterMoveFinished
-    {
-        void OnAllPathProceed(V2Int _LastPos);
-    }
+        ICharacterMoveFinished,
+        IOnPathCompleted { }
 }

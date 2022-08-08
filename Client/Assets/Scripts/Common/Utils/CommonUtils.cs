@@ -147,7 +147,7 @@ namespace Common.Utils
 #if UNITY_ANDROID
                     MiniIT.Utils.AdvertisingIdFetcher.RequestAdvertisingId(_AdvertisingId =>
                     {
-                        lock (@lock)
+                        lock (Lock)
                         {
                             if (result.Result != EEntityResult.Pending)
                                 return;

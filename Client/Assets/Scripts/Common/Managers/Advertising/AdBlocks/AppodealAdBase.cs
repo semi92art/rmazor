@@ -8,6 +8,13 @@ namespace Common.Managers.Advertising.AdBlocks
 {
     public abstract class AppodealAdBase : AdBase
     {
+        #region constants
+
+        private const string PlacementDefault      = "default";
+        private const string PlacementNonSkippable = "non_skippable";
+
+        #endregion
+        
         #region nonpublic members
 
         protected override string AdSource   => AdvertisingNetworks.Appodeal;
@@ -41,7 +48,8 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClicked = _OnClicked;
             if (!Ready) 
                 return;
-            Appodeal.Show(ShowStyle, "default");
+            string placement = Skippable ? PlacementDefault : PlacementNonSkippable;
+            Appodeal.Show(ShowStyle, placement);
         }
 
         #endregion
