@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.CameraProviders;
+using Common.Debugging;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -34,6 +35,8 @@ namespace Mono_Installers
         public GlobalGameSettings globalGameSettings;
         public ModelSettings      modelSettings;
         public ViewSettings       viewSettings;
+        public GameObject         debugConsoleView;
+        public GameObject         debugConsoleViewFake;
         
         public override void InstallBindings()
         {
@@ -68,6 +71,9 @@ namespace Mono_Installers
             #endregion
 
             #region managers
+
+            Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleView).AsSingle();
+            // Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleViewFake).AsSingle();
             
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>() .AsSingle();
             Container.Bind<IUnityAnalyticsProvider>()      .To<UnityAnalyticsProvider>()       .AsSingle();

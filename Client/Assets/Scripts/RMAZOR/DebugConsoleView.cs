@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
 using Common.Entities.UI;
 using Common.Exceptions;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
@@ -20,43 +22,25 @@ using UnityEngine.UI;
 namespace RMAZOR
 {
     public delegate void VisibilityChangedHandler(bool _Visible);
-    
-    public class DebugConsoleView : MonoBehaviour
+
+    public interface IDebugConsoleView
     {
-        #region singleton
-        
-        private static DebugConsoleView _instance;
-        public static DebugConsoleView Instance => _instance.IsNull() ? _instance = Create() : _instance;
+        event VisibilityChangedHandler VisibilityChanged;
+        bool                           Visible { get; }
 
-        #endregion
-        
-        #region factory
-
-        private static DebugConsoleView Create()
-        {
-            var canvas = UIUtils.UiCanvas(
-                "DebugConsoleCanvas",
-                RenderMode.ScreenSpaceOverlay,
-                true,
-                1,
-                AdditionalCanvasShaderChannels.None,
-                CanvasScaler.ScaleMode.ScaleWithScreenSize,
-                new Vector2Int(1920,1080),
-                CanvasScaler.ScreenMatchMode.Shrink,
-                0f,
-                100,
-                true,
-                GraphicRaycaster.BlockingObjects.None);
-            
-            DontDestroyOnLoad(canvas);
-
-            return new PrefabSetManager(new AssetBundleManagerFake()).InitUiPrefab(
-                UIUtils.UiRectTransform(canvas.RTransform(), RectTransformLite.FullFill),
-                "debug_console", "console")?.GetComponent<DebugConsoleView>();
-        }
-
-        #endregion
-        
+        void Init(
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IAdsManager                 _AdsManager,
+            IScoreManager               _ScoreManager,
+            IAudioManager               _AudioManager);
+        void EnableDebug(bool   _Enable);
+        void SetVisibility(bool _Visible);
+        void Monitor(string     _Name, bool _Enable, System.Func<object> _Value);
+    }
+    
+    public class DebugConsoleView : MonoBehInitBase, IDebugConsoleView
+    {
         #region serialized fields
 
         [SerializeField] private GameObject      viewContainer; 
@@ -69,19 +53,20 @@ namespace RMAZOR
 
         #region nonpublic members
 
+        private int  m_CurrentCommand;
+        private int  m_Index;
+        private bool m_IsVisible;
+        private bool m_EnableDebug;
+        
         private Vector3 m_SwipeFirstPosition;
         private Vector3 m_SwipeLastPosition;
-        private float   m_SwipeDragThreshold;
-        private int     m_CurrentCommand;
-        private int     m_Index;
-        private bool    m_IsVisible;
-        private bool    m_EnableDebug;
  
         private Vector2 m_FirstPressPos;
         private Vector2 m_SecondPressPos;
         private Vector2 m_CurrentSwipe;
 
         private IViewInputCommandsProceeder m_CommandsProceeder;
+        private IDebugConsoleController        Controller { get; } = new DebugConsoleController();
         
         private readonly Dictionary<string, System.Func<object>> m_MonitoringValuesDict = 
             new Dictionary<string, System.Func<object>>();
@@ -90,7 +75,6 @@ namespace RMAZOR
         
         #region api
 
-        public IDebugConsoleController        Controller { get; } = new DebugConsoleController();
         public event VisibilityChangedHandler VisibilityChanged;
         
         public void Init(
@@ -101,8 +85,17 @@ namespace RMAZOR
             IAudioManager               _AudioManager)
         {
             m_CommandsProceeder = _CommandsProceeder;
-            Controller.Init(_Model, _CommandsProceeder, _AdsManager, _ScoreManager, _AudioManager);
+            Controller.Init(
+                _Model,
+                _CommandsProceeder, 
+                _AdsManager,
+                _ScoreManager,
+                _AudioManager);
+            SetCanvas();
+            Init();
         }
+
+        public bool Visible => viewContainer.activeSelf;
         
         public void EnableDebug(bool _Enable)
         {
@@ -131,6 +124,7 @@ namespace RMAZOR
 
             inputField.ActivateInputField();
             inputField.Select();
+            inputField.caretPosition = inputField.text.Length;
         }
 
         public void DownCommand()
@@ -146,6 +140,7 @@ namespace RMAZOR
             }
             inputField.ActivateInputField();
             inputField.Select();
+            inputField.caretPosition = inputField.text.Length;
         }
 
         public void RunCommand()
@@ -156,16 +151,37 @@ namespace RMAZOR
             inputField.Select();
             m_CurrentCommand = 0;
         }
+        
+        public void SetVisibility(bool _Visible)
+        {
+            Dbg.Log("Set Debug Console visibility: " + _Visible);
+            VisibilityChanged?.Invoke(_Visible);
+            var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
+                .Concat(RmazorUtils.MoveAndRotateCommands);
+            if (_Visible)
+                m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));
+            else
+                m_CommandsProceeder.UnlockCommands(commands, nameof(DebugConsoleView));
+            m_IsVisible = _Visible;
+            viewContainer.SetActive(_Visible);
+            if (inputField.text == "`")
+                inputField.text = "";
+            
+            textScrollbar.verticalNormalizedPosition = 0f;
+            inputField.ActivateInputField();
+            inputField.Select();
+        }
 
         #endregion
 
         #region engine methods
 
-        private void Start()
+        private IEnumerator Start()
         {
+            while (!Initialized)
+                yield return null;
             Controller.OnLogChanged += OnLogChanged;
             UpdateLogStr(Controller.Log);
-            m_SwipeDragThreshold = GraphicUtils.ScreenSize.x * 0.2f;
             SetVisibility(false);
         }
 
@@ -178,6 +194,37 @@ namespace RMAZOR
         {
             if (!m_EnableDebug)
                 return;
+            ProceedInputCommands();
+            ProceedTouchScreenKeyboard();
+            ShowMonitoringParameters();
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void SetCanvas()
+        {
+            var canvas = UIUtils.UiCanvas(
+                "DebugConsoleCanvas",
+                RenderMode.ScreenSpaceOverlay,
+                true,
+                1,
+                AdditionalCanvasShaderChannels.None,
+                CanvasScaler.ScaleMode.ScaleWithScreenSize,
+                new Vector2Int(1920,1080),
+                CanvasScaler.ScreenMatchMode.Shrink,
+                0f,
+                100,
+                true,
+                GraphicRaycaster.BlockingObjects.None);
+            DontDestroyOnLoad(canvas);
+            transform.SetParent(canvas.transform);
+            gameObject.RTransform().SetParams(RectTransformLite.FullFill);
+        }
+
+        private void ProceedInputCommands()
+        {
             if (LeanInput.GetDown(KeyCode.Escape) && m_IsVisible)
                 ToggleVisibility();
             if (LeanInput.GetDown(KeyCode.Return))
@@ -190,39 +237,20 @@ namespace RMAZOR
                 UpCommand();
             if (LeanInput.GetDown(KeyCode.DownArrow))
                 DownCommand();
+        }
 
-            if (LeanInput.GetTouchCount() > 0)
-            {
-                CommonUtils.GetTouch(0, out _, out Vector2 pos, out _, out bool began, out bool ended);
-                if (began)
-                    m_FirstPressPos = pos;
-                else if (ended)
-                {
-                    m_SecondPressPos = pos;
-                    m_CurrentSwipe = new Vector2(
-                        m_SecondPressPos.x - m_FirstPressPos.x, 
-                        m_SecondPressPos.y - m_FirstPressPos.y);
-                    if (m_CurrentSwipe.magnitude < m_SwipeDragThreshold)
-                    {
-                        Dbg.Log("m_CurrentSwipe.magnitude: " + m_CurrentSwipe.magnitude + ", m_SwipeDragThreshold: " + m_SwipeDragThreshold);
-                        return;
-                    }
-                    m_CurrentSwipe.Normalize();
-                    if (Mathf.Abs(m_CurrentSwipe.x) > Mathf.Abs(m_CurrentSwipe.y)
-                        && m_CurrentSwipe.x < 0
-                        && !m_IsVisible)
-                    {
-                        ToggleVisibility();
-                    }
-                }
-            }
-            if (m_IsVisible)
-            {
-                var sb = new StringBuilder();
-                foreach ((string key, var value) in m_MonitoringValuesDict)
-                    sb.AppendLine(key + " " + value);
-                monitoringValuesArea.text = sb.ToString();
-            }
+        private void ShowMonitoringParameters()
+        {
+            if (!m_IsVisible) 
+                return;
+            var sb = new StringBuilder();
+            foreach ((string key, var value) in m_MonitoringValuesDict)
+                sb.AppendLine(key + " " + value);
+            monitoringValuesArea.text = sb.ToString();
+        }
+
+        private void ProceedTouchScreenKeyboard()
+        {
             if (inputField.touchScreenKeyboard == null)
                 return;
             switch (inputField.touchScreenKeyboard.status)
@@ -239,35 +267,12 @@ namespace RMAZOR
                     throw new SwitchCaseNotImplementedException(inputField.touchScreenKeyboard.status);
             }
         }
-
-        #endregion
-
-        #region nonpublic methods
-
+        
         private void ToggleVisibility()
         {
             SetVisibility(!viewContainer.activeSelf);
-            textScrollbar.verticalNormalizedPosition = 0f;
-            inputField.ActivateInputField();
-            inputField.Select();
         }
 
-        private void SetVisibility(bool _Visible)
-        {
-            Dbg.Log("Set Debug Console visibility: " + _Visible);
-            VisibilityChanged?.Invoke(_Visible);
-            var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
-                .Concat(RmazorUtils.MoveAndRotateCommands);
-            if (_Visible)
-                m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));
-            else
-                m_CommandsProceeder.UnlockCommands(commands, nameof(DebugConsoleView));
-            m_IsVisible = _Visible;
-            viewContainer.SetActive(_Visible);
-            if (inputField.text == "`")
-                inputField.text = "";
-        }
-        
         private void OnLogChanged(string[] _NewLog)
         {
             UpdateLogStr(_NewLog);
