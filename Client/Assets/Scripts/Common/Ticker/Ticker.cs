@@ -6,9 +6,13 @@ namespace Common.Ticker
 {
     public interface ITicker
     {
+        float Time { get; }
+    }
+
+    public interface IUnityTicker : ITicker
+    {
         event UnityAction Paused;
         event UnityAction UnPaused;
-        float             Time           { get; }
         float             TimeUnscaled   { get; }
         float             DeltaTime      { get; }
         float             FixedTime      { get; }
@@ -20,10 +24,10 @@ namespace Common.Ticker
         void              ClearRegisteredObjects();
     }
 
-    public interface IViewGameTicker  : ITicker { }
-    public interface IModelGameTicker : ITicker { }
-    public interface IUITicker        : ITicker { }
-    public interface ICommonTicker    : ITicker { }
+    public interface IViewGameTicker  : IUnityTicker { }
+    public interface IModelGameTicker : IUnityTicker { }
+    public interface IUITicker        : IUnityTicker { }
+    public interface ICommonTicker    : IUnityTicker { }
     
     public abstract class Ticker : ITicker
     {

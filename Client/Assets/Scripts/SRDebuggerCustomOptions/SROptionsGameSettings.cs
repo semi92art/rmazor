@@ -36,10 +36,12 @@ namespace SRDebuggerCustomOptions
         private const string CategoryLoadLevels = "Load Levels";
         private const string CategoryHaptics    = "Haptics";
         private const string CategoryAds        = "Ads";
-        private const string CategoryMonitor    = "Monitor";
         private const string CategoryAudio      = "Audio";
+        private const string CategoryMonitor    = "Monitor";
+        private const string CategoryFps        = "Fps";
 
-        private static int _adsNetworkIdx;
+        private static int  _adsNetworkIdx;
+        private static bool _debugConsoleVisible;
 
         private static ModelSettings               _modelSettings;
         private static ViewSettings                _viewSettings;
@@ -660,26 +662,44 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryCommon)]
-        public bool EnablePostProcessing
+        public bool EnableColorGrading
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, true);
+                bool enabled = _cameraProvider.IsEffectEnabled(ECameraEffect.ColorGrading);
+                _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, !enabled);
             }
         }
         
         [Category(CategoryCommon)]
-        public bool DisablePostProcessing
+        public bool EnableBloom
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, false);
+                bool enabled = _cameraProvider.IsEffectEnabled(ECameraEffect.Bloom);
+                _cameraProvider.EnableEffect(ECameraEffect.Bloom, !enabled);
+            }
+        }
+
+        [Category(CategoryCommon)]
+        public bool ShowHideDebugConsole
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                if (_debugConsoleVisible) 
+                    _managers.DebugManager.HideDebugConsole();
+                else
+                    _managers.DebugManager.ShowDebugConsole();
+                _debugConsoleVisible = !_debugConsoleVisible;
             }
         }
         
@@ -769,6 +789,45 @@ namespace SRDebuggerCustomOptions
                     "Acceleration", 
                     value, 
                     () => CommonUtils.GetAcceleration());
+            }
+        }
+
+        #endregion
+
+        #region fps
+
+        [Category(CategoryFps)]
+        public float FpsRecordDuration { get; set; }
+        
+        [Category(CategoryFps)]
+        public bool RecordFps
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.DebugManager.FpsCounter.Record(FpsRecordDuration);
+            }
+        }
+        
+        [Category(CategoryFps)]
+        public bool ShowFpsRecord
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                var recording = _managers.DebugManager.FpsCounter.GetRecording();
+                var sb = new StringBuilder();
+                sb.Append("Min Fps: " + recording.FpsMin.ToString("F1"));
+                sb.Append("; ");
+                sb.AppendLine("Max Fps: " + recording.FpsMax.ToString("F1"));
+                sb.AppendLine("Values: ");
+                foreach (float fpsValue in recording.FpsValues)
+                    sb.AppendLine(fpsValue.ToString("F1"));
+                Dbg.Log(sb.ToString());
             }
         }
 

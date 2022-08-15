@@ -17,7 +17,6 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
@@ -82,7 +81,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemSpear(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,

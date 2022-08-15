@@ -57,7 +57,7 @@ PlayerSettings:
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
-  iosAllowHTTPDownload: 1
+  iosAllowHTTPDownload: 0
   allowedAutorotateToPortrait: 1
   allowedAutorotateToPortraitUpsideDown: 1
   allowedAutorotateToLandscapeRight: 1
@@ -136,15 +136,12 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.6.3
+  bundleVersion: 1.7.0
   preloadedAssets:
   - {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 8219298684319459333, guid: d65166343a2be334badfff72bbe8c759, type: 3}
   - {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
-  - {fileID: 11400000, guid: f3d7c3154fa8924409625c627996a336, type: 2}
   - {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
-  - {fileID: 11400000, guid: 46097a38ffb5470478ac18d6b198aed4, type: 2}
   - {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
   - {fileID: 2184672177264980343, guid: 53c46a0773884dd4b9770b2fb98d5b84, type: 3}
   - {fileID: 5059098813564520511, guid: 29946a834dfc30b458505c36c553b042, type: 3}
@@ -152,13 +149,10 @@ PlayerSettings:
   - {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b, type: 3}
   - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
   - {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
-  - {fileID: 0}
   - {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518, type: 3}
   - {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
   - {fileID: 432638780763177933, guid: 622fc568ecbde9f448197a9bf5ef69dc, type: 3}
   - {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b, type: 3}
-  - {fileID: 8219298684319459333, guid: 667335171afcbc04b8649684f7996939, type: 3}
-  - {fileID: 8219298684319459333, guid: da4f8ca4c665e314482b12c01ade75c4, type: 3}
   - {fileID: 3177347172963282559, guid: 5d12e93f79129d5458876db6ed6956b6, type: 3}
   - {fileID: 3177347172963282559, guid: 8aa6e0dc802208f4cb8d359297e298f4, type: 3}
   - {fileID: 3177347172963282559, guid: b6512af5d924d7e4ab192467be538b23, type: 3}
@@ -174,10 +168,7 @@ PlayerSettings:
   - {fileID: 6522426653106204139, guid: 2a5d6c79425cb3248b9e9ff17e7218d2, type: 3}
   - {fileID: 2929232023256113801, guid: 31a1c442b6170f14fa528fd2e1f60cb3, type: 3}
   - {fileID: 2929232023256113801, guid: d457401d0c26133488ea36866a5e23c1, type: 3}
-  - {fileID: 2929232023256113801, guid: 154c3c9772499e94dbeb164bb42b389d, type: 3}
-  - {fileID: 2929232023256113801, guid: 3eee9ff9fba9c8c45acbd8ff6dbc06be, type: 3}
   - {fileID: 2929232023256113801, guid: e804d55fc9f1c114781f3bcc2237cdaf, type: 3}
-  - {fileID: 2929232023256113801, guid: 3b00b41e64e5e784a96caf816d4a10c6, type: 3}
   - {fileID: 8084936785278095536, guid: b1ab196056bb902469744d64131211b1, type: 3}
   - {fileID: 1425640064618946733, guid: 7f6d32e7723fc0149a86c90fd0d5be7b, type: 3}
   - {fileID: 5905266820976307603, guid: 73bcba6a8d9f7764db126985e784de59, type: 3}
@@ -187,231 +178,11 @@ PlayerSettings:
   - {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f, type: 3}
   - {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b, type: 3}
   - {fileID: 6624169740486630875, guid: 5b0a6bed4109d2144b0279826ee42655, type: 3}
-  - {fileID: 0}
   - {fileID: 731759395191873786, guid: 283a7a893927ea84f9c61e3367221a46, type: 3}
   - {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79, type: 3}
-  - {fileID: 5545151479159213484, guid: 7c7d299c1edab1947b9c8f4530fa3ad0, type: 3}
+  - {fileID: 0}
   - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
   - {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24, type: 3}
-  - {fileID: 8945480434963055887, guid: a857730524c9ebc4ab26e948698a179a, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -456,7 +227,7 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 37
+  AndroidBundleVersionCode: 39
   AndroidMinSdkVersion: 24
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
@@ -807,8 +578,8 @@ PlayerSettings:
     m_GraphicsJobMode: 0
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: AndroidPlayer
-    m_APIs: 15000000
-    m_Automatic: 0
+    m_APIs: 0b00000015000000
+    m_Automatic: 1
   - m_BuildTarget: iOSSupport
     m_APIs: 10000000
     m_Automatic: 1

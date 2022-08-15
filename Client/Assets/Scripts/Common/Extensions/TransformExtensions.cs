@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Common.Entities.UI;
 using Common.Utils;
 using UnityEngine;
 
@@ -206,6 +207,32 @@ namespace Common.Extensions
             if (!_Item.gameObject.activeInHierarchy)
                 return false;
             return _Item.CountCornersVisibleFrom(_Rect) > 0;
+        }
+
+        public static RectTransform SetParams(this RectTransform _Item, RectTransformLite _Params)
+        {
+            _Item.SetParams(
+                _Params.Anchor ?? default,
+                _Params.AnchoredPosition ?? default,
+                _Params.Pivot ?? default,
+                _Params.SizeDelta ?? default);
+            return _Item;
+        }
+
+        public static RectTransform SetParams(
+            this RectTransform _Item,
+            UiAnchor           _Anchor,
+            Vector2            _AnchoredPosition,
+            Vector2            _Pivot,
+            Vector2            _SizeDelta)
+        {
+            _Item.anchorMin = _Anchor.Min;
+            _Item.anchorMax = _Anchor.Max;
+            _Item.anchoredPosition = _AnchoredPosition;
+            _Item.pivot = _Pivot;
+            _Item.sizeDelta = _SizeDelta;
+            _Item.localScale = Vector3.one;
+            return _Item;
         }
 
         

@@ -48,11 +48,11 @@ namespace Common.Utils
         }
 
         public static IEnumerator WaitWhile(
-            Func<bool> _Predicate,
-            UnityAction _Action = null,
-            Func<bool> _OnBreak = null,
-            float? _Seconds = null,
-            ITicker _Ticker = null)
+            Func<bool>  _Predicate,
+            UnityAction _Action  = null,
+            Func<bool>  _OnBreak = null,
+            float?      _Seconds = null,
+            ITicker     _Ticker  = null)
         {
             if (_Predicate == null)
                 yield break;
@@ -75,13 +75,13 @@ namespace Common.Utils
         }
         
         public static IEnumerator DoWhile(
-            Func<bool> _Predicate,
-            UnityAction _Action,
-            UnityAction _FinishAction,
-            ITicker _Ticker,
-            Func<bool> _Pause = null,
-            bool _WaitEndOfFrame = true,
-            bool _FixedUpdate = false)
+            Func<bool>   _Predicate,
+            UnityAction  _Action,
+            UnityAction  _FinishAction,
+            IUnityTicker _Ticker,
+            Func<bool>   _Pause          = null,
+            bool         _WaitEndOfFrame = true,
+            bool         _FixedUpdate    = false)
         {
             if (_Action == null || _Predicate == null)
                 yield break;
@@ -122,16 +122,16 @@ namespace Common.Utils
         }
         
          public static IEnumerator Lerp(
-            ITicker                  _Ticker,
-            float                    _Time,
-            float                    _From            = 0f,
-            float                    _To              = 1f,
-            UnityAction<float>       _OnProgress      = null,
-            UnityAction              _OnFinish        = null,
-            Func<bool>               _BreakPredicate  = null,
-            Func<float, float>       _ProgressFormula = null,
-            bool                     _FixedUpdate     = false,
-            UnityAction<bool, float> _OnFinishEx      = null)
+             IUnityTicker             _Ticker,
+             float                    _Time,
+             float                    _From            = 0f,
+             float                    _To              = 1f,
+             UnityAction<float>       _OnProgress      = null,
+             UnityAction              _OnFinish        = null,
+             Func<bool>               _BreakPredicate  = null,
+             Func<float, float>       _ProgressFormula = null,
+             bool                     _FixedUpdate     = false,
+             UnityAction<bool, float> _OnFinishEx      = null)
         {
             if (_OnProgress == null)
                 yield break;

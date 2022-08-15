@@ -2,6 +2,7 @@
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -18,13 +19,12 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
-    public interface IViewUILevelSkipper : IInitViewUIItem, IOnLevelStageChanged
+    public interface IViewUILevelSkipper : IInit, IInitViewUIItem, IOnLevelStageChanged 
     {
         bool LevelSkipped { get; }
-        void SkipLevel();
     }
 
-    public class ViewUILevelSkipperFake : IViewUILevelSkipper
+    public class ViewUILevelSkipperFake : InitBase, IViewUILevelSkipper
     {
         public bool LevelSkipped                                 => false;
         public void Init(Vector4                       _Offsets) { }
@@ -32,7 +32,7 @@ namespace RMAZOR.Views.Common
         public void SkipLevel()                                  { }
     }
     
-    public class ViewUILevelSkipperButton : IViewUILevelSkipper
+    public class ViewUILevelSkipperButton : InitBase, IViewUILevelSkipper
     {
         #region constants
 
@@ -42,7 +42,6 @@ namespace RMAZOR.Views.Common
         
         #region nonpublic members
 
-        private bool           m_Initialized;
         private float          m_TopOffset;
         private GameObject     m_ButtonObj;
         private TextMeshPro    m_Text;
@@ -82,18 +81,18 @@ namespace RMAZOR.Views.Common
             IViewGameTicker             _GameTicker,
             IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
         {
-            ViewSettings        = _ViewSettings;
-            Model               = _Model;
-            CommandsProceeder   = _CommandsProceeder;
-            ContainersGetter    = _ContainersGetter;
-            PrefabSetManager    = _PrefabSetManager;
-            HapticsManager      = _HapticsManager;
-            TouchProceeder      = _TouchProceeder;
-            CameraProvider      = _CameraProvider;
-            LocalizationManager = _LocalizationManager;
-            AdsManager          = _AdsManager;
-            ColorProvider       = _ColorProvider;
-            GameTicker          = _GameTicker;
+            ViewSettings         = _ViewSettings;
+            Model                = _Model;
+            CommandsProceeder    = _CommandsProceeder;
+            ContainersGetter     = _ContainersGetter;
+            PrefabSetManager     = _PrefabSetManager;
+            HapticsManager       = _HapticsManager;
+            TouchProceeder       = _TouchProceeder;
+            CameraProvider       = _CameraProvider;
+            LocalizationManager  = _LocalizationManager;
+            AdsManager           = _AdsManager;
+            ColorProvider        = _ColorProvider;
+            GameTicker           = _GameTicker;
             BetweenLevelAdLoader = _BetweenLevelAdLoader;
         }
 
@@ -105,22 +104,11 @@ namespace RMAZOR.Views.Common
         {
             m_TopOffset = _Offsets.w;
             ColorProvider.ColorChanged += OnColorChanged;
+            InitButton();
+            Init();
         }
         
         public bool LevelSkipped { get; private set; }
-
-        public void SkipLevel()
-        {
-            LevelSkipped = true;
-            AdsManager.ShowRewardedAd(_OnShown: () =>
-            {
-                CommandsProceeder.RaiseCommand(
-                    EInputCommand.FinishLevel, 
-                    new object[] {"skip"}, 
-                    true);
-            });
-            BetweenLevelAdLoader.ShowAd = false;
-        }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -129,19 +117,19 @@ namespace RMAZOR.Views.Common
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
-                    if (!m_Initialized)
-                    {
-                        InitButton();
-                        m_Initialized = true;
-                    }
                     LevelSkipped = false;
+                    ActivateButton(false);
                     break;
                 case ELevelStage.ReadyToStart:
                     ActivateButton(false);
                     break;
-                case ELevelStage.StartedOrContinued when 
-                    _Args.PreviousStage == ELevelStage.ReadyToStart
-                    && _Args.PrePreviousStage == ELevelStage.Loaded:
+                case ELevelStage.StartedOrContinued:
+                    if (_Args.PreviousStage != ELevelStage.ReadyToStart
+                        || (_Args.PrePreviousStage != ELevelStage.Loaded
+                        && _Args.PrePreviousStage != ELevelStage.CharacterKilled))
+                    {
+                        return;
+                    }
                     Cor.Stop(m_ShowButtonCoroutine);
                     m_ShowButtonCoroutine = ShowButtonCountdownCoroutine();
                     Cor.Run(m_ShowButtonCoroutine);
@@ -155,6 +143,11 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.CharacterKilled:
                     Cor.Stop(m_ShowButtonCoroutine);
                     break;
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.Paused:
+                    break;
+                default: throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
 
@@ -164,12 +157,12 @@ namespace RMAZOR.Views.Common
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            Cor.Run(Cor.WaitWhile(() => !m_Initialized,
+            Cor.Run(Cor.WaitWhile(() => !Initialized,
                 () =>
                 {
                     switch (_ColorId)
                     {
-                        case ColorIds.UiBorder:     m_Border.color = _Color;     break;
+                        case ColorIds.UiBorder:     m_Border.color     = _Color; break;
                         case ColorIds.UiBackground: m_Background.color = _Color; break;
                     }
                 }));
@@ -177,8 +170,16 @@ namespace RMAZOR.Views.Common
         
         private void OnSkipLevelButtonPressed()
         {
-            SkipLevel();
-            ActivateButton(false);
+            AdsManager.ShowRewardedAd(_OnReward: () =>
+            {
+                ActivateButton(false);
+                LevelSkipped = true;
+                BetweenLevelAdLoader.ShowAd = false;
+                CommandsProceeder.RaiseCommand(
+                    EInputCommand.FinishLevel, 
+                    new object[] {"skip"}, 
+                    true);
+            });
         }
         
         private void InitButton()
@@ -205,6 +206,7 @@ namespace RMAZOR.Views.Common
             m_ButtonObj = go;
             m_Border.color = ColorProvider.GetColor(ColorIds.UiBorder);
             m_Background.color = ColorProvider.GetColor(ColorIds.UiDialogBackground);
+            ActivateButton(false);
         }
         
         private IEnumerator ShowButtonCountdownCoroutine()

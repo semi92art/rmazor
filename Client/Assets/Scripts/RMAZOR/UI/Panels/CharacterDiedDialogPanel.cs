@@ -244,7 +244,7 @@ namespace RMAZOR.UI.Panels
         private void OnWatchAdsButtonClick()
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
-            Managers.AdsManager.ShowRewardedAd(_OnShown: () => m_AdsWatched = true, _Skippable: false);
+            Managers.AdsManager.ShowRewardedAd(_OnReward: () => m_AdsWatched = true, _Skippable: false);
         }
 
         private void OnPayMoneyButtonClick()

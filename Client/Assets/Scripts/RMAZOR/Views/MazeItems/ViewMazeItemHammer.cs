@@ -97,6 +97,26 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
 
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                base.ActivatedInSpawnPool = value;
+                if (value) 
+                    return;
+                foreach (var shape in m_MainShapes)
+                    shape.enabled = false;
+                foreach (var shape in m_AdditionalShapes)
+                    shape.enabled = false;
+                foreach (var shape in m_AdditionalShapes2)
+                    shape.enabled = false;
+                foreach (var shape in m_AdditionalShapes3)
+                    shape.enabled = false;
+                m_Tail.enabled = false;
+            }
+        }
+
         public override void Init()
         {
             InitParticlesThrower();

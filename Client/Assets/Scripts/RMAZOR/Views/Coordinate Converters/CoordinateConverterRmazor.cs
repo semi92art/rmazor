@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Utils;
 using RMAZOR.Models;
@@ -46,6 +47,16 @@ namespace RMAZOR.Views.Coordinate_Converters
             CheckForErrors();
             SetScale();
         }
+        
+        public override Vector2 ToLocalMazeItemPosition(Vector2 _Point)
+        {
+            return ToLocalMazePosition(_Point);
+        }
+
+        public override Vector2 ToLocalCharacterPosition(Vector2 _Point)
+        {
+            return ToLocalMazePosition(_Point + Vector2.up * .5f);
+        }
 
         #endregion
 
@@ -54,19 +65,23 @@ namespace RMAZOR.Views.Coordinate_Converters
         protected override Vector2 ToLocalMazePosition(Vector2 _Point)
         {
             CheckForErrors();
-            var pos = ScaleValue * (_Point - MazeSizeForPositioning * 0.5f);
+            var pos = ScaleValue * (_Point - .5f * ( MazeSizeForPositioning - Vector2.right));
             if (m_CutLeft)
-                pos += Vector2.left * (ScaleValue * 1f);
+                pos += .5f * ScaleValue * Vector2.left;
             if (m_CutBottom)
-                pos += Vector2.down * (ScaleValue * 1f);
+                pos += .5f * ScaleValue * Vector2.down;
+            if (m_CutRight)
+                pos += .5f * ScaleValue * Vector2.right;
+            if (m_CutTop)
+                pos += .5f * ScaleValue * Vector2.up;
             return pos;
         }
         
         protected override void SetCenterPoint()
         {
             var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.Camera);
-            float centerX = ((bounds.min.x + LeftOffset) + (bounds.max.x - RightOffset)) * 0.5f;
-            float centerY = ((bounds.min.y + BottomOffset) + (bounds.max.y - TopOffset)) * 0.5f;
+            float centerX = ((bounds.min.x + LeftOffset) + (bounds.max.x - RightOffset)) * .5f;
+            float centerY = ((bounds.min.y + BottomOffset) + (bounds.max.y - TopOffset)) * .5f;
             Center = new Vector2(centerX, centerY);
         }
 
@@ -75,7 +90,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             bool? hasTrapsReact; 
             bool hasOtherBlocks, hasPathItems;
             bool Predicate1() => !hasOtherBlocks && !hasTrapsReact.HasValue && !hasPathItems;
-            bool Predicate2() => hasTrapsReact.HasValue && hasTrapsReact.Value && !hasOtherBlocks;
+            bool Predicate2() => hasTrapsReact.HasValue && hasTrapsReact.Value && !hasOtherBlocks && !hasPathItems;
             int k = 0;
             (hasTrapsReact, hasOtherBlocks, hasPathItems) = (null, false, false);
             while (Predicate1() && k < _Info.Size.X)
@@ -116,6 +131,7 @@ namespace RMAZOR.Views.Coordinate_Converters
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.Y == k);
             }
             m_CutTop = Predicate2() && !hasOtherBlocks && k >= 0;
+            Dbg.Log(m_CutLeft + " " + m_CutRight + " " + m_CutBottom + " " + m_CutTop);
         }
 
         protected virtual void SetCorrectMazeSize(MazeInfo _Info)
@@ -123,22 +139,22 @@ namespace RMAZOR.Views.Coordinate_Converters
             MazeSizeForPositioning = MazeSizeForScale = _Info.Size;
             if (m_CutLeft && MazeSizeForScale.x > MinWidth)
             {
-                MazeSizeForPositioning.x -= 1f;
+                // MazeSizeForPositioning.x -= 1f;
                 MazeSizeForScale.x -= 1f;
             }
             if (m_CutRight && MazeSizeForScale.x > MinWidth)
             {
-                MazeSizeForPositioning.x -= 1f;
+                // MazeSizeForPositioning.x -= 1f;
                 MazeSizeForScale.x -= 1f;
             }
             if (m_CutBottom && MazeSizeForScale.y > MinHeight)
             {
-                MazeSizeForPositioning.y -= 1f;
+                // MazeSizeForPositioning.y -= 1f;
                 MazeSizeForScale.y -= 1f;
             }
             if (m_CutTop && MazeSizeForScale.y > MinHeight)
             {
-                MazeSizeForPositioning.y -= 1f;
+                // MazeSizeForPositioning.y -= 1f;
                 MazeSizeForScale.y -= 1f;
             }
         }

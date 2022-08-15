@@ -3,24 +3,55 @@ using AppodealStack.Monetization.Api;
 using AppodealStack.Monetization.Common;
 using Common.Helpers;
 using Common.Ticker;
+using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdBlocks
 {
-    public interface IAppodealInterstitialAd : IAdBase, IInterstitialAdListener { }
+    public interface IAppodealInterstitialAd : IInterstitialAdBase, IInterstitialAdListener { }
     
-    public class AppodealInterstitialAd : AppodealAdBase, IAppodealInterstitialAd
+    public class AppodealInterstitialAd : InterstitialAdBase, IAppodealInterstitialAd
     {
-        protected override int    ShowStyle  => AppodealShowStyle.Interstitial;
+        #region nonpublic members
+        
+        protected override string AdSource   => AdvertisingNetworks.Appodeal;
         protected override string AdType     => AdTypeInterstitial;
-        protected override int    AppoAdType => AppodealAdType.Interstitial;
+        private            int    ShowStyle  => AppodealShowStyle.Interstitial;
+        private            int    AppoAdType => AppodealAdType.Interstitial;
 
-        public AppodealInterstitialAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker)
+        #endregion
+
+        #region inject
+        
+        private AppodealInterstitialAd(
+            GlobalGameSettings _GameSettings,
+            ICommonTicker      _CommonTicker)
             : base(_GameSettings, _CommonTicker) { }
+
+        #endregion
+
+        #region api
+        
+        public override bool Ready => Appodeal.IsLoaded(AppoAdType);
         
         public override void Init(string _AppId, string _UnitId)
         {
             base.Init(_AppId, _UnitId);
             Appodeal.SetInterstitialCallbacks(this);
+        }
+
+        public override void LoadAd()
+        {
+            Appodeal.Cache(AppoAdType);
+        }
+
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        {
+            OnShown = _OnShown;
+            OnClicked = _OnClicked;
+            if (!Ready) 
+                return;
+            const string placement = "default";
+            Appodeal.Show(ShowStyle, placement);
         }
 
         public void OnInterstitialLoaded(bool _IsPrecache) 
@@ -57,6 +88,8 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             Dbg.Log("Appodeal: Interstitial expired"); 
         }
+
+        #endregion
     }
 }
 #endif

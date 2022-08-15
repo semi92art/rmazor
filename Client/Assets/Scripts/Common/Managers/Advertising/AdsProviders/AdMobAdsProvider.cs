@@ -43,24 +43,33 @@ namespace Common.Managers.Advertising.AdsProviders
         
         #region inject
 
-        private IRemotePropertiesCommon RemoteProperties { get; }
+        private GlobalGameSettings      GlobalGameSettings { get; }
+        private IRemotePropertiesCommon RemoteProperties   { get; }
 
         private AdMobAdsProvider(
+            GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesCommon _RemoteProperties,
             IAdMobInterstitialAd    _InterstitialAd,
-            IAdMobRewardedAd        _RewardedAd,
-            IAdMobRewardedAd        _RewardedAdNonSkippable) 
+            IAdMobRewardedAd        _RewardedAd) 
             : base(
                 _InterstitialAd,
-                _RewardedAd,
-                _RewardedAdNonSkippable)
+                _RewardedAd)
         {
-            RemoteProperties = _RemoteProperties;
+            GlobalGameSettings = _GlobalGameSettings;
+            RemoteProperties   = _RemoteProperties;
         }
 
         #endregion
 
         #region api
+
+        public override bool RewardedAdReady => Application.isEditor ? 
+            GlobalGameSettings.rewardedAdReadyForTest 
+            : base.RewardedAdReady;
+
+        public override bool InterstitialAdReady => Application.isEditor
+            ? GlobalGameSettings.interstitialAdReadyForTest
+            : base.InterstitialAdReady;
 
         public override string Source => AdvertisingNetworks.Admob;
 

@@ -46,9 +46,9 @@ namespace RMAZOR.Views.Common
 #if UNITY_EDITOR
             CommonDataRmazor.CameraEffectsCustomAnimator = this;
 #endif
-            ColorProvider.ColorChanged += OnColorChanged;
-            
-            CameraProvider.EnableEffect(ECameraEffect.Bloom, true);
+            CameraProvider.EnableEffect(
+                ECameraEffect.Bloom, 
+                Application.platform == RuntimePlatform.IPhonePlayer);
             base.Init();
         }
 
@@ -79,15 +79,6 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region nonpublic methods
-        
-        private void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId == ColorIds.PathFill)
-            {
-                var colorGradingProps = new ColorGradingProps {VignetteColor = _Color};
-                CameraProvider.SetEffectProps(ECameraEffect.ColorGrading, colorGradingProps);
-            }
-        }
 
         private void SetColorGradingProps(LevelStageArgs _Args)
         {
@@ -131,6 +122,7 @@ namespace RMAZOR.Views.Common
                 out _ ,
                 out BloomPropsAlt bloomPropsAlt);
             var props = bloomPropsAlt.ToBloomProps(out bool enableBloom);
+            enableBloom &= Application.platform == RuntimePlatform.IPhonePlayer; // на андройде блум тормозит
             CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
             if (!enableBloom)
                 return;

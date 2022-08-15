@@ -33,6 +33,7 @@ namespace Common.Constants
 
         public const string AdShown   = "ad_shown";
         public const string AdClicked = "ad_clicked";
+        public const string AdReward  = "ad_reward";
         
         private const string Level1Finished    = "level_1_finished";
         private const string Level2Finished    = "level_2_finished";

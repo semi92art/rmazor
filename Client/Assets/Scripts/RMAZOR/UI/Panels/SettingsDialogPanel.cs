@@ -110,7 +110,7 @@ namespace RMAZOR.UI.Panels
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
             InitOtherButtons();
-            InitDebugSettingItem();
+            // InitDebugSettingItem();
             PanelObject = sp.RTransform();
         }
 
@@ -134,11 +134,11 @@ namespace RMAZOR.UI.Panels
             InitRestorePurchasesButton();
         }
 
-        private void InitDebugSettingItem()
-        {
-            if (Application.isEditor || RemoteProperties.DebugEnabled)
-                InitSettingItem(SettingsGetter.DebugSetting);
-        }
+        // private void InitDebugSettingItem()
+        // {
+        //     if (Application.isEditor || RemoteProperties.DebugEnabled)
+        //         InitSettingItem(SettingsGetter.DebugSetting);
+        // }
         
         private void InitSettingItem<T>(ISetting<T> _Setting)
         {

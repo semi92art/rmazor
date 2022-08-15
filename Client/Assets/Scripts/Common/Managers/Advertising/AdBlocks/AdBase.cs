@@ -10,7 +10,6 @@ namespace Common.Managers.Advertising.AdBlocks
         bool Ready     { get; }
         void Init(string _AppId, string _UnitId);
         void LoadAd();
-        void ShowAd(UnityAction _OnShown, UnityAction _OnClicked);
     }
     
     public abstract class AdBase : IAdBase, IUpdateTick
@@ -33,8 +32,8 @@ namespace Common.Managers.Advertising.AdBlocks
         protected bool        DoLoadAdWithDelay;
         private   float       m_LoadAdDelayTimer;
 
-        protected volatile bool        DoInvokeOnShown;
-        protected volatile bool        DoInvokeOnClicked;
+        protected volatile bool DoInvokeOnShown;
+        protected volatile bool DoInvokeOnClicked;
         
         #endregion
 
@@ -66,20 +65,23 @@ namespace Common.Managers.Advertising.AdBlocks
         public abstract bool Ready     { get; }
         
         public abstract void LoadAd();
-        public abstract void ShowAd(UnityAction _OnShown, UnityAction _OnClicked);
         
-        public void UpdateTick()
+        public virtual void UpdateTick()
         {
             if (DoInvokeOnClicked)
             {
-                Dbg.Log("Appodeal click action");
+                Dbg.Log("Ad click action");
                 OnClicked?.Invoke();
+                OnClicked = null;
                 DoInvokeOnClicked = false;
             }
             if (DoInvokeOnShown)
             {
-                Dbg.Log("Appodeal shown action");
+                Dbg.Log("Ad shown action");
+                if (OnShown == null)
+                    Dbg.LogWarning("OnShown action is null");
                 OnShown?.Invoke();
+                OnShown = null;
                 LoadAd();
                 DoInvokeOnShown = false;
             }

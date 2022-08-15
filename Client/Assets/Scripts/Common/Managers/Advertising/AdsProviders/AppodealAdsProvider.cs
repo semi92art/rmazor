@@ -32,12 +32,10 @@ namespace Common.Managers.Advertising.AdsProviders
         private AppodealAdsProvider(
             GlobalGameSettings      _GlobalGameSettings,
             IAppodealInterstitialAd _InterstitialAd,
-            IAppodealRewardedAd     _RewardedAd,
-            IAppodealRewardedAd     _RewardedAdNonSkippable)
+            IAppodealRewardedAd     _RewardedAd)
             : base(
                 _InterstitialAd,
-                _RewardedAd,
-                _RewardedAdNonSkippable)
+                _RewardedAd)
         {
             GlobalGameSettings = _GlobalGameSettings;
         }

@@ -1,6 +1,5 @@
 ﻿#if UNITY_ADS_API
 using System.Text;
-using Common.Helpers;
 using Common.Managers.Advertising.AdBlocks;
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,12 +24,10 @@ namespace Common.Managers.Advertising.AdsProviders
         
         private UnityAdsProvider(
             IUnityAdsInterstitialAd _InterstitialAd,
-            IUnityAdsRewardedAd     _RewardedAd,
-            IUnityAdsRewardedAd     _RewardedAdNonSkippable) 
+            IUnityAdsRewardedAd     _RewardedAd) 
             : base(
                 _InterstitialAd,
-                _RewardedAd,
-                _RewardedAdNonSkippable) { }
+                _RewardedAd) { }
 
         #endregion
 

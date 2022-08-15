@@ -52,11 +52,11 @@ namespace RMAZOR.Views.UI
         #region api
 
         public override void Init(
-            ITicker                  _Ticker,
-            ICameraProvider          _CameraProvider,
+            IUnityTicker         _Ticker,
+            ICameraProvider      _CameraProvider,
             ICoordinateConverter _CoordinateConverter,
-            IColorProvider           _ColorProvider,
-            Vector4                  _Offsets)
+            IColorProvider       _ColorProvider,
+            Vector4              _Offsets)
         {
             base.Init(_Ticker, _CameraProvider, _CoordinateConverter, _ColorProvider, _Offsets);
             var uiCol = _ColorProvider.GetColor(ColorIds.UI);

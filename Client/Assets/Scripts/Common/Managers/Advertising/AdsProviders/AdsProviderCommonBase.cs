@@ -1,6 +1,4 @@
-﻿using Common.Exceptions;
-using Common.Helpers;
-using Common.Managers.Advertising.AdBlocks;
+﻿using Common.Managers.Advertising.AdBlocks;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdsProviders
@@ -9,37 +7,36 @@ namespace Common.Managers.Advertising.AdsProviders
     {
         #region inject
 
-        private readonly   IAudioManager m_AudioManager;
-        protected readonly IAdBase       m_InterstitialAd;
-        protected readonly IAdBase       m_RewardedAd;
-        protected readonly IAdBase       m_RewardedNonSkippableAd;
+        private readonly   IAudioManager       m_AudioManager;
+        protected readonly IInterstitialAdBase m_InterstitialAd;
+        protected readonly IRewardedAdBase     m_RewardedAd;
         
         protected AdsProviderCommonBase(
-            IAdBase            _InterstitialAd,
-            IAdBase            _RewardedAd,
-            IAdBase            _RewardedNonSkippableAd)
+            IInterstitialAdBase _InterstitialAd,
+            IRewardedAdBase     _RewardedAd)
         {
             m_InterstitialAd         = _InterstitialAd;
             m_RewardedAd             = _RewardedAd;
-            m_RewardedNonSkippableAd = _RewardedNonSkippableAd;
         }
 
         #endregion
 
         #region api
         
-        public override bool RewardedAdReady             => m_RewardedAd != null && m_RewardedAd.Ready;
-        public override bool RewardedNonSkippableAdReady => m_RewardedNonSkippableAd != null && m_RewardedNonSkippableAd.Ready;
-        public override bool InterstitialAdReady         => m_InterstitialAd != null && m_InterstitialAd.Ready;
+        public override bool RewardedAdReady             => 
+            m_RewardedAd != null && m_RewardedAd.Ready;
+        public override bool RewardedNonSkippableAdReady => RewardedAdReady;
+        public override bool InterstitialAdReady         => 
+            m_InterstitialAd != null && m_InterstitialAd.Ready;
 
-        public override void LoadAd(AdvertisingType _AdvertisingType)
+        public override void LoadRewardedAd()
         {
-            switch (_AdvertisingType)
-            {
-                case AdvertisingType.Interstitial: m_InterstitialAd.LoadAd(); break;
-                case AdvertisingType.Rewarded:     m_RewardedAd.LoadAd();     break;
-                default:                           throw new SwitchCaseNotImplementedException(_AdvertisingType);
-            }
+            m_RewardedAd.LoadAd();
+        }
+        
+        public override void LoadInterstitialAd()
+        {
+            m_InterstitialAd.LoadAd();
         }
 
         #endregion
@@ -51,13 +48,7 @@ namespace Common.Managers.Advertising.AdsProviders
             m_RewardedAd.Skippable = true;
             m_RewardedAd.Init(AppId, RewardedUnitId);
         }
-        
-        protected override void InitRewardedAdNonSkippable()
-        {
-            m_RewardedNonSkippableAd.Skippable = false;
-            m_RewardedNonSkippableAd.Init(AppId, RewardedNonSkippableUnitId);
-        }
-    
+
         protected override void InitInterstitialAd()
         {
             m_InterstitialAd.Skippable = true;
@@ -67,42 +58,30 @@ namespace Common.Managers.Advertising.AdsProviders
         protected override void ShowRewardedAdCore(
             UnityAction _OnShown,
             UnityAction _OnClicked,
-            bool        _Skippable)
+            UnityAction _OnReward)
         {
-            if (RewardedAdReady)
+            if (!RewardedAdReady) 
+                return;
+            MuteAudio(true);
+            void OnShown()
             {
-                MuteAudio(true);
-                void OnShown()
-                {
-                    MuteAudio(false);
-                    _OnShown?.Invoke();
-                }
-                m_RewardedAd.ShowAd(OnShown, _OnClicked);
+                MuteAudio(false);
+                _OnShown?.Invoke();
             }
-            else
-            {
-                Dbg.Log("Rewarded ad is not ready.");
-                m_RewardedAd.LoadAd();
-            }
+            m_RewardedAd.ShowAd(OnShown, _OnClicked, _OnReward);
         }
         
-        protected override void ShowInterstitialAdCore(UnityAction _OnShown, UnityAction _OnClicked, bool _Skippable)
+        protected override void ShowInterstitialAdCore(UnityAction _OnShown, UnityAction _OnClicked)
         {
-            if (InterstitialAdReady)
+            if (!InterstitialAdReady) 
+                return;
+            MuteAudio(true);
+            void OnShown()
             {
-                MuteAudio(true);
-                void OnShown()
-                {
-                    MuteAudio(false);
-                    _OnShown?.Invoke();
-                }
-                m_InterstitialAd.ShowAd(OnShown, _OnClicked);
+                MuteAudio(false);
+                _OnShown?.Invoke();
             }
-            else
-            {
-                Dbg.Log("Interstitial ad is not ready.");
-                m_InterstitialAd.LoadAd();
-            }
+            m_InterstitialAd.ShowAd(OnShown, _OnClicked);
         }
 
         #endregion

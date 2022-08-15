@@ -67,8 +67,6 @@ namespace RMAZOR.Views.MazeItems
         private float m_DashedOffset;
         
         private bool Collected => !Props.Blank && MoneyItem.IsCollected;
-
-
         
         #endregion
         
@@ -100,13 +98,13 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region api
-
+        
         public override Component[] Renderers => new Component[]
         {
             m_PathItem,
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
             m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner
-        }.Concat(MoneyItem.Renderers).ToArray();
+        }.ToArray();
         
         public override object Clone() => new ViewMazeItemPath(
             ViewSettings,
@@ -161,6 +159,13 @@ namespace RMAZOR.Views.MazeItems
                 return;
             ShiftOffsetsOfDashedBorders();
             HighlightBordersAndCorners();
+        }
+
+        public override void Appear(bool _Appear)
+        {
+            if (Props.IsMoneyItem)
+                MoneyItem.Appear(_Appear);
+            base.Appear(_Appear);
         }
 
         #endregion
@@ -254,7 +259,7 @@ namespace RMAZOR.Views.MazeItems
             float scale = CoordinateConverter.Scale;
             if (Props.IsMoneyItem)
             {
-                if (MoneyItem.Renderers.Any(_R => _R.IsNull()))
+                if (!MoneyItem.Initialized)
                     MoneyItem.Init(Object.transform);
                 MoneyItem.UpdateShape();
                 MoneyItem.Active = true;
@@ -263,8 +268,11 @@ namespace RMAZOR.Views.MazeItems
             else
             {
                 MoneyItem.Active = false;
-                m_PathItem.Width = m_PathItem.Height = scale * 0.4f;
-                m_PathItem.CornerRadius = ViewSettings.CornerRadius * scale * 2f;
+                m_PathItem
+                    .SetWidth(scale * 0.4f)
+                    .SetHeight(scale * 0.4f)
+                    .SetCornerRadius(scale * 2f * ViewSettings.CornerRadius)
+                    .SetThickness(scale * 0.5f * ViewSettings.LineThickness);
             }
             m_BlankHatch1.enabled = m_BlankHatch2.enabled = Props.Blank;
             if (Props.Blank)
@@ -720,10 +728,6 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnAppearStart(bool _Appear)
         {
-            // if (!Props.Blank && _Appear)
-            // {
-            //     m_BlankHatch.enabled = false;
-            // }
             if (!_Appear && Collected 
                 || _Appear && (Props.Blank || Props.IsStartNode))
             {
@@ -734,22 +738,19 @@ namespace RMAZOR.Views.MazeItems
             if (_Appear)
                 EnableInitializedShapes(true);
         }
-
+        
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var borderSets = GetBorderAppearSets();
             var cornerSets = GetCornerAppearSets();
             var result = borderSets.ConcatWithDictionary(cornerSets);
-            var moneyItemCol = ColorProvider.GetColor(ColorIds.MoneyItem);
             var pathItemCol = ColorProvider.GetColor(ColorIds.PathItem);
             var mainCol = ColorProvider.GetColor(ColorIds.Main);
             if (Props.Blank)
                 result.Add(new [] {m_BlankHatch1, m_BlankHatch2}, () => mainCol.SetA(0.25f));
             if ((!_Appear || Props.Blank || Props.IsStartNode) && (_Appear || Collected)) 
                 return result;
-            if (Props.IsMoneyItem)
-                result.Add(MoneyItem.Renderers, () => moneyItemCol);
-            else if (!Collected)
+            if (!Props.IsMoneyItem && !Collected)
                 result.Add(new [] {m_PathItem}, () => pathItemCol);
             return result;
         }
@@ -788,10 +789,10 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void EnableInitializedShapes(bool _Enable)
         {
-            if (m_PathItem.IsNotNull() && !Props.IsMoneyItem && !Props.Blank)   
-                m_PathItem.enabled = _Enable;
-            if (MoneyItem.Renderers.All(_R => _R.IsNotNull()) && Props.IsMoneyItem && !Props.Blank)
-                MoneyItem.Active = _Enable;
+            if (m_PathItem.IsNotNull())
+                m_PathItem.enabled = _Enable && !Props.IsMoneyItem && !Props.Blank;
+            if (MoneyItem.Initialized && Props.IsMoneyItem && !Props.Blank)
+                MoneyItem.Active = _Enable && Props.IsMoneyItem && !Props.Blank;
             if (m_LeftBorderInited)      m_LeftBorder.enabled        = _Enable;
             if (m_RightBorderInited)     m_RightBorder.enabled       = _Enable;
             if (m_BottomBorderInited)    m_BottomBorder.enabled      = _Enable;

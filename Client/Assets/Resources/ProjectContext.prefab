@@ -79,3 +79,7 @@ MonoBehaviour:
   globalGameSettings: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
   modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
   viewSettings: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
+  debugConsoleView: {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24,
+    type: 3}
+  debugConsoleViewFake: {fileID: 244142910955179789, guid: 13408ab584b46c147b90d33ee96b49ea,
+    type: 3}

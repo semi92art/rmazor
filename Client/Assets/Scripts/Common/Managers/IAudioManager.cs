@@ -235,7 +235,7 @@ namespace Common.Managers
             float startVolume = _AttenuateUp ? 0f : _Info.SourceVolume;
             float endVolume = !_AttenuateUp ? 0f : _Info.SourceVolume;
             yield return Cor.Lerp(
-                _Info.Type == EAudioClipType.UiSound ? (ITicker)UiTicker : GameTicker,
+                _Info.Type == EAudioClipType.UiSound ? (IUnityTicker)UiTicker : GameTicker,
                 _AttenuateUp ? _Info.AttenuationSecondsOnPlay : _Info.AttenuationSecondsOnStop,
                 startVolume,
                 endVolume,

@@ -44,17 +44,17 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region nonpublic members
-        
-        protected ITicker                  Ticker;
-        private   ICameraProvider          m_CameraProvider;
+
+        protected IUnityTicker         Ticker;
+        private   ICameraProvider      m_CameraProvider;
         private   ICoordinateConverter m_CoordinateConverter;
-        private   Vector4                  m_Offsets;
-        protected bool                     ReadyToAnimate;
-        protected EMazeMoveDirection?      Direction;
-        private   IEnumerator              m_LastTraceAnimCoroutine;
-        private   IEnumerator              m_LastHandAnimCoroutine;
-        private   IEnumerator              m_LastWaitCoroutine;
-        protected bool                     TutorialFinished;
+        private   Vector4              m_Offsets;
+        protected bool                 ReadyToAnimate;
+        protected EMazeMoveDirection?  Direction;
+        private   IEnumerator          m_LastTraceAnimCoroutine;
+        private   IEnumerator          m_LastHandAnimCoroutine;
+        private   IEnumerator          m_LastWaitCoroutine;
+        protected bool                 TutorialFinished;
         
         protected abstract Dictionary<EMazeMoveDirection, float> HandAngles { get; }
 
@@ -63,11 +63,11 @@ namespace RMAZOR.Views.UI
         #region api
 
         public virtual void Init(
-            ITicker                  _Ticker,
-            ICameraProvider          _CameraProvider,
+            IUnityTicker         _Ticker,
+            ICameraProvider      _CameraProvider,
             ICoordinateConverter _CoordinateConverter,
-            IColorProvider           _ColorProvider,
-            Vector4                  _Offsets)
+            IColorProvider       _ColorProvider,
+            Vector4              _Offsets)
         {
             _Ticker.Register(this);
             Ticker = _Ticker;

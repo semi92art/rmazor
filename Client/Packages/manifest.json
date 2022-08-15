@@ -2,7 +2,7 @@
   "dependencies": {
     "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git",
     "com.unity.2d.sprite": "1.0.0",
-    "com.unity.ads": "4.2.1",
+    "com.unity.ads": "4.3.0",
     "com.unity.analytics": "3.6.12",
     "com.unity.burst": "1.7.0",
     "com.unity.editorcoroutines": "1.0.0",

@@ -12,19 +12,21 @@ using Common.Utils;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
     public interface IViewTurretProjectile : ICloneable, IAppear, IInit, IActivated
     {
-        IViewTurretProjectileTail Tail                { get; }
-        Transform                 ContainerTransform  { get; }
-        Transform                 ProjectileTransform { get; }
-        
-        void                      Init(bool _Fake);
-        void                      SetSortingOrder(int _Order);
-        void                      SetStencilRefId(int _RefId);
-        void                      Show(bool _Show);
+        event UnityAction<Collider2D> WallCollision;
+        IViewTurretProjectileTail     Tail                { get; }
+        Transform                     ContainerTransform  { get; }
+        Transform                     ProjectileTransform { get; }
+
+        void Init(bool           _Fake);
+        void SetSortingOrder(int _Order);
+        void SetStencilRefId(int _RefId);
+        void Show(bool           _Show);
     }
     
     public class ViewTurretProjectileShuriken : InitBase, IViewTurretProjectile
@@ -33,13 +35,16 @@ namespace RMAZOR.Views.MazeItems.Additional
         
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
         
-        private GameObject        m_Projectile;
-        private ViewMazeItemProps m_Props;
-        private GameObject        m_Turret;
-        private SpriteRenderer    m_BorderRenderer;
-        private SpriteRenderer    m_MainRenderer;
-        private bool              m_Fake;
-        private bool              m_Activated;
+        private GameObject          m_Projectile;
+        private ViewMazeItemProps   m_Props;
+        private GameObject          m_Turret;
+        private SpriteRenderer      m_BorderRenderer;
+        private SpriteRenderer      m_MainRenderer;
+        private Rigidbody2D         m_Rb;
+        private CircleCollider2D    m_Coll;
+        private bool                m_Fake;
+        private bool                m_Activated;
+        private CollisionDetector2D m_CollisionDetector2D;
         
         #endregion
 
@@ -76,17 +81,20 @@ namespace RMAZOR.Views.MazeItems.Additional
             get => m_Activated;
             set
             {
-                m_Activated = value;
-                if (value)
-                    return;
-                m_MainRenderer.enabled = false;
-                m_BorderRenderer.enabled = false;
+                m_Activated              = value;
+                m_MainRenderer.enabled   = value;
+                m_BorderRenderer.enabled = value;
+                m_Coll.enabled           = value && !m_Fake;
+                if (value && !m_Fake) m_Rb.WakeUp();
+                else                  m_Rb.Sleep();
             }
         }
-        public IViewTurretProjectileTail Tail                { get; }
-        public EAppearingState           AppearingState      { get; private set; }
-        public Transform                 ContainerTransform  => m_Projectile.transform;
-        public Transform                 ProjectileTransform => m_MainRenderer.transform;
+
+        public event UnityAction<Collider2D> WallCollision;
+        public IViewTurretProjectileTail     Tail                { get; }
+        public EAppearingState               AppearingState      { get; private set; }
+        public Transform                     ContainerTransform  => m_Projectile.transform;
+        public Transform                     ProjectileTransform => m_MainRenderer.transform;
 
         public object Clone() => new ViewTurretProjectileShuriken(
             ViewSettings,
@@ -113,8 +121,7 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         public void Show(bool _Show)
         {
-            m_MainRenderer.enabled = _Show;
-            m_BorderRenderer.enabled = _Show;
+            Activated = _Show;
         }
         
         public void SetSortingOrder(int _Order)
@@ -152,14 +159,12 @@ namespace RMAZOR.Views.MazeItems.Additional
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
+            if (!Activated)
+                return;
             switch (_ColorId)
             {
-                case ColorIds.MazeItem1:
-                    m_MainRenderer.color = _Color;
-                    break;
-                case ColorIds.Character2:
-                    m_BorderRenderer.color = _Color;
-                    break;
+                case ColorIds.MazeItem1:  m_MainRenderer.color = _Color;   break;
+                case ColorIds.Character2: m_BorderRenderer.color = _Color; break;
             }
         }
         
@@ -169,16 +174,31 @@ namespace RMAZOR.Views.MazeItems.Additional
             var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             m_Projectile =  PrefabSetManager.InitPrefab(
                 projParent, "views", "turret_projectile");
-            m_Projectile.name = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
-            m_MainRenderer = m_Projectile.GetCompItem<SpriteRenderer>("projectile");
-            m_BorderRenderer = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
-            m_MainRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
-            m_MainRenderer.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-            m_BorderRenderer.color = ColorProvider.GetColor(ColorIds.Character2);
-            m_MainRenderer.maskInteraction = SpriteMaskInteraction.None;
+            m_Projectile.name                = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
+            m_Rb                             = m_Projectile.GetCompItem<Rigidbody2D>("rigidbody");
+            m_Coll                           = m_Projectile.GetCompItem<CircleCollider2D>("collider");
+            m_CollisionDetector2D            = m_Projectile.GetCompItem<CollisionDetector2D>("collider");
+            m_MainRenderer                   = m_Projectile.GetCompItem<SpriteRenderer>("projectile");
+            m_BorderRenderer                 = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
+            m_MainRenderer.maskInteraction   = SpriteMaskInteraction.VisibleOutsideMask;
+            m_MainRenderer.color             = ColorProvider.GetColor(ColorIds.MazeItem1);
+            m_BorderRenderer.color           = ColorProvider.GetColor(ColorIds.Character2);
+            m_MainRenderer.maskInteraction   = SpriteMaskInteraction.None;
             m_BorderRenderer.maskInteraction = SpriteMaskInteraction.None;
+            m_Coll.gameObject.layer          = LayerMask.NameToLayer("ψ Psi");
+            m_CollisionDetector2D.OnTriggerEnter += OnColliderTriggerEnter;
+            if (!m_Fake)
+                return;
+            m_Coll.enabled = false;
+            m_CollisionDetector2D.enabled = false;
+            m_Rb.Sleep();
         }
-        
+
+        private void OnColliderTriggerEnter(Collider2D _Collider)
+        {
+            WallCollision?.Invoke(_Collider);
+        }
+
         protected virtual void OnAppearStart(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
@@ -190,7 +210,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var projectileRenderersCol = ColorProvider.GetColor(ColorIds.MazeItem1);
-            var projectileRenderersCol2 = ColorProvider.GetColor(ColorIds.Main);
+            var projectileRenderersCol2 = ColorProvider.GetColor(ColorIds.Character2);
             if (!_Appear)
                 projectileRenderersCol = projectileRenderersCol2 = m_MainRenderer.color;
             return new Dictionary<IEnumerable<Component>, Func<Color>>
@@ -203,9 +223,8 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected virtual void OnAppearFinish(bool _Appear)
         {
             if (!_Appear)
-            {          
-                m_MainRenderer.enabled = false;
-                m_BorderRenderer.enabled = false;
+            {
+                Activated = false;
             }
             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
         }

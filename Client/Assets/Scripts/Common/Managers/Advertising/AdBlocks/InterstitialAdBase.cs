@@ -1,0 +1,21 @@
+﻿using Common.Helpers;
+using Common.Ticker;
+using UnityEngine.Events;
+
+namespace Common.Managers.Advertising.AdBlocks
+{
+    public interface IInterstitialAdBase : IAdBase
+    {
+        void ShowAd(UnityAction _OnShown, UnityAction _OnClicked);
+    }
+    
+    public abstract class InterstitialAdBase : AdBase, IInterstitialAdBase
+    {
+        protected InterstitialAdBase(
+            GlobalGameSettings _GlobalGameSettings,
+            ICommonTicker      _CommonTicker) 
+            : base(_GlobalGameSettings, _CommonTicker) { }
+
+        public abstract void ShowAd(UnityAction _OnShown, UnityAction _OnClicked);
+    }
+}

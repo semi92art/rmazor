@@ -109,15 +109,9 @@ namespace RMAZOR.Views.Coordinate_Converters
             return mazeItemFake.position;
         }
 
-        public Vector2 ToLocalMazeItemPosition(Vector2 _Point)
-        {
-            return ToLocalMazePosition(_Point + Vector2.right * .5f);
-        }
+        public abstract Vector2 ToLocalMazeItemPosition(Vector2 _Point);
 
-        public Vector2 ToLocalCharacterPosition(Vector2 _Point)
-        {
-            return ToLocalMazePosition(_Point + Vector2.one * .5f);
-        }
+        public abstract Vector2 ToLocalCharacterPosition(Vector2 _Point);
 
         #endregion
 

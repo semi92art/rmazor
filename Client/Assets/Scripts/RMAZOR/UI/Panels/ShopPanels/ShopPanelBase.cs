@@ -161,7 +161,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
         {
             bool castSuccess = _Args.SavedGame.CastTo(out SavedGame result);
             if (!castSuccess)
+            {
+                Dbg.LogError("OnGameSaved cast is not successfull");
                 return;
+            }
             long score = result.Money;
             m_MoneyText.text = score.ToString();
         }

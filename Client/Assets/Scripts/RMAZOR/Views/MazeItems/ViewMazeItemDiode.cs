@@ -43,7 +43,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemDiode(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -184,6 +184,26 @@ namespace RMAZOR.Views.MazeItems
             start *= scale;
             end *= scale;
             return new Tuple<Vector2, Vector2>(start, end);
+        }
+
+        protected override void OnAppearStart(bool _Appear)
+        {
+            if (_Appear)
+            {
+                m_SolidLine.enabled = true;
+                m_IntermittentLine.enabled = true;
+            }
+            base.OnAppearStart(_Appear);
+        }
+
+        protected override void OnAppearFinish(bool _Appear)
+        {
+            if (!_Appear)
+            {
+                m_SolidLine.enabled = false;
+                m_IntermittentLine.enabled = false;
+            }
+            base.OnAppearFinish(_Appear);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

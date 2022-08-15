@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
@@ -10,6 +12,7 @@ using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
+using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -130,7 +133,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             CommandsProceeder.LockCommands(
-                RmazorUtils.MoveAndRotateCommands, 
+                GetCommandsToLock(), 
                 nameof(ITutorialDialogPanel));
             base.OnDialogStartAppearing();
         }
@@ -138,7 +141,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogDisappeared()
         {
             CommandsProceeder.UnlockCommands(
-                RmazorUtils.MoveAndRotateCommands, 
+                GetCommandsToLock(), 
                 nameof(ITutorialDialogPanel));
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
@@ -163,6 +166,16 @@ namespace RMAZOR.UI.Panels
             vpGo.transform.SetLocalPosXY(Vector2.left * 1e3f);
             m_VideoPlayer = vpGo.GetCompItem<VideoPlayer>("video_player");
             m_VideoPlayer.audioOutputMode = VideoAudioOutputMode.None;
+        }
+        
+        private static IEnumerable<EInputCommand> GetCommandsToLock()
+        {
+            return new[]
+                {
+                    EInputCommand.ShopMenu,
+                    EInputCommand.SettingsMenu
+                }
+                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
 
         #endregion

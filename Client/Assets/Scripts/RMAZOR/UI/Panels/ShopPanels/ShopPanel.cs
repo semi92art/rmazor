@@ -218,7 +218,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     if (_Info.BuyForWatchingAd)
                     {
                         Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
-                        Managers.AdsManager.ShowRewardedAd(_OnShown: OnPaidReal);
+                        Managers.AdsManager.ShowRewardedAd(_OnReward: OnPaidReal);
                     }
                     else
                     {
@@ -289,12 +289,15 @@ namespace RMAZOR.UI.Panels.ShopPanels
                                             .GetTranslation("coins_alt")
                                             .ToLowerInvariant();
                     CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+                    if (_PurchaseKey == -1)
+                        return;
                     string productId = _PurchaseKey switch
                     {
-                        1 => "coins_pack_small",
-                        2 => "coins_pack_medium",
-                        3 => "coins_pack_large",
-                        _ => null
+                        -1 => "coins_pack_micro",
+                        1  => "coins_pack_small",
+                        2  => "coins_pack_medium",
+                        3  => "coins_pack_large",
+                        _  => null
                     };
                     if (productId == null)
                     {

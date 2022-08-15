@@ -3,26 +3,61 @@ using AppodealStack.Monetization.Api;
 using AppodealStack.Monetization.Common;
 using Common.Helpers;
 using Common.Ticker;
+using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdBlocks
 {
-    public interface IAppodealRewardedAd : IAdBase, IRewardedVideoAdListener { }
+    public interface IAppodealRewardedAd : IRewardedAdBase, IRewardedVideoAdListener { }
     
-    public class AppodealRewardedAd : AppodealAdBase, IAppodealRewardedAd
+    public class AppodealRewardedAd : RewardedAdBase, IAppodealRewardedAd
     {
-        protected override int    ShowStyle  => AppodealShowStyle.RewardedVideo;
+        #region nonpublic members
+        
+        protected override string AdSource   => AdvertisingNetworks.Appodeal;
         protected override string AdType     => AdTypeRewarded;
-        protected override int    AppoAdType => AppodealAdType.RewardedVideo;
+        private            int    ShowStyle  => AppodealShowStyle.RewardedVideo;
+        private            int    AppoAdType => AppodealAdType.RewardedVideo;
 
-        public AppodealRewardedAd(GlobalGameSettings _GameSettings, ICommonTicker _CommonTicker) 
+        #endregion
+
+        #region inject
+        
+        public AppodealRewardedAd(
+            GlobalGameSettings _GameSettings,
+            ICommonTicker      _CommonTicker) 
             : base(_GameSettings, _CommonTicker) { }
+
+        #endregion
+
+        #region api
+        
+        public override bool Ready => Appodeal.IsLoaded(AppoAdType);
 
         public override void Init(string _AppId, string _UnitId)
         {
             base.Init(_AppId, _UnitId);
             Appodeal.SetRewardedVideoCallbacks(this);
         }
+
+        public override void LoadAd()
+        {
+            Appodeal.Cache(AppoAdType);
+        }
         
+        public override void ShowAd(
+            UnityAction _OnShown, 
+            UnityAction _OnClicked, 
+            UnityAction _OnReward)
+        {
+            OnShown = _OnShown;
+            OnClicked = _OnClicked;
+            OnReward = _OnReward;
+            if (!Ready) 
+                return;
+            const string placement = "default";
+            Appodeal.Show(ShowStyle, placement);
+        }
+
         public void OnRewardedVideoLoaded(bool _IsPrecache) 
         { 
             OnAdLoaded();
@@ -53,8 +88,9 @@ namespace Common.Managers.Advertising.AdBlocks
             Dbg.Log("Appodeal: Video closed"); 
         }
 
-        public void OnRewardedVideoFinished(double _Amount, string _Name) 
-        { 
+        public void OnRewardedVideoFinished(double _Amount, string _Name)
+        {
+            OnAdRewardGot();
             Dbg.Log("Appodeal: Reward: " + _Amount + " " + _Name); 
         }
 
@@ -62,6 +98,8 @@ namespace Common.Managers.Advertising.AdBlocks
         { 
             Dbg.Log("Appodeal: Video expired"); 
         }
+
+        #endregion
     }
 }
 #endif

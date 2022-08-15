@@ -21,3 +21,5 @@ MonoBehaviour:
   payToContinueMoneyCount: 100
   moneyItemCoast: 1
   apkForAppodeal: 0
+  rewardedAdReadyForTest: 1
+  interstitialAdReadyForTest: 1

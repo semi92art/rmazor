@@ -17,14 +17,16 @@ namespace Common.Managers.Advertising
 {
     public interface IAdsManager : IInit
     {
-        bool         RewardedAdReady     { get; }
-        bool         InterstitialAdReady { get; }
-        Entity<bool> ShowAds             { get; set; }
+        bool         RewardedAdReady             { get; }
+        bool         RewardedAdNonSkippableReady { get; }
+        bool         InterstitialAdReady         { get; }
+        Entity<bool> ShowAds                     { get; set; }
 
         void ShowRewardedAd(
             UnityAction _OnBeforeShown = null,
             UnityAction _OnShown       = null,
             UnityAction _OnClicked     = null,
+            UnityAction _OnReward      = null,
             string      _AdsNetwork    = null,
             bool        _Forced        = false,
             bool        _Skippable     = true);
@@ -34,8 +36,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnShown       = null,
             UnityAction _OnClicked     = null,
             string      _AdsNetwork    = null,
-            bool        _Forced        = false,
-            bool        _Skippable     = true);
+            bool        _Forced        = false);
     }
 
     public class AdsManager : InitBase, IAdsManager
@@ -75,8 +76,9 @@ namespace Common.Managers.Advertising
             set => SaveUtils.PutValue(SaveKeysCommon.DisableAds, !value.Value);
         }
 
-        public bool RewardedAdReady     => m_Providers.Values.Any(_P => _P.RewardedAdReady);
-        public bool InterstitialAdReady => m_Providers.Values.Any(_P => _P.InterstitialAdReady);
+        public bool RewardedAdReady             => m_Providers.Values.Any(_P => _P.RewardedAdReady);
+        public bool RewardedAdNonSkippableReady => m_Providers.Values.Any(_P => _P.RewardedAdReady);
+        public bool InterstitialAdReady         => m_Providers.Values.Any(_P => _P.InterstitialAdReady);
 
         public override void Init()
         {
@@ -90,6 +92,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnBeforeShown,
             UnityAction _OnShown,
             UnityAction _OnClicked,
+            UnityAction _OnReward,
             string      _AdsNetwork = null,
             bool        _Forced     = false,
             bool        _Skippable  = true)
@@ -98,14 +101,28 @@ namespace Common.Managers.Advertising
                 ? m_Providers.Values
                 : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
                     .Select(_Kvp => _Kvp.Value)).ToList();
+            bool IsProviderReady(IAdsProvider _Provider)
+            {
+                if (_Provider == null
+                    || !_Provider.Initialized
+                    || !_Provider.RewardedAdReady)
+                {
+                    return false;
+                }
+                return true;
+            }
             var readyProviders = providers
                 .Where(_P => _P.Initialized && _P.RewardedAdReady)
                 .ToList();
             if (!readyProviders.Any())
             {
                 Dbg.LogWarning("Rewarded ad was not ready to be shown.");
-                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized && !_P.RewardedAdReady))
-                    provider.LoadAd(AdvertisingType.Rewarded);
+                foreach (var provider in providers
+                    .Where(_P => _P != null && _P.Initialized)
+                    .Where(_P => !IsProviderReady(_P)))
+                {
+                    provider.LoadRewardedAd();
+                }
                 return;
             }
             ShowAd(
@@ -113,9 +130,9 @@ namespace Common.Managers.Advertising
                 _OnBeforeShown, 
                 _OnShown,
                 _OnClicked, 
+                _OnReward,
                 AdvertisingType.Rewarded,
-                _Forced,
-                _Skippable);
+                _Forced);
         }
 
         public void ShowInterstitialAd(
@@ -123,21 +140,33 @@ namespace Common.Managers.Advertising
             UnityAction _OnShown,
             UnityAction _OnClicked,
             string      _AdsNetwork = null,
-            bool        _Forced     = false,
-            bool        _Skippable  = true)
+            bool        _Forced     = false)
         {
             var providers = (string.IsNullOrEmpty(_AdsNetwork)
                 ? m_Providers.Values
                 : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
                     .Select(_Kvp => _Kvp.Value)).ToList();
+            bool IsProviderReady(IAdsProvider _Provider)
+            {
+                if (_Provider == null
+                    || !_Provider.Initialized
+                    || !_Provider.InterstitialAdReady)
+                {
+                    return false;
+                }
+                return true;
+            }
             var readyProviders = providers
                 .Where(_P => _P.Initialized && _P.InterstitialAdReady)
                 .ToList();
             if (!readyProviders.Any())
             {
                 Dbg.LogWarning("Interstitial ad was not ready to be shown.");
-                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized && !_P.InterstitialAdReady))
-                    provider.LoadAd(AdvertisingType.Interstitial);
+                foreach (var provider in providers.Where(_P => _P != null && _P.Initialized)
+                    .Where(_P => !IsProviderReady(_P)))
+                {
+                    provider.LoadInterstitialAd();
+                }
                 return;
             }
             ShowAd(
@@ -145,9 +174,9 @@ namespace Common.Managers.Advertising
                 _OnBeforeShown,
                 _OnShown,
                 _OnClicked, 
+                null,
                 AdvertisingType.Interstitial,
-                _Forced,
-                _Skippable);
+                _Forced);
         }
 
         #endregion
@@ -179,9 +208,9 @@ namespace Common.Managers.Advertising
             UnityAction                       _OnBeforeShown,
             UnityAction                       _OnShown,
             UnityAction                       _OnClicked,
+            UnityAction                       _OnReward,
             AdvertisingType                   _Type,
-            bool                              _Forced,
-            bool                              _Skippable)
+            bool                              _Forced)
         {
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
@@ -227,14 +256,19 @@ namespace Common.Managers.Advertising
                 _OnClicked?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdClicked, eventData);
             }
+            void OnReward()
+            {
+                _OnReward?.Invoke();
+                AnalyticsManager.SendAnalytic(AnalyticIds.AdReward, eventData);
+            }
             Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
-                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, ShowAds, _Forced, _Skippable);
+                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, ShowAds, _Forced);
                     break;
                 case AdvertisingType.Rewarded:
-                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, ShowAds, _Forced, _Skippable);
+                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, OnReward, ShowAds, _Forced);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

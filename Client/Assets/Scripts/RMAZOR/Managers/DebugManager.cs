@@ -1,5 +1,6 @@
 ﻿using System;
 using Common;
+using Common.Debugging;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -13,12 +14,22 @@ namespace RMAZOR.Managers
 {
     public interface IDebugManager : IInit
     {
-        event VisibilityChangedHandler VisibilityChanged;
-        void                           Monitor(string _Name, bool _Enable, Func<object> _Value);
+        event VisibilityChangedHandler DebugConsoleVisibilityChanged;
+
+        void        ShowDebugConsole();
+        void        HideDebugConsole();
+        void        Monitor(string _Name, bool _Enable, Func<object> _Value);
+        IFpsCounter FpsCounter { get; }
     }
 
     public class DebugManager : InitBase, IDebugManager
     {
+        #region nonpublic members
+
+        private bool m_DebugConsoleInitialized;
+
+        #endregion
+        
         #region inject
 
         private IRemotePropertiesRmazor     RemoteProperties  { get; }
@@ -28,6 +39,8 @@ namespace RMAZOR.Managers
         private IAdsManager                 AdsManager        { get; }
         private IScoreManager               ScoreManager      { get; }
         private IAudioManager               AudioManager      { get; }
+        private IDebugConsoleView           DebugConsoleView  { get; }
+        public  IFpsCounter                 FpsCounter        { get; }
 
         private DebugManager(
             IRemotePropertiesRmazor     _RemoteProperties,
@@ -36,7 +49,9 @@ namespace RMAZOR.Managers
             IDebugSetting               _DebugSetting,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager)
+            IAudioManager               _AudioManager,
+            IDebugConsoleView           _DebugConsoleView,
+            IFpsCounter                 _FpsCounter)
         {
             RemoteProperties  = _RemoteProperties;
             Model             = _Model;
@@ -45,17 +60,29 @@ namespace RMAZOR.Managers
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
             AudioManager      = _AudioManager;
+            DebugConsoleView  = _DebugConsoleView;
+            FpsCounter        = _FpsCounter;
         }
 
         #endregion
 
         #region api
 
-        public event VisibilityChangedHandler VisibilityChanged;
-        
+        public event VisibilityChangedHandler DebugConsoleVisibilityChanged;
+
+        public void ShowDebugConsole()
+        {
+            DebugConsoleView.SetVisibility(true);
+        }
+
+        public void HideDebugConsole()
+        {
+            DebugConsoleView.SetVisibility(false);
+        }
+
         public void Monitor(string _Name, bool _Enable, Func<object> _Value)
         {
-            DebugConsoleView.Instance.Monitor(_Name, _Enable, _Value);
+            DebugConsoleView.Monitor(_Name, _Enable, _Value);
         }
 
         public override void Init()
@@ -63,7 +90,8 @@ namespace RMAZOR.Managers
             if (Initialized)
                 return;
             DebugSetting.ValueSet += EnableDebug;
-            InitDebugConsole();
+            InitDebugConsole(false);
+            FpsCounter.Init();
             EnableDebug(DebugSetting.Get());
             base.Init();
         }
@@ -72,25 +100,32 @@ namespace RMAZOR.Managers
 
         #region nonpublic methods
 
-        private void InitDebugConsole()
+        private void InitDebugConsole(bool _Forced)
         {
-            if (!Application.isEditor && !RemoteProperties.DebugEnabled)
+            if (!Application.isEditor && !RemoteProperties.DebugEnabled && !_Forced)
                 return;
-            var instance = DebugConsoleView.Instance;
-            instance.VisibilityChanged += _Value =>
+            DebugConsoleView.VisibilityChanged += _Value =>
             {
                 CommandsProceeder.RaiseCommand(
                     _Value ? EInputCommand.DisableDebug : EInputCommand.EnableDebug,
                     null,
                     true);
-                VisibilityChanged?.Invoke(_Value);
+                DebugConsoleVisibilityChanged?.Invoke(_Value);
             };
-            instance.Init(Model, CommandsProceeder, AdsManager, ScoreManager, AudioManager);
+            DebugConsoleView.Init(
+                Model, 
+                CommandsProceeder,
+                AdsManager,
+                ScoreManager,
+                AudioManager);
+            m_DebugConsoleInitialized = true;
         }
     
-        private static void EnableDebug(bool _Enable)
+        private void EnableDebug(bool _Enable)
         {
-            DebugConsoleView.Instance.EnableDebug(_Enable);
+            if (!m_DebugConsoleInitialized && _Enable)
+                InitDebugConsole(true);
+            DebugConsoleView.EnableDebug(_Enable);
         }
 
         #endregion

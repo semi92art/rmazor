@@ -4,13 +4,16 @@ using System.Linq;
 using Common;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Ticker;
 using RMAZOR.Models;
 using UnityEngine.Events;
+using Zenject;
 
 namespace RMAZOR.Views.InputConfigurators
 {
     public interface IViewInputCommandsProceeder : IInit
     {
+        float                                      SecondsWithoutCommand { get; }
         event UnityAction<EInputCommand, object[]> Command; 
         event UnityAction<EInputCommand, object[]> InternalCommand; 
         
@@ -24,7 +27,7 @@ namespace RMAZOR.Views.InputConfigurators
         bool                       IsCommandLocked(EInputCommand _Key);
     }
     
-    public class ViewInputCommandsProceeder : InitBase, IViewInputCommandsProceeder
+    public class ViewInputCommandsProceeder : InitBase, IViewInputCommandsProceeder, IUpdateTick
     {
         #region nonpublic members
 
@@ -35,15 +38,39 @@ namespace RMAZOR.Views.InputConfigurators
 
         #endregion
 
+        #region inject
+        
+        private ICommonTicker CommonTicker { get; }
+
+        protected ViewInputCommandsProceeder() { }
+        
+        [Inject]
+        protected ViewInputCommandsProceeder(ICommonTicker _CommonTicker)
+        {
+            CommonTicker = _CommonTicker;
+        }
+        
+        #endregion
+
         #region api
 
+        public float SecondsWithoutCommand { get; private set; }
+        
         public event UnityAction<EInputCommand, object[]> Command;
         public event UnityAction<EInputCommand, object[]> InternalCommand;
         
         public override void Init()
         {
+            CommonTicker?.Register(this);
             m_AllCommands = Enum.GetValues(typeof(EInputCommand)).Cast<EInputCommand>();
             base.Init();
+        }
+        
+        public void UpdateTick()
+        {
+            if (CommonTicker == null)
+                return;
+            SecondsWithoutCommand += CommonTicker.DeltaTime;
         }
         
         public void LockCommand(EInputCommand _Key, string _Group)
@@ -97,6 +124,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         public virtual bool RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
         {
+            SecondsWithoutCommand = 0f;
             InternalCommand?.Invoke(_Key, _Args);
             if (_Forced)
             {
@@ -115,5 +143,7 @@ namespace RMAZOR.Views.InputConfigurators
         }
 
         #endregion
+
+
     }
 }

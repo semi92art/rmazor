@@ -22,32 +22,29 @@ namespace Common.Utils
             float                            _Match,
             float                            _ReferencePixelsPerUnit,
             bool                             _IgnoreReversedGraphics,
-            GraphicRaycaster.BlockingObjects _BlockingObjects
-        )
+            GraphicRaycaster.BlockingObjects _BlockingObjects)
         {
-            var go = new GameObject(_Name);
-            var canvas = go.AddComponent<Canvas>();
-            canvas.renderMode = _RenderMode;
-            canvas.pixelPerfect = _PixelPerfect;
-            canvas.sortingOrder = _SortOrder;
-            canvas.additionalShaderChannels = _AdditionalCanvasShaderChannels;
-
-            var canvasScaler = go.AddComponent<CanvasScaler>();
-            canvasScaler.uiScaleMode = _ScaleMode;
-            canvasScaler.referenceResolution = _ReferenceResolution;
-            canvasScaler.screenMatchMode = _ScreenMatchMode;
-            canvasScaler.matchWidthOrHeight = _Match;
-            canvasScaler.referencePixelsPerUnit = _ReferencePixelsPerUnit;
-
-            var graphicRaycaster = go.AddComponent<GraphicRaycaster>();
+            var go                                  = new GameObject(_Name);
+            var canvas                              = go.AddComponent<Canvas>();
+            canvas.renderMode                       = _RenderMode;
+            canvas.pixelPerfect                     = _PixelPerfect;
+            canvas.sortingOrder                     = _SortOrder;
+            canvas.additionalShaderChannels         = _AdditionalCanvasShaderChannels;
+            var canvasScaler                        = go.AddComponent<CanvasScaler>();
+            canvasScaler.uiScaleMode                = _ScaleMode;
+            canvasScaler.referenceResolution        = _ReferenceResolution;
+            canvasScaler.screenMatchMode            = _ScreenMatchMode;
+            canvasScaler.matchWidthOrHeight         = _Match;
+            canvasScaler.referencePixelsPerUnit     = _ReferencePixelsPerUnit;
+            var graphicRaycaster                    = go.AddComponent<GraphicRaycaster>();
             graphicRaycaster.ignoreReversedGraphics = _IgnoreReversedGraphics;
-            graphicRaycaster.blockingObjects = _BlockingObjects;
+            graphicRaycaster.blockingObjects        = _BlockingObjects;
 
             return canvas;
         }
         
         public static RectTransform UiRectTransform(
-            RectTransform _Parent,
+            RectTransform     _Parent,
             RectTransformLite _RtrLite)
         {
             return UiRectTransform(
@@ -61,11 +58,11 @@ namespace Common.Utils
         
         private static RectTransform UiRectTransform(
             RectTransform _Parent,
-            string _Name,
-            UiAnchor _Anchor,
-            Vector2 _AnchoredPosition,
-            Vector2 _Pivot,
-            Vector2 _SizeDelta
+            string        _Name,
+            UiAnchor      _Anchor,
+            Vector2       _AnchoredPosition,
+            Vector2       _Pivot,
+            Vector2       _SizeDelta
         )
         {
             var item = new GameObject().AddComponent<RectTransform>();
@@ -79,12 +76,12 @@ namespace Common.Utils
         
         private static void Set(
             RectTransform _Item,
-            RectTransform      _Parent,
-            string             _Name,
-            UiAnchor           _Anchor,
-            Vector2            _AnchoredPosition,
-            Vector2            _Pivot,
-            Vector2            _SizeDelta)
+            RectTransform _Parent,
+            string        _Name,
+            UiAnchor      _Anchor,
+            Vector2       _AnchoredPosition,
+            Vector2       _Pivot,
+            Vector2       _SizeDelta)
         {
             _Item.SetParent(_Parent);
             _Item.name = _Name;
@@ -93,10 +90,10 @@ namespace Common.Utils
 
         private static void Set(
             RectTransform _Item,
-            UiAnchor           _Anchor,
-            Vector2            _AnchoredPosition,
-            Vector2            _Pivot,
-            Vector2            _SizeDelta)
+            UiAnchor      _Anchor,
+            Vector2       _AnchoredPosition,
+            Vector2       _Pivot,
+            Vector2       _SizeDelta)
         {
             _Item.anchorMin = _Anchor.Min;
             _Item.anchorMax = _Anchor.Max;

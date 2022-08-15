@@ -14,5 +14,7 @@ namespace Common.Helpers
         public int       payToContinueMoneyCount;
         public int       moneyItemCoast;
         public bool      apkForAppodeal;
+        public bool      rewardedAdReadyForTest;
+        public bool      interstitialAdReadyForTest;
     }
 }

@@ -9,9 +9,9 @@ using GoogleMobileAds.Api;
 
 namespace Common.Managers.Advertising.AdBlocks
 {
-    public interface IAdMobInterstitialAd : IAdBase { }
+    public interface IAdMobInterstitialAd : IInterstitialAdBase { }
     
-    public class AdMobInterstitialAd : AdBase, IAdMobInterstitialAd
+    public class AdMobInterstitialAd : InterstitialAdBase, IAdMobInterstitialAd
     {
         #region nonpublic members
         

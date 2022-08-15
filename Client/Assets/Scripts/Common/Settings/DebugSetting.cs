@@ -2,16 +2,13 @@
 using Common.Helpers;
 using Common.Utils;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace Common.Settings
 {
     public interface IDebugSetting : ISetting<bool> { }
-    
-    // ReSharper disable once ClassNeverInstantiated.Global
+
     public class DebugSetting : SettingBase<bool>, IDebugSetting
     {
-
         #region nonpublic members
         
         private IRemotePropertiesCommon RemoteProperties { get; }

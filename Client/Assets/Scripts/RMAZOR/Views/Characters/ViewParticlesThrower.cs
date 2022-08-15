@@ -106,7 +106,7 @@ namespace RMAZOR.Views.Characters
                 default:
                     throw new SwitchCaseNotImplementedException(ParticleType);
             }
-            particle!.Throw(_StartPosition, _Speed, _Scale, _ThrowTime);
+            particle?.Throw(_StartPosition, _Speed, _Scale, _ThrowTime);
         }
 
         #endregion

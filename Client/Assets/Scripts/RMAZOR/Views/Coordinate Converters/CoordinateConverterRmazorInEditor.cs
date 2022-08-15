@@ -47,6 +47,16 @@ namespace RMAZOR.Views.Coordinate_Converters
             SetScale();
         }
 
+        public override Vector2 ToLocalMazeItemPosition(Vector2 _Point)
+        {
+            return ToLocalMazePosition(_Point + Vector2.right * .5f);
+        }
+        
+        public override Vector2 ToLocalCharacterPosition(Vector2 _Point)
+        {
+            return ToLocalMazePosition(_Point + Vector2.one * .5f);
+        }
+
         #endregion
 
         #region nonpublic menhods

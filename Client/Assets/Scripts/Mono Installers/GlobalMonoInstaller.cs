@@ -149,23 +149,24 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()        .To<MazeInfoValidator>()            .AsSingle();
 #if ADMOB_API
             Container.Bind<IAdMobAdsProvider>()         .To<AdMobAdsProvider>()             .AsSingle();
-            Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsTransient();
-            Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsTransient();
+            Container.Bind<IAdMobInterstitialAd>()      .To<AdMobInterstitialAd>()          .AsSingle();
+            Container.Bind<IAdMobRewardedAd>()          .To<AdMobRewardedAd>()              .AsSingle();
 #endif
 #if UNITY_ADS_API
             Container.Bind<IUnityAdsProvider>()         .To<UnityAdsProvider>()             .AsSingle();
-            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsTransient();
-            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsTransient();
+            Container.Bind<IUnityAdsInterstitialAd>()   .To<UnityAdsInterstitialAd>()       .AsSingle();
+            Container.Bind<IUnityAdsRewardedAd>()       .To<UnityAdsRewardedAd>()           .AsSingle();
 #endif
 #if APPODEAL_3
             Container.Bind<IAppodealAdsProvider>()      .To<AppodealAdsProvider>()          .AsSingle();
-            Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsTransient();
-            Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsTransient();
+            Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
+            Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 #endif
             Container.Bind<IAdsProvidersSet>().To<AdsProvidersSet>().AsSingle();
             Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
+            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
         }
     }
 }

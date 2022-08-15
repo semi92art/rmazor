@@ -19,7 +19,7 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 {
-    public interface IViewMazeMoneyItem : IOnLevelStageChanged, ICloneable
+    public interface IViewMazeMoneyItem : IInit, IOnLevelStageChanged, ICloneable, IAppear
     {
         event UnityAction      Collected;
         bool                   IsCollected { get; set; }
@@ -27,7 +27,6 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         void                   Collect(bool   _Collect);
         void                   Init(Transform _Parent);
         void                   UpdateShape();
-        IEnumerable<Component> Renderers { get; }
     }
 
     public class ViewMazeMoneyItemDisc : InitBase, IViewMazeMoneyItem
@@ -46,24 +45,27 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         #region inject
 
-        private ViewSettings         ViewSettings        { get; }
-        private IPrefabSetManager    PrefabSetManager    { get; }
-        private IColorProvider       ColorProvider       { get; }
-        private ICoordinateConverter CoordinateConverter { get; }
-        private IAudioManager        AudioManager        { get; }
+        private ViewSettings                ViewSettings        { get; }
+        private IPrefabSetManager           PrefabSetManager    { get; }
+        private IColorProvider              ColorProvider       { get; }
+        private ICoordinateConverter        CoordinateConverter { get; }
+        private IAudioManager               AudioManager        { get; }
+        private IRendererAppearTransitioner AppearTransitioner  { get; }
 
         private ViewMazeMoneyItemDisc(
-            ViewSettings         _ViewSettings,
-            IPrefabSetManager    _PrefabSetManager,
-            IColorProvider       _ColorProvider,
-            ICoordinateConverter _CoordinateConverter,
-            IAudioManager        _AudioManager)
+            ViewSettings                _ViewSettings,
+            IPrefabSetManager           _PrefabSetManager,
+            IColorProvider              _ColorProvider,
+            ICoordinateConverter        _CoordinateConverter,
+            IAudioManager               _AudioManager,
+            IRendererAppearTransitioner _AppearTransitioner)
         {
             ViewSettings        = _ViewSettings;
             PrefabSetManager    = _PrefabSetManager;
             ColorProvider       = _ColorProvider;
             CoordinateConverter = _CoordinateConverter;
             AudioManager        = _AudioManager;
+            AppearTransitioner  = _AppearTransitioner;
         }
 
         #endregion
@@ -76,7 +78,8 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 PrefabSetManager,
                 ColorProvider, 
                 CoordinateConverter, 
-                AudioManager);
+                AudioManager,
+                AppearTransitioner);
 
         public void UpdateShape()
         {
@@ -87,12 +90,9 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             m_MainDisc.transform.SetLocalScaleXY(Vector2.one * scale * commonScaleCoeff);
         }
 
-        public IEnumerable<Component> Renderers => Initialized
-            ? new Component[] {m_MainDisc, m_InnerDisc, m_OuterDisc}
-            : new Component[] {null};
-
         public event UnityAction Collected;
-        public bool              IsCollected { get; set; }
+        public bool              IsCollected    { get; set; }
+        public EAppearingState   AppearingState { get; private set; }
 
         public bool Active
         {
@@ -106,6 +106,45 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 m_InnerDisc.enabled = value;
                 m_OuterDisc.enabled = value;
             }
+        }
+        
+        public void Appear(bool _Appear)
+        {
+            var colMain = ColorProvider.GetColor(ColorIds.MoneyItem);
+            var colBlurAttenuated = colMain.SetA(0f);
+            var appearSets = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new[] {m_MainDisc, m_InnerDisc, m_OuterDisc}, () => colMain}
+            };
+            Cor.Run(Cor.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    if (_Appear)
+                    {
+                        m_InnerDisc.enabled = true;
+                        m_OuterDisc.enabled = true;
+                    }
+                    AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+                    AppearTransitioner.DoAppearTransition(
+                        _Appear,
+                        appearSets,
+                        ViewSettings.betweenLevelTransitionTime,
+                        () =>
+                        {
+                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+                            if (_Appear)
+                            {
+                                m_InnerDisc.ColorInner = colBlurAttenuated;
+                                m_OuterDisc.ColorOuter = colBlurAttenuated;
+                            }
+                            else
+                            {
+                                m_InnerDisc.enabled = false;
+                                m_OuterDisc.enabled = false;
+                            }
+                        });
+                }));
         }
 
         public void Collect(bool _Collect)
@@ -191,6 +230,8 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             m_OuterDisc.ColorOuter = _Color.SetA(0f);
             m_InnerDisc.ColorInner = _Color.SetA(0f);
             m_InnerDisc.ColorOuter = _Color;
+            m_InnerDisc.SetColorMode(Disc.DiscColorMode.Radial);
+            m_OuterDisc.SetColorMode(Disc.DiscColorMode.Radial);
         }
 
         #endregion

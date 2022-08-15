@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
-using Common.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -13,17 +13,13 @@ namespace Common.UI
 {
     public class MultiplyMoneyWheelPanelView : SimpleUiItemBase, IFixedUpdateTick
     {
-        #region constants
-
-        private const float ArrowSpeed = 5f;
-
-        #endregion
-        
         #region serialized fields
 
         [SerializeField] private List<Image>   coeffBacks;
+        [SerializeField] private List<Image>   coeffBorders;
         [SerializeField] private Image         arrow;
         [SerializeField] private RectTransform min, max;
+        [SerializeField] private Animator      animator;
 
         #endregion
         
@@ -31,9 +27,10 @@ namespace Common.UI
 
         private List<float> m_Thresholds;
         private List<Color> m_BackColors;
-        private bool        m_DoMoveArrow;
-        private bool        m_ArrowDirectionRight = true;
-        private int         m_MultiplyCoefficient;
+
+        private bool m_DoMoveArrow;
+        private bool m_ArrowDirectionRight = true;
+        private int  m_MultiplyCoefficient;
         
         #endregion
         
@@ -50,6 +47,7 @@ namespace Common.UI
             bool                 _AutoFont = true)
         {
             InitCoefficientBackgroundsColors();
+            DisableCoefficientBorders();
             base.Init(
                 _UITicker,
                 _ColorProvider,
@@ -68,11 +66,13 @@ namespace Common.UI
         public void StartWheel()
         {
             UpdateThresholds();
+            animator.SetTrigger(AnimKeys.Anim);
             m_DoMoveArrow = true;
         }
 
         public void StopWheel()
         {
+            animator.SetTrigger(AnimKeys.Stop);
             m_DoMoveArrow = false;
         }
 
@@ -106,7 +106,6 @@ namespace Common.UI
                     _ => GetArrowPos()
                 };
             }
-
         }
 
         public void FixedUpdateTick()
@@ -115,7 +114,7 @@ namespace Common.UI
                 return;
             if (!m_DoMoveArrow)
                 return;
-            MoveArrow();
+            UpdateMultiplyCoefficient();
         }
         
         #endregion
@@ -125,6 +124,12 @@ namespace Common.UI
         private void InitCoefficientBackgroundsColors()
         {
             m_BackColors = coeffBacks.Select(_Cb => _Cb.color).ToList();
+        }
+
+        private void DisableCoefficientBorders()
+        {
+            foreach (var coeffBorder in coeffBorders)
+                coeffBorder.enabled = false;
         }
         
         private int GetMultiplyCoefficientCore()
@@ -150,7 +155,7 @@ namespace Common.UI
                 .ToList();
         }
 
-        private void MoveArrow()
+        private void UpdateMultiplyCoefficient()
         {
             int multCoeff = GetMultiplyCoefficientCore();
             if (multCoeff != m_MultiplyCoefficient)
@@ -159,20 +164,6 @@ namespace Common.UI
                 MultiplyCoefficientChanged?.Invoke(multCoeff);
                 HighlightCoefficientBackground();
             }
-            float minX = m_Thresholds.First();
-            float maxX = m_Thresholds.Last();
-            float centerX = (minX + maxX) * .5f;
-            Vector2 GetArrowPos () => arrow.rectTransform.localPosition;
-            float coeff = ((maxX - minX) * .5f - Mathf.Abs(GetArrowPos().x - centerX)) / ((maxX - minX) * .5f);
-            if (coeff < MathUtils.Epsilon) coeff = MathUtils.Epsilon;
-            float speedAddict = coeff;
-            float arrowSpeedCorrected = 100f + speedAddict * ArrowSpeed * 100f;
-            var delta = Vector2.right * Ticker.FixedDeltaTime * arrowSpeedCorrected;
-            arrow.rectTransform.localPosition = GetArrowPos() + (m_ArrowDirectionRight ? 1f : -1f) * delta;
-            if (m_ArrowDirectionRight && GetArrowPos().x > maxX)
-                m_ArrowDirectionRight = false;
-            else if (!m_ArrowDirectionRight && GetArrowPos().x < minX)
-                m_ArrowDirectionRight = true;
         }
 
         private void HighlightCoefficientBackground()
@@ -187,8 +178,10 @@ namespace Common.UI
             else                                             coeffPos = 4;
             for (int i = 0; i < coeffBacks.Count; i++)
                 coeffBacks[i].color = m_BackColors[i];
+            DisableCoefficientBorders();
             Color.RGBToHSV(m_BackColors[coeffPos], out float h, out float s, out float v);
             coeffBacks[coeffPos].color = Color.HSVToRGB(h , s + 0.3f, v + 0.2f);
+            coeffBorders[coeffPos].enabled = true;
         }
 
         #endregion

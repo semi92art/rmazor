@@ -9,9 +9,9 @@ using GoogleMobileAds.Api;
 
 namespace Common.Managers.Advertising.AdBlocks
 {
-    public interface IAdMobRewardedAd : IAdBase { }
+    public interface IAdMobRewardedAd : IRewardedAdBase { }
     
-    public class AdMobRewardedAd : AdBase, IAdMobRewardedAd
+    public class AdMobRewardedAd : RewardedAdBase, IAdMobRewardedAd
     {
         #region nonpublic members
 
@@ -47,10 +47,11 @@ namespace Common.Managers.Advertising.AdBlocks
             base.Init(_AppId, _UnitId);
         }
         
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward)
         {
             OnShown = _OnShown;
             OnClicked = _OnClicked;
+            OnReward = _OnReward;
             m_RewardedAd.Show();
         }
 
@@ -97,6 +98,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
         {
+            OnAdRewardGot();
             Dbg.Log("AdMob: Rewarded user earned" 
                     + ": amount: " + _E.Amount
                     + ", type: " + _E.Type);

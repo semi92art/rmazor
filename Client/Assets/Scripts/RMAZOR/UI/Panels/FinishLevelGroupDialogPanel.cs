@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -60,8 +61,6 @@ namespace RMAZOR.UI.Panels
         private AnimationTriggerer          m_Triggerer;
         private string                      m_MultiplyText;
         private long                        m_MultiplyCoefficient;
-        
-        private bool m_PanelShowing;
 
         #endregion
 
@@ -170,32 +169,21 @@ namespace RMAZOR.UI.Panels
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(m_ContinueButtonText, ETextType.MenuUI, "continue"));
             m_MultiplyText = Managers.LocalizationManager.GetTranslation("multiply");
-            m_Triggerer.Trigger1 += () =>
-            {
-                m_ButtonSkip.interactable = true;
-                m_ButtonMultiplyMoney.interactable = true;
-                m_WheelPanelView.StartWheel();
-            };
-            m_PanelShowing = false;
-            m_WheelPanelView.MultiplyCoefficientChanged += _Coefficient => m_MultiplyButtonText.text =
-                Managers.LocalizationManager.GetTranslation("multiply") + " x" + _Coefficient;
             m_TextMoneyCount.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
+            m_Triggerer.Trigger1 += OnStartAppearingAnimationFinished;
+            m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
         }
 
         public override void OnDialogStartAppearing()
         {
-            m_ButtonContinue.gameObject.SetActive(false);
-            m_PanelShowing = true;
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
+            m_ButtonContinue.gameObject.SetActive(false);
             Cor.Run(Cor.WaitNextFrame(() =>
             {
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             }));
-            IndicateAdsLoading(true);
-            Cor.Run(Cor.WaitWhile(
-                () => !Managers.AdsManager.RewardedAdReady,
-                () => IndicateAdsLoading(false)));
+            Cor.Run(StartIndicatingAdLoadingCoroutine());
             base.OnDialogStartAppearing();
         }
 
@@ -209,7 +197,6 @@ namespace RMAZOR.UI.Panels
         
         public override void OnDialogDisappeared()
         {
-            m_PanelShowing = false;
             Prompt.ShowPrompt(EPromptType.TapToNext);
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             base.OnDialogDisappeared();
@@ -219,14 +206,42 @@ namespace RMAZOR.UI.Panels
 
         #region nonpublic methods
         
+        private void IndicateAdsLoading(bool _Indicate)
+        {
+            if (AppearingState != EAppearingState.Appearing
+                && AppearingState != EAppearingState.Appeared)
+            {
+                return;
+            }
+            m_AnimLoadingAds.SetGoActive(_Indicate);
+            m_IconWatchAds.enabled             = !_Indicate;
+            m_ButtonMultiplyMoney.interactable = !_Indicate;
+        }
+        
+        private void OnStartAppearingAnimationFinished()
+        {
+            m_ButtonSkip.interactable = true;
+            m_WheelPanelView.StartWheel();
+        }
+
+        private void OnMultiplyCoefficientChanged(int _Coefficient)
+        {
+            if (!Managers.AdsManager.RewardedAdNonSkippableReady)
+                return;
+            m_MultiplyButtonText.text =
+                Managers.LocalizationManager.GetTranslation("multiply") + " x" + _Coefficient;
+        }
+        
         private void OnMultiplyButtonPressed()
         {
+            if (AppearingState != EAppearingState.Appeared)
+                return;
             m_WheelPanelView.StopWheel();
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
             m_TextMoneyCount.text = reward.ToString();
-            Managers.AdsManager.ShowRewardedAd(_OnShown: () =>
+            Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
             {
                 Multiply();
                 m_ButtonMultiplyMoney.gameObject.SetActive(false);
@@ -250,15 +265,6 @@ namespace RMAZOR.UI.Panels
             var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
             dv.Back();
             CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
-        }
-        
-        private void IndicateAdsLoading(bool _Indicate)
-        {
-            if (!m_PanelShowing)
-                return;
-            m_AnimLoadingAds.SetGoActive(_Indicate);
-            m_IconWatchAds.enabled             = !_Indicate;
-            m_ButtonMultiplyMoney.interactable = !_Indicate;
         }
 
         private void Multiply()
@@ -297,7 +303,18 @@ namespace RMAZOR.UI.Panels
                 }));
         }
 
-        private IEnumerable<EInputCommand> GetCommandsToLock()
+        private IEnumerator StartIndicatingAdLoadingCoroutine()
+        {
+            IndicateAdsLoading(true);
+            yield return Cor.WaitWhile(
+                () => !Managers.AdsManager.RewardedAdNonSkippableReady,
+                () =>
+                {
+                    IndicateAdsLoading(false);
+                });
+        }
+
+        private static IEnumerable<EInputCommand> GetCommandsToLock()
         {
             return new[]
                 {

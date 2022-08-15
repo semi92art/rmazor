@@ -8,6 +8,7 @@ using Common.Helpers;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Notifications;
 using Common.Providers;
+using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
@@ -21,6 +22,8 @@ using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = System.Object;
 
 namespace RMAZOR.Views
 {
@@ -46,8 +49,17 @@ namespace RMAZOR.Views
         ICameraProvider               CameraProvider       { get; }
     }
     
-    public class ViewGame : InitBase, IViewGame
+    public class ViewGame : InitBase, IViewGame, IApplicationPause, IUpdateTick
     {
+        #region nonpublic members
+
+        private bool     m_ShowAdOnLongTimeWithoutCommandsEnabled;
+        private float    m_SecondsInLevelWithoutInputActions;
+        private DateTime m_LastPauseDateTime = DateTime.UtcNow;
+        private object[] m_ProceedersCached;
+
+        #endregion
+        
         #region inject
 
         private IRemotePropertiesRmazor       RemotePropertiesRmazor { get; }
@@ -67,13 +79,15 @@ namespace RMAZOR.Views
         private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
         public  ICameraProvider               CameraProvider         { get; }
 
-        private IViewMazeCommon             Common              { get; }
-        private IViewMazeForeground         Foreground          { get; }
-        private ICoordinateConverter        CoordinateConverter { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private IFullscreenDialogViewer            FullscreenDialogViewer     { get; }
-        private IRendererAppearTransitioner AppearTransitioner  { get; }
-        private IAdsProvidersSet            AdsProvidersSet     { get; }
+        private IViewMazeCommon             Common                 { get; }
+        private IViewMazeForeground         Foreground             { get; }
+        private ICoordinateConverter        CoordinateConverter    { get; }
+        private IColorProvider              ColorProvider          { get; }
+        private IFullscreenDialogViewer     FullscreenDialogViewer { get; }
+        private IRendererAppearTransitioner AppearTransitioner     { get; }
+        private IAdsProvidersSet            AdsProvidersSet        { get; }
+        private IModelGame                  Model                  { get; }
+        private ICommonTicker               CommonTicker           { get; }
 
         private ViewGame(
             IRemotePropertiesRmazor       _RemotePropertiesRmazor,
@@ -94,11 +108,13 @@ namespace RMAZOR.Views
             ICoordinateConverter          _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
-            IFullscreenDialogViewer              _FullscreenDialogViewer,
+            IFullscreenDialogViewer       _FullscreenDialogViewer,
             IRendererAppearTransitioner   _AppearTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground,
             IViewFullscreenTransitioner   _FullscreenTransitioner,
-            IAdsProvidersSet              _AdsProvidersSet)
+            IAdsProvidersSet              _AdsProvidersSet,
+            IModelGame                    _Model,
+            ICommonTicker                 _CommonTicker)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -118,26 +134,25 @@ namespace RMAZOR.Views
             CoordinateConverter          = _CoordinateConverter;
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
-            FullscreenDialogViewer              = _FullscreenDialogViewer;
+            FullscreenDialogViewer       = _FullscreenDialogViewer;
             AppearTransitioner           = _AppearTransitioner;
             AdditionalBackground         = _AdditionalBackground;
             FullscreenTransitioner       = _FullscreenTransitioner;
             AdsProvidersSet              = _AdsProvidersSet;
+            Model                        = _Model;
+            CommonTicker                 = _CommonTicker;
         }
         
-        #endregion
-
-        #region nonpublic members
-
-        private object[] m_ProceedersCached;
-
         #endregion
 
         #region api
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             InitAdsProvidersMuteAudioAction();
+            CommonTicker.Register(this);
             CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
             CameraProvider.GetConverterScale = () => CoordinateConverter.Scale;
             CameraProvider.Init();
@@ -149,6 +164,23 @@ namespace RMAZOR.Views
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.ReadyToStart:
+                case ELevelStage.StartedOrContinued:
+                    m_ShowAdOnLongTimeWithoutCommandsEnabled = true;
+                    break;
+                case ELevelStage.Loaded:
+                case ELevelStage.Paused:
+                case ELevelStage.Finished:
+                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
+                case ELevelStage.CharacterKilled:
+                    m_ShowAdOnLongTimeWithoutCommandsEnabled = false;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
             LevelStageController.OnLevelStageChanged(_Args);
         }
         
@@ -172,10 +204,47 @@ namespace RMAZOR.Views
             foreach (var proceeder in proceeders)
                 proceeder?.OnCharacterMoveFinished(_Args);
         }
+        
+        public void OnApplicationPause(bool _Pause)
+        {
+            if (_Pause)
+                m_LastPauseDateTime = DateTime.UtcNow;
+            else
+            {
+                var span = DateTime.UtcNow - m_LastPauseDateTime;
+                if (span.TotalHours > 6d)
+                    ReloadGame();
+            }
+        }
+        
+        public void UpdateTick()
+        {
+            if (!Initialized)
+                return;
+            ShowAdIfNoActionsForLongTime();
+        }
 
         #endregion
         
         #region nonpublic methods
+
+        private void ShowAdIfNoActionsForLongTime()
+        {
+            var levelStage = Model.LevelStaging.LevelStage;
+            if (levelStage != ELevelStage.ReadyToStart
+                && levelStage != ELevelStage.StartedOrContinued)
+            {
+                return;
+            }
+            if (CommandsProceeder.SecondsWithoutCommand < 60f
+                || !m_ShowAdOnLongTimeWithoutCommandsEnabled
+                || !Managers.AdsManager.RewardedAdReady)
+            {
+                return;
+            }
+            m_ShowAdOnLongTimeWithoutCommandsEnabled = false;
+            Managers.AdsManager.ShowRewardedAd();
+        }
 
         private void InitAdsProvidersMuteAudioAction()
         {
@@ -280,6 +349,12 @@ namespace RMAZOR.Views
                     _Reschedule: Application.platform == RuntimePlatform.Android,
                     _SmallIcon: "main_icon");
             }
+        }
+
+        private static void ReloadGame()
+        {
+            //TODO
+            Application.Quit();
         }
         
         #endregion
