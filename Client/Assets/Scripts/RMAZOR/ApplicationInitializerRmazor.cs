@@ -45,9 +45,9 @@ namespace RMAZOR
         private IAssetBundleManager     AssetBundleManager   { get; set; }
         private ICommonTicker           CommonTicker         { get; set; }
         
-// #if UNITY_ANDROID
-//         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
-// #endif
+#if UNITY_ANDROID
+        [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
+#endif
 
         
         [Inject] 
@@ -89,9 +89,9 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
-// #if UNITY_ANDROID
-//             InitAndroidPerformanceClient();
-// #endif
+#if UNITY_ANDROID
+            InitAndroidPerformanceClient();
+#endif
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
@@ -111,12 +111,12 @@ namespace RMAZOR
                 yield return new WaitForEndOfFrame();
         }
 
-// #if UNITY_ANDROID
-//         private void InitAndroidPerformanceClient()
-//         {
-//             AndroidPerformanceTunerClient.Init();
-//         }
-// #endif
+#if UNITY_ANDROID
+        private void InitAndroidPerformanceClient()
+        {
+            AndroidPerformanceTunerClient.Init();
+        }
+#endif
 
         private static void LogAppInfo()
         {

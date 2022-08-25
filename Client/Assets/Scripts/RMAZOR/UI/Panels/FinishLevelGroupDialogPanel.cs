@@ -274,7 +274,7 @@ namespace RMAZOR.UI.Panels
                 true);
             void SendAnalytic()
             {
-                var eventData = new Dictionary<string, object> {{AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}};
+                var eventData = new Dictionary<string, object> {{AnalyticIds.LevelIndex, Model.LevelStaging.LevelIndex}};
                 Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInFinishGroupPanelPressed, eventData);
             }
             void SetMoneyInBank()

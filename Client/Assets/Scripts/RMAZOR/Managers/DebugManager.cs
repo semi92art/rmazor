@@ -4,7 +4,6 @@ using Common.Debugging;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
-using Common.Managers.Analytics;
 using Common.Managers.PlatformGameServices;
 using Common.Settings;
 using RMAZOR.Models;
@@ -40,7 +39,6 @@ namespace RMAZOR.Managers
         private IAdsManager                 AdsManager        { get; }
         private IScoreManager               ScoreManager      { get; }
         private IAudioManager               AudioManager      { get; }
-        private IAnalyticsManager           AnalyticsManager  { get; }
         private IDebugConsoleView           DebugConsoleView  { get; }
         public  IFpsCounter                 FpsCounter        { get; }
 
@@ -52,7 +50,6 @@ namespace RMAZOR.Managers
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
             IAudioManager               _AudioManager,
-            IAnalyticsManager           _AnalyticsManager,
             IDebugConsoleView           _DebugConsoleView,
             IFpsCounter                 _FpsCounter)
         {
@@ -63,7 +60,6 @@ namespace RMAZOR.Managers
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
             AudioManager      = _AudioManager;
-            AnalyticsManager  = _AnalyticsManager;
             DebugConsoleView  = _DebugConsoleView;
             FpsCounter        = _FpsCounter;
         }
@@ -122,7 +118,6 @@ namespace RMAZOR.Managers
                 AdsManager,
                 ScoreManager,
                 AudioManager,
-                AnalyticsManager,
                 FpsCounter);
             m_DebugConsoleInitialized = true;
         }

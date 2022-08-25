@@ -243,8 +243,8 @@ namespace Common.Managers.Advertising
                 return;
             var eventData = new Dictionary<string, object>
             {
-                {AnalyticIds.ParameterAdSource, selectedProvider.Source},
-                {AnalyticIds.ParameterAdType, Enum.GetName(typeof(AdvertisingType), _Type)}
+                {AnalyticIds.AdSource, selectedProvider.Source},
+                {AnalyticIds.AdType, Enum.GetName(typeof(AdvertisingType), _Type)}
             };
             void OnShownExtended()
             {

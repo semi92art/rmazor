@@ -22,11 +22,10 @@ namespace Common.Constants
         public const string WatchAdInShopPanelPressed          = "watch_ad_in_shop_panel_pressed";
         public const string WatchAdInFinishGroupPanelPressed   = "watch_ad_in_finish_group_panel_pressed";
         
-        public const string TestAnalytic               = "test_analytic";
-        
-        public const string LevelReadyToStart          = "level_ready_to_start";
-        public const string LevelStarted               = "level_started";
-        public const string CharacterDied              = "death";
+        public const string TestAnalytic      = "test_analytic";
+        public const string LevelReadyToStart = "level_ready_to_start";
+        public const string LevelStarted      = "level_started";
+        public const string CharacterDied     = "death";
 
         public const string LevelFinished       = "level_finished";
         public const string Purchase            = "purchase";
@@ -106,17 +105,16 @@ namespace Common.Constants
 
         #region parameters
 
-        public const string Parameter1ForTestAnalytic  = "test_analytic_parameter_1";
-        public const string ParameterLevelIndex        = "level_index";
-        public const string ParameterMoneyCount        = "money_count";
-        public const string ParameterDiesCount         = "dies_count";
-        public const string ParameterLevelTime         = "level_time";
-        public const string ParameterAchievementId     = "achievement_id";
-        public const string ParameterPurchaseProductId = "purchase_product_id";
-        public const string ParameterPrice             = "price";
-        public const string ParameterCurrency          = "currency";
-        public const string ParameterAdSource          = "ad_source";
-        public const string ParameterAdType            = "ad_type";
+        public const string LevelIndex        = "level_index";
+        public const string MoneyCount        = "money_count";
+        public const string DiesCount         = "dies_count";
+        public const string LevelTime         = "level_time";
+        public const string AchievementId     = "achievement_id";
+        public const string PurchaseProductId = "purchase_product_id";
+        public const string Price             = "price";
+        public const string Currency          = "currency";
+        public const string AdSource          = "ad_source";
+        public const string AdType            = "ad_type";
 
 
         #endregion

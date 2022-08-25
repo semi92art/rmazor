@@ -107,11 +107,7 @@ namespace RMAZOR.DebugConsole
                 new DebugCommandArgs(
                     "record_fps",
                     RecordFps,
-                    "Record fps values, first argument - duration in seconds, example: record_fps 5"),
-                new DebugCommandArgs(
-                    "send_test_analytic",
-                    SendTestAnalytic,
-                    "Send test analytic")
+                    "Record fps values, first argument - duration in seconds, example: record_fps 5")
             };
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
@@ -394,15 +390,6 @@ namespace RMAZOR.DebugConsole
                 CommonUtils.CopyToClipboard(recordingString);
                 Dbg.Log(recordingString);
             }));
-        }
-
-        private static void SendTestAnalytic(string[] _Args)
-        {
-            var eventData = new Dictionary<string, object>
-            {
-                {AnalyticIds.Parameter1ForTestAnalytic, Mathf.RoundToInt(UnityEngine.Random.value * 100)}
-            };
-            Controller.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic, eventData);
         }
     }
 }

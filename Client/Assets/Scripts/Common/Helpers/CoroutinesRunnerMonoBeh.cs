@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -14,16 +13,8 @@ namespace Common.Helpers
         {
             if (!mustRun)
                 return;
-            try
-            {
-                foreach (var action in Actions)
-                    action?.Invoke();
-            }
-            catch (Exception e)
-            {
-                Dbg.LogError(e);
-            }
-
+            foreach (var action in Actions)
+                action?.Invoke();
             Actions.Clear();
             mustRun = false;
         }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
 using Firebase;
 using Firebase.Analytics;
 
@@ -10,6 +9,12 @@ namespace Common.Managers.Analytics
 
     public class FirebaseAnalyticsProvider : AnalyticsProviderBase, IFirebaseAnalyticsProvider
     {
+        #region nonpublic members
+
+        protected override Dictionary<string, string> ValidIdsAndNamesTranslations => null;
+
+        #endregion
+        
         #region api
         
         public override void Init()
@@ -24,8 +29,6 @@ namespace Common.Managers.Analytics
         
         private static void InitializeFirebase()
         {
-            // if (Application.isEditor)
-            //     return;
             if (CommonData.FirebaseApp != null)
             {
                 InitializeAnalytics();
@@ -59,7 +62,12 @@ namespace Common.Managers.Analytics
         {
             if (CommonData.FirebaseApp == null)
                 return;
-            Parameter[] @params = _EventData?.Select(_Kvp =>
+            if (_EventData == null)
+            {
+                FirebaseAnalytics.LogEvent(_AnalyticId);
+                return;
+            }
+            var @params = _EventData.Select(_Kvp =>
             {
                 (string key, var value) = _Kvp;
                 Parameter p = value switch
@@ -75,26 +83,6 @@ namespace Common.Managers.Analytics
                 return p;
             }).Where(_P => _P != null).ToArray();
             FirebaseAnalytics.LogEvent(_AnalyticId, @params);
-        }
-
-        protected override string GetRealAnalyticId(string _AnalyticId)
-        {
-            return _AnalyticId switch
-            {
-                AnalyticIds.LevelStarted  => FirebaseAnalytics.EventLevelStart,
-                AnalyticIds.LevelFinished => FirebaseAnalytics.EventLevelEnd,
-                _                               => _AnalyticId
-            };
-        }
-
-        protected override string GetRealParameterId(string _ParameterId)
-        {
-            return _ParameterId switch
-            {
-                AnalyticIds.ParameterLevelIndex       => FirebaseAnalytics.ParameterLevel,
-                AnalyticIds.Parameter1ForTestAnalytic => FirebaseAnalytics.ParameterIndex,
-                _                                     => _ParameterId
-            };
         }
 
         #endregion

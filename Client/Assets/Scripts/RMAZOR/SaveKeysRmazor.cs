@@ -13,12 +13,11 @@ namespace RMAZOR
     {
         private static Dictionary<EMazeItemType, SaveKey<bool>> _mazeItemsTutorialsFinished;
 
-        private static SaveKey<bool>       _allLevelsPassed;
-        private static SaveKey<bool>       _movementTutorialFinished;
-        private static SaveKey<bool>       _moneyFromServerLoadedFirstTime;
-        private static SaveKey<int>        _ratePanelShowsCount;
-        private static SaveKey<long>       _currentLevelGroupMoney;
-        private static SaveKey<List<long>> _levelsFinishedOnce;
+        private static SaveKey<bool> _allLevelsPassed;
+        private static SaveKey<bool> _movementTutorialFinished;
+        private static SaveKey<bool> _moneyFromServerLoadedFirstTime;
+        private static SaveKey<int>  _ratePanelShowsCount;
+        private static SaveKey<long> _currentLevelGroupMoney;
 
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
@@ -36,7 +35,6 @@ namespace RMAZOR
             SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
             SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
             SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney), true);
-            SaveUtils.PutValue(LevelsFinishedOnce,   SaveUtils.GetValue(LevelsFinishedOnce), true);
             var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
             foreach (var mazeItemType in mazeItemTypes)
             {
@@ -55,8 +53,6 @@ namespace RMAZOR
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
         public static SaveKey<long> CurrentLevelGroupMoney =>
             _currentLevelGroupMoney ??= new SaveKey<long>(nameof(CurrentLevelGroupMoney));
-        public static SaveKey<List<long>> LevelsFinishedOnce =>
-            _levelsFinishedOnce ??= new SaveKey<List<long>>(nameof(LevelsFinishedOnce));
 
         public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
         {
