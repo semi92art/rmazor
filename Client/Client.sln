@@ -45,8 +45,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Foundation", "SA.Foundat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouch", "LeanTouch.csproj", "{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner", "Google.Android.PerformanceTuner.csproj", "{7494cc53-568c-4a49-8512-d83f6c447d17}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanCommon", "LeanCommon.csproj", "{b84c5e54-bf41-bdac-dd64-59140a6d59ce}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations", "Lofelt.NiceVibrations.csproj", "{37cfc2ae-d367-7881-4448-056750033767}"
@@ -64,8 +62,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Services.Analytics.Samples", "Unity.Services.Analytics.Samples.csproj", "{7389e611-e2c3-f1f7-647e-eb964cca63fd}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Manifest", "SA.Android.Manifest.csproj", "{869f5012-7037-6276-2e54-a11088fbdb90}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner_gen", "Google.Android.PerformanceTuner_gen.csproj", "{387d2185-e8fa-cbeb-64ce-46c508e0c175}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{63b2b48a-78b3-8da0-b943-c308151a6ef3}"
 EndProject
@@ -96,8 +92,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-TestFramework", "Zenject-TestFramework.csproj", "{d1024056-1084-ea89-f063-b34a3adceced}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{6c069222-a403-3357-4636-43653c20a180}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner.Editor", "Google.Android.PerformanceTuner.Editor.csproj", "{368cf049-f75d-0a3f-4039-a90bb86efaa9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins.Editor", "StansAssets.Plugins.Editor.csproj", "{46a768cf-0c9b-596d-69cb-da65ad487ead}"
 EndProject
@@ -162,8 +156,6 @@ Global
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7494cc53-568c-4a49-8512-d83f6c447d17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7494cc53-568c-4a49-8512-d83f6c447d17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{b84c5e54-bf41-bdac-dd64-59140a6d59ce}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{b84c5e54-bf41-bdac-dd64-59140a6d59ce}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37cfc2ae-d367-7881-4448-056750033767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -182,8 +174,6 @@ Global
 		{7389e611-e2c3-f1f7-647e-eb964cca63fd}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{387d2185-e8fa-cbeb-64ce-46c508e0c175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{387d2185-e8fa-cbeb-64ce-46c508e0c175}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6e1e3ec6-e18c-554f-5da4-49773c4445a0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -214,8 +204,6 @@ Global
 		{d1024056-1084-ea89-f063-b34a3adceced}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{368cf049-f75d-0a3f-4039-a90bb86efaa9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{368cf049-f75d-0a3f-4039-a90bb86efaa9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4e3d4c2c-836e-080c-5950-b3af7e3c0286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

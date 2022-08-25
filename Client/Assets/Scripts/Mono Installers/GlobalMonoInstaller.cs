@@ -88,9 +88,9 @@ namespace Mono_Installers
             Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
             Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()           .AsSingle();
             
-#if UNITY_ANDROID
-            Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
-#endif
+// #if UNITY_ANDROID
+//             Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
+// #endif
             if (Application.isEditor)
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
@@ -110,7 +110,7 @@ namespace Mono_Installers
                 Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>()      .AsSingle();
                 Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
-                Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
+                // Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
                 
                 Container.Bind<IPlatformGameServiceAuthenticator>()
                     .To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
@@ -120,7 +120,7 @@ namespace Mono_Installers
                 Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()        .AsSingle();
                 Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()        .AsSingle();
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()      .AsSingle();
-                Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
+                // Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
 
                 Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorIos>().AsSingle();
                 Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderIos>()         .AsSingle();
@@ -136,8 +136,8 @@ namespace Mono_Installers
 #endif
             Container.Bind<IAdsManager>()               .To<AdsManager>()                   .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
+            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
 
             #endregion
             

@@ -10,6 +10,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Analytics;
 using Common.Managers.PlatformGameServices;
 using Common.Utils;
 using Lean.Common;
@@ -35,6 +36,7 @@ namespace RMAZOR
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
             IAudioManager               _AudioManager,
+            IAnalyticsManager           _AnalyticsManager,
             IFpsCounter                 _FpsCounter);
         void EnableDebug(bool   _Enable);
         void SetVisibility(bool _Visible);
@@ -85,6 +87,7 @@ namespace RMAZOR
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
             IAudioManager               _AudioManager,
+            IAnalyticsManager           _AnalyticsManager,
             IFpsCounter                 _FpsCounter)
         {
             m_CommandsProceeder = _CommandsProceeder;
@@ -94,6 +97,7 @@ namespace RMAZOR
                 _AdsManager,
                 _ScoreManager,
                 _AudioManager,
+                _AnalyticsManager,
                 _FpsCounter);
             SetCanvas();
             Init();

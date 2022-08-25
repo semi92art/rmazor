@@ -94,6 +94,8 @@ Prototyping.meta*
 !/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/AndroidManifest.xml.meta
 !/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/project.properties
 !/[Aa]ssets/[Pp]lugins/[Aa]ndroid/GoogleMobileAdsPlugin.androidlib/project.properties.meta
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/AndroidManifest.xml
+!/[Aa]ssets/[Pp]lugins/[Aa]ndroid/AndroidManifest.xml.meta
 
 
 !/_Other/*

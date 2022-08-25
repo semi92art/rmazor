@@ -33,8 +33,8 @@ namespace RMAZOR.Views.UI.Game_Logo
     {
         #region constants
 
-        private const float ShowTime           = 1.5f;
-        private const float HideBackgroundTime = 0.75f;
+        private const float ShowTime           = 0.75f;
+        private const float HideBackgroundTime = 0.5f;
 
         #endregion
 

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.Constants;
-using Common.Helpers;
 using Unity.Services.Analytics;
 using Unity.Services.Core;
 
@@ -11,12 +9,6 @@ namespace Common.Managers.Analytics
 
     public class UnityAnalyticsProvider : AnalyticsProviderBase, IUnityAnalyticsProvider
     {
-        #region nonpublic members
-
-        protected override Dictionary<string, string> ValidIdsAndNamesTranslations => null;
-        
-        #endregion
-        
         #region nonpublic methods
         
         protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
@@ -33,6 +25,16 @@ namespace Common.Managers.Analytics
             {
                 Dbg.LogError(e.Message);
             }
+        }
+
+        protected override string GetRealAnalyticId(string  _AnalyticId)
+        {
+            return _AnalyticId;
+        }
+
+        protected override string GetRealParameterId(string _ParameterId)
+        {
+            return _ParameterId;
         }
 
         #endregion

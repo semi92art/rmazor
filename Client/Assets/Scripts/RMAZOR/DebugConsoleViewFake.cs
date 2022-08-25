@@ -1,6 +1,7 @@
 ﻿using Common.Debugging;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Analytics;
 using Common.Managers.PlatformGameServices;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -19,6 +20,7 @@ namespace RMAZOR
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
             IAudioManager               _AudioManager,
+            IAnalyticsManager           _AnalyticsManager,
             IFpsCounter                 _FpsCounter)
         { }
 

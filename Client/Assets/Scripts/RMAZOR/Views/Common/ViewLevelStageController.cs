@@ -173,6 +173,7 @@ namespace RMAZOR.Views.Common
             ProceedOther(_Args);
             ProceedSounds(_Args);
             CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
+            SendLevelAnalyticEvent(_Args);
         }
 
         #endregion
@@ -460,7 +461,6 @@ namespace RMAZOR.Views.Common
                         Money = newMoneyCount,
                         Level = _Args.LevelIndex
                     };
-                    SendLevelAnalyticEvent(_Args, newMoneyCount);
                     Managers.ScoreManager.SaveGameProgress(
                         newSavedGame, false);
                 }));
@@ -525,38 +525,42 @@ namespace RMAZOR.Views.Common
             }
         }
 
-        private void SendLevelAnalyticEvent(LevelStageArgs _Args, long _MoneyCount)
+        private void SendLevelAnalyticEvent(LevelStageArgs _Args)
         {
             string analyticId = _Args.LevelStage switch
             {
-                ELevelStage.ReadyToStart    => AnalyticIds.LevelReadyToStart,
-                ELevelStage.StartedOrContinued when _Args.PreviousStage == ELevelStage.ReadyToStart &&
-                                                    _Args.PrePreviousStage == ELevelStage.Loaded
-                                            => AnalyticIds.LevelStarted,
                 ELevelStage.CharacterKilled => AnalyticIds.CharacterDied,
                 ELevelStage.Finished when _Args.PreviousStage == ELevelStage.StartedOrContinued 
                                             => AnalyticIds.LevelFinished,
                 _                           => null
             };
-
-            void SendLevelAnalytic()
-            {
-                if (string.IsNullOrEmpty(analyticId))
-                    return;
-                Managers.AnalyticsManager.SendAnalytic(analyticId, 
-                    new Dictionary<string, object>
-                    {
-                        {AnalyticIds.LevelIndex, _Args.LevelIndex},
-                        {AnalyticIds.LevelTime, Model.LevelStaging.LevelTime},
-                        {AnalyticIds.DiesCount, Model.LevelStaging.DiesCount},
-                        {AnalyticIds.MoneyCount, _MoneyCount}
-                    });
-            }
-            SendLevelAnalytic();
-            if (_Args.LevelStage != ELevelStage.Finished)
+            if (string.IsNullOrEmpty(analyticId))
                 return;
-            analyticId = AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex);
-            SendLevelAnalytic();
+            if (analyticId == AnalyticIds.LevelFinished 
+                && CheckIfLevelWasFinishedAtLeastOnce(_Args.LevelIndex))
+            {
+                return;
+            }
+            Managers.AnalyticsManager.SendAnalytic(analyticId, 
+                new Dictionary<string, object>
+                {
+                    {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
+                });
+        }
+
+        private static bool CheckIfLevelWasFinishedAtLeastOnce(long _LevelIndex)
+        {
+            bool wasFinishedAtLeastOnce = false;
+            var finishedOnceDict = SaveUtils.GetValue(SaveKeysRmazor.LevelsFinishedOnce);
+            if (finishedOnceDict != null && finishedOnceDict.Contains(_LevelIndex))
+                wasFinishedAtLeastOnce = true;
+            if (wasFinishedAtLeastOnce) 
+                return true;
+            finishedOnceDict ??= new List<long>();
+            finishedOnceDict.Add(_LevelIndex);
+            finishedOnceDict = finishedOnceDict.Distinct().ToList();
+            SaveUtils.PutValue(SaveKeysRmazor.LevelsFinishedOnce, finishedOnceDict);
+            return false;
         }
 
         private void UnlockAchievementOnLevelFinishedIfKeyExist(LevelStageArgs _Args)
@@ -597,7 +601,7 @@ namespace RMAZOR.Views.Common
                     if (achievement.completed)
                         return;
                     Managers.ScoreManager.UnlockAchievement(achievementKey);
-                    var eventData = new Dictionary<string, object> {{AnalyticIds.AchievementId, achievementKey.ToString()}};
+                    var eventData = new Dictionary<string, object> {{AnalyticIds.ParameterAchievementId, achievementKey.ToString()}};
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.AchievementUnlocked, eventData);
                 }));
         }
