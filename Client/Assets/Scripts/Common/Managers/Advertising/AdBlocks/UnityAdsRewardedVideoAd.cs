@@ -94,9 +94,10 @@ namespace Common.Managers.Advertising.AdBlocks
             UnityAdsShowCompletionState _ShowCompletionState)
         {
             if (_ShowCompletionState == UnityAdsShowCompletionState.COMPLETED)
-                DoInvokeOnReward = true;
+            {
+                OnAdRewardGot();
+            }
             m_IsReady = false;
-            OnAdRewardGot();
             Dbg.Log($"Completion state: {_ShowCompletionState}");
         }
 

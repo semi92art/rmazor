@@ -61,6 +61,11 @@ namespace Common.Utils
             return _Val > _Max ? _Min : _Val < _Min ? _Max : _Val;
         }
 
+        public static long ClampInverse(long _Val, long _Min, long _Max)
+        {
+            return _Val > _Max ? _Min : _Val < _Min ? _Max : _Val;
+        }
+        
         public static float ClampInverse(float _Val, float _Min, float _Max)
         {
             return _Val > _Max ? _Min : _Val < _Min ? _Max : _Val;

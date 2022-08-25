@@ -25,15 +25,15 @@ namespace Common.Managers.Advertising.AdBlocks
 
         protected abstract string AdSource { get; }
         protected abstract string AdType   { get; }
-        
+
         protected UnityAction OnShown;
         protected UnityAction OnClicked;
         protected string      UnitId;
-        protected bool        DoLoadAdWithDelay;
         private   float       m_LoadAdDelayTimer;
 
-        protected volatile bool DoInvokeOnShown;
-        protected volatile bool DoInvokeOnClicked;
+        private volatile bool m_DoLoadAdWithDelay;
+        private volatile bool m_DoInvokeOnShown;
+        private volatile bool m_DoInvokeOnClicked;
         
         #endregion
 
@@ -68,14 +68,14 @@ namespace Common.Managers.Advertising.AdBlocks
         
         public virtual void UpdateTick()
         {
-            if (DoInvokeOnClicked)
+            if (m_DoInvokeOnClicked)
             {
                 Dbg.Log("Ad click action");
                 OnClicked?.Invoke();
                 OnClicked = null;
-                DoInvokeOnClicked = false;
+                m_DoInvokeOnClicked = false;
             }
-            if (DoInvokeOnShown)
+            if (m_DoInvokeOnShown)
             {
                 Dbg.Log("Ad shown action");
                 if (OnShown == null)
@@ -83,16 +83,16 @@ namespace Common.Managers.Advertising.AdBlocks
                 OnShown?.Invoke();
                 OnShown = null;
                 LoadAd();
-                DoInvokeOnShown = false;
+                m_DoInvokeOnShown = false;
             }
-            if (!DoLoadAdWithDelay)
+            if (!m_DoLoadAdWithDelay)
                 return;
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
             if (m_LoadAdDelayTimer < GlobalGameSettings.adsLoadDelay) 
                 return;
             LoadAd();
             m_LoadAdDelayTimer = 0f;
-            DoLoadAdWithDelay = false;
+            m_DoLoadAdWithDelay = false;
         }
 
         #endregion
@@ -107,25 +107,25 @@ namespace Common.Managers.Advertising.AdBlocks
         protected virtual void OnAdFailedToLoad()
         {
             Dbg.LogWarning($"{AdSource}: {AdType} load failed");
-            DoLoadAdWithDelay = true;
+            m_DoLoadAdWithDelay = true;
         }
         
         protected virtual void OnAdShown()
         {
             Dbg.Log($"{AdSource}: {AdType} shown");
-            DoInvokeOnShown = true;
+            m_DoInvokeOnShown = true;
         }
         
         protected virtual void OnAdFailedToShow()
         {
             Dbg.LogWarning($"{AdSource}: {AdType} show failed");
-            DoLoadAdWithDelay = true;
+            m_DoLoadAdWithDelay = true;
         }
         
         protected virtual void OnAdClicked()
         {
             Dbg.Log($"{AdSource}: {AdType} clicked");
-            DoInvokeOnClicked = true;
+            m_DoInvokeOnClicked = true;
         }
 
         #endregion

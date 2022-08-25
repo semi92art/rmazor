@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
+using Common.Debugging;
 using Common.Entities.UI;
 using Common.Exceptions;
 using Common.Extensions;
@@ -33,7 +34,8 @@ namespace RMAZOR
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager);
+            IAudioManager               _AudioManager,
+            IFpsCounter                 _FpsCounter);
         void EnableDebug(bool   _Enable);
         void SetVisibility(bool _Visible);
         void Monitor(string     _Name, bool _Enable, System.Func<object> _Value);
@@ -82,7 +84,8 @@ namespace RMAZOR
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager)
+            IAudioManager               _AudioManager,
+            IFpsCounter                 _FpsCounter)
         {
             m_CommandsProceeder = _CommandsProceeder;
             Controller.Init(
@@ -90,7 +93,8 @@ namespace RMAZOR
                 _CommandsProceeder, 
                 _AdsManager,
                 _ScoreManager,
-                _AudioManager);
+                _AudioManager,
+                _FpsCounter);
             SetCanvas();
             Init();
         }

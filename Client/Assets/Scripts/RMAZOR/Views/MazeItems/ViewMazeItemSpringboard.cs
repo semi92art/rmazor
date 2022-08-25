@@ -57,7 +57,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemSpringboard(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -124,7 +124,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.Main)
+            if (_ColorId != ColorIds.MazeItem2)
                 return;
             m_Pillar.Color = _Color;
             m_Springboard.Color = _Color;
@@ -171,7 +171,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var col = ColorProvider.GetColor(ColorIds.Main);
+            var col = ColorProvider.GetColor(ColorIds.MazeItem2);
             return new Dictionary<IEnumerable<Component>, Func<Color>> {{Renderers, () => col}};
         }
         

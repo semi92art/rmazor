@@ -36,8 +36,8 @@ namespace Common.Managers.IAP
         }
 
         public abstract void         RestorePurchases();
-        public abstract void         Purchase(int          _Key);
-        public abstract bool         RateGame(bool         _JustSuggest = true);
+        public abstract void         Purchase(int _Key);
+        public abstract bool         RateGame();
         public abstract ShopItemArgs GetItemInfo(int       _Key);
         public abstract void         SetPurchaseAction(int _Key, UnityAction _Action);
         public abstract void         SetDeferredAction(int _Key, UnityAction _Action);

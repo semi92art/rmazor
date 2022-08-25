@@ -13,7 +13,7 @@ namespace Common.Managers.Advertising.AdBlocks
     {
         protected UnityAction OnReward;
         
-        protected volatile bool DoInvokeOnReward;
+        private volatile bool m_DoInvokeOnReward;
         
         protected RewardedAdBase(
             GlobalGameSettings _GlobalGameSettings,
@@ -24,12 +24,12 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public override void UpdateTick()
         {
-            if (DoInvokeOnReward)
+            if (m_DoInvokeOnReward)
             {
                 Dbg.Log("Ad reward action");
                 OnReward?.Invoke();
                 OnReward = null;
-                DoInvokeOnReward = false;
+                m_DoInvokeOnReward = false;
             }
             base.UpdateTick();
         }
@@ -37,7 +37,7 @@ namespace Common.Managers.Advertising.AdBlocks
         protected virtual void OnAdRewardGot()
         {
             Dbg.Log($"{AdSource}: {AdType} reward got");
-            DoInvokeOnReward = true;
+            m_DoInvokeOnReward = true;
         }
     }
 }

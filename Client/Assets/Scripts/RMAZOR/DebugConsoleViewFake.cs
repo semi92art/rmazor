@@ -1,4 +1,5 @@
-﻿using Common.Managers;
+﻿using Common.Debugging;
+using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using RMAZOR.Models;
@@ -17,7 +18,8 @@ namespace RMAZOR
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager)
+            IAudioManager               _AudioManager,
+            IFpsCounter                 _FpsCounter)
         { }
 
         public void EnableDebug(bool   _Enable)                                         { }

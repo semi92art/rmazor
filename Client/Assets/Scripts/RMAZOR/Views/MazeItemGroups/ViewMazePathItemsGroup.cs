@@ -26,7 +26,7 @@ namespace RMAZOR.Views.MazeItemGroups
     public class ViewMazePathItemsGroup : InitBase, IViewMazePathItemsGroup
     {
         #region nonpublic members
-
+        
         protected SpawnPool<IViewMazeItemPath> PathsPool;
         private   bool                         m_FirstMoveDone;
         private   long                         m_CurrentLevelMoney;
@@ -88,6 +88,7 @@ namespace RMAZOR.Views.MazeItemGroups
                     MazeItemsCreator.InitPathItems(Model.Data.Info, PathsPool);
                     PathItems = PathsPool.Where(_Item => _Item.ActivatedInSpawnPool).ToList();
                     CollectStartPathItemIfWasNot(false);
+
                     break;
                 }
                 case ELevelStage.Finished:
@@ -111,13 +112,8 @@ namespace RMAZOR.Views.MazeItemGroups
             var pathItems = RmazorUtils.GetFullPath(_Args.From, _Args.To)
                 .Select(_Pos => PathItems.First(
                     _Item => _Item.Props.Position == _Pos && _Item.ActivatedInSpawnPool));
-            int k = 0;
             foreach (var item in pathItems)
-            {
-                if (item is IViewMazeItemPathFilled itemFilled)
-                    itemFilled.HighlightPathItem(++k / ModelSettings.characterSpeed);
                 item.OnCharacterMoveStarted(_Args);
-            }
         }
         
         public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
@@ -169,9 +165,7 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             m_CurrentLevelMoney += GlobalGameSettings.moneyItemCoast;
         }
-
+        
         #endregion
-
-
     }
 }

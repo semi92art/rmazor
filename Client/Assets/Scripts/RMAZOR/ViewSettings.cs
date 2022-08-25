@@ -36,6 +36,7 @@ namespace RMAZOR
         public float  animatePathFillTime;
         public float  cameraSpeed;
         public float  pathItemCharMoveHighlightTime;
+        public bool   highlightPathItem;
 
         public float LineThickness
         {

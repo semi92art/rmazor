@@ -90,7 +90,8 @@ namespace RMAZOR.Views.MazeItems
             }
         }
 
-        public override void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
+        protected override int  LinesAndJointsColorId                      => ColorIds.MazeItem1;
+        public override    void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {

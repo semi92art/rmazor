@@ -78,6 +78,8 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder);
 
+        protected override int LinesAndJointsColorId => ColorIds.MazeItem2;
+
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {
             Managers.AudioManager.PlayClip(AudioClipArgsBlockSlidingDown);
@@ -109,7 +111,7 @@ namespace RMAZOR.Views.MazeItems
             m_Shape = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedBorder)
-                .SetColor(ColorProvider.GetColor(ColorIds.Main));
+                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
         }
 
         protected override void UpdateShape()
@@ -126,14 +128,14 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.Main)
+            if (_ColorId == ColorIds.MazeItem2)
                 m_Shape.Color = _Color;
         }
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            sets.Add(Renderers, () => ColorProvider.GetColor(ColorIds.Main));
+            sets.Add(Renderers, () => ColorProvider.GetColor(ColorIds.MazeItem2));
             return sets;
         }
 

@@ -60,7 +60,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemPortal(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -198,7 +198,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.Main)
+            if (_ColorId != ColorIds.MazeItem2)
                 return;
             m_Center.Color = _Color;
             foreach (var item in m_Orbits)
@@ -259,7 +259,7 @@ namespace RMAZOR.Views.MazeItems
 
         private Color GetMainColor()
         {
-            return ColorProvider.GetColor(ColorIds.Main);
+            return ColorProvider.GetColor(ColorIds.MazeItem2);
         }
 
         #endregion

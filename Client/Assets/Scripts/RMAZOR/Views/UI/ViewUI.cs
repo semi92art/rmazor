@@ -1,5 +1,4 @@
-﻿using System;
-using Common;
+﻿using Common;
 using Common.Constants;
 using Common.Ticker;
 using Common.UI;
@@ -77,10 +76,7 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     break;
                 case EInputCommand.RateGamePanel:
-                    ShowRateGamePanel(false);
-                    // var lastTimeShown = SaveUtils.GetValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown);
-                    // var span = DateTime.Now - lastTimeShown;
-                    // ShowRateGamePanel(span.Days > 31);
+                    ShowRateGamePanel();
                     int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
                     SaveUtils.PutValue(SaveKeysRmazor.RatePanelShowsCount, ratePanelShowsCount + 1);
                     break;
@@ -116,21 +112,11 @@ namespace RMAZOR.Views.UI
                     && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
         }
 
-        private void ShowRateGamePanel(bool _Native)
+        private void ShowRateGamePanel()
         {
-            if (_Native)
-            {
-                if (Application.isEditor)
-                    Dbg.Log("Native rate app ui was shown.");
-                Managers.ShopManager.RateGame(true);
-                SaveUtils.PutValue(SaveKeysCommon.TimeSinceLastIapReviewDialogShown, DateTime.Now);
-            }
-            else
-            {
-                var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-                DialogPanelsSet.RateGameDialogPanel.LoadPanel();
-                dv.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
-            }
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            DialogPanelsSet.RateGameDialogPanel.LoadPanel();
+            dv.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
         }
 
         #endregion

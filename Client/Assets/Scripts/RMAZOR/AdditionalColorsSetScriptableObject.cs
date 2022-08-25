@@ -13,6 +13,14 @@ namespace RMAZOR
         Background1 = 1,
         Background2 = 2
     }
+
+    [Serializable]
+    public class AdditionalColorPropsAdditionalInfo
+    {
+        [JsonProperty("A1"), Range(0, 1)] public float neonStreamColorCoefficient1;
+        [JsonProperty("A2"), Range(0, 3)] public float swirlForPlanetColorCoefficient1;
+        [JsonProperty("A3"), Range(0, 10)] public float wormHoleColorCoefficient1;
+    }
     
     [Serializable]
     public class AdditionalColorsProps
@@ -28,7 +36,8 @@ namespace RMAZOR
         [JsonProperty("F4")] public EBackAndFrontColorType characterBorderFillType;
         [JsonProperty("F5")] public EBackAndFrontColorType uiBackgroundFillType;
 
-        public BloomPropsAlt bloom;
+        public BloomPropsAlt                      bloom;
+        public AdditionalColorPropsAdditionalInfo additionalInfo;
 
         public Color GetColor(EBackAndFrontColorType _Type)
         {

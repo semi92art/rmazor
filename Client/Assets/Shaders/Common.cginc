@@ -67,3 +67,7 @@ float clamp_inverse(float v, float min, float max) {
 float3 float_3(float v) {
     return float3(v,v,v);
 }
+
+float dist(float2 p0, float2 pf) {
+    return sqrt((pf.x-p0.x)*(pf.x-p0.x)+(pf.y-p0.y)*(pf.y-p0.y));
+}

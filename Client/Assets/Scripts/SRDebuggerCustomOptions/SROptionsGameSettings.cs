@@ -20,10 +20,12 @@ using Common.Utils;
 using Firebase.Extensions;
 using Firebase.Messaging;
 using RMAZOR;
+using RMAZOR.Controllers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace SRDebuggerCustomOptions
@@ -37,8 +39,8 @@ namespace SRDebuggerCustomOptions
         private const string CategoryHaptics    = "Haptics";
         private const string CategoryAds        = "Ads";
         private const string CategoryAudio      = "Audio";
-        private const string CategoryMonitor    = "Monitor";
         private const string CategoryFps        = "Fps";
+        private const string CategoryBackground = "Background";
 
         private static int  _adsNetworkIdx;
         private static bool _debugConsoleVisible;
@@ -49,7 +51,7 @@ namespace SRDebuggerCustomOptions
         private static IManagersGetter             _managers;
         private static IViewInputCommandsProceeder _commandsProceeder;
         private static ICameraProvider             _cameraProvider;
-        
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetState()
         {
@@ -382,14 +384,14 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryCommon)]
-        public bool Show_Rate_Dialog
+        public bool Rate_Game
         {
             get => false;
             set
             {
                 if (!value)
                     return;
-                _managers.ShopManager.RateGame(true);
+                _managers.ShopManager.RateGame();
             }
         }
 
@@ -429,7 +431,7 @@ namespace SRDebuggerCustomOptions
         }
         
         [Category(CategoryCommon)]
-        public bool Show_Locked_Groups_With_Movememt
+        public bool Show_Locked_Groups_With_Movement
         {
             get => false;
             set
@@ -774,21 +776,37 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.UnmuteAudio(EAudioClipType.UiSound);
             }
         }
-
-        #endregion
-
-        #region monitor
         
-        [Category(CategoryMonitor)]
-        public bool Acceleration
+        [Category(CategoryBackground)]
+        public bool SetNextBackground
         {
             get => false;
             set
             {
-                _managers.DebugManager.Monitor(
-                    "Acceleration", 
-                    value, 
-                    () => CommonUtils.GetAcceleration());
+                if (!value)
+                    return;
+                var gameController = Object.FindObjectOfType<GameControllerMVC>();
+                LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Previous)
+                {
+                    long levelIndex = gameController.Model.LevelStaging.LevelIndex;
+                        var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
+                        "configs", "view_settings");
+                    int group = RmazorUtils.GetGroupIndex(levelIndex);
+                    int levels = (_Previous ? -1 : 1) * RmazorUtils.GetLevelsInGroup(_Previous ? group - 1 : group);
+                    levelIndex = MathUtils.ClampInverse(levelIndex + levels, 0, settings.levelsCountMain - 1);
+                    var fakeArgs = new LevelStageArgs(
+                        levelIndex, 
+                        ELevelStage.Loaded, 
+                        ELevelStage.Unloaded, 
+                        ELevelStage.ReadyToUnloadLevel)
+                    {
+                        Args = new [] {"set_back_editor"}
+                    };
+                    return fakeArgs;
+                }
+                var args = GetLevelStageArgsForBackgroundTexture(false);
+                gameController.View.Background.OnLevelStageChanged(args);
+                gameController.View.AdditionalBackground.OnLevelStageChanged(args);
             }
         }
 

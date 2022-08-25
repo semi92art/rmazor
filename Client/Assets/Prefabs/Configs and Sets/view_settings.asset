@@ -34,10 +34,11 @@ MonoBehaviour:
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
   additionalBackTexturesInUse: 1
-  filledPathAlpha: 0
+  filledPathAlpha: 1
   additionalBackgroundAlpha: 0.5
   skipLevelSeconds: 10
   animatePathFill: 1
   animatePathFillTime: 0.2
   cameraSpeed: 0.1
   pathItemCharMoveHighlightTime: 0.3
+  highlightPathItem: 1

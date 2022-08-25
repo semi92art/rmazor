@@ -91,7 +91,7 @@ namespace Common.Managers.IAP
             BuyProductID(id);
         }
 
-        public override bool RateGame(bool _JustSuggest = true)
+        public override bool RateGame()
         {
             if (NetworkUtils.IsInternetConnectionAvailable())
                 return true;

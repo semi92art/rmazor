@@ -38,7 +38,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private GameObject          m_Projectile;
         private ViewMazeItemProps   m_Props;
         private GameObject          m_Turret;
-        private SpriteRenderer      m_BorderRenderer;
+        // private SpriteRenderer      m_BorderRenderer;
         private SpriteRenderer      m_MainRenderer;
         private Rigidbody2D         m_Rb;
         private CircleCollider2D    m_Coll;
@@ -83,7 +83,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             {
                 m_Activated              = value;
                 m_MainRenderer.enabled   = value;
-                m_BorderRenderer.enabled = value;
+                // m_BorderRenderer.enabled = value;
                 m_Coll.enabled           = value && !m_Fake;
                 if (value && !m_Fake) m_Rb.WakeUp();
                 else                  m_Rb.Sleep();
@@ -127,14 +127,14 @@ namespace RMAZOR.Views.MazeItems.Additional
         public void SetSortingOrder(int _Order)
         {
             m_MainRenderer.sortingOrder = _Order;
-            m_BorderRenderer.sortingOrder = _Order - 1;
+            // m_BorderRenderer.sortingOrder = _Order - 1;
             Tail.SetSortingOrder(_Order);
         }
         
         public void SetStencilRefId(int _RefId)
         {
             m_MainRenderer.sharedMaterial.SetFloat(StencilRefId, _RefId);
-            m_BorderRenderer.sharedMaterial.SetFloat(StencilRefId, _RefId);
+            // m_BorderRenderer.sharedMaterial.SetFloat(StencilRefId, _RefId);
             Tail.SetStencilRefId(_RefId);
         }
 
@@ -164,7 +164,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             switch (_ColorId)
             {
                 case ColorIds.MazeItem1:  m_MainRenderer.color = _Color;   break;
-                case ColorIds.Character2: m_BorderRenderer.color = _Color; break;
+                // case ColorIds.Character2: m_BorderRenderer.color = _Color; break;
             }
         }
         
@@ -179,12 +179,13 @@ namespace RMAZOR.Views.MazeItems.Additional
             m_Coll                           = m_Projectile.GetCompItem<CircleCollider2D>("collider");
             m_CollisionDetector2D            = m_Projectile.GetCompItem<CollisionDetector2D>("collider");
             m_MainRenderer                   = m_Projectile.GetCompItem<SpriteRenderer>("projectile");
-            m_BorderRenderer                 = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
+            var borderRenderer                 = m_Projectile.GetCompItem<SpriteRenderer>("projectile_border");
+            borderRenderer.enabled = false;
             m_MainRenderer.maskInteraction   = SpriteMaskInteraction.VisibleOutsideMask;
             m_MainRenderer.color             = ColorProvider.GetColor(ColorIds.MazeItem1);
-            m_BorderRenderer.color           = ColorProvider.GetColor(ColorIds.Character2);
+            // m_BorderRenderer.color           = ColorProvider.GetColor(ColorIds.Character2);
             m_MainRenderer.maskInteraction   = SpriteMaskInteraction.None;
-            m_BorderRenderer.maskInteraction = SpriteMaskInteraction.None;
+            // m_BorderRenderer.maskInteraction = SpriteMaskInteraction.None;
             m_Coll.gameObject.layer          = LayerMask.NameToLayer("ψ Psi");
             m_CollisionDetector2D.OnTriggerEnter += OnColliderTriggerEnter;
             if (!m_Fake)
@@ -216,7 +217,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new Component[] {m_MainRenderer},  () => projectileRenderersCol},
-                {new Component[] {m_BorderRenderer},() => projectileRenderersCol2},
+                // {new Component[] {m_BorderRenderer},() => projectileRenderersCol2},
             };
         }
 

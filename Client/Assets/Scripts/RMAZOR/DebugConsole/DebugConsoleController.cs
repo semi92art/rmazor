@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Debugging;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
@@ -36,6 +37,7 @@ namespace RMAZOR.DebugConsole
         IScoreManager                        ScoreManager      { get; }
         IAudioManager                        AudioManager      { get; }
         IModelGame                           Model             { get; }
+        IFpsCounter                          FpsCounter        { get; }
         Queue<string>                        Scrollback        { get; }
         string[]                             Log               { get; }
         Dictionary<string, DebugCommandArgs> Commands          { get; }
@@ -46,7 +48,8 @@ namespace RMAZOR.DebugConsole
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager, 
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager);
+            IAudioManager               _AudioManager,
+            IFpsCounter                 _FpsCounter);
         void RegisterCommand(DebugCommandArgs _DebugCommandArgs);
         void RunCommandString(string          _CommandString);
         void AppendLogLine(string             _Line);
@@ -79,6 +82,7 @@ namespace RMAZOR.DebugConsole
         public IAdsManager                 AdsManager        { get; private set; }
         public IScoreManager               ScoreManager      { get; private set; }
         public IAudioManager               AudioManager      { get; private set; }
+        public IFpsCounter                 FpsCounter        { get; private set; }
 
         public string[]      Log        { get; private set; }
         public Queue<string> Scrollback { get; } = new Queue<string>(ScrollbackSize);
@@ -96,13 +100,15 @@ namespace RMAZOR.DebugConsole
             IViewInputCommandsProceeder _CommandsProceeder,
             IAdsManager                 _AdsManager,
             IScoreManager               _ScoreManager,
-            IAudioManager               _AudioManager)
+            IAudioManager               _AudioManager,
+            IFpsCounter                _FpsCounter)
         {
             Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
             AdsManager        = _AdsManager;
             ScoreManager      = _ScoreManager;
             AudioManager      = _AudioManager;
+            FpsCounter        = _FpsCounter;
             LoadCommandsHistory();
         }
 

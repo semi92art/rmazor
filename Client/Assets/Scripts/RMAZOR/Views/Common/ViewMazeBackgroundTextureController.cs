@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Common;
-using Common.Exceptions;
-using Common.Extensions;
+﻿using Common.Exceptions;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
@@ -10,44 +6,50 @@ using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
-using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 
 namespace RMAZOR.Views.Common
 {
-    public class ViewMazeBackgroundTextureController : ViewMazeBackgroundTextureControllerBase, IUpdateTick
+    public class ViewMazeBackgroundTextureController : ViewMazeBackgroundTextureControllerBase
     {
         #region nonpublic members
 
-        private IList<Triangles2TextureProps>   m_Triangles2TextureSetItems;
-        private bool                            m_IsFirstLoad = true;
-        private List<ITextureProps>             m_TextureSetItems;
+        private bool m_IsFirstLoad = true;
         
         #endregion
         
         #region inject
 
-        private IFullscreenTextureProviderTriangles2 Triangles2TextureProvider { get; }
-        private IFullscreenTextureProviderSolidColor TextureProviderSolidColor { get; }
-        private IViewGameTicker                      Ticker                    { get; }
-        private IViewMazeBackgroundIdleItems         IdleItems                 { get; }
+        private IFullscreenTextureProviderParallaxGradientCircles TextureProviderParallaxCircles { get; }
+        // private IFullscreenTextureProviderNeonStream              TextureProviderNeonStream      { get; }
+        private IFullscreenTextureProviderConnectedDots           TextureProviderConnectedDots   { get; }
+        private IFullscreenTextureProviderSwirlForPlanet          TextureProviderSwirlForPlanet  { get; }
+        // private IFullscreenTextureProviderWormHole                TextureProviderWormHole        { get; }
+        private IViewGameTicker                                   Ticker                         { get; }
+        private IViewMazeBackgroundIdleItems                      IdleItems                      { get; }
 
         private ViewMazeBackgroundTextureController(
-            IRemotePropertiesRmazor              _RemoteProperties,
-            IColorProvider                       _ColorProvider,
-            IPrefabSetManager                    _PrefabSetManager,
-            IFullscreenTextureProviderTriangles2 _Triangles2TextureProvider,
-            IFullscreenTextureProviderSolidColor _TextureProviderSolidColor,
-            IViewGameTicker                      _Ticker,
-            IViewMazeBackgroundIdleItems         _IdleItems) 
+            IRemotePropertiesRmazor                           _RemoteProperties,
+            IColorProvider                                    _ColorProvider,
+            IPrefabSetManager                                 _PrefabSetManager,
+            IFullscreenTextureProviderParallaxGradientCircles _TextureProviderParallaxCircles,
+            // IFullscreenTextureProviderNeonStream              _TextureProviderNeonStream,
+            IFullscreenTextureProviderConnectedDots           _TextureProviderConnectedDots,
+            IFullscreenTextureProviderSwirlForPlanet          _TextureProviderSwirlForPlanet,
+            // IFullscreenTextureProviderWormHole                _TextureProviderWormHole,
+            IViewGameTicker                                   _Ticker,
+            IViewMazeBackgroundIdleItems                      _IdleItems) 
             : base(
                 _RemoteProperties,
                 _ColorProvider, 
                 _PrefabSetManager)
         {
-            Triangles2TextureProvider = _Triangles2TextureProvider;
-            TextureProviderSolidColor = _TextureProviderSolidColor;
-            Ticker                    = _Ticker;
-            IdleItems                 = _IdleItems;
+            TextureProviderParallaxCircles = _TextureProviderParallaxCircles;
+            // TextureProviderNeonStream      = _TextureProviderNeonStream;
+            TextureProviderConnectedDots   = _TextureProviderConnectedDots;
+            TextureProviderSwirlForPlanet  = _TextureProviderSwirlForPlanet;
+            // TextureProviderWormHole        = _TextureProviderWormHole;
+            Ticker                         = _Ticker;
+            IdleItems                      = _IdleItems;
         }
 
         #endregion
@@ -56,10 +58,14 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            CommonDataRmazor.BackgroundTextureController = this;
             Ticker.Register(this);
-            Triangles2TextureProvider .Init();
-            TextureProviderSolidColor .Init();
-            IdleItems                 .Init();
+            TextureProviderParallaxCircles .Init();
+            // TextureProviderNeonStream      .Init();
+            TextureProviderConnectedDots   .Init();
+            TextureProviderSwirlForPlanet  .Init();
+            // TextureProviderWormHole        .Init();
+            IdleItems                      .Init();
             base.Init();
         }
 
@@ -70,49 +76,29 @@ namespace RMAZOR.Views.Common
             if (_Args.LevelStage == ELevelStage.Loaded)
                 OnLevelLoaded(_Args);
         }
+        
+        #if UNITY_EDITOR
 
-        public void UpdateTick()
+        public void SetAdditionalInfo(AdditionalColorPropsAdditionalInfo _AdditionalInfo)
         {
-            // TODO acceleration
+            AdditionalInfo = _AdditionalInfo;
+            // TextureProviderNeonStream.SetAdditionalParams(
+            //     new TextureProviderNeonStreamAdditionalParams(AdditionalInfo.neonStreamColorCoefficient1));
+            TextureProviderSwirlForPlanet.SetAdditionalParams(
+                new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
+            // TextureProviderWormHole.SetAdditionalParams(
+            //     new TextureProviderWormHoleAdditionalParams(AdditionalInfo.wormHoleColorCoefficient1));
         }
+        
+        #endif
 
         #endregion
         
         #region nonpublic methods
 
-        protected override void LoadSets()
-        {
-            base.LoadSets();
-            const string set = "configs";
-            m_Triangles2TextureSetItems = RemoteProperties.Tria2TextureSet;
-            if (m_Triangles2TextureSetItems.NullOrEmpty())
-            {
-                var triangles2TextureSet = PrefabSetManager.GetObject<Triangles2TexturePropsSetScriptableObject>
-                    (set, "triangles2_texture_set");
-                m_Triangles2TextureSetItems = triangles2TextureSet.set;
-            }
-            static int CalculateTextureHash(string _Value)
-            {
-                ulong hashedValue = 3074457345618258791ul;
-                for(int i=0; i<_Value.Length; i++)
-                {
-                    hashedValue += _Value[i];
-                    hashedValue *= 3074457345618258799ul;
-                }
-                return (int)hashedValue;
-            }
-            m_TextureSetItems = m_Triangles2TextureSetItems
-                .Cast<ITextureProps>()
-                .OrderBy(_Item => CalculateTextureHash(
-                    _Item.ToString(null, null)))
-                
-                .Where(_Props => _Props.InUse)
-                .ToList();
-        }
-
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            ActivateTexturePropertiesSet(_Args.LevelIndex, out var provider);
+            ActivateConcreteBackgroundTexture(_Args.LevelIndex, out var provider);
             IdleItems.SetSpawnPool(GetProviderIndex(provider));
             int group = RmazorUtils.GetGroupIndex(_Args.LevelIndex);
             long firstLevInGroup = RmazorUtils.GetFirstLevelInGroup(group);
@@ -128,33 +114,48 @@ namespace RMAZOR.Views.Common
                 BackCol2Current);
         }
 
-        private void ActivateTexturePropertiesSet(long _LevelIndex, out IFullscreenTextureProvider _Provider)
+        private void ActivateConcreteBackgroundTexture(long _LevelIndex, out IFullscreenTextureProvider _Provider)
         {
-            _Provider = TextureProviderSolidColor;
-            TextureProviderSolidColor.Activate(true);
-            Triangles2TextureProvider.Activate(false);
-
-            // int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            // int idx = group % m_TextureSetItems.Count;
-            // var setItem = m_TextureSetItems[idx];
-            // Triangles2TextureProvider.Activate(false);
-            // switch (setItem)
-            // {
-            //     case Triangles2TextureProps triangles2Props:
-            //         Triangles2TextureProvider.Activate(true);
-            //         Triangles2TextureProvider.SetProperties(triangles2Props);
-            //         _Provider = Triangles2TextureProvider;
-            //         break;
-            //     default: throw new SwitchCaseNotImplementedException(setItem);
-            // }
+            _Provider = TextureProviderParallaxCircles;
+            // TextureProviderNeonStream     .Activate(false);
+            TextureProviderParallaxCircles.Activate(false);
+            TextureProviderConnectedDots  .Activate(false);
+            TextureProviderSwirlForPlanet .Activate(false);
+            // TextureProviderWormHole       .Activate(false);
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int c = group % 3;
+            switch (c)
+            {
+                // case 0:
+                //     TextureProviderNeonStream.Activate(true);
+                //     TextureProviderNeonStream.SetAdditionalParams(
+                //         new TextureProviderNeonStreamAdditionalParams(AdditionalInfo.neonStreamColorCoefficient1));
+                //     break;
+                case 0:  TextureProviderParallaxCircles.Activate(true); break;
+                case 1:  TextureProviderConnectedDots  .Activate(true); break;
+                case 2:  
+                    TextureProviderSwirlForPlanet.Activate(true);
+                    TextureProviderSwirlForPlanet.SetAdditionalParams(
+                        new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
+                    break;
+                // case 4: 
+                //     TextureProviderWormHole.Activate(true); 
+                //     TextureProviderWormHole.SetAdditionalParams(
+                //         new TextureProviderWormHoleAdditionalParams(AdditionalInfo.wormHoleColorCoefficient1));
+                //     break;
+                default: throw new SwitchCaseNotImplementedException(c);
+            }
         }
 
         private static int GetProviderIndex(IFullscreenTextureProvider _Provider)
         {
             return _Provider switch
             {
-                IFullscreenTextureProviderTriangles2 => 1,
-                IFullscreenTextureProviderSolidColor => 1,
+                IFullscreenTextureProviderParallaxGradientCircles => 1,
+                IFullscreenTextureProviderNeonStream              => 1,
+                IFullscreenTextureProviderConnectedDots           => 1,
+                IFullscreenTextureProviderSwirlForPlanet          => 1,
+                IFullscreenTextureProviderWormHole                => 1,
                 _ => throw new SwitchCaseNotImplementedException(_Provider)
             };
         }

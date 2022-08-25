@@ -209,10 +209,12 @@ namespace Mono_Installers
                 Container.Bind<IViewUICongratsMessage>() .To<ViewUICongratsMessage>()         .AsSingle();
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoMazeBlade>()       .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()             .AsSingle();
-                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
+                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
+                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
-                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
+                // Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()      .AsSingle();
             }
         }
 
@@ -255,8 +257,20 @@ namespace Mono_Installers
             Container.Bind<IFullscreenTextureProviderTriangles2>()
                 .To<FullscreenTextureProviderTriangles2>()
                 .AsSingle();
-            Container.Bind<IFullscreenTextureProviderSolidColor>()
-                .To<FullscreenTextureProviderSolidColor>()
+            Container.Bind<IFullscreenTextureProviderParallaxGradientCircles>()
+                .To<FullscreenTextureProviderParallaxGradientCircles>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderNeonStream>()
+                .To<FullscreenTextureProviderNeonStream>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderConnectedDots>()
+                .To<FullscreenTextureProviderConnectedDots>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderSwirlForPlanet>()
+                .To<FullscreenTextureProviderSwirlForPlanet>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderWormHole>()
+                .To<FullscreenTextureProviderWormHole>()
                 .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()

@@ -25,7 +25,7 @@ namespace Common
         public const int PathFill       = 109;
         public const int PathItem       = 110;
         public const int PathBackground = 111;
-        
+        public const int MazeItem2      = 112;
 
         public static int GetColorIdByName(string _ColorName)
         {
@@ -59,6 +59,7 @@ namespace Common
             {PathFill,           nameof(PathFill)          .WithSpaces()},
             {PathItem,           nameof(PathItem)          .WithSpaces()},
             {PathBackground,     nameof(PathBackground)    .WithSpaces()},
+            {MazeItem2,          nameof(MazeItem2)         .WithSpaces()},
         };
     }
 }

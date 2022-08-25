@@ -44,7 +44,6 @@ namespace RMAZOR.Views.Characters
         public void  OnCharacterMoveFinished(CharacterMovingFinishedEventArgs   _Args)     { }
         public void  OnLevelStageChanged(LevelStageArgs                         _Args)     { }
         public void  OnPathCompleted(V2Int                                      _LastPath) { }
-
     }
     
     public class ViewCharacterLegs : InitBase, IViewCharacterLegs

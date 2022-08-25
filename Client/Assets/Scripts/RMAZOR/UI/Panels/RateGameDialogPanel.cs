@@ -148,7 +148,7 @@ namespace RMAZOR.UI.Panels
         private void OnRateGameButtonClick()
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton2Pressed);
-            Managers.ShopManager.RateGame(false);
+            Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
             var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
             dv.Back();

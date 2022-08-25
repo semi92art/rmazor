@@ -58,7 +58,7 @@ namespace Common.Managers.IAP
             m_PurchaseActions[_Key]?.Invoke();
         }
 
-        public override bool RateGame(bool _JustSuggest = true)
+        public override bool RateGame()
         {
             return false;
         }

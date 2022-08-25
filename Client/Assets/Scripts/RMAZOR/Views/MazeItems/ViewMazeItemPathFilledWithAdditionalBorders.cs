@@ -338,7 +338,7 @@ namespace RMAZOR.Views.MazeItems
                 return _ColorRaw;
             var col = _ColorRaw;
             Color.RGBToHSV(col, out float h, out float s, out float v);
-            v += v < 0.5f ? 0.3f : -0.3f;
+            // v += v < 0.5f ? -0.2f : 0.2f;
             col = Color.HSVToRGB(h, s, v);
             return col;
         }

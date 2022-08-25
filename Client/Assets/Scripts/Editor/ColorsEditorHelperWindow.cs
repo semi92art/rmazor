@@ -179,6 +179,7 @@ namespace Editor
             m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
             m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType).SetA(0.7f));
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
+            CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
         }
 
         private void SetNextOrPreviousAdditionalColorSet(bool _Previous)

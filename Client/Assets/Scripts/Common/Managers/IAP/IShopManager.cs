@@ -8,7 +8,7 @@ namespace Common.Managers.IAP
         void         RegisterProductInfos(List<ProductInfo> _Products);
         void         RestorePurchases();
         void         Purchase(int _Key);
-        bool         RateGame(bool _JustSuggest);
+        bool         RateGame();
         ShopItemArgs GetItemInfo(int _Key);
         void         SetPurchaseAction(int _Key, UnityAction _Action);
         void         SetDeferredAction(int _Key, UnityAction _Action);

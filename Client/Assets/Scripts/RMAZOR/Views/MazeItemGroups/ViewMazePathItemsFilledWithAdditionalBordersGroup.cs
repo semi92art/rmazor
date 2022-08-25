@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
@@ -12,7 +13,8 @@ namespace RMAZOR.Views.MazeItemGroups
 {
     public class ViewMazePathItemsFilledWithAdditionalBordersGroup : ViewMazePathItemsGroup
     {
-        private V2Int[] m_LastPath;
+        private Dictionary<V2Int, bool> m_PathItemFilledDict;
+        private V2Int[]                 m_LastPath;
         
         protected ViewMazePathItemsFilledWithAdditionalBordersGroup(
             GlobalGameSettings _GlobalGameSettings,
@@ -34,6 +36,17 @@ namespace RMAZOR.Views.MazeItemGroups
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.Loaded:
+                    UpdatePathItemFilledDictionary();
+                    break;
+                case ELevelStage.CharacterKilled:
+                    foreach (var item in GetItemsToStopHighlightOnMoveBreak())
+                        item.HighlightEnabled = false;
+                    break;
+            }
+            
             if (_Args.LevelStage != ELevelStage.CharacterKilled)
                 return;
             foreach (var item in GetItemsToStopHighlightOnMoveBreak())
@@ -43,6 +56,18 @@ namespace RMAZOR.Views.MazeItemGroups
         public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
             m_LastPath = RmazorUtils.GetFullPath(_Args.From, _Args.To);
+            var pathItems = RmazorUtils.GetFullPath(_Args.From, _Args.To)
+                .Select(_Pos => PathItems.First(
+                    _Item => _Item.Props.Position == _Pos && _Item.ActivatedInSpawnPool))
+                .Cast<IViewMazeItemPathFilled>();
+            int k = 0;
+            foreach (var item in pathItems)
+            {
+                if (ViewSettings.highlightPathItem)
+                    item.HighlightPathItem(++k / ModelSettings.characterSpeed); 
+                m_PathItemFilledDict[item.Props.Position] = true;
+                item.OnCharacterMoveStarted(_Args);
+            }
             base.OnCharacterMoveStarted(_Args);
         }
 
@@ -88,6 +113,11 @@ namespace RMAZOR.Views.MazeItemGroups
                 pathItemsToShopHighlight.Add(item as IViewMazeItemPathFilled);
             }
             return pathItemsToShopHighlight;
+        }
+        
+        private void UpdatePathItemFilledDictionary()
+        {
+            m_PathItemFilledDict = Model.PathItemsProceeder.PathProceeds.CloneAlt();
         }
     }
 }

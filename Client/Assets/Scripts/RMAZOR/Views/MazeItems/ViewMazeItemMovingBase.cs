@@ -12,9 +12,7 @@ using Common.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -36,12 +34,10 @@ namespace RMAZOR.Views.MazeItems
         private static AudioClipArgs AudioClipArgsBlockDrop =>
             new AudioClipArgs("block_drop", EAudioClipType.GameSound);
         
-        #endregion
-        
-        #region shapes
-
         private readonly List<Line> m_PathLines  = new List<Line>();
         private readonly List<Disc> m_PathJoints = new List<Disc>();
+        
+        protected abstract int LinesAndJointsColorId { get; }
 
         #endregion
 
@@ -50,7 +46,7 @@ namespace RMAZOR.Views.MazeItems
         protected ViewMazeItemMovingBase(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -176,7 +172,7 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            var col = ColorProvider.GetColor(ColorIds.Main);
+            var col = ColorProvider.GetColor(LinesAndJointsColorId);
             if (m_PathLines.Any())
                 sets.Add(m_PathLines, () => col);
             if (m_PathJoints.Any())
@@ -186,7 +182,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.Main) 
+            if (_ColorId != LinesAndJointsColorId) 
                 return;
             foreach (var line in m_PathLines.Where(_Line => _Line.IsNotNull()))
                 line.Color = _Color.SetA(0.7f);

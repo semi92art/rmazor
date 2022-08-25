@@ -165,15 +165,6 @@ namespace Common.Utils
             return result;
         }
 
-        public static Vector3 GetAcceleration()
-        {
-#if ENABLE_INPUT_SYSTEM
-            return Accelerometer.current.acceleration.ReadValue();
-#else
-            return Input.acceleration;
-#endif
-        }
-
         public static void DoOnInitializedEx<T>(T _InitObject, UnityAction _Action) where T : IInit
         {
             if (_InitObject.Initialized)

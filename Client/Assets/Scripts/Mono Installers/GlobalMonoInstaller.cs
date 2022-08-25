@@ -145,6 +145,7 @@ namespace Mono_Installers
             Container.Bind<IViewGameTicker>()           .To<ViewGameTicker>()               .AsSingle();
             Container.Bind<IModelGameTicker>()          .To<ModelGameTicker>()              .AsSingle();
             Container.Bind<IUITicker>()                 .To<UITicker>()                     .AsSingle();
+            Container.Bind<ISystemTicker>()             .To<SystemTicker>()                 .AsSingle();
             Container.Bind<ILevelsLoader>()             .To<LevelsLoader>()                 .AsSingle();
             Container.Bind<IMazeInfoValidator>()        .To<MazeInfoValidator>()            .AsSingle();
 #if ADMOB_API
@@ -166,7 +167,8 @@ namespace Mono_Installers
             Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
-            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
+            // Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
+            Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
         }
     }
 }

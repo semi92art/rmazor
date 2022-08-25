@@ -248,7 +248,7 @@ namespace RMAZOR.UI.Panels
                 () =>
                 {
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton1Pressed);
-                    Managers.ShopManager.RateGame(false);
+                    Managers.ShopManager.RateGame();
                 });
             var info = new LocalizableTextObjectInfo(item.title, ETextType.MenuUI, "rate_game");
             Managers.LocalizationManager.AddTextObject(info);

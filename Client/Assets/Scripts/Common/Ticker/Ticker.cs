@@ -1,6 +1,9 @@
-﻿using Common.Extensions;
+﻿using System;
+using Common.Extensions;
+using Common.Helpers;
 using UnityEngine;
 using UnityEngine.Events;
+using Object = UnityEngine.Object;
 
 namespace Common.Ticker
 {
@@ -13,7 +16,6 @@ namespace Common.Ticker
     {
         event UnityAction Paused;
         event UnityAction UnPaused;
-        float             TimeUnscaled   { get; }
         float             DeltaTime      { get; }
         float             FixedTime      { get; }
         float             FixedDeltaTime { get; }
@@ -28,6 +30,11 @@ namespace Common.Ticker
     public interface IModelGameTicker : IUnityTicker { }
     public interface IUITicker        : IUnityTicker { }
     public interface ICommonTicker    : IUnityTicker { }
+
+    public interface ISystemTicker : ITicker, IInit
+    {
+        DateTime DateTimeUtc { get; }
+    }
     
     public abstract class Ticker : ITicker
     {
@@ -67,7 +74,6 @@ namespace Common.Ticker
         public event UnityAction Paused;
         public event UnityAction UnPaused;
         public float             Time           => TickerProceeder.Time;
-        public float             TimeUnscaled   =>  UnityEngine.Time.unscaledTime;
         public float             DeltaTime      => UnityEngine.Time.deltaTime;
         public float             FixedTime      => TickerProceeder.FixedTime;
         public float             FixedDeltaTime => UnityEngine.Time.fixedDeltaTime;
@@ -98,4 +104,17 @@ namespace Common.Ticker
     public class ModelGameTicker : Ticker, IModelGameTicker { }
     public class UITicker : Ticker, IUITicker { }
     public class CommonTicker : Ticker, ICommonTicker { }
+
+    public class SystemTicker : InitBase, ISystemTicker
+    {
+        private readonly DateTime m_StartDateTime;
+
+        public SystemTicker()
+        {
+            m_StartDateTime = DateTime.UtcNow;
+        }
+
+        public float    Time        => (float) (DateTime.UtcNow - m_StartDateTime).TotalSeconds;
+        public DateTime DateTimeUtc => DateTime.UtcNow;
+    }
 }

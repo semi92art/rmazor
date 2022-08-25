@@ -22,8 +22,6 @@ using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using Object = System.Object;
 
 namespace RMAZOR.Views
 {
@@ -55,7 +53,7 @@ namespace RMAZOR.Views
 
         private bool     m_ShowAdOnLongTimeWithoutCommandsEnabled;
         private float    m_SecondsInLevelWithoutInputActions;
-        private DateTime m_LastPauseDateTime = DateTime.UtcNow;
+        private float    m_LastPauseTime;
         private object[] m_ProceedersCached;
 
         #endregion
@@ -88,6 +86,7 @@ namespace RMAZOR.Views
         private IAdsProvidersSet            AdsProvidersSet        { get; }
         private IModelGame                  Model                  { get; }
         private ICommonTicker               CommonTicker           { get; }
+        private ISystemTicker               SystemTicker           { get; }
 
         private ViewGame(
             IRemotePropertiesRmazor       _RemotePropertiesRmazor,
@@ -114,7 +113,8 @@ namespace RMAZOR.Views
             IViewFullscreenTransitioner   _FullscreenTransitioner,
             IAdsProvidersSet              _AdsProvidersSet,
             IModelGame                    _Model,
-            ICommonTicker                 _CommonTicker)
+            ICommonTicker                 _CommonTicker,
+            ISystemTicker                 _SystemTicker)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -141,6 +141,7 @@ namespace RMAZOR.Views
             AdsProvidersSet              = _AdsProvidersSet;
             Model                        = _Model;
             CommonTicker                 = _CommonTicker;
+            SystemTicker                 = _SystemTicker;
         }
         
         #endregion
@@ -151,6 +152,7 @@ namespace RMAZOR.Views
         {
             if (Initialized)
                 return;
+            m_LastPauseTime = SystemTicker.Time;
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
             CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
@@ -208,11 +210,11 @@ namespace RMAZOR.Views
         public void OnApplicationPause(bool _Pause)
         {
             if (_Pause)
-                m_LastPauseDateTime = DateTime.UtcNow;
+                m_LastPauseTime = SystemTicker.Time;
             else
             {
-                var span = DateTime.UtcNow - m_LastPauseDateTime;
-                if (span.TotalHours > 6d)
+                float secondsLeft = SystemTicker.Time - m_LastPauseTime;
+                if (secondsLeft / 60f > 6f)
                     ReloadGame();
             }
         }

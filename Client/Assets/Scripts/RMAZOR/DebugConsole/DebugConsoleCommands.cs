@@ -104,6 +104,10 @@ namespace RMAZOR.DebugConsole
                     "show_ad",      
                     ShowAd, 
                     "Show ad rewarded/interstitial"),
+                new DebugCommandArgs(
+                    "record_fps",
+                    RecordFps,
+                    "Record fps values, first argument - duration in seconds, example: record_fps 5")
             };
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
@@ -366,6 +370,26 @@ namespace RMAZOR.DebugConsole
                 Controller.AudioManager.MuteAudio(EAudioClipType.Music);
             else 
                 Controller.AudioManager.UnmuteAudio(EAudioClipType.Music);
+        }
+        
+        private static void RecordFps(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int seconds))
+            {
+                Controller.AppendLogLine("Wrong. First argument must be numeric!");
+                return;
+            }
+            Controller.FpsCounter.Record(seconds);
+            Cor.Run(Cor.Delay(
+                seconds + 0.1f, 
+                null, 
+                () =>
+            {
+                var recording = Controller.FpsCounter.GetRecording();
+                string recordingString = recording.ToString();
+                CommonUtils.CopyToClipboard(recordingString);
+                Dbg.Log(recordingString);
+            }));
         }
     }
 }

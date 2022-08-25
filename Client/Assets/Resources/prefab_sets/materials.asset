@@ -27,7 +27,19 @@ MonoBehaviour:
       name: trap_react_spikes_material
       bundle: 0
     - item: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
-      name: background_solid_color
+      name: background_parallax_gradient_circles
+      bundle: 0
+    - item: {fileID: 2100000, guid: c6c716ebc83412846bbeea2afdfda4aa, type: 2}
+      name: background_neon_stream
+      bundle: 0
+    - item: {fileID: 2100000, guid: 8968253daec9cb54c9e94ea8d3764376, type: 2}
+      name: background_connected_dots
+      bundle: 0
+    - item: {fileID: 2100000, guid: bc5e567cb9679624a82a092a02096251, type: 2}
+      name: background_swirl_for_planet
+      bundle: 0
+    - item: {fileID: 2100000, guid: 8d0980d360fe6954c8fa93cfa36dff1d, type: 2}
+      name: background_worm_hole
       bundle: 0
     - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
       name: background_triangles_2

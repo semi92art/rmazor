@@ -39,7 +39,8 @@ namespace RMAZOR.Views.Common
             BackCol1Next,
             BackCol2Next;
 
-        private BloomPropsAlt m_BloomPropsAlt;
+        private BloomPropsAlt                        m_BloomPropsAlt;
+        protected AdditionalColorPropsAdditionalInfo AdditionalInfo;
 
         #endregion
 
@@ -155,6 +156,7 @@ namespace RMAZOR.Views.Common
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = group % colorsSet.Count;
             m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
+            AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
         }
 
         #endregion

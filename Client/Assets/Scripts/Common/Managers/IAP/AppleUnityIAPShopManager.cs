@@ -29,14 +29,12 @@ namespace Common.Managers.IAP
             m_AppleExtensions.RegisterPurchaseDeferredListener(OnDeferredPurchase);
         }
 
-        public override bool RateGame(bool _JustSuggest = true)
+        public override bool RateGame()
         {
-            if (!base.RateGame(_JustSuggest))
+            if (!base.RateGame())
                 return false;
-            if (_JustSuggest)
-                SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
-            else
-                Application.OpenURL("itms-apps://itunes.apple.com/app/id1601083190");
+            // SA.iOS.StoreKit.ISN_SKStoreReviewController.RequestReview();
+            Application.OpenURL("itms-apps://itunes.apple.com/app/id1601083190");
             return true;
         }
     }

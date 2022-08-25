@@ -43,8 +43,8 @@
 			    return (p.x-a.x)*(b.y-a.y)-(p.y-a.y)*(b.x-a.x) > tv;
 			}
   
-            fixed4 frag (v2f i) : SV_Target {
-       			float2 pos = i.uv;
+            fixed4 frag (v2f f_i) : SV_Target {
+       			float2 pos = f_i.uv;
        			pos.x *= screen_ratio();
             	pos.x *= -1.;
                 float s32 = sqrt(3.) / 2.;

@@ -8,11 +8,8 @@ using Common.Providers;
 using Common.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -81,7 +78,7 @@ namespace RMAZOR.Views.MazeItems
             m_FilledShape = Object.AddComponentOnNewChild<Rectangle>("Joint", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedSolid)
-                .SetColor(ColorProvider.GetColor(ColorIds.Main));
+                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
         }
 
         protected override void UpdateShape()
@@ -100,7 +97,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Main)
+            if (_ColorId == ColorIds.MazeItem2)
                 m_FilledShape.Color = _Color.SetA(0.3f);
             base.OnColorChanged(_ColorId, _Color);
         }
@@ -108,7 +105,7 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            sets.Add(new [] {m_FilledShape}, () => ColorProvider.GetColor(ColorIds.Main).SetA(0.3f));
+            sets.Add(new [] {m_FilledShape}, () => ColorProvider.GetColor(ColorIds.MazeItem2).SetA(0.3f));
             return sets;
         }
 

@@ -101,6 +101,8 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder);
 
+        protected override int LinesAndJointsColorId => ColorIds.MazeItem1;
+
         public override bool ActivatedInSpawnPool
         {
             get => base.ActivatedInSpawnPool;

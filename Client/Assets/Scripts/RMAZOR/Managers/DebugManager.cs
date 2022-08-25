@@ -117,7 +117,8 @@ namespace RMAZOR.Managers
                 CommandsProceeder,
                 AdsManager,
                 ScoreManager,
-                AudioManager);
+                AudioManager,
+                FpsCounter);
             m_DebugConsoleInitialized = true;
         }
     

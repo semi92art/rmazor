@@ -18,7 +18,7 @@ namespace Editor
         [MenuItem("Tools/Test Utils Helper", false, 108)]
         public static void ShowWindow()
         {
-            GetWindow<TempUtilsHelperEditorWindow>("Test Utils Helper");
+            GetWindow<TempUtilsHelperEditorWindow>("Temp Utils Helper");
         }
 
         private void OnGUI()
@@ -74,12 +74,10 @@ namespace Editor
                 return false;
             }
             m_GameController = FindObjectOfType<GameControllerMVC>();
-            if (m_GameController == null)
-            {
-                Dbg.LogError("Game Controller was not found.");
-                return false;
-            }
-            return true;
+            if (m_GameController != null)
+                return true;
+            Dbg.LogError("Game Controller was not found.");
+            return false;
         }
     }
 }
