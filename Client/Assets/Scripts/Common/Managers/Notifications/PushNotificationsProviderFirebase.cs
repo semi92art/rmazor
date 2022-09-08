@@ -1,4 +1,4 @@
-﻿using Common.Helpers;
+﻿/*using Common.Helpers;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Messaging;
@@ -80,4 +80,4 @@ namespace Common.Managers.Notifications
             Dbg.Log("Received a new message from: " + _Args.Message.From);
         }
     }
-}
+}*/

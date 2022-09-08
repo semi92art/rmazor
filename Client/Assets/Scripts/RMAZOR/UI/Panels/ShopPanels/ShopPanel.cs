@@ -249,7 +249,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         {
             Managers.AnalyticsManager.SendAnalytic(
                 AnalyticIds.Purchase,
-        new Dictionary<string, object> { {AnalyticIds.PurchaseProductId, "no_ads"}});
+        new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, "no_ads"}});
             Managers.AdsManager.ShowAds = new Entity<bool>
             {
                 Result = EEntityResult.Success,
@@ -306,7 +306,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     }
                     Managers.AnalyticsManager.SendAnalytic(
                         AnalyticIds.Purchase,
-                        new Dictionary<string, object> { {AnalyticIds.PurchaseProductId, productId}});
+                        new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, productId}});
                 }));
         }
 

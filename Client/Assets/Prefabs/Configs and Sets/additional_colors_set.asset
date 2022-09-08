@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - main: {r: 1, g: 0.6277604, b: 0, a: 1}
+    - main: {r: 1, g: 0.4900025, b: 0.1462264, a: 1}
       bacground1: {r: 0.16112542, g: 0.18867922, b: 0.11836951, a: 1}
       bacground2: {r: 0.1647059, g: 0.4124149, b: 0.48235294, a: 1}
       inUse: 1
@@ -34,13 +34,33 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
+    - main: {r: 0, g: 0, b: 0, a: 1}
+      bacground1: {r: 0.54901963, g: 0.54901963, b: 0.54901963, a: 1}
+      bacground2: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 2
+      pathFillFillType: 1
+      characterBorderFillType: 2
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0.3
+        color: {r: 0.87843144, g: 0.65882355, b: 0.019607844, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
+      additionalInfo:
+        neonStreamColorCoefficient1: 0.3
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 7
     - main: {r: 1, g: 0, b: 0.3333335, a: 1}
       bacground1: {r: 0.25490198, g: 0.12156863, b: 0.15748973, a: 1}
       bacground2: {r: 0.745283, g: 0, b: 0.25135043, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 2
+      pathFillFillType: 0
       characterBorderFillType: 1
       uiBackgroundFillType: 0
       bloom:
@@ -74,26 +94,6 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.35
         swirlForPlanetColorCoefficient1: 2
         wormHoleColorCoefficient1: 7
-    - main: {r: 0.06666668, g: 0.12925288, b: 0.24705882, a: 1}
-      bacground1: {r: 0, g: 0.52156866, b: 0.74509805, a: 1}
-      bacground2: {r: 0.20558919, g: 0.6163936, b: 0.7924528, a: 1}
-      inUse: 0
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 0
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 0
-        diffusion: 0.3
-        color: {r: 0.10980393, g: 0, b: 1, a: 1}
-        amount: 10
-        threshold: 1.4
-        softness: 0.9
-      additionalInfo:
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 0.6
-        wormHoleColorCoefficient1: 4
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
       bacground2: {r: 0.7930287, g: 0.8396226, b: 0.34456214, a: 1}
@@ -115,7 +115,7 @@ MonoBehaviour:
         swirlForPlanetColorCoefficient1: 0.5
         wormHoleColorCoefficient1: 4
     - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
-      bacground1: {r: 0.8584906, g: 0.5615841, b: 0.34420612, a: 1}
+      bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
       bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
       inUse: 1
       pathItemFillType: 0

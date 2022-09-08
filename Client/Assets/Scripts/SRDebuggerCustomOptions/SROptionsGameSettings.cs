@@ -5,6 +5,7 @@
 // ReSharper disable PartialTypeWithSinglePart
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -17,8 +18,6 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Utils;
-using Firebase.Extensions;
-using Firebase.Messaging;
 using RMAZOR;
 using RMAZOR.Controllers;
 using RMAZOR.Managers;
@@ -629,25 +628,11 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                _managers.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic);
-            }
-        }
-
-        [Category(CategoryCommon)]
-        public bool Get_FCM_Token
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                FirebaseMessaging.GetTokenAsync()
-                    .ContinueWithOnMainThread(_Task =>
-                    {
-                        string token = _Task.Result;
-                        Dbg.Log("FCM Token: " + token);
-                        CommonUtils.CopyToClipboard(token);
-                    });
+                var eventData = new Dictionary<string, object>
+                {
+                    {AnalyticIds.Parameter1ForTestAnalytic, Mathf.RoundToInt(UnityEngine.Random.value * 100)}
+                };
+                _managers.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic, eventData);
             }
         }
 

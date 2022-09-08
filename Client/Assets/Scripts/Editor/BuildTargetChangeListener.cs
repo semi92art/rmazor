@@ -13,8 +13,8 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
 {
     #region constants
 
-    private const string Ver39           = "v3.9";
-    private const string Ver41           = "v4.1";
+    private const string NiceVibrationsPluginVer39           = "v3.9";
+    private const string NiceVibrationsPluginVer41           = "v4.1";
     private const string Appodeal        = "Appodeal";
     private const string NiceVibrations  = "NiceVibrations";
     private const string GoogleMobileAds = "GoogleMobileAds";
@@ -57,14 +57,14 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
 
     private static void ConfigureAndroidPlatform()
     {
-        var target = NamedBuildTarget.Android;
-        SetNiceVibrationsPluginVersion(Ver39, target);
+        // var target = NamedBuildTarget.Android;
+        // SetNiceVibrationsPluginVersion(NiceVibrationsPluginVer39, target);
     }
 
     private static void ConfigureIosPlatform()
     {
-        var target = NamedBuildTarget.iOS;
-        SetNiceVibrationsPluginVersion(Ver41, target);
+        // var target = NamedBuildTarget.iOS;
+        // SetNiceVibrationsPluginVersion(NiceVibrationsPluginVer41, target);
     }
     
     private static List<string> GetScriptingDefineSymbols(NamedBuildTarget _Target)
@@ -96,11 +96,11 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         if (!_Bak)
         {
             return _Plugin == NiceVibrations ? 
-                Path.Combine(dir, "Assets", _Plugin, "OlderVersions", $"{Ver39}") 
+                Path.Combine(dir, "Assets", _Plugin, "OlderVersions", $"{NiceVibrationsPluginVer39}") 
                 : Path.Combine(dir, "Assets", _Plugin);
         }
         return _Plugin == NiceVibrations ? 
-            Path.Combine(dir, "_Other", "additional-packages", $"{NiceVibrations}-{Ver39}") 
+            Path.Combine(dir, "_Other", "additional-packages", $"{NiceVibrations}-{NiceVibrationsPluginVer39}") 
             : Path.Combine(dir, "_Other", "additional-packages",
            _Plugin);
     }
@@ -152,6 +152,16 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
     
     #region NICE VIBRATIONS
 
+    public static void SetNiceVibrationsPluginV39(NamedBuildTarget _Target)
+    {
+        SetNiceVibrationsPluginVersion(NiceVibrationsPluginVer39, _Target);
+    }
+    
+    public static void SetNiceVibrationsPluginV41(NamedBuildTarget _Target)
+    {
+        SetNiceVibrationsPluginVersion(NiceVibrationsPluginVer41, _Target);
+    }
+
     private static void SetNiceVibrationsPluginVersion(string _Version, NamedBuildTarget _Target)
     {
         var scriptDefSymbols = GetScriptingDefineSymbols(_Target);
@@ -164,7 +174,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         string path = GetPluginPath(NiceVibrations, false);
         switch (_Version)
         {
-            case Ver39:
+            case NiceVibrationsPluginVer39:
                 foreach (string symbolToAdd in pluginSymbols)
                 {
                     if (!scriptDefSymbols.Contains(symbolToAdd))
@@ -181,7 +191,7 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
                     Directory.Delete(path, true);
                 CopyFilesRecursively(bakPath, path);
                 break;
-            case Ver41:
+            case NiceVibrationsPluginVer41:
                 foreach (string symbolToRemove in pluginSymbols)
                 {
                     if (scriptDefSymbols.Contains(symbolToRemove))

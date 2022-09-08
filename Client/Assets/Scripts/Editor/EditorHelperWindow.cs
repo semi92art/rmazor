@@ -83,66 +83,34 @@ namespace Editor
         {
             EditorUtilsEx.ScrollViewZone(ref m_CommonScrollPos, () =>
             {
-                if (Application.isPlaying)
-                    GUILayout.Label($"Target FPS: {Application.targetFrameRate}");
-                // TODO пока не актуально
-                // EditorUtilsEx.HorizontalZone(() =>
-                // {
-                //     EditorUtilsEx.GuiButtonAction(CreateTestUsers, m_TestUsersCount);
-                //     GUILayout.Label("count:", GUILayout.Width(40));
-                //     m_TestUsersCount = EditorGUILayout.IntField(m_TestUsersCount);
-                // });
-                // EditorUtilsEx.GuiButtonAction("Delete test users", DeleteTestUsers);
-                // EditorUtilsEx.HorizontalZone(() =>
-                // {
-                //     GUILayout.Label("Debug Server Url:");
-                //     m_DebugServerUrl = EditorGUILayout.TextField(m_DebugServerUrl);
-                //     if (!string.IsNullOrEmpty(m_DebugServerUrl) && m_DebugServerUrl.Last().InRange('/','\\'))
-                //         m_DebugServerUrl = m_DebugServerUrl.Remove(m_DebugServerUrl.Length - 1);
-                // });
-                // EditorUtilsEx.GuiButtonAction("Set default api url", SetDefaultApiUrl);
-                // EditorUtilsEx.HorizontalLine(Color.gray);
                 var bt = EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android
                     ? NamedBuildTarget.Android : NamedBuildTarget.iOS;
                 EditorUtilsEx.HorizontalZone(() =>
                 {
-                    EditorUtilsEx.GuiButtonAction("Add Admob to this target", () =>
-                    {
-                        BuildTargetChangeListener.AddGoogleAds(bt);
-                    });
-                    EditorUtilsEx.GuiButtonAction("Remove Admob from this target", () =>
-                    {
-                        BuildTargetChangeListener.RemoveGoogleAds(bt);
-                    });
+                    EditorUtilsEx.GuiButtonAction("Add Admob", () => BuildTargetChangeListener.AddGoogleAds(bt));
+                    EditorUtilsEx.GuiButtonAction("Remove Admob", () => BuildTargetChangeListener.RemoveGoogleAds(bt));
                 });
                 EditorUtilsEx.HorizontalZone(() =>
                 {
-                    EditorUtilsEx.GuiButtonAction("Add Appodeal to this target", () =>
-                    {
-                        BuildTargetChangeListener.AddAppodeal(bt);
-                    });
-                    EditorUtilsEx.GuiButtonAction("Remove Appodeal from this target", () =>
-                    {
-                        BuildTargetChangeListener.RemoveAppodeal(bt);
-                    });
+                    EditorUtilsEx.GuiButtonAction("Add Appodeal", () => BuildTargetChangeListener.AddAppodeal(bt));
+                    EditorUtilsEx.GuiButtonAction("Remove Appodeal", () => BuildTargetChangeListener.RemoveAppodeal(bt));
                 });
-
                 EditorUtilsEx.HorizontalZone(() =>
                 {
-                    EditorUtilsEx.GuiButtonAction("Add UnityAds to this target", () =>
-                    {
-                        BuildTargetChangeListener.AddUnityAds(bt);
-                    });
-                    EditorUtilsEx.GuiButtonAction("Remove UnityAds from this target", () =>
-                    {
-                        BuildTargetChangeListener.RemoveUnityAds(bt);
-                    });
+                    EditorUtilsEx.GuiButtonAction("Add UnityAds", () => BuildTargetChangeListener.AddUnityAds(bt));
+                    EditorUtilsEx.GuiButtonAction("Remove UnityAds", () => BuildTargetChangeListener.RemoveUnityAds(bt));
                 });
                 EditorUtilsEx.HorizontalLine();
                 EditorUtilsEx.HorizontalZone(() =>
                 {
                     EditorUtilsEx.GuiButtonAction("Copy Appodeal settings from backup", BuildTargetChangeListener.CopyAppodealSettingsFromBackup);
-                    EditorUtilsEx.GuiButtonAction("Remove Appodeal settings", BuildTargetChangeListener.RemoveAppodealSettingsFolder);
+                    EditorUtilsEx.GuiButtonAction("Remove Appodeal settings folder", BuildTargetChangeListener.RemoveAppodealSettingsFolder);
+                });
+                EditorUtilsEx.HorizontalLine();
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Set Nice Vibrations v.3.9", () => BuildTargetChangeListener.SetNiceVibrationsPluginV39(bt));
+                    EditorUtilsEx.GuiButtonAction("Set Nice Vibrations v.4.1", () => BuildTargetChangeListener.SetNiceVibrationsPluginV41(bt));
                 });
                 EditorUtilsEx.HorizontalLine();
                 var headerStyle = new GUIStyle
