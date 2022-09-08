@@ -74,12 +74,16 @@ namespace Common.Debugging
         #endregion
 
         #region inject
-        
-        private ICommonTicker CommonTicker { get; }
 
-        public FpsCounter(ICommonTicker _CommonTicker)
+        private IRemotePropertiesCommon RemotePropertiesCommon { get; }
+        private ICommonTicker           CommonTicker           { get; }
+
+        public FpsCounter(
+            IRemotePropertiesCommon _RemotePropertiesCommon,
+            ICommonTicker _CommonTicker)
         {
-            CommonTicker = _CommonTicker;
+            RemotePropertiesCommon = _RemotePropertiesCommon;
+            CommonTicker           = _CommonTicker;
         }
         
         #endregion
@@ -88,6 +92,8 @@ namespace Common.Debugging
 
         public override void Init()
         {
+            if (!RemotePropertiesCommon.DebugEnabled && !Application.isEditor)
+                return;
             InitFpsText();
             CommonTicker.Register(this);
             base.Init();
@@ -141,7 +147,7 @@ namespace Common.Debugging
             var textGo = new GameObject("Fps Counter Text");
             Object.DontDestroyOnLoad(textGo);
             var screendBounds = GraphicUtils.GetVisibleBounds();
-            textGo.transform.SetPosXY(screendBounds.max.x, screendBounds.max.y);
+            textGo.transform.SetPosXY(screendBounds.max.x - 1, screendBounds.max.y - 1);
             m_FpsText = textGo.AddComponent<TextMeshPro>();
             m_FpsText.rectTransform.pivot = Vector2.one;
             m_FpsText.alignment = TextAlignmentOptions.TopRight;

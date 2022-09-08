@@ -136,7 +136,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             const string prefabName = "start_logo_maze_blade_2";
             var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
-                "ui_game",
+                CommonPrefabSetNames.UiGame,
                 prefabName);
             go.GetCompItem<AnimationTriggerer>("triggerer").Trigger1 = () => go.SetActive(false);
             m_GameLogoCharAnims = KeysAndDelays.Keys

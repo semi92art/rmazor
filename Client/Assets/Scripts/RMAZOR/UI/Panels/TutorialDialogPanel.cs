@@ -3,14 +3,12 @@ using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -54,27 +52,22 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private IProposalDialogViewer       ProposalDialogViewer { get; }
         private IContainersGetter           ContainersGetter     { get; }
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
 
         public TutorialDialogPanel(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
-            IDialogViewersController    _DialogViewersController,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
-            IProposalDialogViewer       _ProposalDialogViewer,
             IContainersGetter           _ContainersGetter,
             IViewInputCommandsProceeder _CommandsProceeder) 
             : base(
                 _Managers, 
                 _Ticker,
-                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider)
         {
-            ProposalDialogViewer = _ProposalDialogViewer;
             ContainersGetter     = _ContainersGetter;
             CommandsProceeder    = _CommandsProceeder;
         }
@@ -82,10 +75,11 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region api
-        
-        public override EUiCategory Category      => EUiCategory.Tutorial;
-        public override bool        AllowMultiple => false;
-        public override Animator    Animator      => m_Animator;
+
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EUiCategory       Category         => EUiCategory.Tutorial;
+        public override bool              AllowMultiple    => false;
+        public override Animator          Animator         => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.isPrepared;
 
@@ -103,24 +97,21 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.enabled = true;
         }
 
-        public override void LoadPanel()
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             if (m_Info == null)
             {
                 Dbg.LogError("Tutorial Dialog Panel info was not set.");
                 return;
             }
-            base.LoadPanel();
-            var rectTr = UIUtils.UiRectTransform(
-                ProposalDialogViewer.Container,
-                RectTransformLite.FullFill);
+            base.LoadPanel(_Container, _OnClose);
             var go = Managers.PrefabSetManager.InitUiPrefab(
-                rectTr,
+                _Container,
                 CommonPrefabSetNames.DialogPanels,
                 "tutorial_panel");
-            PanelObject = go.RTransform();
+            PanelRectTransform = go.RTransform();
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
-            panel.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
+            panel.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
             m_Description = go.GetCompItem<TextMeshProUGUI>("description");
             m_ButtonClose = go.GetCompItem<Button>("button_close");
             m_Animator    = go.GetCompItem<Animator>("animator");
@@ -155,7 +146,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnCloseButtonClick()
         {
-            ProposalDialogViewer.Back();
+            OnClose(null);
         }
 
         private void InitVideoPlayer()

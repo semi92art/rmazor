@@ -17,7 +17,7 @@ MonoBehaviour:
     - name: Main
       color: {r: 0.6313726, g: 0.46799824, b: 0, a: 1}
     - name: Maze Item 1
-      color: {r: 0, g: 1, b: 0.9897845, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
     - name: Maze Item 2
       color: {r: 0, g: 1, b: 0.9897845, a: 1}
     - name: Path Item

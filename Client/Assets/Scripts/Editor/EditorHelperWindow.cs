@@ -40,6 +40,8 @@ namespace Editor
         private Vector2            m_SettingsScrollPos;
         private static GlobalGameSettings _globalGameSettings;
 
+        private SerializedObject m_SettingsSerObj;
+
         [MenuItem("Tools/\u2699 Editor Helper _%h", false, 104)]
         public static void ShowWindow()
         {
@@ -303,18 +305,21 @@ namespace Editor
 
         private void SettingsTabPageCore(Object _Settings, Type _Type)
         {
+            if (m_SettingsSerObj == null || m_SettingsSerObj.GetType() != _Type)
+                m_SettingsSerObj = new SerializedObject(_Settings);
+            else 
+                m_SettingsSerObj.Update();
             var fieldInfos = _Type.GetFields(BindingFlags.Public | BindingFlags.Instance);
-            var serObj = new SerializedObject(_Settings);
             EditorUtilsEx.ScrollViewZone(ref m_SettingsScrollPos, () =>
             {
                 foreach (var fieldInfo in fieldInfos)
                 {
-                    var prop = serObj.FindProperty(fieldInfo.Name);
+                    var prop = m_SettingsSerObj.FindProperty(fieldInfo.Name);
                     EditorGUILayout.PropertyField(prop);
                 }
-                if (!serObj.hasModifiedProperties)
+                if (!m_SettingsSerObj.hasModifiedProperties)
                     return;
-                serObj.ApplyModifiedProperties();
+                m_SettingsSerObj.ApplyModifiedProperties();
                 EditorUtility.SetDirty(_Settings);
                 AssetDatabase.SaveAssets();
                 AssetDatabase.Refresh();
@@ -329,53 +334,7 @@ namespace Editor
                 SaveUtilsInEditor.PutValue(SaveKeysCommon.ServerUrl, m_DebugServerUrl);
             m_TestUrlCheck = m_DebugServerUrl;
         }
-
-        private static void CreateTestUsers(int _Count)
-        {
-            CommonData.Testing = true;
-            var gc = new GameClient(_globalGameSettings, new CommonTicker());
-            const int gameId = 1;
-            gc.Initialize += () =>
-            {
-                for (int i = 0; i < _Count; i++)
-                {
-                    var packet = new RegisterUserPacket(
-                        new RegisterUserPacketRequestArgs
-                        {
-                            Name = $"{CommonUtils.GetUniqueId()}",
-                            PasswordHash = "test",
-                            GameId = gameId
-                        });
-                    int ii = i;
-                    packet.OnFail(() =>
-                        {
-                            Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
-                            Dbg.LogError(packet.Response);
-                        });
-
-                    gc.Send(packet);
-                }
-            };
-            gc.Init();
-        }
-
-        private static void DeleteTestUsers()
-        {
-            CommonData.Testing = true;
-            var gc = new GameClient(_globalGameSettings, new CommonTicker());
-            gc.Initialize += () =>
-            {
-                IPacket packet = new DeleteTestUsersPacket();
-                packet.OnSuccess(() =>
-                    {
-                        Dbg.Log("All test users deleted");
-                    })
-                    .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
-                gc.Send(packet);
-            };
-            gc.Init();
-        }
-
+        
         public static void LoadScene(string _Name)
         {
             if (Application.isPlaying)
@@ -383,20 +342,69 @@ namespace Editor
             else if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 EditorSceneManager.OpenScene(_Name);
         }
-
-        private void SetDefaultApiUrl()
+        
+        private static Dictionary<string, string> GetAllSaveKeyValues()
         {
-            m_DebugServerUrl = @"http://77.37.152.15:7000";
-            UpdateTestUrl(true);
-        }
-
-        private static Dictionary<string, string> GetAllSaveKeyValues() =>
-            new Dictionary<string, string>
+            return new Dictionary<string, string>
             {
                 {"Last connection succeeded", SaveUtils.GetValue(SaveKeysCommon.LastDbConnectionSuccess).ToString()},
                 {"Login", SaveUtils.GetValue(SaveKeysCommon.Login) ?? "not exist"},
                 {"Password hash", SaveUtils.GetValue(SaveKeysCommon.PasswordHash) ?? "not exist"},
                 {"Account id", GameClientUtils.AccountId.ToString()},
             };
+        }
+
+        // private static void CreateTestUsers(int _Count)
+        // {
+        //     CommonData.Testing = true;
+        //     var gc = new GameClient(_globalGameSettings, new CommonTicker());
+        //     const int gameId = 1;
+        //     gc.Initialize += () =>
+        //     {
+        //         for (int i = 0; i < _Count; i++)
+        //         {
+        //             var packet = new RegisterUserPacket(
+        //                 new RegisterUserPacketRequestArgs
+        //                 {
+        //                     Name = $"{CommonUtils.GetUniqueId()}",
+        //                     PasswordHash = "test",
+        //                     GameId = gameId
+        //                 });
+        //             int ii = i;
+        //             packet.OnFail(() =>
+        //                 {
+        //                     Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
+        //                     Dbg.LogError(packet.Response);
+        //                 });
+        //
+        //             gc.Send(packet);
+        //         }
+        //     };
+        //     gc.Init();
+        // }
+        //
+        // private static void DeleteTestUsers()
+        // {
+        //     CommonData.Testing = true;
+        //     var gc = new GameClient(_globalGameSettings, new CommonTicker());
+        //     gc.Initialize += () =>
+        //     {
+        //         IPacket packet = new DeleteTestUsersPacket();
+        //         packet.OnSuccess(() =>
+        //             {
+        //                 Dbg.Log("All test users deleted");
+        //             })
+        //             .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
+        //         gc.Send(packet);
+        //     };
+        //     gc.Init();
+        // }
+        
+        // private void SetDefaultApiUrl()
+        // {
+        //     m_DebugServerUrl = @"http://77.37.152.15:7000";
+        //     UpdateTestUrl(true);
+        // }
+        
     }
 }

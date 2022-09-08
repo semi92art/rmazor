@@ -32,3 +32,9 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: e551e313639949643bbadf429c6a45b7, type: 2}
       name: korean
       bundle: 0
+    - item: {fileID: 11400000, guid: bb8280a003ff95147a1ef3df1a02237f, type: 2}
+      name: blob-spongey
+      bundle: 0
+    - item: {fileID: 11400000, guid: 605433b68313d491a8ab88bc03a41651, type: 2}
+      name: lilita-one-outline-54
+      bundle: 0

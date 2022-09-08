@@ -66,7 +66,7 @@ namespace RMAZOR.Views.InputConfigurators
             base.Init();
         }
         
-        public void UpdateTick()
+        public virtual void UpdateTick()
         {
             if (CommonTicker == null)
                 return;

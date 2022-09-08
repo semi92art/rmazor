@@ -29,37 +29,36 @@ namespace RMAZOR.UI.Panels
     
     public class FinishLevelGroupDialogPanelFake : IFinishLevelGroupDialogPanel
     {
-        public EUiCategory     Category       => default;
-        public bool            AllowMultiple  => false;
-        public EAppearingState AppearingState { get; set; }
-        public RectTransform   PanelObject    => null;
-        public Animator        Animator       => null;
-        public void LoadPanel() { }
+        public EDialogViewerType DialogViewerType   => default;
+        public EUiCategory       Category           => default;
+        public bool              AllowMultiple      => false;
+        public EAppearingState   AppearingState     { get; set; }
+        public RectTransform     PanelRectTransform => null;
+        public Animator          Animator           => null;
+        
+        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
     }
 
     public class FinishLevelGroupDialogPanel : DialogPanelBase, IFinishLevelGroupDialogPanel
     {
         #region nonpublic members
 
+        private Animator                    m_StarsAndRibbonAnimator;
         private Animator                    m_PanelAnimator;
-        private SimpleUiDialogPanelView     m_PanelView;
         private MultiplyMoneyWheelPanelView m_WheelPanelView;
         private Image                       m_MoneyIcon;
         private Image                       m_IconWatchAds;
         private Button                      m_ButtonMultiplyMoney;
         private Button                      m_ButtonSkip;
         private Button                      m_ButtonContinue;
-        private SimpleUiButtonView          m_ButtonMultiplyMoneyView;
-        private SimpleUiButtonView          m_ButtonSkipView;
-        private SimpleUiButtonView          m_ButtonContinueView;
-        private TextMeshProUGUI             m_TextYouHaveMoney;
-        private TextMeshProUGUI             m_TextMoneyCount;
+        private TextMeshProUGUI             m_TitleText;
+        private TextMeshProUGUI             m_MoneyCountText;
         private TextMeshProUGUI             m_MultiplyButtonText;
         private TextMeshProUGUI             m_SkipButtonText;
         private TextMeshProUGUI             m_ContinueButtonText;
         private Animator                    m_AnimLoadingAds;
         private AnimationTriggerer          m_Triggerer;
-        private string                      m_MultiplyText;
+        private Sprite                      m_MultipliedMoneySprite;
         private long                        m_MultiplyCoefficient;
 
         #endregion
@@ -74,7 +73,6 @@ namespace RMAZOR.UI.Panels
         private FinishLevelGroupDialogPanel(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
-            IDialogViewersController    _DialogViewersController,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
             IViewUIPrompt               _Prompt,
@@ -84,7 +82,6 @@ namespace RMAZOR.UI.Panels
             : base(
                 _Managers,
                 _Ticker,
-                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider)
         {
@@ -98,32 +95,29 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EUiCategory Category      => EUiCategory.FinishGroup;
-        public override bool        AllowMultiple => false;
-        public override Animator    Animator      => m_PanelAnimator;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EUiCategory       Category         => EUiCategory.FinishGroup;
+        public override bool              AllowMultiple    => false;
+        public override Animator          Animator         => m_PanelAnimator;
 
-        public override void LoadPanel()
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            base.LoadPanel(_Container, _OnClose);
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    dv.Container,
+                    _Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "finish_level_group_panel");
-            PanelObject = go.RTransform();
+            PanelRectTransform = go.RTransform();
             go.SetActive(false);
-            m_PanelView               = go.GetCompItem<SimpleUiDialogPanelView>("panel_view");
+            m_StarsAndRibbonAnimator  = go.GetCompItem<Animator>("stars_and_ribbon_animator");
             m_WheelPanelView          = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
             m_PanelAnimator           = go.GetCompItem<Animator>("panel_animator");
             m_ButtonMultiplyMoney     = go.GetCompItem<Button>("multiply_money_button");
             m_ButtonSkip              = go.GetCompItem<Button>("skip_button");
             m_ButtonContinue          = go.GetCompItem<Button>("continue_button");
-            m_ButtonMultiplyMoneyView = go.GetCompItem<SimpleUiButtonView>("multiply_money_button");
-            m_ButtonSkipView          = go.GetCompItem<SimpleUiButtonView>("skip_button");
-            m_ButtonContinueView      = go.GetCompItem<SimpleUiButtonView>("continue_button");
-            m_TextYouHaveMoney        = go.GetCompItem<TextMeshProUGUI>("reward_text");
-            m_TextMoneyCount          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_TitleText               = go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_MoneyCountText          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
             m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
             m_SkipButtonText          = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
             m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
@@ -131,51 +125,39 @@ namespace RMAZOR.UI.Panels
             m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
             m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
             m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_PanelView.Init(
-                Ticker,
-                ColorProvider,
-                Managers.AudioManager,
-                Managers.LocalizationManager,
-                Managers.PrefabSetManager);
-            m_WheelPanelView.Init(
-                Ticker,
-                ColorProvider,
-                Managers.AudioManager,
-                Managers.LocalizationManager,
-                Managers.PrefabSetManager);
-            m_ButtonMultiplyMoneyView.Init(
-                Ticker,
-                ColorProvider,
-                Managers.AudioManager,
-                Managers.LocalizationManager,
-                Managers.PrefabSetManager);
-            m_ButtonSkipView.Init(
-                Ticker,
-                ColorProvider,
-                Managers.AudioManager,
-                Managers.LocalizationManager,
-                Managers.PrefabSetManager);
             m_MoneyIcon.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
+            m_MultipliedMoneySprite = Managers.PrefabSetManager.GetObject<Sprite>(
+                "icons", 
+                "icon_coin_ui_multiplied");
+            m_WheelPanelView.Init(
+                Ticker,
+                Managers.AudioManager,
+                Managers.LocalizationManager);
             m_ButtonMultiplyMoney.onClick.AddListener(OnMultiplyButtonPressed);
             m_ButtonSkip.onClick.AddListener(OnSkipButtonPressed);
             m_ButtonContinue.onClick.AddListener(OnContinueButtonPressed);
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "reward"));
+                new LocalizableTextObjectInfo(m_TitleText, ETextType.MenuUI, "stage_finished"));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_MultiplyButtonText, ETextType.MenuUI, "multiply"));
+                new LocalizableTextObjectInfo(m_MoneyCountText, ETextType.MenuUI, "reward",
+                    _S => _S.ToUpper() + ": " + MoneyCounter.CurrentLevelGroupMoney));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_SkipButtonText, ETextType.MenuUI, "skip"));
+                new LocalizableTextObjectInfo(m_MultiplyButtonText, ETextType.MenuUI, "multiply",
+                    _S => _S.ToUpper()));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_ContinueButtonText, ETextType.MenuUI, "continue"));
-            m_MultiplyText = Managers.LocalizationManager.GetTranslation("multiply");
-            m_TextMoneyCount.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
+                new LocalizableTextObjectInfo(m_SkipButtonText, ETextType.MenuUI, "skip",
+                    _S => _S.ToUpper()));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_ContinueButtonText, ETextType.MenuUI, "continue",
+                    _S => _S.ToUpper()));
             m_Triggerer.Trigger1 += OnStartAppearingAnimationFinished;
             m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
         }
 
         public override void OnDialogStartAppearing()
         {
+            m_StarsAndRibbonAnimator.SetTrigger(AnimKeys.Anim);
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
             m_ButtonContinue.gameObject.SetActive(false);
@@ -240,7 +222,9 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
-            m_TextMoneyCount.text = reward.ToString();
+            string rewardWord = Managers.LocalizationManager.GetTranslation("reward").ToUpper();
+            m_MoneyCountText.text = rewardWord + ": " + reward;
+            m_MoneyIcon.sprite = m_MultipliedMoneySprite;
             Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
             {
                 Multiply();
@@ -255,15 +239,13 @@ namespace RMAZOR.UI.Panels
             m_WheelPanelView.StopWheel();
             m_MultiplyCoefficient = 1;
             Multiply();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-            dv.Back();
+            OnClose(null);
             CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
         }
 
         private void OnContinueButtonPressed()
         {
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-            dv.Back();
+            OnClose(null);
             CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
         }
 

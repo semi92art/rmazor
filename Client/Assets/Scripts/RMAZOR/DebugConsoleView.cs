@@ -200,7 +200,7 @@ namespace RMAZOR
 
         private void Update()
         {
-            if (!m_EnableDebug)
+            if (!m_EnableDebug && !Application.isEditor)
                 return;
             ProceedInputCommands();
             ProceedTouchScreenKeyboard();

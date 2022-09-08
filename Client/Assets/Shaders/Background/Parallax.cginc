@@ -1,9 +1,5 @@
 ﻿#include <HLSLSupport.cginc>
 
-void rotate(inout float2 p, float a) {
-    p = cos(a) * p + sin(a) * float2(p.y, -p.x);
-}
-
 float circle(float2 p, float r) {
     return (length(p / r) - 1.0) * r;
 }

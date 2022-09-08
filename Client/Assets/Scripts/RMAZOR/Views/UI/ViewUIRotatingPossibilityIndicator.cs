@@ -84,7 +84,7 @@ namespace RMAZOR.Views.UI
             const float scale = 3f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goIndicator = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "rotating_possibility_indicator");
+                cont, CommonPrefabSetNames.UiGame, "rotating_possibility_indicator");
             goIndicator.name = Name;
             Shape     = goIndicator.GetCompItem<Rectangle>("indicator");
             Animator  = goIndicator.GetCompItem<Animator>("animator");

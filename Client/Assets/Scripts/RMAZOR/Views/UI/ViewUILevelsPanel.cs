@@ -150,7 +150,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goLevelText = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "level_text");
+                cont, CommonPrefabSetNames.UiGame, "level_text");
             m_LevelText = goLevelText.GetCompItem<TextMeshPro>("text");
             m_Renderers.Add(m_LevelText);
             m_LevelText.rectTransform.SetSizeWithCurrentAnchors(
@@ -165,11 +165,11 @@ namespace RMAZOR.Views.UI
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var goLevelCheckMark = Managers.PrefabSetManager.GetPrefab(
-                "ui_game", "level_check_mark");
+                CommonPrefabSetNames.UiGame, "level_check_mark");
             float yPos = screenBounds.max.y - m_TopOffset - 3f;
             if (m_CheckMarks.Any()) 
                 return;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 10; i++)
             {
                 var go = Object.Instantiate(goLevelCheckMark, cont);
                 m_CheckMarks.Add(go.GetCompItem<Animator>("animator"));

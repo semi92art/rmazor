@@ -18,7 +18,6 @@ using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
@@ -66,7 +65,6 @@ namespace RMAZOR.UI.Panels
         protected CharacterDiedDialogPanel(
             GlobalGameSettings          _GlobalGameSettings,
             IModelGame                  _Model,
-            IDialogViewersController    _DialogViewersController,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
             ICameraProvider             _CameraProvider,
@@ -76,7 +74,6 @@ namespace RMAZOR.UI.Panels
             : base(
                 _Managers,
                 _UITicker, 
-                _DialogViewersController, 
                 _CameraProvider,
                 _ColorProvider)
         {
@@ -89,21 +86,21 @@ namespace RMAZOR.UI.Panels
         #endregion
         
         #region api
-        
-        public override EUiCategory Category      => EUiCategory.CharacterDied;
-        public override bool        AllowMultiple => false;
-        public override Animator    Animator      => m_PanelAnimator;
 
-        public override void LoadPanel()
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EUiCategory       Category         => EUiCategory.CharacterDied;
+        public override bool              AllowMultiple    => false;
+        public override Animator          Animator         => m_PanelAnimator;
+
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            base.LoadPanel(_Container, _OnClose);
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    dv.Container,
+                    _Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");
-            PanelObject = go.RTransform();
+            PanelRectTransform = go.RTransform();
             go.SetActive(false);
             m_PanelAnimator           = go.GetCompItem<Animator>("animator");
             m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
@@ -122,11 +119,14 @@ namespace RMAZOR.UI.Panels
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
             m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have"));
+                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have",
+                    _T => _T.ToUpper()));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue"));
+                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue",
+                    _T => _T.ToUpper()));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextNotEnoughMoney, ETextType.MenuUI, "not_enough_money"));
+                new LocalizableTextObjectInfo(m_TextNotEnoughMoney, ETextType.MenuUI, "not_enough_money",
+                    _T => _T.ToUpper()));
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
             m_MoneyIcon1.sprite = moneyIconSprite;
@@ -134,12 +134,6 @@ namespace RMAZOR.UI.Panels
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             m_RoundFilledBorder.color = ColorProvider.GetColor(ColorIds.UiBorder);
-            go.GetCompItem<SimpleUiButtonView>("watch_ads_button").Init(
-                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
-            go.GetCompItem<SimpleUiButtonView>("pay_money_button").Init(
-                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
-            go.GetCompItem<SimpleUiDialogPanelView>("dialog_panel_view").Init(
-                Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
             m_AdsWatched = false;
             m_MoneyPayed = false;
             m_PanelShowing = false;
@@ -283,8 +277,13 @@ namespace RMAZOR.UI.Panels
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
                             true);
                     }
-                    var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-                    dv.Back(_Broken ? (UnityAction)RaiseContinueCommand : RaiseLoadFirstLevelInGroupCommand);
+                    OnClose(() =>
+                    {
+                        if (_Broken)
+                            RaiseContinueCommand();
+                        else 
+                            RaiseLoadFirstLevelInGroupCommand();
+                    });
                 });
         }
         

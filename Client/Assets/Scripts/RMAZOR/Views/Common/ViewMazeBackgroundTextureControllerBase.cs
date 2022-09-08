@@ -129,7 +129,7 @@ namespace RMAZOR.Views.Common
                 ColorIds.PathBackground => props.GetColor(props.pathBackgroundFillType),
                 ColorIds.PathFill       => props.GetColor(props.pathFillFillType),
                 ColorIds.Character2     => props.GetColor(props.characterBorderFillType),
-                ColorIds.UiBackground   => props.GetColor(props.uiBackgroundFillType).SetA(0.7f),
+                ColorIds.UiBackground   => props.GetColor(props.uiBackgroundFillType),
                 _                       => Color.magenta
             };
         }

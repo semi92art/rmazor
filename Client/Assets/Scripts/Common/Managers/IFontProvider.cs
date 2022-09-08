@@ -1,6 +1,5 @@
-﻿using Common.Enums;
-using Common.Exceptions;
-using Common.Utils;
+﻿using System.Runtime.CompilerServices;
+using Common.Enums;
 using TMPro;
 
 namespace Common.Managers
@@ -34,55 +33,33 @@ namespace Common.Managers
 
         public TMP_FontAsset GetFont(ETextType _TextType, ELanguage _Language)
         {
-            string prefabName = string.Empty;
-            switch (_TextType)
+            string prefabName = _TextType switch
             {
-                case ETextType.GameUI:
-                    switch (_Language)
-                    {
-                        case ELanguage.Russian:
-                        case ELanguage.English:
-                        case ELanguage.German:
-                        case ELanguage.Spanish:
-                        case ELanguage.Portugal:
-                            prefabName = "montserrat-ace-regular";
-                            break;
-                        case ELanguage.Japaneese:
-                            prefabName = "japaneese";
-                            break;
-                        case ELanguage.Korean:
-                            prefabName = "korean";
-                            break;
-                        default:
-                            throw new SwitchCaseNotImplementedException(_Language);
-                    }
-                    break;
-                case ETextType.MenuUI:
-                    switch (_Language)
-                    {
-                        case ELanguage.Russian:
-                        case ELanguage.English:
-                        case ELanguage.German:
-                        case ELanguage.Spanish:
-                        case ELanguage.Portugal:
-                            prefabName = "fulbo-argenta-cirillic";
-                            break;
-                        case ELanguage.Japaneese:
-                            prefabName = "japaneese";
-                            break;
-                        case ELanguage.Korean:
-                            prefabName = "korean";
-                            break;
-                        default:
-                            throw new SwitchCaseNotImplementedException(_Language);
-                    }
-                    break;
-                case ETextType.Currency:
-                    prefabName = "segoe-ui";
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_TextType);
-            }
+                ETextType.GameUI => _Language switch
+                {
+                    ELanguage.English   => "montserrat-ace-regular",
+                    ELanguage.Russian   => "montserrat-ace-regular",
+                    ELanguage.German    => "montserrat-ace-regular",
+                    ELanguage.Spanish   => "montserrat-ace-regular",
+                    ELanguage.Portugal  => "montserrat-ace-regular",
+                    ELanguage.Japaneese => "japaneese",
+                    ELanguage.Korean    => "korean",
+                    _                   => throw new SwitchExpressionException(_Language)
+                },
+                ETextType.MenuUI => _Language switch
+                {
+                    ELanguage.English   => "lilita-one-outline-54",
+                    ELanguage.Russian   => "fulbo-argenta-cirillic",
+                    ELanguage.German    => "fulbo-argenta-cirillic",
+                    ELanguage.Spanish   => "fulbo-argenta-cirillic",
+                    ELanguage.Portugal  => "fulbo-argenta-cirillic",
+                    ELanguage.Japaneese => "japaneese",
+                    ELanguage.Korean    => "korean",
+                    _                   => throw new SwitchExpressionException(_Language)
+                },
+                ETextType.Currency => "segoe-ui",
+                _                  => throw new SwitchExpressionException(_TextType)
+            };
             return PrefabSetManager.GetObject<TMP_FontAsset>(PrefabSetName, prefabName);
         }
     }

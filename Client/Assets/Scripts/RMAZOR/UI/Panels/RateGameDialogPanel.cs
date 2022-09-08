@@ -1,5 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -19,105 +20,99 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface IRateGameDialogPanel : IDialogPanel
-    {
-        bool CanBeClosed { get; set; }
-        void SetDialogTitle(string _Text);
-    }
+    public interface IRateGameDialogPanel : IDialogPanel { }
     
-    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel
-    {
-        public bool CanBeClosed                 { get; set; }
-        public void SetDialogTitle(string _Text) { }
-    }
+    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel { }
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
     {
         #region nonpublic members
 
-        private Animator           m_Animator;
-        private Button             m_ButtonClose;
-        private Button             m_ButtonRateGame;
-        private TextMeshProUGUI    m_TextTitle;
-        private TextMeshProUGUI    m_TextRateGame;
+        private Button          m_ButtonRate;
+        private Button          m_ButtonLater;
+        private Button          m_ButtonNever;
+        private TextMeshProUGUI m_TextTitle;
+        private TextMeshProUGUI m_TextMessage;
+        private Animator        m_StarsAnimator;
 
         #endregion
 
         #region inject
         
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
 
         public RateGameDialogPanel(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
-            IDialogViewersController    _DialogViewersController,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _Managers, 
                 _Ticker, 
-                _DialogViewersController, 
                 _CameraProvider,
                 _ColorProvider)
         {
-            CommandsProceeder    = _CommandsProceeder;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         #endregion
 
         #region api
 
-        public override EUiCategory Category      => EUiCategory.RateGame;
-        public override bool        AllowMultiple => false;
-        public override Animator    Animator      => m_Animator;
-
-        public bool CanBeClosed
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Fullscreen;
+        public override EUiCategory       Category         => EUiCategory.RateGame;
+        public override bool              AllowMultiple    => false;
+        
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            get => m_ButtonClose.gameObject.activeSelf;
-            set => m_ButtonClose.SetGoActive(value);
-        }
-
-        public override void LoadPanel()
-        {
-            base.LoadPanel();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            base.LoadPanel(_Container, _OnClose);
             var go = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
-                    dv.Container,
+                    _Container,
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "rate_game_panel");
-            PanelObject = go.RTransform();
+            PanelRectTransform = go.RTransform();
             go.SetActive(false);
-            m_Animator        = go.GetCompItem<Animator>("animator");
-            m_ButtonClose     = go.GetCompItem<Button>("close_button");
-            m_ButtonRateGame  = go.GetCompItem<Button>("rate_game_button");
-            m_TextRateGame    = go.GetCompItem<TextMeshProUGUI>("rate_game_text");
-            m_TextTitle       = go.GetCompItem<TextMeshProUGUI>("title");
-            var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
-            panel.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
-            var button = go.GetCompItem<SimpleUiButtonView>("rate_game_button");
-            button.Init(Ticker, ColorProvider, Managers.AudioManager, Managers.LocalizationManager, Managers.PrefabSetManager);
-            button.Highlighted = true;
-            m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
-            m_ButtonRateGame.onClick.AddListener(OnRateGameButtonClick);
+            m_TextTitle   = go.GetCompItem<TextMeshProUGUI>("title");
+            m_TextMessage = go.GetCompItem<TextMeshProUGUI>("message");
+            m_ButtonRate  = go.GetCompItem<Button>("rate_button");
+            m_ButtonLater = go.GetCompItem<Button>("later_button");
+            m_ButtonNever = go.GetCompItem<Button>("never_button");
+            m_StarsAnimator = go.GetCompItem<Animator>("stars_animator");
+
+            var rateButtonText = go.GetCompItem<TextMeshProUGUI>("rate_button_text");
+            var laterButtonText = go.GetCompItem<TextMeshProUGUI>("later_button_text");
+            var neverButtonText = go.GetCompItem<TextMeshProUGUI>("never_button_text");
+            
+            m_ButtonRate.onClick.AddListener(OnRateButtonClick);
+            m_ButtonLater.onClick.AddListener(OnLaterButtonClick);
+            m_ButtonNever.onClick.AddListener(OnNeverButtonClick);
+            
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextRateGame, ETextType.MenuUI, "rate_game"));
-            m_TextRateGame.text = Managers.LocalizationManager.GetTranslation("rate_game");
-            m_TextTitle.text = Managers.LocalizationManager.GetTranslation("we_need_comment");
-            var closeButtonAnimator = m_ButtonClose.GetComponent<Animator>();
-            if (closeButtonAnimator.IsNotNull())
-                closeButtonAnimator.enabled = false;
+                new LocalizableTextObjectInfo(m_TextTitle, ETextType.MenuUI, "rate_game_panel_title",
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextMessage, ETextType.MenuUI, "rate_game_panel_text",
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(rateButtonText, ETextType.MenuUI, "rate_game",
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(laterButtonText, ETextType.MenuUI, "later",
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(neverButtonText, ETextType.MenuUI, "never",
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
         }
 
         public override void OnDialogStartAppearing()
         {
+            m_StarsAnimator.SetTrigger(AnimKeys.Anim);
             Cor.Run(Cor.WaitNextFrame(() =>
             {
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             }));
-            m_ButtonClose.SetGoActive(false);
-            Cor.Run(OnPanelStartAnimationFinished());
             base.OnDialogStartAppearing();
         }
 
@@ -127,43 +122,35 @@ namespace RMAZOR.UI.Panels
             base.OnDialogDisappeared();
         }
 
-        public void SetDialogTitle(string _Text)
-        {
-            m_TextTitle.text = _Text;
-        }
-        
         #endregion
 
         #region nonpublic methods
 
-        private IEnumerator OnPanelStartAnimationFinished()
-        {
-            const float closeButtonEnableDelay = 3f;
-            float time = Ticker.Time;
-            yield return Cor.WaitWhile(
-                () => time + closeButtonEnableDelay > Ticker.Time,
-                () => m_ButtonClose.SetGoActive(true));
-        }
-        
-        private void OnRateGameButtonClick()
+        private void OnRateButtonClick()
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton2Pressed);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-            dv.Back();
-            
+            OnClose(null);
         }
 
-        private void OnCloseButtonClick()
+        private void OnLaterButtonClick()
         {
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-            dv.Back();
+            OnClose(null);
+        }
+
+        private void OnNeverButtonClick()
+        {
+            SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
+            OnClose(null);
         }
 
         private static IEnumerable<EInputCommand> GetCommandsToLock()
         {
-            return RmazorUtils.MoveAndRotateCommands;
+            return RmazorUtils.MoveAndRotateCommands.Concat(new []
+            {
+                EInputCommand.ShopMenu, EInputCommand.SettingsMenu
+            });
         }
 
         #endregion

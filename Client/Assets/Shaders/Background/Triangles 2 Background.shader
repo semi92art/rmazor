@@ -101,7 +101,7 @@ Shader "RMAZOR/Background/Triangles 2" {
             	}
             	else
 					frag_col = lerp_coeff < _E ? _Color1 : _Color2;
-            	return frag_col + parallax_color(i, _ParallaxSize, _Color1, _Color2);
+            	return frag_col;
             }
             
             ENDCG

@@ -17,9 +17,8 @@ namespace RMAZOR
     {
         #region api
 
-        public static float MaxMazeWidth  = 20;
-        public static float MaxMazeHeight = 20;
-
+        public static int[] LevelsInGroupArray = {5, 5, 5};
+        
         public static Tuple<float, float> GetRightAndLeftScreenOffsets()
         {
             float ratio = GraphicUtils.AspectRatio;
@@ -29,9 +28,6 @@ namespace RMAZOR
             else                    (leftScreenOffset, rightScreenOffset) = (1f, 1f);
             return new Tuple<float, float>(leftScreenOffset, rightScreenOffset);
         }
-
-        public static readonly int[] LevelsInGroupList = {3, 4, 5};
-        
         
         public static readonly EInputCommand[] MoveCommands =
         {
@@ -244,10 +240,10 @@ namespace RMAZOR
             int groupIndex = 0;
             while (levelIndexTemp <= _LevelIndex)
             {
-                levelIndexTemp += LevelsInGroupList[groupIndexInList];
+                levelIndexTemp += LevelsInGroupArray[groupIndexInList];
                 groupIndex++;
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupList.Length)
+                if (groupIndexInList >= LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return groupIndex;
@@ -255,8 +251,8 @@ namespace RMAZOR
 
         public static int GetLevelsInGroup(int _GroupIndex)
         {
-            int groupIndexInList = (_GroupIndex - 1) % LevelsInGroupList.Length;
-            return LevelsInGroupList[groupIndexInList];
+            int groupIndexInList = (_GroupIndex - 1) % LevelsInGroupArray.Length;
+            return LevelsInGroupArray[groupIndexInList];
         }
 
         public static int GetIndexInGroup(long _LevelIndex)
@@ -266,9 +262,9 @@ namespace RMAZOR
             long levelsCount = 0;
             for (int i = 0; i < groupIndex - 1; i++)
             {
-                levelsCount += LevelsInGroupList[groupIndexInList];
+                levelsCount += LevelsInGroupArray[groupIndexInList];
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupList.Length)
+                if (groupIndexInList >= LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return (int)(_LevelIndex - levelsCount);
@@ -280,9 +276,9 @@ namespace RMAZOR
             int index = 0;
             for (int i = 0; i < _GroupIndex - 1; i++)
             {
-                index += LevelsInGroupList[groupIndexInList];
+                index += LevelsInGroupArray[groupIndexInList];
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupList.Length)
+                if (groupIndexInList >= LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return index;

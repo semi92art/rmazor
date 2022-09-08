@@ -131,32 +131,19 @@ namespace RMAZOR.Views.Coordinate_Converters
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.Y == k);
             }
             m_CutTop = Predicate2() && !hasOtherBlocks && k >= 0;
-            Dbg.Log(m_CutLeft + " " + m_CutRight + " " + m_CutBottom + " " + m_CutTop);
         }
 
         protected virtual void SetCorrectMazeSize(MazeInfo _Info)
         {
             MazeSizeForPositioning = MazeSizeForScale = _Info.Size;
             if (m_CutLeft && MazeSizeForScale.x > MinWidth)
-            {
-                // MazeSizeForPositioning.x -= 1f;
                 MazeSizeForScale.x -= 1f;
-            }
             if (m_CutRight && MazeSizeForScale.x > MinWidth)
-            {
-                // MazeSizeForPositioning.x -= 1f;
                 MazeSizeForScale.x -= 1f;
-            }
             if (m_CutBottom && MazeSizeForScale.y > MinHeight)
-            {
-                // MazeSizeForPositioning.y -= 1f;
                 MazeSizeForScale.y -= 1f;
-            }
             if (m_CutTop && MazeSizeForScale.y > MinHeight)
-            {
-                // MazeSizeForPositioning.y -= 1f;
                 MazeSizeForScale.y -= 1f;
-            }
         }
 
         private static void IsTrapReactOrOtherBlock(

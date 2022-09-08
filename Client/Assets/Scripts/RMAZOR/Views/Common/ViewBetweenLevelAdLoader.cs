@@ -17,12 +17,6 @@ namespace RMAZOR.Views.Common
     
     public class ViewBetweenLevelAdLoader : IViewBetweenLevelAdLoader
     {
-        #region nonpublic members
-
-        private bool m_ShowRewardedOnUnload;
-
-        #endregion
-
         #region inject
 
         private IAdsManager         AdsManager   { get; }
@@ -48,30 +42,29 @@ namespace RMAZOR.Views.Common
             UnityAction _OnAfterAdShown,
             UnityAction _OnAdWasNotShown)
         {
-            bool doTryToShowAd = _LevelIndex >= GameSettings.firstLevelToShowAds
-                                 && _LevelIndex % GameSettings.showAdsEveryLevel == 0
-                                 && ShowAd;
+            bool doTryToShowAd = 
+                _LevelIndex >= GameSettings.firstLevelToShowAds
+                && (_LevelIndex + GameSettings.firstLevelToShowAds) % GameSettings.showAdsEveryLevel == 0
+                && ShowAd;
             ShowAd = true;
             if (doTryToShowAd)
             {
-                if (m_ShowRewardedOnUnload)
+                bool showRewardedOnUnload = UnityEngine.Random.value > GameSettings.interstitialAdsRatio;
+                if (showRewardedOnUnload)
                 {
                     AdsManager.ShowRewardedAd(
                         AdsManager.RewardedAdReady ?_OnBeforeAdShown : null, 
                         _OnAfterAdShown);
-                    if (AdsManager.RewardedAdReady)
-                        m_ShowRewardedOnUnload = !m_ShowRewardedOnUnload;
                 }
-                else if (!m_ShowRewardedOnUnload)
+                else
                 {
                     AdsManager.ShowInterstitialAd(
                         AdsManager.InterstitialAdReady ? _OnBeforeAdShown : null,
                         _OnAfterAdShown);
-                    if (AdsManager.InterstitialAdReady)
-                        m_ShowRewardedOnUnload = !m_ShowRewardedOnUnload;
+
                 }
-                if (m_ShowRewardedOnUnload && !AdsManager.RewardedAdReady
-                    || !m_ShowRewardedOnUnload && !AdsManager.InterstitialAdReady)
+                if (showRewardedOnUnload && !AdsManager.RewardedAdReady
+                    || !showRewardedOnUnload && !AdsManager.InterstitialAdReady)
                 {
                     _OnAdWasNotShown?.Invoke();
                 }

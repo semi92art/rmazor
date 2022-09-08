@@ -39,6 +39,9 @@ namespace RMAZOR.Views.Common
         private const float BorderScaleCoefficient = 2f;
         private const float CornerScaleCoefficient = 4f;
 
+        private const int   CornersDashSize = 4;
+        private const float Corners2Alpha    = 0.5f;
+
         #endregion
         
         #region nonpublic members
@@ -51,7 +54,9 @@ namespace RMAZOR.Views.Common
             new RendererSpawnPool<SpriteRenderer>();
         
         private readonly BehavioursSpawnPool<Line>      m_Borders              = new BehavioursSpawnPool<Line>();
+        private readonly BehavioursSpawnPool<Line>      m_Borders2             = new BehavioursSpawnPool<Line>();
         private readonly BehavioursSpawnPool<Disc>      m_Corners              = new BehavioursSpawnPool<Disc>();
+        private readonly BehavioursSpawnPool<Disc>      m_Corners2             = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
 
         private readonly List<Sprite>   m_TextureSprites = new List<Sprite>();
@@ -68,7 +73,6 @@ namespace RMAZOR.Views.Common
         private ICoordinateConverter        CoordinateConverter { get; }
         private IPrefabSetManager           PrefabSetManager    { get; }
         private IRendererAppearTransitioner Transitioner        { get; }
-        private IModelGame                  Model               { get; }
 
         private ViewMazeAdditionalBackgroundDrawerRmazor(
             ViewSettings                _ViewSettings,
@@ -76,8 +80,7 @@ namespace RMAZOR.Views.Common
             IContainersGetter           _ContainersGetter,
             ICoordinateConverter        _CoordinateConverter,
             IPrefabSetManager           _PrefabSetManager,
-            IRendererAppearTransitioner _Transitioner,
-            IModelGame                  _Model)
+            IRendererAppearTransitioner _Transitioner)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -85,7 +88,6 @@ namespace RMAZOR.Views.Common
             CoordinateConverter = _CoordinateConverter;
             PrefabSetManager    = _PrefabSetManager;
             Transitioner        = _Transitioner;
-            Model               = _Model;
         }
 
         #endregion
@@ -123,7 +125,9 @@ namespace RMAZOR.Views.Common
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {m_Borders.GetAllActiveItems(), () => mainCol},
+                {m_Borders2.GetAllActiveItems(), () => mainCol},
                 {m_Corners.GetAllActiveItems(), () => mainCol},
+                {m_Corners2.GetAllActiveItems(), () => mainCol.SetA(Corners2Alpha)},
                 {new[] {m_TextureRendererBack}, () => back1Col},
                 {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
@@ -146,8 +150,14 @@ namespace RMAZOR.Views.Common
             var activeBorders = m_Borders.GetAllActiveItems();
             foreach (var border in activeBorders)
                 border.Color = _Color.SetA(border.Color.a);
+            var activeBorders2 = m_Borders2.GetAllActiveItems();
+            foreach (var border in activeBorders2)
+                border.Color = _Color.SetA(border.Color.a);
             var activeCorners = m_Corners.GetAllActiveItems();
             foreach (var corner in activeCorners)
+                corner.Color = _Color.SetA(corner.Color.a);
+            var activeCorners2 = m_Corners2.GetAllActiveItems();
+            foreach (var corner in activeCorners2)
                 corner.Color = _Color.SetA(corner.Color.a);
         }
         
@@ -202,25 +212,52 @@ namespace RMAZOR.Views.Common
                 go.SetParent(Container);
                 var border = go.AddComponent<Line>()
                     .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
-                    .SetEndCaps(LineEndCap.None);
+                    .SetEndCaps(LineEndCap.Round);
                 m_Borders.Add(border);
+                var go2 = new GameObject("Additional Background Border Dashed");
+                go2.SetParent(Container);
+                var border2 = go2.AddComponent<Line>()
+                    .SetEndCaps(LineEndCap.Round)
+                    .SetDashed(true)
+                    .SetDashSnap(DashSnapping.Off)
+                    .SetDashType(DashType.Angled)
+                    .SetDashSpace(DashSpace.FixedCount)
+                    .SetDashSize(8f)
+                    .SetDashShapeModifier(1f)
+                    .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder);
+                m_Borders2.Add(border2);
             }
             m_Borders.DeactivateAll(true);
+            m_Borders2.DeactivateAll(true);
         }
 
         private void InitCornersPool()
         {
             for (int i = 0; i < CornersPoolCount; i++)
             {
-                var go = new GameObject("Additional Background Corner");
+                var go = new GameObject("Additional Background Corner Dashed");
                 go.SetParent(Container);
                 var corner = go.AddComponent<Disc>();
                 corner.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
                     .SetType(DiscType.Arc)
-                    .SetArcEndCaps(ArcEndCap.Round);
+                    .SetArcEndCaps(ArcEndCap.Round)
+                    .SetDashed(true)
+                    .SetDashType(DashType.Angled)
+                    .SetDashSpace(DashSpace.FixedCount)
+                    .SetDashSize(CornersDashSize)
+                    .SetDashSnap(DashSnapping.Tiling)
+                    .SetDashShapeModifier(1f);
                 m_Corners.Add(corner);
+                var go2 = new GameObject("Additional Background Corner Background");
+                go2.SetParent(Container);
+                var corner2 = go2.AddComponent<Disc>();
+                corner2.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
+                    .SetType(DiscType.Arc)
+                    .SetArcEndCaps(ArcEndCap.Round);
+                m_Corners2.Add(corner2);
             }
             m_Corners.DeactivateAll(true);
+            m_Corners2.DeactivateAll(true);
         }
 
         private void InitTextures()
@@ -286,7 +323,9 @@ namespace RMAZOR.Views.Common
             m_TextureRenderers    .DeactivateAll();
             m_TextureRendererMasks.DeactivateAll();
             m_Borders             .DeactivateAll();
+            m_Borders2            .DeactivateAll();
             m_Corners             .DeactivateAll();
+            m_Corners2            .DeactivateAll();
         }
 
         private void DrawBordersForGroup(PointsGroupArgs _Group)
@@ -369,13 +408,19 @@ namespace RMAZOR.Views.Common
 
         private void DrawBorder(V2Int _Position, EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
         {
-            var border = m_Borders.FirstInactive;
             var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            var border = m_Borders.FirstInactive;
             border.SetThickness(ViewSettings.LineThickness * BorderScaleCoefficient * CoordinateConverter.Scale)
                 .transform.SetPosXY(borderPos)
                 .gameObject.name = _Side + " " + "border";
-            (border.Start, border.End) = GetBorderPointsAndDashed(_Position, _Side, _StartLimit, _EndLimit);
+            (border.Start, border.End) = GetBorderPoints(border, _Position, _Side, _StartLimit, _EndLimit, false);
             m_Borders.Activate(border);
+            var border2 = m_Borders2.FirstInactive;
+            border2.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
+                .transform.SetPosXY(borderPos)
+                .gameObject.name = _Side + " " + "border" + " " + "dashed";
+            (border2.Start, border2.End) = GetBorderPoints(border2, _Position, _Side, _StartLimit, _EndLimit, true);
+            m_Borders2.Activate(border2);
         }
         
         private void DrawCorner(
@@ -385,10 +430,10 @@ namespace RMAZOR.Views.Common
             bool _Inner)
         {
             var angles = Mathf.Deg2Rad * GetCornerAngles(_Right, _Up, _Inner);
-            var corner = m_Corners.FirstInactive;
             var position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             float radius = ViewSettings.CornerRadius * BorderScaleCoefficient
                                                      * CoordinateConverter.Scale;
+            var corner = m_Corners.FirstInactive;
             corner.SetRadius(radius)
                 .SetThickness(ViewSettings.LineThickness * CornerScaleCoefficient * CoordinateConverter.Scale)
                 .SetAngRadiansStart(angles.x)
@@ -396,13 +441,24 @@ namespace RMAZOR.Views.Common
                 .transform.SetPosXY(position)
                 .PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
             m_Corners.Activate(corner);
+            
+            var corner2 = m_Corners2.FirstInactive;
+            corner2.SetRadius(radius)
+                .SetThickness(ViewSettings.LineThickness * CornerScaleCoefficient * CoordinateConverter.Scale)
+                .SetAngRadiansStart(angles.x)
+                .SetAngRadiansEnd(angles.y)
+                .transform.SetPosXY(position)
+                .PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
+            m_Corners2.Activate(corner2);
         }
         
-        private Tuple<Vector2, Vector2> GetBorderPointsAndDashed(
+        private Tuple<Vector2, Vector2> GetBorderPoints(
+            Line _Border,
             V2Int _Point,
             EMazeMoveDirection _Side, 
             bool _StartLimit, 
-            bool _EndLimit)
+            bool _EndLimit,
+            bool _Second)
         {
             Vector2 start, end;
             Vector2 pos = _Point;
@@ -433,9 +489,38 @@ namespace RMAZOR.Views.Common
             }
             start = CoordinateConverter.ToLocalMazeItemPosition(start);
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
+            if (!_Second) 
+                return new Tuple<Vector2, Vector2>(start, end);
+            float thickness = CoordinateConverter.Scale * ViewSettings.LineThickness * BorderScaleCoefficient * 0.5f;
+            var tr = _Border.transform;
+            Vector3 startGlobal = tr.TransformPoint(new Vector3(start.x, start.y, 0f));
+            Vector3 endGlobal = tr.TransformPoint(new Vector3(end.x, end.y, 0f));
+            switch (_Side)
+            {
+                case EMazeMoveDirection.Left:
+                    startGlobal += Vector3.right * thickness;
+                    endGlobal += Vector3.right * thickness;
+                    break;
+                case EMazeMoveDirection.Up:
+                    startGlobal += Vector3.down * thickness;
+                    endGlobal += Vector3.down * thickness;
+                    break;
+                case EMazeMoveDirection.Right:
+                    startGlobal += Vector3.left * thickness;
+                    endGlobal += Vector3.left * thickness;
+                    break;
+                case EMazeMoveDirection.Down:
+                    startGlobal += Vector3.up * thickness;
+                    endGlobal += Vector3.up * thickness;
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Side);
+            }
+            start = tr.InverseTransformPoint(startGlobal);
+            end = tr.InverseTransformPoint(endGlobal);
             return new Tuple<Vector2, Vector2>(start, end);
         }
-        
+
         private Vector2 GetCornerCenter(
             V2Int _Point,
             bool _Right,

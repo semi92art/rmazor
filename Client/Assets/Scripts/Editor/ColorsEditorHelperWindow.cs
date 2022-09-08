@@ -120,7 +120,6 @@ namespace Editor
                 ColorIds.UiBorder,
                 ColorIds.UiText,
                 ColorIds.UiDialogItemNormal,
-                ColorIds.UiDialogBackground
             };
             foreach (int id in coloIds)
             {
@@ -177,7 +176,7 @@ namespace Editor
             m_ColorProvider.SetColor(ColorIds.PathBackground, props.GetColor(props.pathBackgroundFillType));
             m_ColorProvider.SetColor(ColorIds.PathFill, props.GetColor(props.pathFillFillType));
             m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
-            m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType).SetA(0.7f));
+            m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType));
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
             CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
         }

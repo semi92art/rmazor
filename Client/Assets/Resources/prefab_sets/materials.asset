@@ -35,11 +35,29 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: 8968253daec9cb54c9e94ea8d3764376, type: 2}
       name: background_connected_dots
       bundle: 0
+    - item: {fileID: 2100000, guid: 53a46579227e15a4f8209c0e7ce3354a, type: 2}
+      name: background_dancing_dots
+      bundle: 0
+    - item: {fileID: 2100000, guid: 7179c589a4c5d7146a8b8ca34b83b21c, type: 2}
+      name: background_funny_rain
+      bundle: 0
     - item: {fileID: 2100000, guid: bc5e567cb9679624a82a092a02096251, type: 2}
       name: background_swirl_for_planet
       bundle: 0
     - item: {fileID: 2100000, guid: 8d0980d360fe6954c8fa93cfa36dff1d, type: 2}
       name: background_worm_hole
+      bundle: 0
+    - item: {fileID: 2100000, guid: 4e426c282e06d904490e3e0e9741db2d, type: 2}
+      name: background_fibrous_ring
+      bundle: 0
+    - item: {fileID: 2100000, guid: 05cf4a6d83b9bc44fa3160d2ef95d65f, type: 2}
+      name: background_rave_squares
+      bundle: 0
+    - item: {fileID: 2100000, guid: f02eab6aa654e774cbd4447e6d13042d, type: 2}
+      name: background_fall_in_deep
+      bundle: 0
+    - item: {fileID: 2100000, guid: c2eb13fb1918114488d645ef24c3a4f6, type: 2}
+      name: background_blue_purple_plaid
       bundle: 0
     - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
       name: background_triangles_2

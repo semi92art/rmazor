@@ -104,7 +104,7 @@ namespace RMAZOR.Views.UI
             GameTicker.Register(this);
             m_BottomOffset = _Offsets.z;
             m_PromptObject = PrefabSetManager.InitPrefab(
-                null, "ui_game", "prompt");
+                null, CommonPrefabSetNames.UiGame, "prompt");
             m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
             m_PromptText.fontSize = 18f;

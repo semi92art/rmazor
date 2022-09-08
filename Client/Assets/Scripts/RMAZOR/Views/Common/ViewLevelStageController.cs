@@ -72,14 +72,13 @@ namespace RMAZOR.Views.Common
         private IViewMazePathItemsGroup             PathItemsGroup              { get; }
         private CompanyLogo                         CompanyLogo                 { get; }
         private IViewUIGameLogo                     GameLogo                    { get; }
-        private IRateGameDialogPanel                RateGameDialogPanel         { get; }
         private IViewFullscreenTransitioner         FullscreenTransitioner      { get; }
         private IViewBetweenLevelAdLoader           BetweenLevelAdLoader        { get; }
         private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator { get; }
         private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer  { get; }
-        private IFinishLevelGroupDialogPanel        FinishLevelGroupDialogPanel { get; }
         private IViewInputTouchProceeder            TouchProceeder              { get; }
         private IMoneyCounter                       MoneyCounter                { get; }
+        private IFinishLevelGroupDialogPanel        FinishLevelGroupDialogPanel { get; }
 
         private ViewLevelStageController(
             ViewSettings                        _ViewSettings,
@@ -97,14 +96,13 @@ namespace RMAZOR.Views.Common
             IViewMazePathItemsGroup             _PathItemsGroup,
             CompanyLogo                         _CompanyLogo,
             IViewUIGameLogo                     _GameLogo,
-            IRateGameDialogPanel                _RateGameDialogPanel,
             IViewFullscreenTransitioner         _FullscreenTransitioner,
             IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
             IViewCameraEffectsCustomAnimator    _CameraEffectsCustomAnimator,
             IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer, 
-            IFinishLevelGroupDialogPanel        _FinishLevelGroupDialogPanel,
             IViewInputTouchProceeder            _TouchProceeder,
-            IMoneyCounter                       _MoneyCounter)
+            IMoneyCounter                       _MoneyCounter,
+            IFinishLevelGroupDialogPanel        _FinishLevelGroupDialogPanel)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
@@ -121,7 +119,6 @@ namespace RMAZOR.Views.Common
             PathItemsGroup              = _PathItemsGroup;
             CompanyLogo                 = _CompanyLogo;
             GameLogo                    = _GameLogo;
-            RateGameDialogPanel         = _RateGameDialogPanel;
             FullscreenTransitioner      = _FullscreenTransitioner;
             BetweenLevelAdLoader        = _BetweenLevelAdLoader;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
@@ -186,7 +183,7 @@ namespace RMAZOR.Views.Common
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
                 return;
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium);
             var cp = dv.CurrentPanel;
             if (cp == null || cp.Category != EUiCategory.FinishGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
@@ -385,10 +382,11 @@ namespace RMAZOR.Views.Common
                 _Ticker: ViewGameTicker));
             if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
-                string panelText = Managers.LocalizationManager.GetTranslation("rate_game_text_all_levels_passed");
-                RateGameDialogPanel.SetDialogTitle(panelText);
-                RateGameDialogPanel.CanBeClosed = false;
+                // TODO сделать отдельное сообщение на окончание всех уровней
+                // CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
+                // string panelText = Managers.LocalizationManager.GetTranslation("rate_game_text_all_levels_passed");
+                // RateGameDialogPanel.SetDialogTitle(panelText);
+                // RateGameDialogPanel.CanBeClosed = false;
             }
             else if (m_NextLevelMustBeFirstInGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
@@ -421,8 +419,8 @@ namespace RMAZOR.Views.Common
                     else
                     {
                         var panel = DialogPanelsSet.CharacterDiedDialogPanel;
-                        panel.LoadPanel();
-                        var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+                        var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                        panel.LoadPanel(dv.Container, dv.Back);
                         dv.Show(panel, 3f);
                     }
                 });
@@ -473,8 +471,8 @@ namespace RMAZOR.Views.Common
             BetweenLevelAdLoader.ShowAd = false;
             if (MoneyCounter.CurrentLevelGroupMoney == 0)
                 return;
-            FinishLevelGroupDialogPanel.LoadPanel();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium);
+            FinishLevelGroupDialogPanel.LoadPanel(dv.Container, dv.Back);
             dv.Show(FinishLevelGroupDialogPanel);
         }
         

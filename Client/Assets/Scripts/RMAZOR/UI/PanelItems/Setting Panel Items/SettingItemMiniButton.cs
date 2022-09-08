@@ -1,8 +1,6 @@
 ﻿using System;
-using Common;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
 using Common.Ticker;
 using Common.UI;
 using UnityEngine;
@@ -11,63 +9,71 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemMiniButton : SimpleUiDialogItemView
+    public class SettingItemMiniButton : SimpleUiItemBase
     {
-        [SerializeField] private Image              icon;
-        [SerializeField] private Toggle             toggle;
+        #region serialized fields
+        
+        [SerializeField] private Image  icon;
+        [SerializeField] private Toggle toggle;
+        [SerializeField] private Sprite backSpriteOn, backSpriteOff;
 
-        private bool m_IsIconNotNull;
+        #endregion
 
+        #region nonpublic members
+        
+        private Sprite m_IconOn, m_IconOff;
+        private bool   m_IsIconNotNull;
+
+        #endregion
+
+        #region constructor
+        
         public void Init(
             IUITicker            _UITicker,
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
             bool                 _IsOn,
             UnityAction<bool>    _Action,
-            Sprite               _SpriteOn,
-            Sprite               _SpriteOff)
+            Sprite               _IconOn,
+            Sprite               _IconOff)
         {
-            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
-            icon.sprite = _IsOn ? _SpriteOn : _SpriteOff;
-            icon.color = _ColorProvider.GetColor(ColorIds.UI);
+            base.Init(_UITicker, _AudioManager, _LocalizationManager);
+            m_IconOn = _IconOn;
+            m_IconOff = _IconOff;
+            SetBackgroundAndIcon(_IsOn);
             toggle.isOn = _IsOn;
-            toggle.onValueChanged.AddListener(_Action);
-            toggle.onValueChanged.AddListener(_On => SoundOnClick());
-            toggle.onValueChanged.AddListener(_On => icon.sprite = _On ? _SpriteOn : _SpriteOff);
+            toggle.onValueChanged.AddListener(_On =>
+            {
+                _Action?.Invoke(_On);
+                SoundOnClick();
+                SetBackgroundAndIcon(_On);
+            });
         }
 
         public override void Init(
             IUITicker            _UITicker, 
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
-            ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
-            bool                 _AutoFont = true)
+            ILocalizationManager _LocalizationManager)
         {
             throw new NotSupportedException();
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         protected override void CheckIfSerializedItemsNotNull()
         {
             base.CheckIfSerializedItemsNotNull();
             m_IsIconNotNull = icon.IsNotNull();
         }
-
-        protected override void SetColorsOnInit()
+        
+        private void SetBackgroundAndIcon(bool _On)
         {
-            base.SetColorsOnInit();
-            icon.color = ColorProvider.GetColor(ColorIds.UI);
+            icon.sprite = _On ? m_IconOn : m_IconOff;
+            background.sprite = _On ? backSpriteOn : backSpriteOff;
         }
 
-        protected override void OnColorChanged(int _ColorId, Color _Color)
-        {
-            base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIds.UI) 
-                return;
-            if (m_IsIconNotNull)
-                icon.color = _Color;
-        }
+        #endregion
     }
 }

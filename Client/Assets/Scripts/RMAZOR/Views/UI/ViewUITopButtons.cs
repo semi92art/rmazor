@@ -40,7 +40,7 @@ namespace RMAZOR.Views.UI
         private IContainersGetter           ContainersGetter        { get; }
         private ICameraProvider             CameraProvider          { get; }
         private IManagersGetter             Managers                { get; }
-        private IFullscreenDialogViewer            FullscreenDialogViewer         { get; }
+        private IFullscreenDialogViewer     FullscreenDialogViewer  { get; }
         private IViewInputCommandsProceeder CommandsProceeder       { get; }
         private IViewInputTouchProceeder    ViewInputTouchProceeder { get; }
 
@@ -49,7 +49,7 @@ namespace RMAZOR.Views.UI
             IContainersGetter           _ContainersGetter,
             ICameraProvider             _CameraProvider,
             IManagersGetter             _Managers,
-            IFullscreenDialogViewer            _FullscreenDialogViewer,
+            IFullscreenDialogViewer     _FullscreenDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewInputTouchProceeder    _ViewInputTouchProceeder)
         {
@@ -57,7 +57,7 @@ namespace RMAZOR.Views.UI
             ContainersGetter        = _ContainersGetter;
             CameraProvider          = _CameraProvider;
             Managers                = _Managers;
-            FullscreenDialogViewer         = _FullscreenDialogViewer;
+            FullscreenDialogViewer  = _FullscreenDialogViewer;
             CommandsProceeder       = _CommandsProceeder;
             ViewInputTouchProceeder = _ViewInputTouchProceeder;
         }
@@ -101,9 +101,9 @@ namespace RMAZOR.Views.UI
             float yPos = screenBounds.max.y - m_TopOffset;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goShopButton = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "shop_button");
+                cont, CommonPrefabSetNames.UiGame, "shop_button");
             var goSettingsButton = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "settings_button");
+                cont, CommonPrefabSetNames.UiGame, "settings_button");
             m_Renderers.AddRange( new Component[]
             {
                 goShopButton.GetCompItem<SpriteRenderer>("button"),

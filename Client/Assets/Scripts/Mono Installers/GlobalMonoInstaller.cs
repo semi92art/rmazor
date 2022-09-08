@@ -167,8 +167,8 @@ namespace Mono_Installers
             Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
-            // Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
-            Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
+            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
+            // Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
         }
     }
 }

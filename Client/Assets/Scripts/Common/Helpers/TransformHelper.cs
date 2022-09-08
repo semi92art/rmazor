@@ -33,6 +33,8 @@ namespace Common.Helpers
 
         public override void OnInspectorGUI()
         {
+            if (m_TransformHelper.IsNull())
+                return;
             if (GUILayout.Button("Clone"))
                 m_TransformHelper.gameObject.Clone();
             GUILayout.BeginHorizontal();

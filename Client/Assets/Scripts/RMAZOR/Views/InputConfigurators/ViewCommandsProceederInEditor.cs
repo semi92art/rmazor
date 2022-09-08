@@ -36,8 +36,9 @@ namespace RMAZOR.Views.InputConfigurators
             base.Init();
         }
 
-        public void UpdateTick()
+        public override void UpdateTick()
         {
+            base.UpdateTick();
             if (!m_DoProceed)
                 return;
             bool forced = false;

@@ -186,7 +186,7 @@ namespace RMAZOR.Views.Common
         {
             var parent = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var go = PrefabSetManager.InitPrefab(
-                parent, "ui_game", "skip_level_button");
+                parent, CommonPrefabSetNames.UiGame, "skip_level_button");
             var tr = go.transform;
             tr.SetLocalScaleXY(Vector2.one * 0.3f); 
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
@@ -205,7 +205,7 @@ namespace RMAZOR.Views.Common
             m_Background = go.GetCompItem<SpriteRenderer>("background");
             m_ButtonObj = go;
             m_Border.color = ColorProvider.GetColor(ColorIds.UiBorder);
-            m_Background.color = ColorProvider.GetColor(ColorIds.UiDialogBackground);
+            m_Background.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
             ActivateButton(false);
         }
         

@@ -4,7 +4,6 @@ using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
@@ -111,11 +110,9 @@ namespace RMAZOR.Views.UI
         {
             switch (_ColorId)
             {
-                case ColorIds.UI:
+                case ColorIds.Main:
                     foreach (var shapeComp in m_RotatingButtonShapes)
                         shapeComp.Color = _Color;
-                    break;
-                case ColorIds.Main:
                     foreach (var shapeComp in m_RotatingButtonShapes2)
                         shapeComp.Color = _Color.SetA(0.3f);
                     break;
@@ -129,9 +126,9 @@ namespace RMAZOR.Views.UI
             const float localScale = 1.5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goRcB = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "rotate_clockwise_button");
+                cont, CommonPrefabSetNames.UiGame, "rotate_clockwise_button");
             var goRccB = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "rotate_counter_clockwise_button");
+                cont, CommonPrefabSetNames.UiGame, "rotate_counter_clockwise_button");
             float scale = 0.5f;
             float yPos = screenBounds.min.y + m_BottomOffset;
             var rcbDisc = goRcB.GetCompItem<Disc>("button");
@@ -240,11 +237,12 @@ namespace RMAZOR.Views.UI
             }
             if (_Instantly)
                 return;
+            var mainCol = ColorProvider.GetColor(ColorIds.Main);
             Transitioner.DoAppearTransition(_Show, 
                 new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {
-                    {m_RotatingButtonShapes, () => ColorProvider.GetColor(ColorIds.UI)},
-                    {m_RotatingButtonShapes2, () => ColorProvider.GetColor(ColorIds.UI).SetA(0.2f)}
+                    {m_RotatingButtonShapes, () => mainCol},
+                    {m_RotatingButtonShapes2, () => mainCol.SetA(0.2f)}
                 }, 0f);
         }
         

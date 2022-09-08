@@ -1,12 +1,8 @@
 ﻿using System;
-using Common;
-using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -14,34 +10,48 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemAction : SimpleUiDialogItemView
+    public class SettingItemAction : SimpleUiItemBase
     {
-        [SerializeField] private Button button;
-        public TextMeshProUGUI title;
+        [SerializeField] private Image           icon;
+        [SerializeField] private Button          button;
+        public                   TextMeshProUGUI title;
 
         private bool m_IsTitleNotNull;
 
         public void Init(
             IUITicker            _UITicker,
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
-            UnityAction          _Select)
+            UnityAction          _Select,
+            Sprite               _Icon       = null,
+            Sprite               _Background = null)
         {
-            base.Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
+            base.Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Setting";
             button.onClick.AddListener(SoundOnClick);
             button.onClick.AddListener(_Select);
+            var titleRectTr = title.rectTransform;
+            if (_Icon.IsNotNull())
+            {
+                icon.enabled = true;
+                icon.sprite = _Icon;
+                titleRectTr.anchoredPosition  = new Vector2(44f, 0f);
+                titleRectTr.sizeDelta = new Vector2(-88f, 0f);
+            }
+            else
+            {
+                icon.enabled = false;
+                titleRectTr.anchoredPosition = Vector2.zero;
+                titleRectTr.sizeDelta = Vector2.zero;
+            }
+            if (_Background.IsNotNull())
+                background.sprite = _Background;
         }
 
         public override void Init(
             IUITicker            _UITicker, 
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
-            ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
-            bool                 _AutoFont = true)
+            ILocalizationManager _LocalizationManager)
         {
             throw new NotSupportedException();
         }
@@ -50,21 +60,6 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         {
             base.CheckIfSerializedItemsNotNull();
             m_IsTitleNotNull = title.IsNotNull();
-        }
-
-        protected override void SetColorsOnInit()
-        {
-            base.SetColorsOnInit();
-            title.color = ColorProvider.GetColor(ColorIds.UiText);
-        }
-
-        protected override void OnColorChanged(int _ColorId, Color _Color)
-        {
-            base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIds.UiText) 
-                return;
-            if (m_IsTitleNotNull)
-                title.color = _Color;
         }
     }
 }

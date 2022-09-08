@@ -27,7 +27,7 @@ namespace Common.Extensions
 
         public static void DestroyChildrenSafe(this GameObject _GameObject, bool _CheckForNull = true)
         {
-            var children = _GameObject.transform.GetChilds()
+            var children = _GameObject.transform.GetChildren()
                 .Where(_T => !_T.IsNull())
                 .Select(_T => _T.gameObject)
                 .ToList();

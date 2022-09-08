@@ -108,7 +108,7 @@ namespace RMAZOR.Views.UI
             float yPos = screenBounds.max.y - m_TopOffset - 5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goCongrads = Managers.PrefabSetManager.InitPrefab(
-                cont, "ui_game", "congratulations_panel");
+                cont, CommonPrefabSetNames.UiGame, "congratulations_panel");
             m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
             m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
             m_CongratsLine = goCongrads.GetCompItem<Line>("line");

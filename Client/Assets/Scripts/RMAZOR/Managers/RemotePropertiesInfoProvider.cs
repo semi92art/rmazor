@@ -112,7 +112,18 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(float), "maze_item_transition_time",
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
-
+                new RemoteConfigPropertyInfo(filter, typeof(string), "levels_in_group",
+                    _Value => Execute(
+                        _Value, _V =>
+                        {
+                            ViewSettings.LevelsInGroup =
+                                JsonConvert.DeserializeObject<int[]>(Convert.ToString(_V));
+                        }),
+                    true),
+                new RemoteConfigPropertyInfo(filter, typeof(bool), "show_full_tutorial",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.showFullTutorial = Convert.ToBoolean(_V))),
+                
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.firstLevelToShowAds = ToInt(_V))),
@@ -125,6 +136,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(long), "pay_to_continue_money_count",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.payToContinueMoneyCount = ToInt(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(float), "interstitial_ads_ratio",
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.interstitialAdsRatio = ToFloat(_V))),
 
                 new RemoteConfigPropertyInfo(filter, typeof(string), "ads_providers_infos",
                     _Value => Execute(
@@ -238,6 +252,9 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("spear_projectile_speed"),
                 CommonUtils.StringToHash("inapp_notifications_list"),
                 CommonUtils.StringToHash("color_grading_props_1"),
+                CommonUtils.StringToHash("levels_in_group"),
+                CommonUtils.StringToHash("show_full_tutorial"),
+                CommonUtils.StringToHash("interstitial_ads_ratio")
             }.Select(_Id => (ushort) _Id)
                 .ToArray();
             return new GameDataFieldFilter(

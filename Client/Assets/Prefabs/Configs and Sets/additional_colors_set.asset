@@ -16,13 +16,13 @@ MonoBehaviour:
     array:
     - main: {r: 1, g: 0.4900025, b: 0.1462264, a: 1}
       bacground1: {r: 0.16112542, g: 0.18867922, b: 0.11836951, a: 1}
-      bacground2: {r: 0.1647059, g: 0.4124149, b: 0.48235294, a: 1}
+      bacground2: {r: 0.735849, g: 0.3446466, b: 0.079832695, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 0
+      uiBackgroundFillType: 1
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -37,7 +37,7 @@ MonoBehaviour:
     - main: {r: 0, g: 0, b: 0, a: 1}
       bacground1: {r: 0.54901963, g: 0.54901963, b: 0.54901963, a: 1}
       bacground2: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 2
       pathFillFillType: 1
@@ -62,7 +62,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 0
+      uiBackgroundFillType: 1
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -76,13 +76,13 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 7
     - main: {r: 0.71931785, g: 0.33490568, b: 1, a: 1}
       bacground1: {r: 0, g: 0.1764706, b: 0.2509804, a: 1}
-      bacground2: {r: 0, g: 0.0821865, b: 0.25490198, a: 1}
+      bacground2: {r: 0.5692293, g: 0.26539695, b: 0.7924528, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 0
+      uiBackgroundFillType: 1
       bloom:
         enableBloom: 0
         diffusion: 0.5
@@ -92,7 +92,7 @@ MonoBehaviour:
         softness: 1
       additionalInfo:
         neonStreamColorCoefficient1: 0.35
-        swirlForPlanetColorCoefficient1: 2
+        swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
@@ -112,7 +112,7 @@ MonoBehaviour:
         softness: 0.9
       additionalInfo:
         neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 0.5
+        swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
     - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
       bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
@@ -132,5 +132,5 @@ MonoBehaviour:
         softness: 0
       additionalInfo:
         neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 0.4
+        swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4

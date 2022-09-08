@@ -7,6 +7,8 @@ namespace Common.Extensions
 {
     public static class TextExtensions
     {
+        #region api
+
         public static string WithSpaces(this string _Name)
         {
             if (string.IsNullOrWhiteSpace(_Name))
@@ -40,14 +42,14 @@ namespace Common.Extensions
             return string.Compare(_Text, _Other, StringComparison.OrdinalIgnoreCase) == 0;
         }
         
-        public static string FirstCharToUpper(this string _Text)
+        public static string FirstCharToUpper(this string _Text, CultureInfo _Culture)
         {
-            return _Text.FirstCharTo(true);
+            return _Text.FirstCharTo(true, _Culture);
         }
 
-        public static string FirstCharToLower(this string _Text)
+        public static string FirstCharToLower(this string _Text, CultureInfo _Culture)
         {
-            return _Text.FirstCharTo(false);
+            return _Text.FirstCharTo(false, _Culture);
         }
 
         public static bool InRange(this string _Text, params string[] _Strings)
@@ -60,16 +62,6 @@ namespace Common.Extensions
             return _Symbols.Any(_S => _Symbol == _S);
         }
 
-        private static string FirstCharTo(this string _Text, bool _ToUpper)
-        {
-            switch (_Text)
-            {
-                case null: throw new ArgumentNullException(nameof(_Text));
-                case "": throw new ArgumentException($"{nameof(_Text)} cannot be empty", nameof(_Text));
-                default: return _ToUpper ? _Text.First().ToString().ToUpper() : _Text.First().ToString().ToLower() + _Text.Substring(1);
-            }
-        }
-        
         public static string ToNumeric(this long _Value)
         {
             return _Value.ToString("N0", CultureInfo.CreateSpecificCulture("en-US"));
@@ -89,5 +81,19 @@ namespace Common.Extensions
         {
             return _Text.Substring(0, _Length) + (_Ellipsis ? "..." : string.Empty);
         }
+
+        #endregion
+
+        #region nonpublic methods
+        
+        private static string FirstCharTo(this string _Text, bool _ToUpper, CultureInfo _Culture)
+        {
+            char first = _ToUpper ? char.ToUpper(_Text[0], _Culture) : char.ToLower(_Text[0], _Culture);
+            return first + _Text.Substring(1);
+        }
+
+        #endregion
+        
+
     }
 }

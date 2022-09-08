@@ -16,7 +16,6 @@ namespace Common.UI
         #region serialized fields
 
         [SerializeField] private List<Image>   coeffBacks;
-        [SerializeField] private List<Image>   coeffBorders;
         [SerializeField] private Image         arrow;
         [SerializeField] private RectTransform min, max;
         [SerializeField] private Animator      animator;
@@ -29,7 +28,6 @@ namespace Common.UI
         private List<Color> m_BackColors;
 
         private bool m_DoMoveArrow;
-        private bool m_ArrowDirectionRight = true;
         private int  m_MultiplyCoefficient;
         
         #endregion
@@ -40,21 +38,14 @@ namespace Common.UI
 
         public override void Init(
             IUITicker            _UITicker,
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
-            ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
-            bool                 _AutoFont = true)
+            ILocalizationManager _LocalizationManager)
         {
             InitCoefficientBackgroundsColors();
-            DisableCoefficientBorders();
             base.Init(
                 _UITicker,
-                _ColorProvider,
                 _AudioManager, 
-                _LocalizationManager, 
-                _PrefabSetManager, 
-                _AutoFont);
+                _LocalizationManager);
         }
 
 
@@ -123,15 +114,10 @@ namespace Common.UI
 
         private void InitCoefficientBackgroundsColors()
         {
-            m_BackColors = coeffBacks.Select(_Cb => _Cb.color).ToList();
+            m_BackColors = coeffBacks.Select(_Cb => _Cb.color.SetA(0.6f)).ToList();
+            coeffBacks.ForEach(_Cb => _Cb.color = _Cb.color.SetA(0.6f));
         }
 
-        private void DisableCoefficientBorders()
-        {
-            foreach (var coeffBorder in coeffBorders)
-                coeffBorder.enabled = false;
-        }
-        
         private int GetMultiplyCoefficientCore()
         {
             if (!Initialized)
@@ -178,10 +164,8 @@ namespace Common.UI
             else                                             coeffPos = 4;
             for (int i = 0; i < coeffBacks.Count; i++)
                 coeffBacks[i].color = m_BackColors[i];
-            DisableCoefficientBorders();
             Color.RGBToHSV(m_BackColors[coeffPos], out float h, out float s, out float v);
-            coeffBacks[coeffPos].color = Color.HSVToRGB(h , s + 0.3f, v + 0.2f);
-            coeffBorders[coeffPos].enabled = true;
+            coeffBacks[coeffPos].color = Color.HSVToRGB(h , s + 0.3f, v + 0.2f).SetA(1f);
         }
 
         #endregion

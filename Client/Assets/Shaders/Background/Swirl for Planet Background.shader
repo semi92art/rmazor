@@ -52,7 +52,7 @@ Shader "RMAZOR/Background/Swirl for Planet"
             #define MAX_ITER 4
 
 
-            float waterHighlight(float2 p, float time, float foaminess)
+            float water_highlight(float2 p, float time, float foaminess)
             {
                 float2 i = float2(p);
                 float c = 0.0;
@@ -73,10 +73,10 @@ Shader "RMAZOR/Background/Swirl for Planet"
 
             fixed4 frag(v2f f_i) : SV_Target
             {
-                float2 fragCoord = f_i.uv * _ScreenParams.xy;
-                fragCoord.y *= 0.9;
+                float2 frag_coord = f_i.uv * _ScreenParams.xy;
+                frag_coord.y *= 0.9;
                 float time = _Time.y * 0.1 + 23.0;
-                float2 uv = fragCoord.xy / _ScreenParams.xy;
+                float2 uv = frag_coord.xy / _ScreenParams.xy;
                 float2 uv_square = float2(uv.x * _ScreenParams.x / _ScreenParams.y, uv.y);
                 float dist_center = pow(2.0 * length(uv - 0.5), 2.0);
 
@@ -85,15 +85,15 @@ Shader "RMAZOR/Background/Swirl for Planet"
 
                 float2 p = fmod(uv_square * TAU * TILING_FACTOR, TAU) - 250.0;
 
-                float c = waterHighlight(p, time, foaminess);
+                float c = water_highlight(p, time, foaminess);
                 c *= _Mc1;
 
                 float3 water_color = _Color1;
-                float3 color = _Color1.rgb * c;
+                float3 color = _Color2.rgb * c;
                 color = clamp(color + water_color, 0.0, 1.0);
 
+                color = lerp(water_color, _Color2.rgb, c);
                 color = lerp(water_color, color, clearness);
-
                 return float4(color, 1.0);
             }
             ENDCG

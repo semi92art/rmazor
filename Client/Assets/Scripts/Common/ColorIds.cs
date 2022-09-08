@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common.Extensions;
 
@@ -8,7 +9,6 @@ namespace Common
     {
         public const int UI                 = 1;
         public const int UiDialogItemNormal = 2;
-        public const int UiDialogBackground = 3;
         public const int UiBorder           = 4;
         public const int UiText             = 5;
         public const int UiBackground       = 6;
@@ -27,6 +27,10 @@ namespace Common
         public const int PathBackground = 111;
         public const int MazeItem2      = 112;
 
+        [Obsolete("Use UiDialogItemNormal Color Id instead this")]
+        public const int UiDialogBackground = 3;
+        
+        
         public static int GetColorIdByName(string _ColorName)
         {
             var kvp = ColorNamesDict.FirstOrDefault(

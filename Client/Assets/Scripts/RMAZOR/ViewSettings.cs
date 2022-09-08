@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 namespace RMAZOR
@@ -37,6 +38,9 @@ namespace RMAZOR
         public float  cameraSpeed;
         public float  pathItemCharMoveHighlightTime;
         public bool   highlightPathItem;
+        public bool   showFullTutorial;
+        public string levelsInGroup;
+        
 
         public float LineThickness
         {
@@ -66,6 +70,16 @@ namespace RMAZOR
         {
             get => finishTimeGood * 0.1f;
             set => finishTimeGood = value / 0.1f;
+        }
+
+        public int[] LevelsInGroup
+        {
+            get => levelsInGroup.Split(',').Select(_V => Convert.ToInt32(_V)).ToArray();
+            set
+            {
+                levelsInGroup = string.Join(",", value.Select(_V => _V.ToString()));
+                RmazorUtils.LevelsInGroupArray = value;
+            }
         }
     }
 }

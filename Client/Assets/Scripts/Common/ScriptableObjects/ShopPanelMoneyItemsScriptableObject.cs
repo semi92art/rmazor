@@ -11,6 +11,7 @@ namespace Common.ScriptableObjects
         [Serializable]
         public class ShopMoneyItem
         {
+            public Sprite icon;
             public int    purchaseKey;
             public int    reward;
             public bool   watchingAds;

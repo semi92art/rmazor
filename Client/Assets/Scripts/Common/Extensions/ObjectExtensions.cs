@@ -64,7 +64,7 @@ namespace Common.Extensions
             return _PrefabComponent.GetComponent<PrefabContent>().GetItemComponent<T>(_ItemName);
         }
 
-        public static List<Transform> GetChilds(this Transform _Transform, bool _Recursive = false)
+        public static List<Transform> GetChildren(this Transform _Transform, bool _Recursive = false)
         {
             var result = new List<Transform>();
             for (int i = 0; i < _Transform.childCount; i++)
@@ -72,17 +72,17 @@ namespace Common.Extensions
                 var tr = _Transform.GetChild(i);
                 result.Add(tr);
                 if (_Recursive)
-                    GetChilds(tr, ref result);
+                    GetChildren(tr, ref result);
             }
             
             return result;
         }
 
-        private static void GetChilds(Transform _Transform, ref List<Transform> _List)
+        private static void GetChildren(Transform _Transform, ref List<Transform> _List)
         {
             _List.Add(_Transform);
             for (int i = 0; i < _Transform.childCount; i++)
-                GetChilds(_Transform.GetChild(i), ref _List);
+                GetChildren(_Transform.GetChild(i), ref _List);
         }
 
         public static List<T> GetComponentsInChildrenEx<T>(

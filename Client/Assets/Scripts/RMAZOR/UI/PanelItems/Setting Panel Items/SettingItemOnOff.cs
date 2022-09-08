@@ -1,45 +1,48 @@
-﻿using Common.Enums;
-using Common.Managers;
-using Common.Providers;
+﻿using Common.Managers;
 using Common.Ticker;
 using Common.UI;
 using TMPro;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemOnOff : SimpleUiDialogItemView
+    public class SettingItemOnOff : SimpleUiItemBase
     {
-        public TextMeshProUGUI title;
-        public Toggle offToggle;
-        public TextMeshProUGUI offText;
-        public Toggle onToggle;
-        public TextMeshProUGUI onText;
+        [SerializeField] private TextMeshProUGUI title;
+        [SerializeField] private Button          button;
+        [SerializeField] private GameObject      toggleOnObj, toggleOffObj;
+
+        private bool m_IsOn;
 
         public void Init(
             IUITicker            _UITicker,
-            IColorProvider       _ColorProvider,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
-            IPrefabSetManager    _PrefabSetManager,
             bool                 _IsOn,
-            string               _TitleLocalizatoinKey,
+            string               _TitleLocalizationKey,
             UnityAction<bool>    _Action)
         {
-            Init(_UITicker, _ColorProvider, _AudioManager, _LocalizationManager, _PrefabSetManager);
+            Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Setting";
-            _LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(title, ETextType.MenuUI, _TitleLocalizatoinKey));
-            var tg = gameObject.AddComponent<ToggleGroup>();
-            offToggle.group = tg;
-            onToggle.group  = tg;
-            if (_IsOn) onToggle.isOn = true;
-            else       offToggle.isOn = true;
-            onToggle.onValueChanged.AddListener(_Value => SoundOnClick());
-            offToggle.onValueChanged.AddListener(_Value => SoundOnClick());
-            onToggle.onValueChanged.AddListener(_Action);
-            _LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(onText, ETextType.MenuUI, "on"));
-            _LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(offText, ETextType.MenuUI, "off"));
+            var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, _TitleLocalizationKey);
+            _LocalizationManager.AddTextObject(locInfo);
+            m_IsOn = _IsOn;
+            SetToggleObject();
+            button.onClick.AddListener(() =>
+            {
+                m_IsOn = !m_IsOn;
+                SetToggleObject();
+                _Action?.Invoke(m_IsOn);
+                SoundOnClick();
+            });
+        }
+
+        private void SetToggleObject()
+        {
+            toggleOnObj.SetActive(m_IsOn);
+            toggleOffObj.SetActive(!m_IsOn);
         }
     }
 }

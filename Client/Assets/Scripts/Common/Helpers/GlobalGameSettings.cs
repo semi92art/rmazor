@@ -16,5 +16,6 @@ namespace Common.Helpers
         public bool      apkForAppodeal;
         public bool      rewardedAdReadyForTest;
         public bool      interstitialAdReadyForTest;
+        public float     interstitialAdsRatio;
     }
 }

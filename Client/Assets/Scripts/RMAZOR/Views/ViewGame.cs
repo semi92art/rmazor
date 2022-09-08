@@ -81,12 +81,12 @@ namespace RMAZOR.Views
         private IViewMazeForeground         Foreground             { get; }
         private ICoordinateConverter        CoordinateConverter    { get; }
         private IColorProvider              ColorProvider          { get; }
-        private IFullscreenDialogViewer     FullscreenDialogViewer { get; }
         private IRendererAppearTransitioner AppearTransitioner     { get; }
         private IAdsProvidersSet            AdsProvidersSet        { get; }
         private IModelGame                  Model                  { get; }
         private ICommonTicker               CommonTicker           { get; }
         private ISystemTicker               SystemTicker           { get; }
+        private ViewSettings                ViewSettings           { get; }
 
         private ViewGame(
             IRemotePropertiesRmazor       _RemotePropertiesRmazor,
@@ -107,14 +107,14 @@ namespace RMAZOR.Views
             ICoordinateConverter          _CoordinateConverter,
             IColorProvider                _ColorProvider,
             ICameraProvider               _CameraProvider,
-            IFullscreenDialogViewer       _FullscreenDialogViewer,
             IRendererAppearTransitioner   _AppearTransitioner,
             IViewMazeAdditionalBackground _AdditionalBackground,
             IViewFullscreenTransitioner   _FullscreenTransitioner,
             IAdsProvidersSet              _AdsProvidersSet,
             IModelGame                    _Model,
             ICommonTicker                 _CommonTicker,
-            ISystemTicker                 _SystemTicker)
+            ISystemTicker                 _SystemTicker,
+            ViewSettings                  _ViewSettings)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -134,7 +134,6 @@ namespace RMAZOR.Views
             CoordinateConverter          = _CoordinateConverter;
             ColorProvider                = _ColorProvider;
             CameraProvider               = _CameraProvider;
-            FullscreenDialogViewer       = _FullscreenDialogViewer;
             AppearTransitioner           = _AppearTransitioner;
             AdditionalBackground         = _AdditionalBackground;
             FullscreenTransitioner       = _FullscreenTransitioner;
@@ -142,6 +141,7 @@ namespace RMAZOR.Views
             Model                        = _Model;
             CommonTicker                 = _CommonTicker;
             SystemTicker                 = _SystemTicker;
+            ViewSettings                 = _ViewSettings;
         }
         
         #endregion
@@ -152,6 +152,7 @@ namespace RMAZOR.Views
         {
             if (Initialized)
                 return;
+            RmazorUtils.LevelsInGroupArray = ViewSettings.LevelsInGroup; 
             m_LastPauseTime = SystemTicker.Time;
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
@@ -315,10 +316,6 @@ namespace RMAZOR.Views
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();
-            FullscreenDialogViewer.OnClosed = () =>
-            {
-                CommandsProceeder.RaiseCommand(EInputCommand.UnPauseLevel, null, true);
-            };
             TouchProceeder.ProceedRotation = Application.isEditor;
             CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNames.Character);
         }

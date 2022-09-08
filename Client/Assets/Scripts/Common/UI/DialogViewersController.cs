@@ -7,7 +7,7 @@ namespace Common.UI
     public enum EDialogViewerType
     {
         Fullscreen,
-        Proposal
+        Medium
     }
     
     public interface IDialogViewersController : IInit
@@ -29,16 +29,16 @@ namespace Common.UI
 
         private IViewUICanvasGetter     CanvasGetter           { get; }
         private IFullscreenDialogViewer FullscreenDialogViewer { get; }
-        private IProposalDialogViewer   ProposalDialogViewer   { get; }
+        private IDialogViewerMedium   DialogViewerMedium   { get; }
 
         public DialogViewersController(
             IViewUICanvasGetter     _CanvasGetter,
             IFullscreenDialogViewer _FullscreenDialogViewer,
-            IProposalDialogViewer   _ProposalDialogViewer)
+            IDialogViewerMedium   _DialogViewerMedium)
         {
             CanvasGetter           = _CanvasGetter;
             FullscreenDialogViewer = _FullscreenDialogViewer;
-            ProposalDialogViewer   = _ProposalDialogViewer;
+            DialogViewerMedium   = _DialogViewerMedium;
         }
 
         #endregion
@@ -50,7 +50,7 @@ namespace Common.UI
             CanvasGetter.Init();
             var parent = CanvasGetter.GetCanvas().RTransform();
             FullscreenDialogViewer.Init();
-            ProposalDialogViewer.Init();
+            DialogViewerMedium.Init();
             SetOtherDialogViewersShowingActions();
             base.Init();
         }
@@ -60,7 +60,7 @@ namespace Common.UI
             return _DialogViewerType switch
             {
                 EDialogViewerType.Fullscreen      => FullscreenDialogViewer,
-                EDialogViewerType.Proposal => ProposalDialogViewer,
+                EDialogViewerType.Medium => DialogViewerMedium,
                 _                          => null
             };
         }
@@ -73,11 +73,11 @@ namespace Common.UI
         {
             FullscreenDialogViewer.OtherDialogViewersShowing = () =>
             {
-                var panel = ProposalDialogViewer.CurrentPanel;
+                var panel = DialogViewerMedium.CurrentPanel;
                 return panel != null && 
                        panel.AppearingState != EAppearingState.Dissapeared;
             };
-            ProposalDialogViewer.OtherDialogViewersShowing = () =>
+            DialogViewerMedium.OtherDialogViewersShowing = () =>
             {
                 var panel = FullscreenDialogViewer.CurrentPanel;
                 return panel != null && 

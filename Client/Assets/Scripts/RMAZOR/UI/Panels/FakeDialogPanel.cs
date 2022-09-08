@@ -6,15 +6,13 @@ namespace RMAZOR.UI.Panels
 {
     public class FakeDialogPanel : IDialogPanel
     {
-        public EUiCategory     Category       => EUiCategory.Fake;
-        public bool            AllowMultiple  => false;
-        public EAppearingState AppearingState { get; set; }
-        public RectTransform   PanelObject    => null;
-        public Animator        Animator       => null;
-
-        public void LoadPanel()      { }
-        public void OnDialogAppeared()   { }
-        public void OnDialogDissapearing()   { }
-        public void OnDialogStartAppearing() { }
+        public EDialogViewerType DialogViewerType   => default;
+        public EUiCategory       Category           => EUiCategory.Fake;
+        public bool              AllowMultiple      => false;
+        public EAppearingState   AppearingState     { get; set; }
+        public RectTransform     PanelRectTransform => null;
+        public Animator          Animator           => null;
+        
+        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
     }
 }

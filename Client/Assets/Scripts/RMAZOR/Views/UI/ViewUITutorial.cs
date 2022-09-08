@@ -58,6 +58,7 @@ namespace RMAZOR.Views.UI
 
         #region inject
 
+        private ViewSettings                ViewSettings            { get; }
         private IModelGame                  Model                   { get; }
         private IPrefabSetManager           PrefabSetManager        { get; }
         private IContainersGetter           ContainersGetter        { get; }
@@ -71,6 +72,7 @@ namespace RMAZOR.Views.UI
         private IViewUIGameLogo             GameLogo                { get; }
 
         private ViewUITutorial(
+            ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IPrefabSetManager           _PrefabSetManager,
             IContainersGetter           _ContainersGetter,
@@ -83,17 +85,18 @@ namespace RMAZOR.Views.UI
             ITutorialDialogPanel        _TutorialDialogPanel,
             IViewUIGameLogo             _GameLogo)
         {
-            Model                = _Model;
-            PrefabSetManager     = _PrefabSetManager;
-            ContainersGetter     = _ContainersGetter;
-            CoordinateConverter  = _CoordinateConverter;
-            CommandsProceeder    = _CommandsProceeder;
-            CameraProvider       = _CameraProvider;
-            ColorProvider        = _ColorProvider;
-            Ticker               = _Ticker;
+            ViewSettings            = _ViewSettings;
+            Model                   = _Model;
+            PrefabSetManager        = _PrefabSetManager;
+            ContainersGetter        = _ContainersGetter;
+            CoordinateConverter     = _CoordinateConverter;
+            CommandsProceeder       = _CommandsProceeder;
+            CameraProvider          = _CameraProvider;
+            ColorProvider           = _ColorProvider;
+            Ticker                  = _Ticker;
             DialogViewersController = _DialogViewersController;
-            TutorialDialogPanel  = _TutorialDialogPanel;
-            GameLogo             = _GameLogo;
+            TutorialDialogPanel     = _TutorialDialogPanel;
+            GameLogo                = _GameLogo;
         }
 
         #endregion
@@ -153,9 +156,15 @@ namespace RMAZOR.Views.UI
                 var dict = GetMazeItemPrefabSubstringsDict();
                 _MazeItemType = dict.First(
                     _Kvp => _Kvp.Value == tutorialTypeRaw).Key;
+                if (!ViewSettings.showFullTutorial 
+                    && _MazeItemType != EMazeItemType.GravityBlock 
+                    && _MazeItemType != EMazeItemType.GravityBlockFree 
+                    && _MazeItemType != EMazeItemType.GravityTrap)
+                {
+                    return null;
+                }
                 return tutorialType;
             }
-
             return null;
         }
 
@@ -173,18 +182,10 @@ namespace RMAZOR.Views.UI
         {
             switch (_Command)
             {
-                case EInputCommand.MoveRight:
-                    m_ReadyToSecondMovementStep = true;
-                    break;
-                case EInputCommand.MoveUp:
-                    m_ReadyToThirdMovementStep = true;
-                    break;
-                case EInputCommand.MoveLeft:
-                    m_ReadyToFourthMovementStep = true;
-                    break;
-                case EInputCommand.MoveDown:
-                    m_ReadyToFinishMovementTutorial = true;
-                    break;
+                case EInputCommand.MoveRight: m_ReadyToSecondMovementStep    = true; break;
+                case EInputCommand.MoveUp:   m_ReadyToThirdMovementStep      = true; break;
+                case EInputCommand.MoveLeft: m_ReadyToFourthMovementStep     = true; break;
+                case EInputCommand.MoveDown: m_ReadyToFinishMovementTutorial = true; break;
             }
         }
 
@@ -218,8 +219,8 @@ namespace RMAZOR.Views.UI
             Cor.Run(Cor.WaitWhile(() => TutorialDialogPanel.IsVideoReady,
                 () =>
                 {
-                    TutorialDialogPanel.LoadPanel();
-                    var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
+                    var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerType);
+                    TutorialDialogPanel.LoadPanel(dv.Container, dv.Back);
                     dv.Show(TutorialDialogPanel, 3f);
                     SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
                 }));

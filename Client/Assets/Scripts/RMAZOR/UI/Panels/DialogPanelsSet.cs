@@ -7,7 +7,7 @@ namespace RMAZOR.UI.Panels
     public interface IDialogPanelsSet : IInit
     {
         ISettingDialogPanel          SettingDialogPanel          { get; }
-        ISettingSelectorDialogPanel  SettingSelectorDialogPanel  { get; }
+        ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
         IShopDialogPanel             ShopDialogPanel             { get; }
         ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
         IRateGameDialogPanel         RateGameDialogPanel         { get; }
@@ -18,7 +18,7 @@ namespace RMAZOR.UI.Panels
     public class DialogPanelsSet : InitBase, IDialogPanelsSet
     {
         public ISettingDialogPanel          SettingDialogPanel          { get; }
-        public ISettingSelectorDialogPanel  SettingSelectorDialogPanel  { get; }
+        public ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
         public IShopDialogPanel             ShopDialogPanel             { get; }
         public ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
         public IRateGameDialogPanel         RateGameDialogPanel         { get; }
@@ -27,7 +27,7 @@ namespace RMAZOR.UI.Panels
 
         public DialogPanelsSet(
             ISettingDialogPanel         _SettingDialogPanel,
-            ISettingSelectorDialogPanel _SettingSelectorDialogPanel, 
+            ISettingLanguageDialogPanel _SettingLanguageDialogPanel, 
             IShopDialogPanel            _ShopDialogPanel,
             ICharacterDiedDialogPanel   _CharacterDiedDialogPanel,
             IRateGameDialogPanel        _RateGameDialogPanel,
@@ -35,7 +35,7 @@ namespace RMAZOR.UI.Panels
             IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel)
         {
             SettingDialogPanel          = _SettingDialogPanel;
-            SettingSelectorDialogPanel  = _SettingSelectorDialogPanel;
+            SettingLanguageDialogPanel  = _SettingLanguageDialogPanel;
             ShopDialogPanel             = _ShopDialogPanel;
             CharacterDiedDialogPanel    = _CharacterDiedDialogPanel;
             RateGameDialogPanel         = _RateGameDialogPanel;
@@ -53,7 +53,7 @@ namespace RMAZOR.UI.Panels
     public class DialogPanelsSetFake : InitBase, IDialogPanelsSet
     {
         public ISettingDialogPanel          SettingDialogPanel          => null;
-        public ISettingSelectorDialogPanel  SettingSelectorDialogPanel  => null;
+        public ISettingLanguageDialogPanel  SettingLanguageDialogPanel  => null;
         public IShopDialogPanel             ShopDialogPanel             => null;
         public ICharacterDiedDialogPanel    CharacterDiedDialogPanel    => null;
         public IRateGameDialogPanel         RateGameDialogPanel         => null;

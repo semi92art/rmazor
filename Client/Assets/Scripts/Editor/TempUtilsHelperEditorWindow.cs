@@ -12,13 +12,15 @@ namespace Editor
 {
     public class TempUtilsHelperEditorWindow : EditorWindow
     {
+        private const string WindowName = "Temp Utils Helper";
+        
         private int             m_LevelIndex;
         private IGameController m_GameController;
         
-        [MenuItem("Tools/Test Utils Helper", false, 108)]
+        [MenuItem("Tools/" + WindowName, false, 108)]
         public static void ShowWindow()
         {
-            GetWindow<TempUtilsHelperEditorWindow>("Temp Utils Helper");
+            GetWindow<TempUtilsHelperEditorWindow>(WindowName);
         }
 
         private void OnGUI()

@@ -18,6 +18,8 @@ namespace Common.UI
     public abstract class DialogViewerBase : InitBase, IDialogViewer
     {
         protected readonly IDialogPanel FakePanel = new DialogPanelFake();
+        
+        protected readonly Stack<IDialogPanel> PanelsStack = new Stack<IDialogPanel>();
 
         protected IViewUICanvasGetter CanvasGetter     { get; }
         protected ICameraProvider     CameraProvider   { get; }
@@ -36,12 +38,20 @@ namespace Common.UI
             PrefabSetManager = _PrefabSetManager;
         }
 
-        public          IDialogPanel              CurrentPanel              { get; protected set; }
-        public abstract RectTransform             Container                 { get; }
-        public          Func<bool>                OtherDialogViewersShowing { get; set; }
+        public IDialogPanel CurrentPanel => !PanelsStack.Any() ? null : PanelsStack.Peek();
+
+        public abstract RectTransform Container                 { get; }
+        public          Func<bool>    OtherDialogViewersShowing { get; set; }
         
-        public abstract void Back(UnityAction   _OnFinish                      = null);
-        public abstract void Show(IDialogPanel  _PanelTo, float _AnimationSpeed = 1, bool _HidePrevious = true);
+        public abstract void Back(UnityAction   _OnFinish       = null);
+
+        public virtual void Show(
+            IDialogPanel _PanelTo,
+            float _AnimationSpeed = 1, 
+            bool _HidePrevious = true)
+        {
+            PanelsStack.Push(_PanelTo);
+        }
 
         public override void Init()
         {

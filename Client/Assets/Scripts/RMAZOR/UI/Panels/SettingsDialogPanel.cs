@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -15,10 +16,13 @@ using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
+using RMAZOR.Models;
 using RMAZOR.Settings;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
-using RMAZOR.Views.UI;
+using RMAZOR.Views.InputConfigurators;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
 {
@@ -34,14 +38,13 @@ namespace RMAZOR.UI.Panels
         
         #region private members
 
-        private RectTransform           m_MiniButtonsContent;
-        private RectTransform           m_SettingsContent;
-        private SimpleUiDialogPanelView m_PanelView;
+        private RectTransform m_MiniButtonsContent;
+        private RectTransform m_SettingsContent;
         
         private readonly RectTransformLite m_SettingItemRectLite = new RectTransformLite
         {
             Anchor = UiAnchor.Create(0, 1, 0, 1),
-            AnchoredPosition = new Vector2(213f, -54.6f),
+            AnchoredPosition = Vector2.zero,
             Pivot = Vector2.one * 0.5f,
             SizeDelta = new Vector2(406f, 87f)
         };
@@ -58,65 +61,79 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private IRemotePropertiesRmazor     RemoteProperties { get; }
-        private ISettingSelectorDialogPanel SelectorPanel    { get; }
-        private ISettingsGetter             SettingsGetter   { get; }
+        private ISettingLanguageDialogPanel LanguagePanel           { get; }
+        private ISettingsGetter             SettingsGetter          { get; }
+        private IViewInputCommandsProceeder CommandsProceeder       { get; }
+        private IDialogViewersController    DialogViewersController { get; }
 
         private SettingsDialogPanel(
-            IRemotePropertiesRmazor     _RemoteProperties,
-            ISettingSelectorDialogPanel _SelectorPanel,
-            IDialogViewersController    _DialogViewersController,
+            ISettingLanguageDialogPanel _LanguagePanel,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
             ISettingsGetter             _SettingsGetter,
             ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider)
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IDialogViewersController    _DialogViewersController)
             : base(
                 _Managers,
                 _UITicker,
-                _DialogViewersController,
                 _CameraProvider,
                 _ColorProvider)
         {
-            RemoteProperties = _RemoteProperties;
-            SelectorPanel    = _SelectorPanel;
-            SettingsGetter   = _SettingsGetter;
+            LanguagePanel           = _LanguagePanel;
+            SettingsGetter          = _SettingsGetter;
+            CommandsProceeder       = _CommandsProceeder;
+            DialogViewersController = _DialogViewersController;
         }
 
         #endregion
         
         #region api
-        
-        public override EUiCategory Category      => EUiCategory.Settings;
-        public override bool        AllowMultiple => false;
 
-        public override void LoadPanel()
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EUiCategory       Category         => EUiCategory.Settings;
+        public override bool              AllowMultiple    => false;
+
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel();
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
-            var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(dv.Container, RectTransformLite.FullFill),
+            base.LoadPanel(_Container, _OnClose);
+            var go  = Managers.PrefabSetManager.InitUiPrefab(
+                UIUtils.UiRectTransform(_Container, RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "settings_panel");
-            m_MiniButtonsContent = sp.GetCompItem<RectTransform>("mini_buttons_content");
-            m_SettingsContent = sp.GetCompItem<RectTransform>("settings_content");
-            m_PanelView = sp.GetCompItem<SimpleUiDialogPanelView>("panel");
-            m_PanelView.Init(
+            m_MiniButtonsContent = go.GetCompItem<RectTransform>("mini_buttons_content");
+            m_SettingsContent    = go.GetCompItem<RectTransform>("settings_content");
+            var title            = go.GetCompItem<TextMeshProUGUI>("title_text");
+            var closeButton      = go.GetCompItem<Button>("button_close");
+            var panelView        = go.GetCompItem<SimpleUiDialogPanelView>("panel");
+            var logInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, "settings", 
+                _T => _T.ToUpper(CultureInfo.CurrentCulture));
+            Managers.LocalizationManager.AddTextObject(logInfo);
+            closeButton.onClick.AddListener(OnButtonCloseClick);
+            panelView.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
-                Managers.LocalizationManager,
-                Managers.PrefabSetManager);
+                Managers.LocalizationManager);
             m_MiniButtonsContent.gameObject.DestroyChildrenSafe();
             m_SettingsContent.gameObject.DestroyChildrenSafe();
             InitSettingItems();
             InitOtherButtons();
-            // InitDebugSettingItem();
-            PanelObject = sp.RTransform();
+            PanelRectTransform = go.RTransform();
         }
 
         #endregion
 
         #region nonpublic methods
+
+        private void OnButtonCloseClick()
+        {
+            base.OnClose(() =>
+            {
+                CommandsProceeder.RaiseCommand(
+                    EInputCommand.UnPauseLevel, null, true);
+            });
+            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+        }
 
         private void InitSettingItems()
         {
@@ -134,12 +151,6 @@ namespace RMAZOR.UI.Panels
             InitRestorePurchasesButton();
         }
 
-        // private void InitDebugSettingItem()
-        // {
-        //     if (Application.isEditor || RemoteProperties.DebugEnabled)
-        //         InitSettingItem(SettingsGetter.DebugSetting);
-        // }
-        
         private void InitSettingItem<T>(ISetting<T> _Setting)
         {
             switch (_Setting.Location)
@@ -152,7 +163,7 @@ namespace RMAZOR.UI.Panels
                         case ESettingType.OnOff:
                             InitOnOffItem(_Setting); break;
                         case ESettingType.InPanelSelector:
-                            InitInPanelSelectorItem(_Setting); break;
+                            InitLanguageSelectorSettingItem(_Setting); break;
                         default: throw new SwitchCaseNotImplementedException(_Setting.Type);
                     }
                     break;
@@ -165,10 +176,8 @@ namespace RMAZOR.UI.Panels
             var itemMiniButton = CreateMiniButtonSetting();
             itemMiniButton.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
                 Convert.ToBoolean(_Setting.Get()),
                 _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)),
                 GetSettingsIconFromPrefabs(_Setting.SpriteOnKey),
@@ -180,60 +189,38 @@ namespace RMAZOR.UI.Panels
             var itemOnOff = CreateOnOffSetting();
             itemOnOff.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
                 Convert.ToBoolean(_Setting.Get()),
                 _Setting.TitleKey, 
                 _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)));
         }
 
-        private void InitInPanelSelectorItem<T>(ISetting<T> _Setting)
+        private void InitLanguageSelectorSettingItem<T>(ISetting<T> _Setting)
         {
-            var itemSelector = CreateInPanelSelectorSetting();
-            itemSelector.Init(
+            var itemLangSelector = CreateLanguageSelectorSettingItem();
+            itemLangSelector.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
-                DialogViewersController.GetViewer(EDialogViewerType.Fullscreen),
-                _Setting.TitleKey,
-                () => typeof(T) == typeof(ELanguage) ?
-                    LocalizationUtils.GetLanguageTitle(ConvertValue<ELanguage>(_Setting.Get())) 
-                    : Convert.ToString(_Setting.Get()),
-                _Value =>
-                    {
-                        if (typeof(T) == typeof(ELanguage))
-                        {
-                            var lang = ConvertValue<ELanguage>(_Value);
-                            itemSelector.setting.text = LocalizationUtils.GetLanguageTitle(lang);
-                            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LanguageButtonPressed);
-                            T val = ConvertValue<T>(lang);
-                            _Setting.Put(val);
-                            Managers.LocalizationManager.SetLanguage(
-                                Managers.LocalizationManager.GetCurrentLanguage());
-                        }
-                        else
-                        {
-                            itemSelector.setting.text = _Value.ToString();
-                            _Setting.Put(ConvertValue<T>(_Value));
-                        }
-                    },
-                () =>
+                DialogViewersController.GetViewer(EDialogViewerType.Medium),
+                _Language =>
                 {
-                    if (typeof(T) == typeof(ELanguage))
+                    void SetLangSetting()
                     {
-                        return _Setting.Values
-                            .Select(_Val => ConvertValue<ELanguage>(_Val)).Cast<object>().ToList();
+                        var lang = ConvertValue<ELanguage>(_Language);
+                        T val = ConvertValue<T>(lang);
+                        _Setting.Put(val);
+                        Managers.LocalizationManager.SetLanguage(
+                            Managers.LocalizationManager.GetCurrentLanguage());
+                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LanguageButtonPressed);
                     }
-                    return _Setting.Values.Cast<object>().ToList();
+                    itemLangSelector.languageIcon.sprite = GetLanguageIcon(_Language);
+                    SetLangSetting();
                 },
-                SelectorPanel,
-                _Font: () => typeof(T) != typeof(ELanguage) ? null : 
-                    Managers.LocalizationManager.GetFont(
-                        ETextType.MenuUI, ConvertValue<ELanguage>(_Setting.Get())));
+                () => _Setting.Values.Select(_Val => ConvertValue<ELanguage>(_Val)).ToList(),
+                LanguagePanel,
+                GetLanguageIcon);
         }
 
         private void InitRateUsButton()
@@ -241,15 +228,17 @@ namespace RMAZOR.UI.Panels
             var item = CreateActionSetting();
             item.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
                 () =>
                 {
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton1Pressed);
                     Managers.ShopManager.RateGame();
-                });
+                },
+                Managers.PrefabSetManager.GetObject<Sprite>(
+                    CommonPrefabSetNames.Views, "five_stars_icon"),
+                Managers.PrefabSetManager.GetObject<Sprite>(
+                CommonPrefabSetNames.Views, "rate_game_button_background"));
             var info = new LocalizableTextObjectInfo(item.title, ETextType.MenuUI, "rate_game");
             Managers.LocalizationManager.AddTextObject(info);
             item.Highlighted = true;
@@ -260,10 +249,8 @@ namespace RMAZOR.UI.Panels
             var item = CreateActionSetting();
             item.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
                 () =>
                 {
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LeaderboardsButtonPressed);
@@ -301,7 +288,11 @@ namespace RMAZOR.UI.Panels
                         _Seconds: 3f,
                         _Ticker: Ticker));
                     Managers.ScoreManager.ShowLeaderboard(DataFieldIds.Level);
-                });
+                },
+                Managers.PrefabSetManager.GetObject<Sprite>(
+                    CommonPrefabSetNames.Views, "leaderboard_icon"),
+                Managers.PrefabSetManager.GetObject<Sprite>(
+                    CommonPrefabSetNames.Views, "leaderboard_button_background"));
             var info = new LocalizableTextObjectInfo(item.title, ETextType.MenuUI, "show_leaderboards");
             Managers.LocalizationManager.AddTextObject(info);
         }
@@ -311,15 +302,15 @@ namespace RMAZOR.UI.Panels
             var item = CreateActionSetting();
             item.Init(
                 Ticker,
-                ColorProvider,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                Managers.PrefabSetManager,
                 () =>
                 {
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RestorePurchasesButtonPressed);
                     Managers.ShopManager.RestorePurchases();
-                });
+                },
+                Managers.PrefabSetManager.GetObject<Sprite>(
+                    CommonPrefabSetNames.Views, "refund_icon"));
             var info = new LocalizableTextObjectInfo(item.title, ETextType.MenuUI, "restore_purchases");
             Managers.LocalizationManager.AddTextObject(info);
         }
@@ -344,14 +335,14 @@ namespace RMAZOR.UI.Panels
             return obj.GetComponent<SettingItemOnOff>();
         }
 
-        private SettingItemInPanelSelector CreateInPanelSelectorSetting()
+        private SettingLanguageSelectorItem CreateLanguageSelectorSettingItem()
         {
             var obj = Managers.PrefabSetManager.InitUiPrefab(
                 UIUtils.UiRectTransform(
                     m_SettingsContent,
                     m_SettingItemRectLite),
                 PrefabSetName, "in_panel_selector_item");
-            return obj.GetComponent<SettingItemInPanelSelector>();
+            return obj.GetComponent<SettingLanguageSelectorItem>();
         }
 
         private SettingItemAction CreateActionSetting()
@@ -374,6 +365,13 @@ namespace RMAZOR.UI.Panels
             if (typeof(T).IsEnum)
                 return (T) Enum.Parse(typeof(T), _Value.ToString());
             return (T) Convert.ChangeType(_Value, typeof(T));
+        }
+
+        private Sprite GetLanguageIcon(ELanguage _Language)
+        {
+            return Managers.PrefabSetManager.GetObject<Sprite>(
+                "lang_icons", 
+                _Language.ToString().ToLowerInvariant());
         }
 
         #endregion

@@ -209,12 +209,12 @@ namespace Mono_Installers
                 Container.Bind<IViewUICongratsMessage>() .To<ViewUICongratsMessage>()         .AsSingle();
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoMazeBlade>()       .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()             .AsSingle();
-                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
-                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
+                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
+                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
-                // Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
-                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()      .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
+                // Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()      .AsSingle();
             }
         }
 
@@ -223,7 +223,7 @@ namespace Mono_Installers
             if (!CommonData.Release)
             {
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersControllerFake>()    .AsSingle();
-                Container.Bind<IProposalDialogViewer>()       .To<ProposalDialogViewerFake>()       .AsSingle();
+                Container.Bind<IDialogViewerMedium>()       .To<DialogViewerMediumFake>()       .AsSingle();
                 Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewerFake>()     .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSetFake>()            .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
@@ -233,13 +233,13 @@ namespace Mono_Installers
             {
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersController>()        .AsSingle();
                 Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewer>()         .AsSingle();
-                Container.Bind<IProposalDialogViewer>()       .To<ProposalDialogViewer>()           .AsSingle();
+                Container.Bind<IDialogViewerMedium>()       .To<DialogViewerMedium>()           .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSet>()                .AsSingle();
                 
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanel>()            .AsSingle();
                 Container.Bind<ITutorialDialogPanel>()        .To<TutorialDialogPanel>()            .AsSingle();
-                Container.Bind<ISettingSelectorDialogPanel>() .To<SettingsSelectorPanel>()          .AsSingle();
-                Container.Bind<IShopDialogPanel>()            .To<ShopPanel>()                      .AsSingle();
+                Container.Bind<ISettingLanguageDialogPanel>() .To<SettingsLanguagePanel>()          .AsSingle();
+                Container.Bind<IShopDialogPanel>()            .To<ShopDialogPanel>()                      .AsSingle();
                 Container.Bind<ISettingDialogPanel>()         .To<SettingsDialogPanel>()            .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanel>()    .AsSingle();
@@ -266,11 +266,29 @@ namespace Mono_Installers
             Container.Bind<IFullscreenTextureProviderConnectedDots>()
                 .To<FullscreenTextureProviderConnectedDots>()
                 .AsSingle();
+            Container.Bind<IFullscreenTextureProviderDancingDots>()
+                .To<FullscreenTextureProviderDancingDots>()
+                .AsSingle();
             Container.Bind<IFullscreenTextureProviderSwirlForPlanet>()
                 .To<FullscreenTextureProviderSwirlForPlanet>()
                 .AsSingle();
             Container.Bind<IFullscreenTextureProviderWormHole>()
                 .To<FullscreenTextureProviderWormHole>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderFunnyRain>()
+                .To<FullscreenTextureProviderFunnyRain>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderRaveSquares>()
+                .To<FullscreenTextureProviderRaveSquares>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderFibrousRing>()
+                .To<FullscreenTextureProviderFibrousRing>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderFallInDeep>()
+                .To<FullscreenTextureProviderFallInDeep>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderBluePurplePlaid>()
+                .To<FullscreenTextureProviderBluePurplePlaid>()
                 .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()

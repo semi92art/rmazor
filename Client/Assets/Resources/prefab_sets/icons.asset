@@ -17,14 +17,17 @@ MonoBehaviour:
     - item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
       name: finger_texture
       bundle: 0
-    - item: {fileID: 21300000, guid: 79aa76a1610e52348a314d2db03133fe, type: 3}
+    - item: {fileID: 21300000, guid: d9400f11787c40d4d9ff6a2f29623b8a, type: 3}
       name: icon_no_ads
       bundle: 0
     - item: {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
       name: icon_square_100x100
       bundle: 0
-    - item: {fileID: 21300000, guid: 2c6b30fa55462274c9ae754eb1254e0f, type: 3}
+    - item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
       name: icon_coin_ui
+      bundle: 0
+    - item: {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
+      name: icon_coin_ui_multiplied
       bundle: 0
     - item: {fileID: 21300000, guid: 4e8b812ab2cc280439984225c94b532d, type: 3}
       name: icon_coin

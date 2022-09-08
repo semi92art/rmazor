@@ -482,7 +482,7 @@ Transform:
   m_GameObject: {fileID: 6841102640685308410}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1.0000001, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2766366199470339338}
@@ -591,8 +591,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 6230518867470089291}
-      name: border
     - item: {fileID: 6841102640685308410}
       name: background
     - item: {fileID: 610300944478246905}
@@ -601,3 +599,5 @@ MonoBehaviour:
       name: button
     - item: {fileID: 5421843136454325870}
       name: button container
+    - item: {fileID: 6230518867470089291}
+      name: border

@@ -60,25 +60,37 @@ namespace RMAZOR.Views.UI
         
         private void OnCommand(EInputCommand _Key, object[] _Args)
         {
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
             switch (_Key)
             {
                 case EInputCommand.SettingsMenu:
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
-                    DialogPanelsSet.SettingDialogPanel.LoadPanel();
-                    dv.Show(DialogPanelsSet.SettingDialogPanel);
+                {
+                    var panel = DialogPanelsSet.SettingDialogPanel;
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    panel.LoadPanel(dv.Container, dv.Back);
+                    dv.Show(panel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
+                }
                     break;
                 case EInputCommand.ShopMenu:
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
-                    DialogPanelsSet.ShopDialogPanel.LoadPanel();
-                    dv.Show(DialogPanelsSet.ShopDialogPanel);
+                {
+                    var panel = DialogPanelsSet.ShopDialogPanel;
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    panel.LoadPanel(dv.Container, dv.Back);
+                    dv.Show(panel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
+                }
                     break;
                 case EInputCommand.RateGamePanel:
-                    ShowRateGamePanel();
+                {
+                    var panel = DialogPanelsSet.RateGameDialogPanel;
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    panel.LoadPanel(dv.Container, dv.Back);
+                    dv.Show(panel);
                     int ratePanelShowsCount = SaveUtils.GetValue(SaveKeysRmazor.RatePanelShowsCount);
                     SaveUtils.PutValue(SaveKeysRmazor.RatePanelShowsCount, ratePanelShowsCount + 1);
+                }
                     break;
             }
         }
@@ -108,15 +120,8 @@ namespace RMAZOR.Views.UI
             return !Application.isEditor 
                     && !SaveUtils.GetValue(SaveKeysCommon.GameWasRated)
                     && ratePanelShowsCount < 10
-                    && Random.value < 0.5f
+                    && Random.value < 0.05f
                     && Model.LevelStaging.LevelIndex > ViewSettings.firstLevelToRateGame;
-        }
-
-        private void ShowRateGamePanel()
-        {
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Proposal);
-            DialogPanelsSet.RateGameDialogPanel.LoadPanel();
-            dv.Show(DialogPanelsSet.RateGameDialogPanel, 3f);
         }
 
         #endregion
