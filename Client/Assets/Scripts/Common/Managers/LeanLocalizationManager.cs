@@ -47,7 +47,8 @@ namespace Common.Managers
         string                       GetTranslation(string _Key);
         void                         SetLanguage(ELanguage _Language);
         ELanguage                    GetCurrentLanguage();
-        void                         AddTextObject(LocalizableTextObjectInfo _Info);
+        void                         AddTextObject(LocalizableTextObjectInfo    _Info);
+        void                         RemoveTextObject(LocalizableTextObjectInfo _Info);
     }
 
     public class LeanLocalizationManager : InitBase, ILocalizationManager
@@ -177,7 +178,12 @@ namespace Common.Managers
                 UpdateText(newArgs);
             }
         }
-        
+
+        public void RemoveTextObject(LocalizableTextObjectInfo _Info)
+        {
+            m_TextObjectsDict.RemoveSafe(_Info.LocalizationKey, out _);
+        }
+
         public TMP_FontAsset GetFont(ETextType _TextType, ELanguage _Language)
         {
             return FontProvider.GetFont(_TextType, _Language);

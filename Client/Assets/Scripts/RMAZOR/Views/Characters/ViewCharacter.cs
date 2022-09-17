@@ -185,7 +185,7 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
-                    if (_Args.PreviousStage == ELevelStage.CharacterKilled)
+                    if (_Args.PreviousStage == ELevelStage.Paused && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
                         SetDefaultPosition();
                     EnableMoving = true;
                     break;

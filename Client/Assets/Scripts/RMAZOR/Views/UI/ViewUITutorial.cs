@@ -10,6 +10,7 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -53,6 +54,7 @@ namespace RMAZOR.Views.UI
         private HandSwipeRotation m_Hsr;
         private TextMeshPro       m_RotPossText;
         private Animator          m_RotPossTextAnim;
+        private bool              m_TutorialPanelLoaded;
 
         #endregion
 
@@ -216,14 +218,15 @@ namespace RMAZOR.Views.UI
             );
             TutorialDialogPanel.SetPanelInfo(info);
             TutorialDialogPanel.PrepareVideo();
-            Cor.Run(Cor.WaitWhile(() => TutorialDialogPanel.IsVideoReady,
-                () =>
-                {
-                    var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerType);
-                    TutorialDialogPanel.LoadPanel(dv.Container, dv.Back);
-                    dv.Show(TutorialDialogPanel, 3f);
-                    SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
-                }));
+            var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerType);
+            if (!m_TutorialPanelLoaded)
+            {
+                TutorialDialogPanel.LoadPanel(dv.Container, dv.Back);
+                m_TutorialPanelLoaded = true;
+            }
+            TutorialDialogPanel.PrepareVideo();
+            dv.Show(TutorialDialogPanel, 3f);
+            SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
         }
 
         private IEnumerator MovementTutorialFirstStepCoroutine()

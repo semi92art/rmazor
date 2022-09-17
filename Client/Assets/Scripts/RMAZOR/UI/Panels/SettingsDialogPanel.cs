@@ -14,6 +14,7 @@ using Common.Providers;
 using Common.Settings;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -91,9 +92,8 @@ namespace RMAZOR.UI.Panels
         
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
         public override EUiCategory       Category         => EUiCategory.Settings;
-        public override bool              AllowMultiple    => false;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -119,6 +119,7 @@ namespace RMAZOR.UI.Panels
             InitSettingItems();
             InitOtherButtons();
             PanelRectTransform = go.RTransform();
+            PanelRectTransform.SetGoActive(false);
         }
 
         #endregion
@@ -203,7 +204,7 @@ namespace RMAZOR.UI.Panels
                 Ticker,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                DialogViewersController.GetViewer(EDialogViewerType.Medium),
+                DialogViewersController.GetViewer(LanguagePanel.DialogViewerType),
                 _Language =>
                 {
                     void SetLangSetting()

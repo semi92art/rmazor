@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers;
 using Common.Providers;
+using Common.Ticker;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
@@ -17,15 +18,14 @@ namespace RMAZOR.Views.MazeItems.Additional
 {
     public interface IViewTurretProjectileTail : ICloneable
     {
-        IEnumerable<Component> Renderers { get; }
-        void                   Init(GameObject              _Projectile);
-        void                   ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition);
-        void                   HideTail();
-        void                   SetSortingOrder(int _Order);
-        void                   SetStencilRefId(int _RefId);
+        void Init(Transform               _Parent, GameObject _ProjectileObject);
+        void ShowTail(TurretShotEventArgs _Args);
+        void HideTail();
+        void SetSortingOrder(int _Order);
+        void SetStencilRefId(int _RefId);
     }
     
-    public class ViewTurretProjectileTail : InitBase, IViewTurretProjectileTail
+    public class ViewTurretProjectileTail : InitBase, IViewTurretProjectileTail, IUpdateTick
     {
         #region nonpublic members
 
@@ -33,52 +33,59 @@ namespace RMAZOR.Views.MazeItems.Additional
         private Transform  m_TailTr;
         private bool       m_Activated;
         private V2Int      m_From, m_To;
-        
+        private bool       m_IsShowing;
+        private GameObject m_ProjectileObject;
+
         #endregion
         
         #region inject
 
+        private IPrefabSetManager    PrefabSetManager    { get; }
         private ICoordinateConverter CoordinateConverter { get; }
-        private IContainersGetter          ContainersGetter    { get; }
-        private IColorProvider             ColorProvider       { get; }
+        private IContainersGetter    ContainersGetter    { get; }
+        private IColorProvider       ColorProvider       { get; }
+        private IViewGameTicker      ViewGameTicker      { get; }
 
         private ViewTurretProjectileTail(
+            IPrefabSetManager _PrefabSetManager,
             ICoordinateConverter _CoordinateConverter,
-            IContainersGetter          _ContainersGetter,
-            IColorProvider             _ColorProvider)
+            IContainersGetter    _ContainersGetter,
+            IColorProvider       _ColorProvider,
+            IViewGameTicker      _ViewGameTicker)
         {
+            PrefabSetManager = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
             ContainersGetter    = _ContainersGetter;
             ColorProvider       = _ColorProvider;
+            ViewGameTicker      = _ViewGameTicker;
         }
         
         #endregion
 
         #region api
-
-        public IEnumerable<Component> Renderers => m_Renderers;
-
-        public void Init(GameObject _Projectile)
+        
+        public void Init(Transform _Parent, GameObject _ProjectileObject)
         {
             if (Initialized)
                 return;
-            InitShape(_Projectile);
+            ViewGameTicker.Register(this);
+            m_ProjectileObject = _ProjectileObject;
+            InitShape(_Parent);
             base.Init();
         }
 
-        public void ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition)
+        public void ShowTail(TurretShotEventArgs _Args)
         {
-            if (_Args.From == _ProjectilePosition)
-            {
-                foreach (var line in m_Renderers)
-                    line.enabled = true;
-            }
+            m_IsShowing = true;
+            foreach (var line in m_Renderers)
+                line.enabled = true;
             var dir = _Args.Direction.Normalized;
             m_TailTr.localEulerAngles = Vector3.forward * GetAngle(dir);
         }
 
         public void HideTail()
         {
+            m_IsShowing = false;
             foreach (var line in m_Renderers)
                 line.enabled = false;
         }
@@ -96,17 +103,27 @@ namespace RMAZOR.Views.MazeItems.Additional
         }
 
         public object Clone() => new ViewTurretProjectileTail(
+            PrefabSetManager,
             CoordinateConverter,
             ContainersGetter,
-            ColorProvider);
+            ColorProvider,
+            ViewGameTicker);
+        
+        public void UpdateTick()
+        {
+            if (m_IsShowing)
+                m_TailTr.localPosition = m_ProjectileObject.transform.localPosition;
+        }
 
         #endregion
 
         #region nonpublic methods
 
-        private void InitShape(GameObject _Projectile)
+        private void InitShape(Transform _Parent)
         {
-            m_TailTr = _Projectile.GetCompItem<Transform>("tail");
+            var go = PrefabSetManager.InitPrefab(
+                _Parent, "views", "turret_projectile_tail");
+            m_TailTr = go.GetCompItem<Transform>("tail");
             m_Renderers = m_TailTr.GetComponentsInChildren<Line>().ToList();
             foreach (var line in m_Renderers)
                 line.SetStencilComp(CompareFunction.Equal);
@@ -120,17 +137,5 @@ namespace RMAZOR.Views.MazeItems.Additional
         }
 
         #endregion
-    }
-
-    public class ViewTurretProjectileTailFake : IViewTurretProjectileTail
-    {
-        public IEnumerable<Component> Renderers => new Component[] { };
-        public object                 Clone()  => new ViewTurretProjectileTailFake();
-        
-        public void Init(GameObject              _Projectile)                        { }
-        public void ShowTail(TurretShotEventArgs _Args, Vector2 _ProjectilePosition) { }
-        public void HideTail()                  { }
-        public void SetSortingOrder(int _Order) { }
-        public void SetStencilRefId(int _RefId) { }
     }
 }

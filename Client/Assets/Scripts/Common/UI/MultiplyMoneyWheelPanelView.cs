@@ -3,7 +3,6 @@ using System.Linq;
 using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
 using Common.Ticker;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,6 +55,7 @@ namespace Common.UI
 
         public void StartWheel()
         {
+            animator.enabled = true;
             UpdateThresholds();
             animator.SetTrigger(AnimKeys.Anim);
             m_DoMoveArrow = true;
@@ -64,6 +64,7 @@ namespace Common.UI
         public void StopWheel()
         {
             animator.SetTrigger(AnimKeys.Stop);
+            animator.enabled = false;
             m_DoMoveArrow = false;
         }
 
@@ -97,6 +98,22 @@ namespace Common.UI
                     _ => GetArrowPos()
                 };
             }
+        }
+        
+        public void HighlightCurrentCoefficient()
+        {
+            float arrowXpos = arrow.rectTransform.anchoredPosition.x;
+            float GetThresholdXPos(int _Index) => m_Thresholds[_Index];
+            int coeffPos;
+            if (arrowXpos < GetThresholdXPos(1))      coeffPos = 0;
+            else if (arrowXpos < GetThresholdXPos(2)) coeffPos = 1;
+            else if (arrowXpos < GetThresholdXPos(3)) coeffPos = 2;
+            else if (arrowXpos < GetThresholdXPos(4)) coeffPos = 3;
+            else                                             coeffPos = 4;
+            for (int i = 0; i < coeffBacks.Count; i++)
+                coeffBacks[i].color = m_BackColors[i];
+            Color.RGBToHSV(m_BackColors[coeffPos], out float h, out float s, out float v);
+            coeffBacks[coeffPos].color = Color.HSVToRGB(h , s + 0.3f, v + 0.2f).SetA(1f);
         }
 
         public void FixedUpdateTick()
@@ -144,28 +161,11 @@ namespace Common.UI
         private void UpdateMultiplyCoefficient()
         {
             int multCoeff = GetMultiplyCoefficientCore();
-            if (multCoeff != m_MultiplyCoefficient)
-            {
-                m_MultiplyCoefficient = multCoeff;
-                MultiplyCoefficientChanged?.Invoke(multCoeff);
-                HighlightCoefficientBackground();
-            }
-        }
-
-        private void HighlightCoefficientBackground()
-        {
-            float arrowXpos = arrow.rectTransform.anchoredPosition.x;
-            float GetThresholdXPos(int _Index) => m_Thresholds[_Index];
-            int coeffPos;
-            if (arrowXpos < GetThresholdXPos(1))      coeffPos = 0;
-            else if (arrowXpos < GetThresholdXPos(2)) coeffPos = 1;
-            else if (arrowXpos < GetThresholdXPos(3)) coeffPos = 2;
-            else if (arrowXpos < GetThresholdXPos(4)) coeffPos = 3;
-            else                                             coeffPos = 4;
-            for (int i = 0; i < coeffBacks.Count; i++)
-                coeffBacks[i].color = m_BackColors[i];
-            Color.RGBToHSV(m_BackColors[coeffPos], out float h, out float s, out float v);
-            coeffBacks[coeffPos].color = Color.HSVToRGB(h , s + 0.3f, v + 0.2f).SetA(1f);
+            if (multCoeff == m_MultiplyCoefficient) 
+                return;
+            m_MultiplyCoefficient = multCoeff;
+            MultiplyCoefficientChanged?.Invoke(multCoeff);
+            HighlightCurrentCoefficient();
         }
 
         #endregion

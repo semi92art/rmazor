@@ -137,7 +137,7 @@ namespace RMAZOR.Views.Characters
         {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                     SetLegsTransform(EMazeMoveDirection.Down);
                     ActivateShapes(true);
                     break;

@@ -74,10 +74,10 @@ Shader "RMAZOR/Background/Funny Rain"
                 float2 gv = frac(uv);
                 gv -= 0.5 + float2(sin((id.y + 2.0) * (id.x + 2.0) + time * 10.0) * 0.1, 0.0);
 
-                float c = 1.0 - smoothstep(0.1, sin_n(time + id.x * id.y) * 0.2 + 0.1, length(gv));
+                float c = 1.0 - smoothstep(0.05, sin_n(time + id.x * id.y) * 0.2 + 0.1, length(gv));
                 float3 col = c * _Color2.rgb;
 
-                col *= rand(id);
+                c *= rand(id);
 
                 fixed4 dots_col = fixed4(col,1);
                 return lerp(_Color1,dots_col,c);

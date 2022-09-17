@@ -72,7 +72,6 @@ namespace RMAZOR.Views.Characters
         private IPrefabSetManager           PrefabSetManager    { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IRendererAppearTransitioner AppearTransitioner  { get; }
-        private IModelGame                  Model               { get; }
 
         private ViewCharacterHead(
             ViewSettings                _ViewSettings,
@@ -80,8 +79,7 @@ namespace RMAZOR.Views.Characters
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
             ICoordinateConverter        _CoordinateConverter,
-            IRendererAppearTransitioner _AppearTransitioner,
-            IModelGame                  _Model)
+            IRendererAppearTransitioner _AppearTransitioner)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -89,7 +87,6 @@ namespace RMAZOR.Views.Characters
             PrefabSetManager    = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
             AppearTransitioner  = _AppearTransitioner;
-            Model               = _Model;
         }
         
         #endregion
@@ -141,7 +138,7 @@ namespace RMAZOR.Views.Characters
                     m_MazeOrientation = MazeOrientation.North;
                     SetOrientation(EMazeMoveDirection.Right, false);
                     break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                     SetOrientation(EMazeMoveDirection.Right, false);
                     ActivateShapes(true);
                     break;
@@ -233,6 +230,7 @@ namespace RMAZOR.Views.Characters
             m_Eye1Shape         = go.GetCompItem<Rectangle>("eye_1").SetSortingOrder(SortingOrders.Character + 1);
             m_Eye2Shape         = go.GetCompItem<Rectangle>("eye_2").SetSortingOrder(SortingOrders.Character + 1);
             m_BorderShape       = go.GetCompItem<Rectangle>("border").SetSortingOrder(SortingOrders.Character - 1);
+            m_HeadCollider.gameObject.layer = LayerMask.NameToLayer("γ Gamma");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
         }
         

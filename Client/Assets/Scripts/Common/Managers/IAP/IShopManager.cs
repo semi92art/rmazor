@@ -10,7 +10,7 @@ namespace Common.Managers.IAP
         void         Purchase(int _Key);
         bool         RateGame();
         ShopItemArgs GetItemInfo(int _Key);
-        void         SetPurchaseAction(int _Key, UnityAction _Action);
-        void         SetDeferredAction(int _Key, UnityAction _Action);
+        void         AddPurchaseAction(int _ProductKey, int _ActionKey, UnityAction _Action);
+        void         AddDeferredAction(int _ProductKey, int _ActionKey, UnityAction _Action);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿#if FIREBASE
+using Common.Helpers;
 
 namespace Common.Managers.Crash_Reporting
 {
@@ -35,3 +36,4 @@ namespace Common.Managers.Crash_Reporting
         }
     }
 }
+#endif

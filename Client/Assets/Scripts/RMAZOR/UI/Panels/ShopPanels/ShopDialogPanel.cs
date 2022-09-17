@@ -12,18 +12,18 @@ using Common.Providers;
 using Common.ScriptableObjects;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Items;
-using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace RMAZOR.UI.Panels.ShopPanels
 {
-    public interface IShopDialogPanel : IDialogPanel, IInit { }
+    public interface IShopDialogPanel : IInit, IShopDialogPanelBase<ShopMoneyItem> { }
     
     public class ShopDialogPanel : ShopDialogPanelBase<ShopMoneyItem>, IShopDialogPanel
     {
@@ -56,14 +56,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
             ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IColorProvider              _ColorProvider)
             : base(
                 _Managers, 
                 _UITicker,
                 _CameraProvider,
-                _ColorProvider,
-                _CommandsProceeder)
+                _ColorProvider)
         {
             Model = _Model;
         }
@@ -72,9 +70,8 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium2;
         public override EUiCategory       Category         => EUiCategory.Shop;
-        public override bool              AllowMultiple    => false;
         public          bool              Initialized      { get; private set; }
         public event UnityAction          Initialize;
         
@@ -93,7 +90,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            var title = PanelObj.GetCompItem<TextMeshProUGUI>("title");
+            var title = PanelRectTransform.GetCompItem<TextMeshProUGUI>("title");
             var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, "shop",
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture));
             Managers.LocalizationManager.AddTextObject(locInfo);
@@ -111,11 +108,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
             {
                 if (itemInSet.watchingAds)
                     continue;
-                Managers.ShopManager.SetPurchaseAction(
+                Managers.ShopManager.AddPurchaseAction(
                     itemInSet.purchaseKey, 
+                    1,
                     () => OnPaid(itemInSet.purchaseKey, itemInSet.reward));
             }
-            Managers.ShopManager.SetPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
+            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, 1, BuyHideAdsItem);
         }
 
         private void LoadItemInfos()

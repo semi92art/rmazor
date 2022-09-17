@@ -31,17 +31,18 @@ MonoBehaviour:
         threshold: 1.4
         softness: 0.9
       additionalInfo:
+        dark: 1
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
-    - main: {r: 0, g: 0, b: 0, a: 1}
-      bacground1: {r: 0.54901963, g: 0.54901963, b: 0.54901963, a: 1}
-      bacground2: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
-      inUse: 0
+    - main: {r: 0.9254902, g: 0.700985, b: 0.27450988, a: 1}
+      bacground1: {r: 0.116011046, g: 0.19750719, b: 0.31132078, a: 1}
+      bacground2: {r: 0.8396226, g: 0.50014764, b: 0.19406372, a: 1}
+      inUse: 1
       pathItemFillType: 0
-      pathBackgroundFillType: 2
-      pathFillFillType: 1
-      characterBorderFillType: 2
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 1
       uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
@@ -51,6 +52,7 @@ MonoBehaviour:
         threshold: 1.4
         softness: 0.9
       additionalInfo:
+        dark: 0
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
@@ -71,6 +73,7 @@ MonoBehaviour:
         threshold: 1.4
         softness: 0.9
       additionalInfo:
+        dark: 1
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
@@ -91,6 +94,7 @@ MonoBehaviour:
         threshold: 4.5
         softness: 1
       additionalInfo:
+        dark: 1
         neonStreamColorCoefficient1: 0.35
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
@@ -111,6 +115,7 @@ MonoBehaviour:
         threshold: 1.4
         softness: 0.9
       additionalInfo:
+        dark: 0
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
@@ -131,6 +136,7 @@ MonoBehaviour:
         threshold: 0
         softness: 0
       additionalInfo:
+        dark: 0
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4

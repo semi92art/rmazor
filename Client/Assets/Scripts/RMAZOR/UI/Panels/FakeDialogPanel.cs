@@ -1,5 +1,6 @@
 ﻿using Common.Enums;
 using Common.UI;
+using Common.UI.DialogViewers;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels
