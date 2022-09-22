@@ -25,12 +25,11 @@ namespace RMAZOR.Views.Common
         #region inject
 
         private IFullscreenTextureProviderParallaxGradientCircles TextureProviderParallaxCircles { get; }
-        private IFullscreenTextureProviderRaveSquares             TextureProviderRaveSquares     { get; }
-        private IFullscreenTextureProviderSwirlForPlanet          TextureProviderSwirlForPlanet  { get; }
-        private IFullscreenTextureProviderTriangles2              TextureProviderTriangles2      { get; }
-        private IFullscreenTextureProviderFallInDeep              TextureProviderFallInDeep      { get; }
-        private IFullscreenTextureProviderBluePurplePlaid         TextureProviderBluePurplePlaid { get; }
-        private IFullscreenTextureProviderLogichroma              TextureProviderLogichroma      { get; }
+        private IFullscreenTextureProviderRaveSquares     TextureProviderRaveSquares     { get; }
+        private IFullscreenTextureProviderSwirlForPlanet  TextureProviderSwirlForPlanet  { get; }
+        private IFullscreenTextureProviderTriangles2      TextureProviderTriangles2      { get; }
+        private IFullscreenTextureProviderFallInDeep      TextureProviderFallInDeep      { get; }
+        private IFullscreenTextureProviderBluePurplePlaid TextureProviderBluePurplePlaid { get; }
 
         private ViewMazeBackgroundTextureController(
             IRemotePropertiesRmazor                           _RemoteProperties,
@@ -41,8 +40,7 @@ namespace RMAZOR.Views.Common
             IFullscreenTextureProviderSwirlForPlanet          _TextureProviderSwirlForPlanet,
             IFullscreenTextureProviderTriangles2              _TextureProviderTriangles2,
             IFullscreenTextureProviderFallInDeep              _TextureProviderFallInDeep,
-            IFullscreenTextureProviderBluePurplePlaid         _TextureProviderBluePurplePlaid,
-            IFullscreenTextureProviderLogichroma              _TextureProviderLogichroma)
+            IFullscreenTextureProviderBluePurplePlaid _TextureProviderBluePurplePlaid)
             : base(
                 _RemoteProperties,
                 _ColorProvider, 
@@ -54,7 +52,6 @@ namespace RMAZOR.Views.Common
             TextureProviderTriangles2      = _TextureProviderTriangles2;
             TextureProviderFallInDeep      = _TextureProviderFallInDeep;
             TextureProviderBluePurplePlaid = _TextureProviderBluePurplePlaid;
-            TextureProviderLogichroma      = _TextureProviderLogichroma;
         }
 
         #endregion
@@ -69,8 +66,7 @@ namespace RMAZOR.Views.Common
             TextureProviderSwirlForPlanet  .Init();
             TextureProviderTriangles2      .Init();
             TextureProviderFallInDeep      .Init();
-            TextureProviderBluePurplePlaid .Init();
-            TextureProviderLogichroma      .Init();
+            TextureProviderBluePurplePlaid.Init();
             base.Init();
         }
 
@@ -151,9 +147,8 @@ namespace RMAZOR.Views.Common
             TextureProviderTriangles2     .Activate(false);
             TextureProviderFallInDeep     .Activate(false);
             TextureProviderBluePurplePlaid.Activate(false);
-            TextureProviderLogichroma     .Activate(false);
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int c = group % 7;
+            int c = group % 6;
             switch (c)
             {
                 case 0: _Provider = TextureProviderParallaxCircles; break;
@@ -174,7 +169,6 @@ namespace RMAZOR.Views.Common
                     break;
                 case 4: _Provider = TextureProviderFallInDeep;      break;
                 case 5: _Provider = TextureProviderBluePurplePlaid; break;
-                case 6: _Provider = TextureProviderLogichroma;      break;
                 default: throw new SwitchCaseNotImplementedException(c);
             }
             _Provider.Activate(true);

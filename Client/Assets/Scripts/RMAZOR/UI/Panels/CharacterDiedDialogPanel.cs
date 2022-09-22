@@ -11,7 +11,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -23,10 +22,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface ICharacterDiedDialogPanel : IDialogPanel
-    {
-        void ReturnFromShopPanel();
-    }
+    public interface ICharacterDiedDialogPanel : IDialogPanel { }
     
     public class CharacterDiedDialogPanel : DialogPanelBase, ICharacterDiedDialogPanel
     {
@@ -40,11 +36,11 @@ namespace RMAZOR.UI.Panels
 
         private Animator           m_PanelAnimator;
         private AnimationTriggerer m_Triggerer;
-        private Image              m_MoneyInBankIcon;
-        private Image              m_MoneyIconInPayButton;
+        private Image              m_MoneyIcon1;
+        private Image              m_MoneyIcon2;
         private Image              m_IconWatchAds;
         private TextMeshProUGUI    m_TextYouHaveMoney;
-        private TextMeshProUGUI    m_MoneyInBankText;
+        private TextMeshProUGUI    m_TextMoneyCount;
         private TextMeshProUGUI    m_TextContinue;
         private TextMeshProUGUI    m_TextPayMoneyCount;
         private TextMeshProUGUI    m_TextNotEnoughMoney;
@@ -56,17 +52,15 @@ namespace RMAZOR.UI.Panels
         private bool               m_MoneyPayed;
         private long               m_MoneyCount;
         private bool               m_PanelShowing;
-        private bool               m_WentToShopPanel;
-        private float              m_BorderFillAmount;
 
         #endregion
 
         #region inject
 
-        private GlobalGameSettings          GlobalGameSettings      { get; }
-        private IModelGame                  Model                   { get; }
-        private IViewInputCommandsProceeder CommandsProceeder       { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader    { get; }
+        private GlobalGameSettings          GlobalGameSettings   { get; }
+        private IModelGame                  Model                { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
 
         protected CharacterDiedDialogPanel(
             GlobalGameSettings          _GlobalGameSettings,
@@ -83,18 +77,19 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
-            GlobalGameSettings      = _GlobalGameSettings;
-            Model                   = _Model;
-            CommandsProceeder       = _CommandsProceeder;
-            BetweenLevelAdLoader    = _BetweenLevelAdLoader;
+            GlobalGameSettings   = _GlobalGameSettings;
+            Model                = _Model;
+            CommandsProceeder    = _CommandsProceeder;
+            BetweenLevelAdLoader = _BetweenLevelAdLoader;
         }
         
         #endregion
         
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
         public override EUiCategory       Category         => EUiCategory.CharacterDied;
+        public override bool              AllowMultiple    => false;
         public override Animator          Animator         => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
@@ -106,21 +101,21 @@ namespace RMAZOR.UI.Panels
                     RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");
             PanelRectTransform = go.RTransform();
-            PanelRectTransform.SetGoActive(false);
-            m_PanelAnimator           = go.GetCompItem<Animator>(          "animator");
+            go.SetActive(false);
+            m_PanelAnimator           = go.GetCompItem<Animator>("animator");
             m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_ButtonWatchAds          = go.GetCompItem<Button>(            "watch_ads_button");
-            m_ButtonPayMoney          = go.GetCompItem<Button>(            "pay_money_button");
-            m_TextYouHaveMoney        = go.GetCompItem<TextMeshProUGUI>(   "you_have_text");
-            m_MoneyInBankText         = go.GetCompItem<TextMeshProUGUI>(   "money_count_text");
-            m_TextPayMoneyCount       = go.GetCompItem<TextMeshProUGUI>(   "pay_money_count_text");
-            m_TextContinue            = go.GetCompItem<TextMeshProUGUI>(   "continue_text");
-            m_TextNotEnoughMoney      = go.GetCompItem<TextMeshProUGUI>(   "not_enough_money_text");
-            m_AnimLoadingAds          = go.GetCompItem<Animator>(          "loading_ads_anim");
-            m_MoneyInBankIcon         = go.GetCompItem<Image>(             "money_icon_1");
-            m_MoneyIconInPayButton    = go.GetCompItem<Image>(             "money_icon_2");
-            m_IconWatchAds            = go.GetCompItem<Image>(             "watch_ads_icon");
-            m_RoundFilledBorder       = go.GetCompItem<Image>(             "round_filled_border");
+            m_ButtonWatchAds          = go.GetCompItem<Button>("watch_ads_button");
+            m_ButtonPayMoney          = go.GetCompItem<Button>("pay_money_button");
+            m_TextYouHaveMoney        = go.GetCompItem<TextMeshProUGUI>("you_have_text");
+            m_TextMoneyCount          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_TextPayMoneyCount       = go.GetCompItem<TextMeshProUGUI>("pay_money_count_text");
+            m_TextContinue            = go.GetCompItem<TextMeshProUGUI>("continue_text");
+            m_TextNotEnoughMoney      = go.GetCompItem<TextMeshProUGUI>("not_enough_money_text");
+            m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
+            m_MoneyIcon1              = go.GetCompItem<Image>("money_icon_1");
+            m_MoneyIcon2              = go.GetCompItem<Image>("money_icon_2");
+            m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
+            m_RoundFilledBorder       = go.GetCompItem<Image>("round_filled_border");
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
             m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
             Managers.LocalizationManager.AddTextObject(
@@ -134,46 +129,19 @@ namespace RMAZOR.UI.Panels
                     _T => _T.ToUpper()));
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
-            m_MoneyInBankIcon.sprite = moneyIconSprite;
-            m_MoneyIconInPayButton.sprite = moneyIconSprite;
+            m_MoneyIcon1.sprite = moneyIconSprite;
+            m_MoneyIcon2.sprite = moneyIconSprite;
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             m_RoundFilledBorder.color = ColorProvider.GetColor(ColorIds.UiBorder);
-        }
-
-        public void ReturnFromShopPanel()
-        {
-            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, 
-                true);
-            Cor.Run(Cor.WaitWhile(() => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogError("Failed to load money count entity when " +
-                                     "return from shop panel to character died panel");
-                        return;
-                    }
-                    m_MoneyCount = savedGame.Money;
-                    m_MoneyInBankText.text = m_MoneyCount.ToString();
-                }));
-            m_AdsWatched      = false;
-            m_MoneyPayed      = false;
-            m_WentToShopPanel = false;
-            m_PanelShowing    = true;
-            Cor.Run(StartCountdown());
+            m_AdsWatched = false;
+            m_MoneyPayed = false;
+            m_PanelShowing = false;
         }
 
         public override void OnDialogStartAppearing()
         {
-            m_BorderFillAmount = 1f;
-            m_AdsWatched = false;
-            m_MoneyPayed = false;
-            m_WentToShopPanel = false;
             m_PanelShowing = true;
-            m_RoundFilledBorder.fillAmount = 1f;
             CameraProvider.EnableEffect(ECameraEffect.Glitch, true);
             var props = new FastGlitchProps
             {
@@ -190,6 +158,7 @@ namespace RMAZOR.UI.Panels
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 CommonData.SavedGameFileName, 
                 true);
+            IndicateMoneyCountLoading(true);
             Cor.Run(Cor.WaitWhile(
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
@@ -201,8 +170,10 @@ namespace RMAZOR.UI.Panels
                         return;
                     }
                     m_MoneyCount = savedGame.Money;
-                    m_MoneyInBankText.text = m_MoneyCount.ToString();
-                    SetBankIsLoaded();
+                    m_TextMoneyCount.text = m_MoneyCount.ToString();
+                    IndicateMoneyCountLoading(
+                        false,
+                        m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount);
                 }));
             Cor.Run(Cor.WaitNextFrame(() =>
             {
@@ -234,37 +205,7 @@ namespace RMAZOR.UI.Panels
             if (_ColorId == ColorIds.UiBorder)
                 m_RoundFilledBorder.color = _Color;
         }
-        
-        private void OnWatchAdsButtonClick()
-        {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
-            Managers.AdsManager.ShowRewardedAd(_OnReward: () => m_AdsWatched = true, _Skippable: false);
-        }
 
-        private void OnPayMoneyButtonClick()
-        {
-            bool isMoneyEnough = m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount;
-            if (!isMoneyEnough)
-            {
-                RegisterPurchaseActionsFinishCurrentLevel();
-                CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu,
-                    new object[] {CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel}, true);
-                m_WentToShopPanel = true;
-                CameraProvider.EnableEffect(ECameraEffect.Glitch, false);
-            }
-            else
-            {
-                var savedGame = new SavedGame
-                {
-                    FileName = CommonData.SavedGameFileName,
-                    Money = m_MoneyCount - GlobalGameSettings.payToContinueMoneyCount,
-                    Level = Model.LevelStaging.LevelIndex
-                };
-                Managers.ScoreManager.SaveGameProgress(savedGame, false);
-                m_MoneyPayed = true;
-            }
-        }
-        
         private void IndicateAdsLoading(bool _Indicate)
         {
             if (!m_PanelShowing)
@@ -274,27 +215,60 @@ namespace RMAZOR.UI.Panels
             m_ButtonWatchAds.interactable = !_Indicate;
         }
 
-        private void SetBankIsLoaded()
+        private void IndicateMoneyCountLoading(bool _Indicate, bool _IsMoneyEnough = true)
         {
-            m_MoneyInBankIcon.enabled      = true;
-            m_MoneyInBankText.enabled      = true;
-            m_MoneyIconInPayButton.enabled = true;
-            m_TextPayMoneyCount.enabled    = true;
-            m_ButtonPayMoney.interactable  = true;
-            m_TextNotEnoughMoney.enabled   = false;
+            m_MoneyIcon2.enabled = !_Indicate;
+            m_TextMoneyCount.enabled = !_Indicate;
+            if (_Indicate)
+            {
+                m_TextNotEnoughMoney.enabled  = false;
+                m_TextPayMoneyCount.enabled   = false;
+                m_MoneyIcon1.enabled          = false;
+                m_ButtonPayMoney.interactable = false;
+            }
+            else
+            {
+                m_TextNotEnoughMoney.enabled  = !_IsMoneyEnough;
+                m_TextPayMoneyCount.enabled   = _IsMoneyEnough;
+                m_MoneyIcon1.enabled          = _IsMoneyEnough;
+                m_ButtonPayMoney.interactable = _IsMoneyEnough;
+            }
+        }
+
+        private void OnWatchAdsButtonClick()
+        {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
+            Managers.AdsManager.ShowRewardedAd(_OnReward: () => m_AdsWatched = true, _Skippable: false);
+        }
+
+        private void OnPayMoneyButtonClick()
+        {
+            var savedGame = new SavedGame
+            {
+                FileName = CommonData.SavedGameFileName,
+                Money = m_MoneyCount - GlobalGameSettings.payToContinueMoneyCount,
+                Level = Model.LevelStaging.LevelIndex
+            };
+            Managers.ScoreManager.SaveGameProgress(savedGame, false);
+            m_MoneyPayed = true;
         }
 
         private IEnumerator StartCountdown()
         {
             yield return Cor.Lerp(
                 Ticker,
-                CountdownTime * m_BorderFillAmount,
-                m_BorderFillAmount,
-                0f,
-                _P => m_RoundFilledBorder.fillAmount = m_BorderFillAmount = _P,
-                _BreakPredicate: () => m_AdsWatched || m_MoneyPayed || m_WentToShopPanel,
+                CountdownTime,
+                _OnProgress: _P => m_RoundFilledBorder.fillAmount = 1f - _P,
+                _BreakPredicate: () => m_AdsWatched || m_MoneyPayed,
                 _OnFinishEx: (_Broken, _) =>
                 {
+                    void RaiseContinueCommand()
+                    {
+                        CommandsProceeder.RaiseCommand(
+                            EInputCommand.ReadyToStartLevel,
+                            null, 
+                            true);
+                    }
                     void RaiseLoadFirstLevelInGroupCommand()
                     {
                         BetweenLevelAdLoader.ShowAd = false;
@@ -303,9 +277,6 @@ namespace RMAZOR.UI.Panels
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
                             true);
                     }
-
-                    if (_Broken && m_WentToShopPanel)
-                        return;
                     OnClose(() =>
                     {
                         if (_Broken)
@@ -314,53 +285,6 @@ namespace RMAZOR.UI.Panels
                             RaiseLoadFirstLevelInGroupCommand();
                     });
                 });
-        }
-        
-        private void RegisterPurchaseActionsFinishCurrentLevel()
-        {
-            // TODO по идее обновлять инфу нужно сразу после покупки, но хуй с ним
-            // var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
-            //     "shop_items", "shop_money_items_set").set;
-            // foreach (var item in set)
-            // {
-            //     Managers.ShopManager.AddPurchaseAction(item.purchaseKey, 2, () =>
-            //     {
-            //         var commandsHistoryReversed = CommandsProceeder.CommandsHistory.ToArray().Reverse();
-            //         System.Tuple<EInputCommand, object[]> lastShopCommand = commandsHistoryReversed.FirstOrDefault(
-            //             _Command => _Command.Item1 == EInputCommand.ShopMenu);
-            //
-            //         var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-            //             CommonData.SavedGameFileName, 
-            //             true);
-            //         
-            //         if (lastShopCommand == null ||
-            //             !lastShopCommand.Item2.Contains(CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel))
-            //         {
-            //             return;
-            //         }
-            //         var savedGame = new SavedGame
-            //         {
-            //             FileName = CommonData.SavedGameFileName,
-            //             Money = m_MoneyCount - GlobalGameSettings.payToContinueMoneyCount,
-            //             Level = Model.LevelStaging.LevelIndex
-            //         };
-            //         Managers.ScoreManager.SaveGameProgress(savedGame, false);
-            //         m_MoneyPayed = true;
-            //         var dv1 = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerType);
-            //         dv1.Back();
-            //         dv1 = DialogViewersController.GetViewer(DialogViewerType);
-            //         dv1.Back();
-            //         RaiseContinueCommand();
-            //     });
-            // }
-        }
-        
-        private void RaiseContinueCommand()
-        {
-            CommandsProceeder.RaiseCommand(
-                EInputCommand.ReadyToStartLevel,
-                null, 
-                true);
         }
         
         #endregion

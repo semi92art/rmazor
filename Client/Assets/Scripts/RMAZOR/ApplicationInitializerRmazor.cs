@@ -96,6 +96,7 @@ namespace RMAZOR
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
             LogAppInfo();
+            yield return Cor.Delay(0.5f, CommonTicker); // для более плавной загрузки логотипа компании
             yield return PermissionsRequestCoroutine();
             InitStartData();
             InitGameManagers();

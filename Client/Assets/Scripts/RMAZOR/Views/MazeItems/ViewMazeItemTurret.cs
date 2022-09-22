@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -49,7 +50,7 @@ namespace RMAZOR.Views.MazeItems
         
         private float               m_RotatingSpeed;
         private bool                m_ProjRotating;
-        private bool                m_ProjectileMovingLocked = true;
+        private Disc                m_HolderBorder;
         private Rectangle           m_ProjectileMask;
         private BoxCollider2D       m_ProjectileMaskCollider;
         private TurretShotEventArgs m_LastShotArgs;
@@ -65,7 +66,6 @@ namespace RMAZOR.Views.MazeItems
         private IViewTurretProjectile         ProjectileFake       { get; }
         private IViewTurretBody               TurretBody           { get; }
         private IViewParticlesThrower         ParticlesThrower     { get; }
-        private IViewCharacter                Character            { get; }
 
         private ViewMazeItemTurret(
             ViewSettings                  _ViewSettings,
@@ -81,8 +81,7 @@ namespace RMAZOR.Views.MazeItems
             IViewMazeAdditionalBackground _AdditionalBackground,
             IViewTurretProjectile         _Projectile,
             IViewTurretBody               _TurretBody,
-            IViewParticlesThrower         _ParticlesThrower,
-            IViewCharacter                _Character)
+            IViewParticlesThrower         _ParticlesThrower)
             : base(
                 _ViewSettings,
                 _Model,
@@ -99,7 +98,6 @@ namespace RMAZOR.Views.MazeItems
             Projectile           = _Projectile;
             TurretBody           = _TurretBody;
             ParticlesThrower     = _ParticlesThrower;
-            Character            = _Character;
             ProjectileFake       = Projectile.Clone() as IViewTurretProjectile;
         }
         
@@ -123,8 +121,7 @@ namespace RMAZOR.Views.MazeItems
             AdditionalBackground,
             Projectile.Clone()       as IViewTurretProjectile,
             TurretBody.Clone()       as IViewTurretBody,
-            ParticlesThrower.Clone() as IViewParticlesThrower,
-            Character);
+            ParticlesThrower.Clone() as IViewParticlesThrower);
 
         public override bool ActivatedInSpawnPool
         {
@@ -135,11 +132,12 @@ namespace RMAZOR.Views.MazeItems
                 {
                     m_ProjectileMaskCollider.enabled = false;
                     m_ProjectileMask.enabled = false;
+                    m_HolderBorder.enabled   = false;
                 }
-                TurretBody    .Activated  = value;
-                Projectile    .Activated  = value;
-                ProjectileFake.Activated  = value;
-                base.ActivatedInSpawnPool = value;
+                TurretBody.ActivatedInSpawnPool = value;
+                Projectile.Activated            = value;
+                ProjectileFake.Activated        = value;
+                base.ActivatedInSpawnPool       = value;
             }
         }
 
@@ -188,14 +186,19 @@ namespace RMAZOR.Views.MazeItems
         {
             if (!Initialized || !ActivatedInSpawnPool)
                 return;
-            if (AppearingState == EAppearingState.Dissapeared || AppearingState == EAppearingState.Appearing)
+            if (AppearingState == EAppearingState.Dissapeared)
+                return;
+            m_HolderBorder.DashOffset = MathUtils.ClampInverse(
+                m_HolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
+                0f, 10f);
+            if (AppearingState == EAppearingState.Appearing)
                 return;
             if (!m_ProjRotating)
-                Projectile.Rotation = ProjectileFake.Rotation;
+                Projectile.ProjectileTransform.localRotation = ProjectileFake.ProjectileTransform.localRotation;
             else
             {
                 var angles = Vector3.forward * m_RotatingSpeed * GameTicker.DeltaTime;
-                Projectile.Rotation = Quaternion.Euler(Projectile.Rotation.eulerAngles + angles);
+                Projectile.ProjectileTransform.Rotate(angles);
             }
         }
 
@@ -213,6 +216,14 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
+            int sortingOrder = GetSortingOrder();
+            m_HolderBorder = Object.AddComponentOnNewChild<Disc>("Border", out _)
+                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
+                .SetSortingOrder(sortingOrder + 1)
+                .SetType(DiscType.Ring)
+                .SetDashed(true)
+                .SetDashType(DashType.Rounded)
+                .SetDashSize(2f);
             var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             static void SetProjectileMaskProperties(Rectangle _Mask)
             {
@@ -243,25 +254,10 @@ namespace RMAZOR.Views.MazeItems
         {
             if (m_LastShotArgs == null)
                 return;
-
-            void StopProjectile()
-            {
-                m_ProjectileMovingLocked = true;
-                Projectile.SetVelocity(Vector2.zero);
-            }
-            if (Character.GetObjects().Colliders.Contains(_Collider))
-            {
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
-                StopProjectile();
-                return;
-            }
             bool isThisCollider = _Collider.transform.localPosition == m_MaskColliderCurrentPosition;
             if (!isThisCollider)
                 return;
-            StopProjectile();
-            ThrowParticlesOnProjectileAndWallCollision(
-                m_LastShotArgs.To,
-                m_LastShotArgs.Direction);
+            ThrowParticlesOnProjectileAndWallCollision(m_LastShotArgs.To, m_LastShotArgs.Direction);
         }
 
         private void InitParticlesThrower()
@@ -278,13 +274,15 @@ namespace RMAZOR.Views.MazeItems
             TurretBody.SetTurretContainer(Object);
             float scale = CoordinateConverter.Scale;
             var projectileScale = Vector2.one * scale * ProjectileContainerRadius * 0.9f;
-            Projectile.SetScale(projectileScale);
-            ProjectileFake.SetScale(projectileScale);
+            Projectile.ContainerTransform.SetLocalScaleXY(projectileScale);
+            ProjectileFake.ContainerTransform.SetLocalScaleXY(projectileScale);
             var pos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
-            Projectile.SetPosition(pos);
-            ProjectileFake.SetPosition(pos);
+            Projectile.ContainerTransform.SetLocalPosXY(pos);
+            ProjectileFake.ContainerTransform.SetLocalPosXY(pos);
             m_ProjectileMask.SetWidth(scale).SetHeight(scale).enabled = false;
             m_ProjectileMaskCollider.size = Vector2.one * scale;
+            m_HolderBorder.SetRadius(scale * ProjectileContainerRadius * 0.9f)
+                .SetThickness(ViewSettings.LineThickness * scale * 0.5f);
         }
 
         private void SetStencilRefValues(List<PointsGroupArgs> _Groups)
@@ -310,7 +308,10 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            
+            switch (_ColorId)
+            {
+                case ColorIds.Main: m_HolderBorder.Color = _Color; break;
+            }
         }
 
         private IEnumerator HandleTurretPreShootCoroutine()
@@ -342,11 +343,11 @@ namespace RMAZOR.Views.MazeItems
                 GameTicker,
                 () =>
                 {
+                    Projectile.ProjectileTransform.SetLocalPosXY(Vector2.zero);
                     Projectile.Show(true);
                     ProjectileFake.Show(false);
                     var projectilePos = CoordinateConverter.ToLocalMazeItemPosition(Props.Position);
-                    Projectile.SetPosition(projectilePos);
-                    Projectile.SetVelocity(Vector2.zero);
+                    Projectile.ContainerTransform.SetLocalPosXY(projectilePos);
                     HighlightBarrel(true);
                     OpenBarrel(true);
                 });
@@ -376,17 +377,14 @@ namespace RMAZOR.Views.MazeItems
         
         private IEnumerator AnimateFakeProjectileBeforeShoot()
         {
-            ProjectileFake.SetScale(Vector2.zero);
+            ProjectileFake.ContainerTransform.localScale = Vector3.zero;
             ProjectileFake.Show(true);
-            ProjectileFake.SetPosition(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
+            ProjectileFake.ContainerTransform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             yield return Cor.Lerp(
                 GameTicker,
                 0.2f,
-                _OnProgress: _P =>
-                {
-                    ProjectileFake.SetScale(
-                        Vector2.one * _P * CoordinateConverter.Scale * ProjectileContainerRadius * 0.9f);
-                });
+                _OnProgress: _P => ProjectileFake.ContainerTransform.localScale =
+                    Vector3.one * _P * CoordinateConverter.Scale * ProjectileContainerRadius * 0.9f);
         }
         
         private void OpenBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
@@ -403,26 +401,90 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
-            m_ProjectileMovingLocked = false;
             m_LastShotArgs = _Args;
             Managers.AudioManager.PlayClip(GetAudioClipArgsShurikenFly());
-            Projectile.Tail.ShowTail(_Args);
+            Vector2 projectilePos = _Args.From;
+            Projectile.Tail.ShowTail(_Args, projectilePos);
+            var projectilePosPrev = projectilePos;
+            bool movedToTheEnd = false;
             m_ProjRotating = true;
             m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed;
-            var velocity = (Vector2) _Args.Direction
-                           * Model.Settings.turretProjectileSpeed;
-            Projectile.SetVelocity(velocity);
-            yield return Cor.WaitWhile(() => !m_ProjectileMovingLocked,
-                () =>
+            var fullPath = RmazorUtils.GetFullPath(_Args.From, _Args.To);
+            V2Int pointCheck = default;
+            bool CorPredicate()
+            {
+                return ProjectileMovingPredicate(
+                    fullPath, 
+                    projectilePos,
+                    projectilePosPrev,
+                    ref movedToTheEnd);
+            }
+            void CorAction()
+            {
+                projectilePosPrev = projectilePos;
+                projectilePos += (Vector2)_Args.Direction
+                                 * Model.Settings.turretProjectileSpeed
+                                 * GameTicker.FixedDeltaTime;
+                Projectile.ContainerTransform.SetLocalPosXY(
+                    CoordinateConverter.ToLocalMazeItemPosition(projectilePos));
+                var point = V2Int.Round(projectilePos);
+                Projectile.Tail.ShowTail(_Args, projectilePos);
+                if (point == _Args.To && point != pointCheck)
                 {
-                    m_ProjRotating = false;
-                    Projectile.Show(false);
-                    Projectile.Tail.HideTail();
-                }, _Ticker: GameTicker);
+                    // ThrowParticlesOnProjectileAndWallCollision(_Args.To, _Args.Direction);
+                }
+
+                pointCheck = point;
+                if (point == _Args.To + _Args.Direction)
+                    movedToTheEnd = true;
+            }
+
+            void CorFinish()
+            {
+                m_ProjRotating = false;
+                Projectile.Show(false);
+                Projectile.Tail.HideTail();
+            }
+            
+            yield return Cor.DoWhile(
+                CorPredicate,
+                CorAction,
+                CorFinish,
+                GameTicker,
+                _FixedUpdate: true);
         }
 
-
-        
+        private bool ProjectileMovingPredicate(
+            ICollection<V2Int> _ProjectilePath,
+            Vector2 _ProjectilePosition,
+            Vector2 _PrevProjectilePosition,
+            ref bool _MovedToTheEnd)
+        {
+            var point = (V2Int)_ProjectilePosition;
+            if (Model.Character.IsMoving)
+            {
+                if (_ProjectilePath.Contains(point) 
+                    && CheckForDeathWhileCharacterMoving(
+                        _PrevProjectilePosition,
+                        _ProjectilePosition,
+                        Model.Character.MovingInfo.PreviousPrecisePosition,
+                        Model.Character.MovingInfo.PrecisePosition))
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (_ProjectilePath.Contains(point) 
+                    && CheckForCharacterDeathWhileCharacterNotMoving(
+                        Model.Character.Position,
+                        _ProjectilePosition))
+                {
+                    return false;
+                }
+            }
+            return !_MovedToTheEnd;
+        }
 
         private void StopProceedingTurret()
         {
@@ -464,7 +526,66 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            return null;
+            return new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new [] {m_HolderBorder}, () => ColorProvider.GetColor(ColorIds.Main)},
+            };
+        }
+
+        private bool CheckForCharacterDeathWhileCharacterNotMoving(Vector2 _CharacterPos, Vector2 _ProjectilePos)
+        {
+            if (!IsDeathPossible())
+                return false;
+            bool result = Vector2.Distance(_CharacterPos, _ProjectilePos) + MathUtils.Epsilon < 0.9f;
+            if (result)
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+            return result;
+        }
+
+        private bool CheckForDeathWhileCharacterMoving(
+            Vector2 _ProjectileStart,
+            Vector2 _ProjectileEnd,
+            Vector2 _CharacterStart,
+            Vector2 _CharacterEnd)
+        {
+            if (!IsDeathPossible())
+                return false;
+            var intersection = MathUtils.LineSegementsIntersect(
+                _ProjectileStart, 
+                _ProjectileEnd,
+                _CharacterStart,
+                _CharacterEnd);
+            if (intersection.HasValue)
+            {
+                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                    new object[] { CoordinateConverter.ToLocalMazeItemPosition(intersection.Value) });
+                return true;
+            }
+            var projAveragePos = (_ProjectileStart + _ProjectileEnd) * 0.5f;
+            var charAveragePos = (_CharacterStart + _CharacterEnd) * 0.5f;
+            if (!(Vector2.Distance(projAveragePos, charAveragePos) + MathUtils.Epsilon < 0.9f)) 
+                return false;
+            CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
+                new object[] { CoordinateConverter.ToLocalMazeItemPosition(charAveragePos) });
+            return true;
+        }
+
+        private bool IsDeathPossible()
+        {
+            if (!Initialized || !ActivatedInSpawnPool)
+                return false;
+            if (ProceedingStage != EProceedingStage.ActiveAndWorking)
+                return false;
+            if (!Model.Character.Alive)
+                return false;
+            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
+                return false;
+            return !Model.PathItemsProceeder.AllPathsProceeded;
+        }
+
+        private static AudioClipArgs GetAudioClipArgsShurikenFly()
+        {
+            return new AudioClipArgs("shuriken", EAudioClipType.GameSound);
         }
         
         private void ThrowParticlesOnProjectileAndWallCollision(
@@ -490,11 +611,6 @@ namespace RMAZOR.Views.MazeItems
                 float randScale = 0.5f + 0.3f * UnityEngine.Random.value;
                 ParticlesThrower.ThrowParticle(pos, fullSpeedVector, randScale, 0.1f);
             }
-        }
-        
-        private static AudioClipArgs GetAudioClipArgsShurikenFly()
-        {
-            return new AudioClipArgs("shuriken", EAudioClipType.GameSound);
         }
 
         #endregion

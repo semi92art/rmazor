@@ -16,18 +16,11 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
-    public class ViewTurretBodySquare : ViewTurretBodyBase, IUpdateTick
+    public class ViewTurretBodySquare : ViewTurretBodyBase
     {
-        #region constants
-
-        private const float ProjectileContainerRadius = 0.4f;
-        
-        #endregion
-        
         #region nonpublic members
         
         private Rectangle m_Body;
-        private Disc      m_HolderBorder;
 
         #endregion
 
@@ -51,7 +44,18 @@ namespace RMAZOR.Views.MazeItems.Additional
         #endregion
 
         #region api
-        
+
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                base.ActivatedInSpawnPool = value;
+                if (!ActivatedInSpawnPool)
+                    m_Body.enabled = false;
+            }
+        }
+
         public override object Clone()
         {
             return new ViewTurretBodySquare(
@@ -62,27 +66,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 CoordinateConverter,
                 Transitioner);
         }
-
-        public override bool Activated
-        {
-            get => base.Activated;
-            set
-            {
-                if (!value)
-                {
-                    m_Body.enabled = false;
-                    m_HolderBorder.enabled = false;
-                }
-                base.Activated = value;
-            }
-        }
-
-        public override void Init()
-        {
-            GameTicker.Register(this);
-            base.Init();
-        }
-
+        
         public override void OpenBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
         {
             Cor.Run(OpenBarrelCore(_Open, _Instantly, _Forced));
@@ -93,13 +77,6 @@ namespace RMAZOR.Views.MazeItems.Additional
             Cor.Run(HighlightBarrelCore(_Open, _Instantly, _Forced));
         }
         
-        public void UpdateTick()
-        {
-            m_HolderBorder.DashOffset = MathUtils.ClampInverse(
-                m_HolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
-                0f, 10f);
-        }
-        
         #endregion
 
         #region nonpublic methods
@@ -108,10 +85,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         {
             switch (_ColorId)
             {
-                case ColorIds.Main: 
-                    m_Body.SetColor(_Color);
-                    m_HolderBorder.SetColor(_Color);
-                    break;
+                case ColorIds.Main: m_Body.Color = _Color; break;
             }
             base.OnColorChanged(_ColorId, _Color);
         }
@@ -129,14 +103,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 .SetMatchDashSpacingToDashSize(false)
                 .SetDashSize(0.5f)
                 .SetDashSnap(DashSnapping.Tiling)
-                .SetDashType(DashType.Rounded);
-            m_HolderBorder = Container.AddComponentOnNewChild<Disc>("Border", out _)
-                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
-                .SetSortingOrder(sortingOrder + 1)
-                .SetType(DiscType.Ring)
-                .SetDashed(true)
-                .SetDashType(DashType.Rounded)
-                .SetDashSize(2f);
+                .SetDashType(DashType.Basic);
         }
 
         protected override void UpdateShape()
@@ -147,8 +114,6 @@ namespace RMAZOR.Views.MazeItems.Additional
                 .SetWidth(scale * (1f + ViewSettings.LineThickness))
                 .SetThickness(scale * ViewSettings.LineThickness)
                 .SetCornerRadius(scale * ViewSettings.CornerRadius);
-            m_HolderBorder.SetRadius(scale * ProjectileContainerRadius * 0.9f)
-                .SetThickness(ViewSettings.LineThickness * scale * 0.5f);
         }
 
         private IEnumerator OpenBarrelCore(bool _Open, bool _Instantly, bool _Forced)
@@ -202,6 +167,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 },
                 _BreakPredicate: () => AppearingState != EAppearingState.Appeared
                                        || Model.LevelStaging.LevelStage == ELevelStage.Finished);
+
         }
         
         protected override void OnAppearStart(bool _Appear)
@@ -222,7 +188,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         {
             var dict = base.GetAppearSets(_Appear);
             var col = ColorProvider.GetColor(ColorIds.Main);
-            dict.Add(new Component[] {m_Body, m_HolderBorder}, () => col);
+            dict.Add(new [] {m_Body}, () => col);
             return dict;
         }
         

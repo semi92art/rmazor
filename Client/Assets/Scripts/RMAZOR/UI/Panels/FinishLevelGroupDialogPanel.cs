@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
@@ -14,7 +13,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
@@ -62,7 +60,6 @@ namespace RMAZOR.UI.Panels
         private AnimationTriggerer          m_Triggerer;
         private Sprite                      m_MultipliedMoneySprite;
         private long                        m_MultiplyCoefficient;
-        private string                      m_MultiplyWord;
 
         #endregion
 
@@ -98,8 +95,9 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
         public override EUiCategory       Category         => EUiCategory.FinishGroup;
+        public override bool              AllowMultiple    => false;
         public override Animator          Animator         => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
@@ -132,45 +130,33 @@ namespace RMAZOR.UI.Panels
             m_MultipliedMoneySprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", 
                 "icon_coin_ui_multiplied");
-            var locMan = Managers.LocalizationManager;
             m_WheelPanelView.Init(
                 Ticker,
                 Managers.AudioManager,
-                locMan);
+                Managers.LocalizationManager);
             m_ButtonMultiplyMoney.onClick.AddListener(OnMultiplyButtonPressed);
             m_ButtonSkip.onClick.AddListener(OnSkipButtonPressed);
             m_ButtonContinue.onClick.AddListener(OnContinueButtonPressed);
-            m_MoneyCountText.text = m_MultiplyWord + ": " + MoneyCounter.CurrentLevelGroupMoney;
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_TitleText, ETextType.MenuUI, "stage_finished"));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MoneyCountText, ETextType.MenuUI, "reward",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture) 
-                          + ": " + MoneyCounter.CurrentLevelGroupMoney));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MultiplyButtonText, ETextType.MenuUI, "multiply",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_SkipButtonText, ETextType.MenuUI, "skip",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_ContinueButtonText, ETextType.MenuUI, "continue",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_TitleText, ETextType.MenuUI, "stage_finished"));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_MoneyCountText, ETextType.MenuUI, "reward",
+                    _S => _S.ToUpper() + ": " + MoneyCounter.CurrentLevelGroupMoney));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_MultiplyButtonText, ETextType.MenuUI, "multiply",
+                    _S => _S.ToUpper()));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_SkipButtonText, ETextType.MenuUI, "skip",
+                    _S => _S.ToUpper()));
+            Managers.LocalizationManager.AddTextObject(
+                new LocalizableTextObjectInfo(m_ContinueButtonText, ETextType.MenuUI, "continue",
+                    _S => _S.ToUpper()));
             m_Triggerer.Trigger1 += OnStartAppearingAnimationFinished;
             m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
         }
 
         public override void OnDialogStartAppearing()
         {
-            m_MultiplyWord = Managers.LocalizationManager
-                .GetTranslation("multiply")
-                .ToUpper(CultureInfo.CurrentUICulture);
-            m_ButtonMultiplyMoney.gameObject.SetActive(true);
-            m_ButtonSkip.gameObject.SetActive(true);
-            m_ButtonContinue.gameObject.SetActive(false);
-            m_MoneyCountText.text = Managers.LocalizationManager.GetTranslation("reward")
-                                        .ToUpper(CultureInfo.CurrentUICulture)
-                                    + ": " + MoneyCounter.CurrentLevelGroupMoney;
             m_StarsAndRibbonAnimator.SetTrigger(AnimKeys.Anim);
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
@@ -224,7 +210,8 @@ namespace RMAZOR.UI.Panels
         {
             if (!Managers.AdsManager.RewardedAdNonSkippableReady)
                 return;
-            m_MultiplyButtonText.text = m_MultiplyWord + " x" + _Coefficient;
+            m_MultiplyButtonText.text =
+                Managers.LocalizationManager.GetTranslation("multiply") + " x" + _Coefficient;
         }
         
         private void OnMultiplyButtonPressed()
@@ -234,7 +221,6 @@ namespace RMAZOR.UI.Panels
             m_WheelPanelView.StopWheel();
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
-            m_WheelPanelView.HighlightCurrentCoefficient();
             long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
             string rewardWord = Managers.LocalizationManager.GetTranslation("reward").ToUpper();
             m_MoneyCountText.text = rewardWord + ": " + reward;

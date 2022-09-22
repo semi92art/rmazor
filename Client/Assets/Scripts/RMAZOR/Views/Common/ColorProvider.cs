@@ -17,10 +17,9 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private readonly Dictionary<int, Color> m_ColorsDict = new Dictionary<int, Color>();
-        private readonly List<int>              m_IgnorableForThemeSwitchColorIds = new List<int>();
-        
+        private readonly Dictionary<int, Color>   m_ColorsDict = new Dictionary<int, Color>();
         private          IList<MainColorsProps> m_Set;
+        private readonly List<int>                m_IgnorableForThemeSwitchColorIds = new List<int>();
 
         #endregion
 
@@ -54,22 +53,13 @@ namespace RMAZOR.Views.Common
             }
             m_ColorsDict.Clear();
             foreach (var item in m_Set)
-            {
-                try
-                {
-                    m_ColorsDict.Add(ColorIds.GetColorIdByName(item.name), item.color);
-                }
-                catch (System.ArgumentException ex)
-                {
-                    Dbg.LogError(ex);
-                }
-            }
+                m_ColorsDict.Add(ColorIds.GetColorIdByName(item.name), item.color);
             foreach (int id in m_ColorsDict.Keys.Except(m_IgnorableForThemeSwitchColorIds))
                 SetColor(id, m_ColorsDict[id]);
             base.Init();
         }
-
-        public void AddIgnorableForThemeSwitchColor(int _ColorId)
+        
+        public void AddIgnorableForThemeSwitchColor(int    _ColorId)
         {
             m_IgnorableForThemeSwitchColorIds.Add(_ColorId);
         }

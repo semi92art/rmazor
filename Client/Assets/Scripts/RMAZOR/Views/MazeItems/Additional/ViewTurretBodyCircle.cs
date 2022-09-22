@@ -16,18 +16,11 @@ using RMAZOR.Views.Coordinate_Converters;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
-    public class ViewTurretBodyCircle : ViewTurretBodyBase, IUpdateTick
+    public class ViewTurretBodyCircle : ViewTurretBodyBase
     {
-        #region constants
-
-        private const float ProjectileContainerRadius = 0.4f;
-        
-        #endregion
-        
         #region nonpublic members
 
         private Disc m_Body;
-        private Disc m_HolderBorder;
         
         #endregion
 
@@ -62,27 +55,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                 CoordinateConverter,
                 Transitioner);
         }
-        
-        public override bool Activated
-        {
-            get => base.Activated;
-            set
-            {
-                if (!value)
-                {
-                    m_Body.enabled = false;
-                    m_HolderBorder.enabled = false;
-                }
-                base.Activated = value;
-            }
-        }
-        
-        public override void Init()
-        {
-            GameTicker.Register(this);
-            base.Init();
-        }
-        
+
         public override void OpenBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
         {
             Cor.Run(OpenBarrelCore(_Open, _Instantly, _Forced));
@@ -91,13 +64,6 @@ namespace RMAZOR.Views.MazeItems.Additional
         public override void HighlightBarrel(bool _Open, bool _Instantly = false, bool _Forced = false)
         {
             Cor.Run(HighlightBarrelCore(_Open, _Instantly, _Forced));
-        }
-        
-        public void UpdateTick()
-        {
-            m_HolderBorder.DashOffset = MathUtils.ClampInverse(
-                m_HolderBorder.DashOffset += 2f * GameTicker.DeltaTime,
-                0f, 10f);
         }
 
         #endregion
@@ -122,13 +88,6 @@ namespace RMAZOR.Views.MazeItems.Additional
                 .SetSortingOrder(sortingOrder)
                 .SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round);
-            m_HolderBorder = Container.AddComponentOnNewChild<Disc>("Border", out _)
-                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem1))
-                .SetSortingOrder(sortingOrder + 1)
-                .SetType(DiscType.Ring)
-                .SetDashed(true)
-                .SetDashType(DashType.Rounded)
-                .SetDashSize(2f);
         }
 
         protected override void UpdateShape()
@@ -137,8 +96,6 @@ namespace RMAZOR.Views.MazeItems.Additional
             float scale = CoordinateConverter.Scale;
             m_Body.SetRadius(scale * 0.5f)
                 .SetThickness(scale * ViewSettings.LineThickness);
-            m_HolderBorder.SetRadius(scale * ProjectileContainerRadius * 0.9f)
-                .SetThickness(ViewSettings.LineThickness * scale * 0.5f);
         }
         
         protected override void OnAppearStart(bool _Appear)
@@ -159,7 +116,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         {
             var dict = base.GetAppearSets(_Appear);
             var col = ColorProvider.GetColor(ColorIds.Main);
-            dict.Add(new [] {m_Body, m_HolderBorder}, () => col);
+            dict.Add(new [] {m_Body}, () => col);
             return dict;
         }
 
@@ -256,5 +213,9 @@ namespace RMAZOR.Views.MazeItems.Additional
         }
 
         #endregion
+
+
+        
+
     }
 }

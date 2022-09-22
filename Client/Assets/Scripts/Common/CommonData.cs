@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Firebase;
 using UnityEngine;
 
 namespace Common
@@ -13,9 +14,7 @@ namespace Common
         public static bool Release = false;
         public static bool Testing = false;
 
-#if FIREBASE
-        public static Firebase.FirebaseApp FirebaseApp;
-#endif
+        public static FirebaseApp FirebaseApp;
 
         public static readonly Color CompanyLogoBackgroundColor = new Color(0.06f, 0f, 0.03f);
         
@@ -23,9 +22,7 @@ namespace Common
         public static void ResetState()
         {
             SetDefaultGameIdIfNotSet();
-#if FIREBASE
             FirebaseApp = null;
-#endif
             LoadNextLevelAutomatically = false;
             DevelopmentBuild           = false;
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD

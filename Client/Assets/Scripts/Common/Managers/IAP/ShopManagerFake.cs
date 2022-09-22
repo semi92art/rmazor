@@ -69,12 +69,12 @@ namespace Common.Managers.IAP
             return args;
         }
 
-        public override void AddPurchaseAction(int _ProductKey, int _ActionId, UnityAction _Action)
+        public override void SetPurchaseAction(int _Key, UnityAction _Action)
         {
-            m_PurchaseActions.SetSafe(_ProductKey, _Action);
+            m_PurchaseActions.SetSafe(_Key, _Action);
         }
 
-        public override void AddDeferredAction(int _Key, int _ActionId, UnityAction _Action)
+        public override void SetDeferredAction(int _Key, UnityAction _Action)
         {
             // do nothing
         }

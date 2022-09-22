@@ -11,6 +11,6 @@ namespace Common.UI
         
         Func<bool> OtherDialogViewersShowing { get; set; }
         void       Back(UnityAction  _OnFinish                      = null);
-        void       Show(IDialogPanel _Panel, float _AnimationSpeed = 1f, bool _HidePrevious = true);
+        void       Show(IDialogPanel _PanelTo, float _AnimationSpeed = 1f, bool _HidePrevious = true);
     }
 }

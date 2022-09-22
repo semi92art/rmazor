@@ -25,10 +25,6 @@ MonoBehaviour:
         type: 3}
       name: turret_projectile
       bundle: 0
-    - item: {fileID: 7576702748604261066, guid: a2c21ef6a45f2434a8df3af39471afd0,
-        type: 3}
-      name: turret_projectile_tail
-      bundle: 0
     - item: {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b,
         type: 3}
       name: turret_projectile_mask

@@ -10,7 +10,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -63,6 +62,7 @@ namespace RMAZOR.UI.Panels
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Fullscreen;
         public override EUiCategory       Category         => EUiCategory.RateGame;
+        public override bool              AllowMultiple    => false;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {

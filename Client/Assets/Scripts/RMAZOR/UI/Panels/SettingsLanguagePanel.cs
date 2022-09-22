@@ -8,7 +8,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
@@ -23,6 +22,7 @@ namespace RMAZOR.UI.Panels
     public interface ISettingLanguageDialogPanel : IDialogPanel
     {
         void PreInit(
+            ELanguage                      _DefaultLang,
             List<ELanguage>                _Languages,
             UnityAction<ELanguage>         _OnSelect,
             System.Func<ELanguage, Sprite> _GetIconFunc);
@@ -32,15 +32,13 @@ namespace RMAZOR.UI.Panels
     {
         #region private members
 
+        private ELanguage                      m_DefaultLang;
         private List<ELanguage>                m_Languages;
         private UnityAction<ELanguage>         m_OnSelect;
         private RectTransform                  m_Content;
         private System.Func<ELanguage, Sprite> m_GetIconFunc;
         private TextMeshProUGUI                m_Title;
         private RectTransform                  m_Blackout;
-        
-        private readonly Dictionary<ELanguage, SettingLanguageItem> m_Items 
-            = new Dictionary<ELanguage, SettingLanguageItem>();
 
         #endregion
 
@@ -61,14 +59,17 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
         public override EUiCategory       Category         => EUiCategory.Settings;
+        public override bool              AllowMultiple    => true;
         
         public void PreInit(
+            ELanguage                      _DefaultLang,
             List<ELanguage>                _Languages,
             UnityAction<ELanguage>         _OnSelect,
             System.Func<ELanguage, Sprite> _GetIconFunc)
         {
+            m_DefaultLang = _DefaultLang;
             m_Languages   = _Languages;
             m_OnSelect    = _OnSelect;
             m_GetIconFunc = _GetIconFunc;
@@ -92,7 +93,6 @@ namespace RMAZOR.UI.Panels
             closeButton.onClick.AddListener(() => base.OnClose(null));
             InitItems();
             PanelRectTransform = sp.RTransform();
-            PanelRectTransform.SetGoActive(false);
         }
         
         #endregion
@@ -102,7 +102,6 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             base.OnDialogStartAppearing();
-            EnableCurrentLanguageGraphic();
             m_Blackout.SetParent(Container.parent);
             m_Blackout.anchoredPosition = Vector2.zero;
             m_Blackout.pivot = Vector2.one * 0.5f;
@@ -136,25 +135,14 @@ namespace RMAZOR.UI.Panels
                     Managers.LocalizationManager,
                     language,
                     m_OnSelect,
+                    language == m_DefaultLang,
                     m_GetIconFunc,
                     () => AppearingState == EAppearingState.Appeared);
                 selectorItems.Add(si);
-                m_Items.Add(language, si);
             }
             foreach (var selItem in selectorItems)
                 selItem.SetItems(selectorItems);
             Object.Destroy(sspi);
-        }
-
-        private void EnableCurrentLanguageGraphic()
-        {
-            var currentLanguage = Managers.LocalizationManager.GetCurrentLanguage();
-            foreach (var (key, value) in m_Items)
-            {
-                if (key == currentLanguage)
-                    value.Select();
-                else value.DeSelect();
-            }
         }
 
         #endregion

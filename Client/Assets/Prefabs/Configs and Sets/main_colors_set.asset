@@ -19,11 +19,7 @@ MonoBehaviour:
     - name: Maze Item 1
       color: {r: 1, g: 1, b: 1, a: 1}
     - name: Maze Item 2
-      color: {r: 0, g: 1, b: 0.98823524, a: 1}
-    - name: Maze Item Dark Theme
       color: {r: 0, g: 1, b: 0.9897845, a: 1}
-    - name: Maze Item Light Theme
-      color: {r: 0, g: 1, b: 0.98918915, a: 1}
     - name: Path Item
       color: {r: 1, g: 0, b: 0, a: 1}
     - name: Path Fill

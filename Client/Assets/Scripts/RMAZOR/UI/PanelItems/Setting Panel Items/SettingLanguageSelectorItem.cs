@@ -37,21 +37,18 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             languageIcon.sprite = _GetIconFunc(currentLang);
             var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, "Language",
                 _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture));
-            bool langPanelLoaded = false;
             _LocalizationManager.AddTextObject(locInfo);
             void OnClick()
             {
+                var currentLang2 = _LocalizationManager.GetCurrentLanguage();
                 SoundOnClick();
                 var items = _Languages?.Invoke();
-                if (!langPanelLoaded)
-                {
-                    _LanguagePanel.PreInit(
-                        items, 
-                        _OnSelect,
-                        _GetIconFunc);
-                    _LanguagePanel.LoadPanel(_DialogViewer.Container, _DialogViewer.Back);
-                    langPanelLoaded = true;
-                }
+                _LanguagePanel.PreInit(
+                    currentLang2, 
+                    items, 
+                    _OnSelect,
+                    _GetIconFunc);
+                _LanguagePanel.LoadPanel(_DialogViewer.Container, _DialogViewer.Back);
                 _DialogViewer.Show(_LanguagePanel);
             }
             button.SetOnClick(OnClick);

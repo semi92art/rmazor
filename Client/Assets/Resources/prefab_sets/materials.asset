@@ -62,9 +62,6 @@ MonoBehaviour:
     - item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
       name: background_triangles_2
       bundle: 0
-    - item: {fileID: 2100000, guid: 594e0e6249cb6b04f8ba9b0f7e8bbbe8, type: 2}
-      name: background_logichroma
-      bundle: 0
     - item: {fileID: 2100000, guid: 257d6236a55738249aded0c5e51e3814, type: 2}
       name: solid_background
       bundle: 0

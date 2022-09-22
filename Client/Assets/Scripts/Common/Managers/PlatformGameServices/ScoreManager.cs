@@ -65,13 +65,9 @@ namespace Common.Managers.PlatformGameServices
         #endregion
         
         #region api
-        
-        public event ScoresEventHandler ScoresChanged;
-        public event GameSavedAction GameSaved
-        {
-            add => SavedGameProvider.GameSaved += value;
-            remove => SavedGameProvider.GameSaved -= value;
-        }
+
+        public event ScoresEventHandler              ScoresChanged;
+        public event UnityAction<SavedGameEventArgs> GameSaved;
         
         public override void Init()
         {

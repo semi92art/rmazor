@@ -17,9 +17,8 @@ namespace RMAZOR
     [Serializable]
     public class AdditionalColorPropsAdditionalInfo
     {
-        [JsonProperty("A0")]               public bool  dark;
-        [JsonProperty("A1"), Range(0, 1)]  public float neonStreamColorCoefficient1;
-        [JsonProperty("A2"), Range(0, 3)]  public float swirlForPlanetColorCoefficient1;
+        [JsonProperty("A1"), Range(0, 1)] public float neonStreamColorCoefficient1;
+        [JsonProperty("A2"), Range(0, 3)] public float swirlForPlanetColorCoefficient1;
         [JsonProperty("A3"), Range(0, 10)] public float wormHoleColorCoefficient1;
     }
     

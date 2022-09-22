@@ -63,7 +63,7 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         public abstract object Clone();
         
-        public virtual bool Activated
+        public virtual bool ActivatedInSpawnPool 
         { 
             get => m_Activated;
             set
@@ -83,7 +83,7 @@ namespace RMAZOR.Views.MazeItems.Additional
                     {
                         ColorProvider.ColorChanged += OnColorChanged;
                         InitShape();
-                        Init();
+                        base.Init();
                     }
                     UpdateShape();
                 }));

@@ -17,8 +17,14 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: 84b7673e76a9a644d96ab1e31453112d, type: 2}
       name: fulbo-argenta-cirillic
       bundle: 0
+    - item: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+      name: liberation-sans
+      bundle: 0
     - item: {fileID: 11400000, guid: e05d4a14b3eb9414ba9296440455b47c, type: 2}
       name: montserrat-ace-regular
+      bundle: 0
+    - item: {fileID: 11400000, guid: 0f159f8240858864181345655c609f0b, type: 2}
+      name: segoe-ui
       bundle: 0
     - item: {fileID: 11400000, guid: 7808e7cfd1ec1fb40992eb375a7914bb, type: 2}
       name: japaneese
@@ -26,9 +32,9 @@ MonoBehaviour:
     - item: {fileID: 11400000, guid: e551e313639949643bbadf429c6a45b7, type: 2}
       name: korean
       bundle: 0
+    - item: {fileID: 11400000, guid: bb8280a003ff95147a1ef3df1a02237f, type: 2}
+      name: blob-spongey
+      bundle: 0
     - item: {fileID: 11400000, guid: 605433b68313d491a8ab88bc03a41651, type: 2}
       name: lilita-one-outline-54
-      bundle: 0
-    - item: {fileID: 11400000, guid: 0f159f8240858864181345655c609f0b, type: 2}
-      name: segoe-ui
       bundle: 0

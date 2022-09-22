@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -44,9 +43,6 @@ namespace RMAZOR
             float                                           _Delay,
             UnityAction                                     _OnFinish = null)
         {
-            Cor.Run(WaitWhileAndNextFrame(_Appear ? 0f : _Delay + 0.01f, _OnFinish));
-            if (_Sets == null)
-                return;
             foreach (var set in _Sets)
             {
                 var endCol = !_Appear ? () => set.Value().SetA(0f) : set.Value;
@@ -67,21 +63,16 @@ namespace RMAZOR
                             case TextMeshPro textMeshPro:       textMeshPro.color    = endCol(); break;
                         }
                     }
+                    _OnFinish?.Invoke();
                 }
-                Cor.Run(Cor.Delay(
-                    _Appear ? 0f : _Delay,
-                    GameTicker,
-                    FastTransit));
+                if (_Appear)
+                    FastTransit();
+                if (!_Appear)
+                    Cor.Run(Cor.Delay(
+                        _Delay,
+                        GameTicker,
+                        FastTransit));
             }
-        }
-
-        private IEnumerator WaitWhileAndNextFrame(float _Delay, UnityAction _Action)
-        {
-            yield return null;
-            yield return Cor.Delay(
-                _Delay,
-                GameTicker,
-                _Action);
         }
 
         #endregion

@@ -3,7 +3,6 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.UI;
-using Common.UI.DialogViewers;
 using RMAZOR;
 using RMAZOR.Controllers;
 using RMAZOR.Helpers;
@@ -176,7 +175,6 @@ namespace Mono_Installers
             
             Container.Bind<IViewTurretProjectile>()          .To<ViewTurretProjectileShuriken>()     .AsSingle();
             Container.Bind<IViewTurretProjectileTail>()      .To<ViewTurretProjectileTail>()         .AsSingle();
-            Container.Bind<IViewTurretProjectileTailFake>()  .To<ViewTurretProjectileTailFake>()     .AsSingle();
             Container.Bind<IViewTurretBody>()                .To<ViewTurretBodySquare>()             .AsSingle();
         }
 
@@ -225,9 +223,8 @@ namespace Mono_Installers
             if (!CommonData.Release)
             {
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersControllerFake>()    .AsSingle();
-                Container.Bind<IDialogViewerMedium1>()       .To<DialogViewerMedium1Fake>()         .AsSingle();
-                Container.Bind<IDialogViewerMedium2>()       .To<DialogViewerMedium2Fake>()         .AsSingle();
-                Container.Bind<IDialogViewerFullscreen>()     .To<DialogViewerFullscreenFake>()     .AsSingle();
+                Container.Bind<IDialogViewerMedium>()       .To<DialogViewerMediumFake>()       .AsSingle();
+                Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewerFake>()     .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSetFake>()            .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanelFake>().AsSingle();
@@ -235,15 +232,14 @@ namespace Mono_Installers
             else
             {
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersController>()        .AsSingle();
-                Container.Bind<IDialogViewerFullscreen>()     .To<DialogViewerFullscreen>()         .AsSingle();
-                Container.Bind<IDialogViewerMedium1>()        .To<DialogViewerMedium1>()            .AsSingle();
-                Container.Bind<IDialogViewerMedium2>()        .To<DialogViewerMedium2>()            .AsSingle();
+                Container.Bind<IFullscreenDialogViewer>()     .To<FullscreenDialogViewer>()         .AsSingle();
+                Container.Bind<IDialogViewerMedium>()       .To<DialogViewerMedium>()           .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSet>()                .AsSingle();
                 
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanel>()            .AsSingle();
                 Container.Bind<ITutorialDialogPanel>()        .To<TutorialDialogPanel>()            .AsSingle();
                 Container.Bind<ISettingLanguageDialogPanel>() .To<SettingsLanguagePanel>()          .AsSingle();
-                Container.Bind<IShopDialogPanel>()            .To<ShopDialogPanel>()                .AsSingle();
+                Container.Bind<IShopDialogPanel>()            .To<ShopDialogPanel>()                      .AsSingle();
                 Container.Bind<ISettingDialogPanel>()         .To<SettingsDialogPanel>()            .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanel>()    .AsSingle();
@@ -294,10 +290,6 @@ namespace Mono_Installers
             Container.Bind<IFullscreenTextureProviderBluePurplePlaid>()
                 .To<FullscreenTextureProviderBluePurplePlaid>()
                 .AsSingle();
-            Container.Bind<IFullscreenTextureProviderLogichroma>()
-                .To<FullscreenTextureProviderLogichroma>()
-                .AsSingle();
-            
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()
                 .AsSingle();

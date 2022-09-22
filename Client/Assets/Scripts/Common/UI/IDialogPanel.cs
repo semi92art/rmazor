@@ -1,5 +1,4 @@
 ﻿using Common.Enums;
-using Common.UI.DialogViewers;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -11,6 +10,7 @@ namespace Common.UI
     {
         EDialogViewerType DialogViewerType   { get; }
         EUiCategory       Category           { get; }
+        bool              AllowMultiple      { get; }
         EAppearingState   AppearingState     { get; set; }
         RectTransform     PanelRectTransform { get; }
         Animator          Animator           { get; }
@@ -22,6 +22,7 @@ namespace Common.UI
     {
         public EDialogViewerType DialogViewerType   => default;
         public EUiCategory       Category           => EUiCategory.Fake;
+        public bool              AllowMultiple      => false;
         public EAppearingState   AppearingState     { get; set; } = EAppearingState.Dissapeared;
         public RectTransform     PanelRectTransform => null;
         public Animator          Animator           => null;

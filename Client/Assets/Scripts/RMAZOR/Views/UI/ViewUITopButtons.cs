@@ -5,7 +5,6 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
@@ -41,7 +40,7 @@ namespace RMAZOR.Views.UI
         private IContainersGetter           ContainersGetter        { get; }
         private ICameraProvider             CameraProvider          { get; }
         private IManagersGetter             Managers                { get; }
-        private IDialogViewerFullscreen     DialogViewerFullscreen  { get; }
+        private IFullscreenDialogViewer     FullscreenDialogViewer  { get; }
         private IViewInputCommandsProceeder CommandsProceeder       { get; }
         private IViewInputTouchProceeder    ViewInputTouchProceeder { get; }
 
@@ -50,7 +49,7 @@ namespace RMAZOR.Views.UI
             IContainersGetter           _ContainersGetter,
             ICameraProvider             _CameraProvider,
             IManagersGetter             _Managers,
-            IDialogViewerFullscreen     _DialogViewerFullscreen,
+            IFullscreenDialogViewer     _FullscreenDialogViewer,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewInputTouchProceeder    _ViewInputTouchProceeder)
         {
@@ -58,7 +57,7 @@ namespace RMAZOR.Views.UI
             ContainersGetter        = _ContainersGetter;
             CameraProvider          = _CameraProvider;
             Managers                = _Managers;
-            DialogViewerFullscreen  = _DialogViewerFullscreen;
+            FullscreenDialogViewer  = _FullscreenDialogViewer;
             CommandsProceeder       = _CommandsProceeder;
             ViewInputTouchProceeder = _ViewInputTouchProceeder;
         }
@@ -138,16 +137,16 @@ namespace RMAZOR.Views.UI
         
         private void CommandShop()
         {
-            if (DialogViewerFullscreen.CurrentPanel != null
-                && DialogViewerFullscreen.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
+            if (FullscreenDialogViewer.CurrentPanel != null
+                && FullscreenDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
             CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
         }
 
         private void CommandSettings()
         {
-            if (DialogViewerFullscreen.CurrentPanel != null
-                && DialogViewerFullscreen.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
+            if (FullscreenDialogViewer.CurrentPanel != null
+                && FullscreenDialogViewer.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
             CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);
         }

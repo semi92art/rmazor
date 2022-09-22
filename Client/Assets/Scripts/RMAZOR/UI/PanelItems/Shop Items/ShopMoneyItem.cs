@@ -1,7 +1,6 @@
 ﻿using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
-using RMAZOR.UI.Panels.ShopPanels;
 using UnityEngine.Events;
 
 namespace RMAZOR.UI.PanelItems.Shop_Items

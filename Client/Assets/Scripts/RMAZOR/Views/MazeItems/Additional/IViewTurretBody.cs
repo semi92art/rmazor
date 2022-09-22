@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {
-    public interface IViewTurretBody : ICloneable, IAppear, IActivated
+    public interface IViewTurretBody : ICloneable, IAppear, ISpawnPoolItem
     {
         void        SetTurretContainer(GameObject _Container);
         void        Update(ViewMazeItemProps _Props);
