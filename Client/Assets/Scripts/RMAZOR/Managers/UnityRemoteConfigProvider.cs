@@ -5,8 +5,9 @@ using Common;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
-using Unity.RemoteConfig;
+using Unity.Services.RemoteConfig;
 using UnityEngine;
+using ConfigResponse = Unity.Services.RemoteConfig.ConfigResponse;
 
 namespace RMAZOR.Managers
 {
@@ -42,51 +43,62 @@ namespace RMAZOR.Managers
 
         protected override Task FetchConfigs()
         {
-            Cor.Run(Cor.Delay(3f, null, () => FinishFetching(null)));
-            ConfigManager.FetchCompleted += _instance.OnFetchCompleted;
-            ConfigManager.FetchConfigs(new UserAttributes(), new AppAttributes());
+            Cor.Run(Cor.Delay(3f, CommonTicker, () =>
+            {
+                if (Initialized)
+                    return;
+                var response = new ConfigResponse {status = ConfigRequestStatus.None};
+                FinishFetching(response);
+            }));
+            RemoteConfigService.Instance.SetEnvironmentID("production");
+            RemoteConfigService.Instance.FetchCompleted += _instance.OnFetchCompleted;
+            RemoteConfigService.Instance.FetchConfigs(new UserAttributes(), new AppAttributes());
             return null;
         }
         
         private void OnFetchCompleted(ConfigResponse _Response)
         {
             if (_Response.status == ConfigRequestStatus.Success)
+            {
                 OnFetchConfigsCompletedSuccessfully();
+            }
             FinishFetching(_Response);
         }
         
-        private void FinishFetching(ConfigResponse? _Response)
+        private void FinishFetching(ConfigResponse _Response)
         {
             if (Initialized)
                 return;
-            if (_Response.HasValue)
-                Dbg.Log("Remote Config Initialized with status: " + _Response.Value.status);
+            Dbg.Log("Remote Config Initialized with status: " + _Response.status);
             base.Init();
         }
 
         protected override void GetRemoteConfig(RemoteConfigPropertyInfo _Info)
         {
-            var config = ConfigManager.appConfig;
+            var config = RemoteConfigService.Instance.appConfig;
             var entity = _Info.GetCachedValueEntity;
             Cor.Run(Cor.WaitWhile(
                 () => entity.Result == EEntityResult.Pending,
                 () =>
                 {
                     if (entity.Result != EEntityResult.Success)
+                    {
+                        Dbg.LogWarning($"Remote Config entity with key {_Info.Key} result: {entity.Result}");
                         return;
-                    object result = entity.Value;
-                    var result1 = result;
+                    }
+                    object value = entity.Value;
+                    var value1 = value;
                     var @switch = new Dictionary<Type, Func<object>>
                     {
-                        {typeof(bool),   () => config.GetBool(  _Info.Key, Convert.ToBoolean(result1))},
-                        {typeof(float),  () => config.GetFloat( _Info.Key, Convert.ToSingle(result1))},
-                        {typeof(string), () => config.GetString(_Info.Key, Convert.ToString(result1))},
-                        {typeof(int),    () => config.GetInt(   _Info.Key, Convert.ToInt32(result1))},
-                        {typeof(long),   () => config.GetLong(  _Info.Key, Convert.ToInt64(result1))}
+                        {typeof(bool),   () => config.GetBool(  _Info.Key, Convert.ToBoolean(value1))},
+                        {typeof(float),  () => config.GetFloat( _Info.Key, Convert.ToSingle( value1))},
+                        {typeof(string), () => config.GetString(_Info.Key, Convert.ToString( value1))},
+                        {typeof(int),    () => config.GetInt(   _Info.Key, Convert.ToInt32(  value1))},
+                        {typeof(long),   () => config.GetLong(  _Info.Key, Convert.ToInt64(  value1))}
                     };
-                    result = !_Info.IsJson ? @switch[_Info.Type]() : config.GetJson(_Info.Key);
-                    _Info.SetPropertyValue(result);
-                }));
+                    value = !_Info.IsJson ? @switch[_Info.Type]() : config.GetJson(_Info.Key);
+                    _Info.SetPropertyValue(@value);
+                }, _Seconds: 2f));
         }
 
         #endregion
@@ -97,7 +109,7 @@ namespace RMAZOR.Managers
         public static void ResetState()
         {
             if (_instance != null)
-                ConfigManager.FetchCompleted -= _instance.OnFetchCompleted;
+                RemoteConfigService.Instance.FetchCompleted -= _instance.OnFetchCompleted;
         }
 
         #endregion

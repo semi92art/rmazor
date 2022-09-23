@@ -61,7 +61,7 @@ namespace RMAZOR.Models.ItemProceeders
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            if (_Args.LevelStage == ELevelStage.ReadyToStart && Rotation.Orientation == MazeOrientation.North)
+            if (_Args.LevelStage == ELevelStage.ReadyToStart && Rotation.Orientation == EMazeOrientation.North)
                 MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
         }
 
@@ -84,7 +84,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         #region nonpublic methods
 
-        private void MoveMazeItemsGravity(MazeOrientation _Orientation, V2Int _CharacterPoint)
+        private void MoveMazeItemsGravity(EMazeOrientation _Orientation, V2Int _CharacterPoint)
         {
             var dropDirection = RmazorUtils.GetDropDirection(_Orientation);
             var infos = ProceedInfos.Where(_Info => _Info.IsProceeding);

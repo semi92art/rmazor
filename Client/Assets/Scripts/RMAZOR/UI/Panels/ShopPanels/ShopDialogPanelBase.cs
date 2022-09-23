@@ -1,27 +1,33 @@
 ﻿using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities;
 using Common.Entities.UI;
 using Common.Extensions;
+using Common.Managers.PlatformGameServices;
 using Common.Providers;
 using Common.ScriptableObjects;
 using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
-using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Items;
-using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels.ShopPanels
 {
-    public abstract class ShopDialogPanelBase<T> : DialogPanelBase where T : ShopItemBase
+    public interface IShopDialogPanelBase<T> : IDialogPanel where T : ShopItemBase
     {
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-
+        void SetOnCloseFinishAction(UnityAction _Action);
+    }
+    
+    public abstract class ShopDialogPanelBase<T> :
+        DialogPanelBase, IShopDialogPanelBase<T> 
+        where T : ShopItemBase
+    {
         #region constants
 
         protected const string PrefabSetName = "shop_items";
@@ -36,29 +42,26 @@ namespace RMAZOR.UI.Panels.ShopPanels
         protected abstract string            PanelItemPrefabName { get; }
         protected abstract RectTransformLite ShopItemRectLite    { get; }
 
-        protected GameObject      PanelObj;
         protected RectTransform   Content;
         private   TextMeshProUGUI m_MoneyText;
-        private   Image           m_MoneyIcon;
+
+        private UnityAction m_OnCloseFinishAction;
 
         #endregion
 
         #region inject
+        
 
         protected ShopDialogPanelBase(
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
             ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            IColorProvider              _ColorProvider) 
             : base(
                 _Managers,
                 _Ticker,
                 _CameraProvider,
-                _ColorProvider)
-        {
-            CommandsProceeder = _CommandsProceeder;
-        }
+                _ColorProvider) { }
 
         #endregion
 
@@ -75,23 +78,34 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 PanelPrefabName);
             Content = sp.GetCompItem<RectTransform>("content");
             var closeButton = sp.GetCompItem<Button>("close_button");
+            m_MoneyText = sp.GetCompItem<TextMeshProUGUI>("mini_panel_money_text");
             closeButton.onClick.AddListener(OnButtonCloseClick);
             PanelRectTransform = sp.RTransform();
             Content.gameObject.DestroyChildrenSafe();
             InitItems();
-            PanelObj = sp;
+            PanelRectTransform.SetGoActive(false);
+        }
+        
+        public void SetOnCloseFinishAction(UnityAction _Action)
+        {
+            m_OnCloseFinishAction = _Action;
         }
 
         #endregion
 
         #region nonpublic methods
 
+        public override void OnDialogStartAppearing()
+        {
+            InitMoneyMiniPanel();
+            base.OnDialogStartAppearing();
+        }
+
         protected virtual void OnButtonCloseClick()
         {
             base.OnClose(() =>
             {
-                CommandsProceeder.RaiseCommand(
-                    EInputCommand.UnPauseLevel, null, true);
+                m_OnCloseFinishAction?.Invoke();
             });
             Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
         }
@@ -128,13 +142,40 @@ namespace RMAZOR.UI.Panels.ShopPanels
             return obj.GetComponent<T>();
         }
 
-        protected override void OnColorChanged(int _ColorId, Color _Color)
+        private void InitMoneyMiniPanel()
         {
-            switch (_ColorId)
+            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
+                CommonData.SavedGameFileName, 
+                true);
+            Cor.Run(Cor.WaitWhile(
+                () => savedGameEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
+                    {
+                        Dbg.LogWarning("Failed to load money entity: " +
+                                       $"_Result: {savedGameEntity.Result}," +
+                                       $" castSuccess: {castSuccess}," +
+                                       $" _Value: {savedGameEntity.Value}");
+                        return;
+                    }
+                    m_MoneyText.text = savedGame.Money.ToString();
+                }));
+            Managers.ScoreManager.GameSaved -= OnGameSaved; 
+            Managers.ScoreManager.GameSaved += OnGameSaved;
+        }
+        
+        private void OnGameSaved(SavedGameEventArgs _Args)
+        {
+            bool castSuccess = _Args.SavedGame.CastTo(out SavedGame result);
+            if (!castSuccess)
             {
-                case ColorIds.UI     when m_MoneyIcon.IsNotNull(): m_MoneyIcon.color = _Color; break;
-                case ColorIds.UiText when m_MoneyText.IsNotNull(): m_MoneyText.color = _Color; break;
+                Dbg.LogError("OnGameSaved cast is not successful");
+                return;
             }
+            long score = result.Money;
+            m_MoneyText.text = score.ToString();
         }
 
         #endregion

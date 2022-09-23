@@ -12,15 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1600272214c7aa418cb76f5cc38aecb, type: 3}
   m_Name: dialog_viewers
   m_EditorClassIdentifier: 
-  bundles: 0
   prefabs:
     array:
     - item: {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091,
         type: 3}
       name: dialog_viewer
+      bundle: 0
+    - item: {fileID: 6009559761229068857, guid: f6722810d9c75d64299108e3fcfda8b2,
+        type: 3}
+      name: medium_1
+      bundle: 0
     - item: {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f,
         type: 3}
-      name: notification_viewer
+      name: medium_2
+      bundle: 0
     - item: {fileID: 5541025160145569569, guid: 80bb05ea1757fad4b97a0dd009723495,
         type: 3}
       name: dialog_close_button
+      bundle: 0

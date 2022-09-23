@@ -18,6 +18,7 @@ Shader "RMAZOR/Background/Triangles 2" {
         _Direction ("Direction", Range(-1, 1)) = 1
     	_AnimationSpeed ("Animation Speed", Range(0, 10)) = 0
     	_AnimationRange ("Animation Range", Range(0.1, 1)) = 0.1
+    	_Speed("Speed", Range(1,10)) = 1
     }
     SubShader {
 		Tags { 
@@ -33,15 +34,17 @@ Shader "RMAZOR/Background/Triangles 2" {
 		Blend One OneMinusSrcAlpha
         Pass {
             CGPROGRAM
+
+			#define T (_Time.x * _Speed)
             
             #pragma vertex vert
             #pragma fragment frag
             #include "../Common.cginc"
-            #include "Parallax.cginc"
 
 			fixed4 _Color1,_Color2;
             float _Size, _Ratio, _A, _B, _C, _D, _E, _F, _Direction, _AnimationSpeed, _AnimationRange, _ParallaxSize;
             bool _Smooth, _Mirror, _Trunc, _TruncColor2;
+            float _Speed;
 
             float rand(float2 co) {
 				float d = dot(co, float2(_A, _B));
@@ -63,8 +66,8 @@ Shader "RMAZOR/Background/Triangles 2" {
                 float2 local = float2(frac(uv.x + fmody * 0.5) - 0.5, frac(uv.y));
                 if (local.y > abs(local.x) * 2.0)
                     coords.x += local.x < 0.0 ? 1.0 : -1.0;
-	             if (local.x >= 0.0 && fmody == 0.0)
-	                 coords.x += 2.0;
+	            if (local.x >= 0.0 && fmody == 0.0)
+	                coords.x += 2.0;
                 return coords;
             }
 
@@ -80,13 +83,11 @@ Shader "RMAZOR/Background/Triangles 2" {
             }
 
             fixed4 frag(v2f i) : SV_Target {
-            	if (all(_Color1 == _Color2))
-					return _Color1;
-                float2 pos = i.uv;
+                float2 pos;
             	pos.x = lerp(i.uv.x, i.uv.y, _Direction);
 				pos.y = lerp(i.uv.y, 1 - i.uv.x, _Direction);
             	pos.x *= _F;
-                pos /= _Size * 0.02f;
+                pos /= _Size * 0.02;
                 float2 triang = get_triangle_coords(pos);
             	float lerp_coeff = rand(triang);
             	fixed4 frag_col;
@@ -100,7 +101,9 @@ Shader "RMAZOR/Background/Triangles 2" {
 						frag_col = lerp_colors(lerp_coeff);
             	}
             	else
+            	{
 					frag_col = lerp_coeff < _E ? _Color1 : _Color2;
+            	}
             	return frag_col;
             }
             

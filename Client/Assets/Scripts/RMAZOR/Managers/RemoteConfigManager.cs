@@ -153,7 +153,7 @@ namespace RMAZOR.Managers
                                     idfaEntity.Value,
                                     StringComparison.InvariantCultureIgnoreCase));
                             if (isThisDeviceForTesting)
-                                Dbg.Log("This device is test");
+                                Dbg.Log("This device is test, idfa: " + idfaEntity.Value);
                             RemoteProperties.DebugEnabled = isThisDeviceForTesting;
                             GlobalGameSettings.testAds = isThisDeviceForTesting;
                             m_FetchCompletedActionDone = true;

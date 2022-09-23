@@ -30,13 +30,16 @@ namespace RMAZOR.Views.Characters
         IAppear
     {
         Func<ViewCharacterInfo> GetCharacterObjects { set; }
+        void                    OnRotationFinished(MazeRotationEventArgs _Args);
     }
 
     public class ViewCharacterLegsFake : InitBase, IViewCharacterLegs
     {
         public Func<ViewCharacterInfo> GetCharacterObjects { private get; set; }
-        public EAppearingState         AppearingState      => EAppearingState.Dissapeared;
-        public bool                    Activated           { get; set; }
+        public void OnRotationFinished(MazeRotationEventArgs _Args) { }
+
+        public EAppearingState         AppearingState => EAppearingState.Dissapeared;
+        public bool                    Activated      { get; set; }
         
         public void  Appear(bool _Appear)                                                  { }
         public void  OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args)     { }
@@ -59,6 +62,8 @@ namespace RMAZOR.Views.Characters
         private Rectangle m_Leg1Body, m_Leg1Border;
         private Rectangle m_Leg2Body, m_Leg2Border;
         private bool      m_Activated;
+        
+        private EMazeOrientation m_LastMazeOrientation;
 
         #endregion
 
@@ -106,8 +111,13 @@ namespace RMAZOR.Views.Characters
                     UpdatePrefab();
             }
         }
-        public EAppearingState         AppearingState      { get; private set; }
+        public EAppearingState         AppearingState      { get;         private set; }
         public Func<ViewCharacterInfo> GetCharacterObjects { private get; set; }
+        
+        public void OnRotationFinished(MazeRotationEventArgs _Args)
+        {
+            m_LastMazeOrientation = _Args.NextOrientation;
+        }
 
         public override void Init()
         {
@@ -137,9 +147,13 @@ namespace RMAZOR.Views.Characters
         {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
-                    SetLegsTransform(EMazeMoveDirection.Down);
+                case ELevelStage.ReadyToStart when 
+                    _Args.PreviousStage == ELevelStage.Paused 
+                    && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
+                {
+                    SetLegsTransform(EMazeMoveDirection.Down, true);
                     ActivateShapes(true);
+                }
                     break;
                 case ELevelStage.CharacterKilled:
                     ActivateShapes(false);
@@ -220,7 +234,8 @@ namespace RMAZOR.Views.Characters
             SetLegsTransform(EMazeMoveDirection.Down);
         }
 
-        private void SetLegsTransform(EMazeMoveDirection _Direction)
+        // FIXME ебаный костыльный алгоритм, набо поправить
+        private void SetLegsTransform(EMazeMoveDirection _Direction, bool _ByLastOrientation = false)
         {
             float scale = CoordinateConverter.Scale;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
@@ -230,12 +245,14 @@ namespace RMAZOR.Views.Characters
             var c = a - dirOrth * 0.2f;
             m_Leg1Body.transform.localPosition = b * scale - dir * m_Leg1Body.Height * 2f;
             m_Leg2Body.transform.localPosition = c * scale - dir * m_Leg1Body.Height * 2f;
+            var orientationForAngle = _ByLastOrientation ? m_LastMazeOrientation : Model.MazeRotation.Orientation;
+            bool orth = (orientationForAngle == EMazeOrientation.East || orientationForAngle == EMazeOrientation.West) && _ByLastOrientation;
             float legsAngle = _Direction switch
             {
-                EMazeMoveDirection.Up    => 180f,
-                EMazeMoveDirection.Down  => 0f,
-                EMazeMoveDirection.Left  => 270,
-                EMazeMoveDirection.Right => 90,
+                EMazeMoveDirection.Up    => !orth ? 180f : 90f,
+                EMazeMoveDirection.Down  => !orth ? 0f : 90f,
+                EMazeMoveDirection.Left  => !orth ? 270f : 0f,
+                EMazeMoveDirection.Right => !orth ? 90f : 0f,
                 _                        => default
             };
             var rotation =  Quaternion.Euler(Vector3.forward * legsAngle);

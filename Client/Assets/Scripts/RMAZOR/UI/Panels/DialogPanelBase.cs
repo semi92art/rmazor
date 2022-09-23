@@ -4,6 +4,7 @@ using Common.Exceptions;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using RMAZOR.Managers;
 using UnityEngine;
 using UnityEngine.Events;
@@ -46,7 +47,6 @@ namespace RMAZOR.UI.Panels
 
         public abstract EDialogViewerType DialogViewerType { get; }
         public abstract EUiCategory       Category         { get; }
-        public abstract bool              AllowMultiple    { get; }
 
         public EAppearingState AppearingState
         {

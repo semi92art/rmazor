@@ -136,6 +136,12 @@ namespace RMAZOR.Views.Common
 
         private void SetColorsOnNewLevel(long _LevelIndex)
         {
+            var colorsSet = m_BackAndFrontColorsSetItemsLight;
+            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int setItemIdx = group % colorsSet.Count;
+            m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
+            AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
+            
             ColorProvider.SetColor(ColorIds.PathItem, GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathFill, GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathBackground, GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
@@ -151,12 +157,6 @@ namespace RMAZOR.Views.Common
             BackCol2Next = GetBackgroundColor(idx2, _LevelIndex + 1);
             ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
-            
-            var colorsSet = m_BackAndFrontColorsSetItemsLight;
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int setItemIdx = group % colorsSet.Count;
-            m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
-            AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
         }
 
         #endregion

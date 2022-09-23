@@ -15,8 +15,8 @@ namespace Common.Managers.PlatformGameServices.SavedGames
     {
         #region inject
 
-        private   IGameClient              GameClient              { get; }
-        protected IRemoteSavedGameProvider RemoteSavedGameProvider { get; }
+        private IGameClient              GameClient              { get; }
+        private IRemoteSavedGameProvider RemoteSavedGameProvider { get; }
 
         protected SavedGamesProvider(
             IGameClient              _GameClient,
@@ -30,7 +30,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
 
         #region api
         
-        public event UnityAction<SavedGameEventArgs> GameSaved;
+        public event GameSavedAction GameSaved;
 
         public void FetchSavedGames()
         {
@@ -79,7 +79,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
                 GameClient, 
                 GameClientUtils.AccountId, 
                 CommonData.GameId,
-                (ushort)CommonUtils.StringToHash(fileNameData.FileName)) 
+                (ushort)CommonUtils.StringToHash(fileNameData!.FileName)) 
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
@@ -97,7 +97,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
             });
         }
 
-        protected Entity<object> GetSavedGameProgressFromCache(string _FileName)
+        private Entity<object> GetSavedGameProgressFromCache(string _FileName)
         {
             var entity = new Entity<object>();
             var gdff = new GameDataFieldFilter(

@@ -11,6 +11,7 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;

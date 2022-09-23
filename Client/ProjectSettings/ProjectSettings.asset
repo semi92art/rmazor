@@ -17,7 +17,7 @@ PlayerSettings:
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
-  m_ShowUnitySplashScreen: 1
+  m_ShowUnitySplashScreen: 0
   m_ShowUnitySplashLogo: 1
   m_SplashScreenOverlayOpacity: 1
   m_SplashScreenAnimation: 2
@@ -136,53 +136,24 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.7.1
+  bundleVersion: 1.8.0
   preloadedAssets:
-  - {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a, type: 3}
-  - {fileID: 8219298684319459333, guid: d65166343a2be334badfff72bbe8c759, type: 3}
-  - {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
-  - {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
-  - {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
-  - {fileID: 2184672177264980343, guid: 53c46a0773884dd4b9770b2fb98d5b84, type: 3}
-  - {fileID: 5059098813564520511, guid: 29946a834dfc30b458505c36c553b042, type: 3}
-  - {fileID: 7576702748604261066, guid: 414f36fb75e457b4baba389f5f1446ab, type: 3}
-  - {fileID: 3637443925060811094, guid: fec643d02fe70da4cb94c3c55c147a1b, type: 3}
-  - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
-  - {fileID: 731759395191873786, guid: ec7fb1fdd38ccb8439dbb51307afb7fc, type: 3}
-  - {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518, type: 3}
-  - {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
-  - {fileID: 432638780763177933, guid: 622fc568ecbde9f448197a9bf5ef69dc, type: 3}
-  - {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b, type: 3}
-  - {fileID: 3177347172963282559, guid: 5d12e93f79129d5458876db6ed6956b6, type: 3}
-  - {fileID: 3177347172963282559, guid: 8aa6e0dc802208f4cb8d359297e298f4, type: 3}
-  - {fileID: 3177347172963282559, guid: b6512af5d924d7e4ab192467be538b23, type: 3}
-  - {fileID: 3177347172963282559, guid: 4c34bef045cbcdf43a39ce248ca4e7ad, type: 3}
-  - {fileID: 3177347172963282559, guid: 1a4d3c1c48be24e44a32fcf3bbbe6e7b, type: 3}
-  - {fileID: 5943621020961091322, guid: bb95f13f5dd973e45a589eba8e113b26, type: 3}
-  - {fileID: 5943621020961091322, guid: 66696c6471cacbb44a596b2b3aa0d52c, type: 3}
-  - {fileID: 5943621020961091322, guid: bde7c7cc68b2e8d4c95bb0d671195c84, type: 3}
-  - {fileID: 5943621020961091322, guid: a190bae0ede57a84eab3555ab84ee04a, type: 3}
-  - {fileID: 1612864835735914, guid: 7830047e40c75e64bb605b7edcad559c, type: 3}
-  - {fileID: 8041470958209576828, guid: 260b900de87b8a840a00972cda69a11f, type: 3}
-  - {fileID: 6522426653106204139, guid: d9f44cc69e04ead40a10f60f57f78d04, type: 3}
-  - {fileID: 6522426653106204139, guid: 2a5d6c79425cb3248b9e9ff17e7218d2, type: 3}
-  - {fileID: 2929232023256113801, guid: 31a1c442b6170f14fa528fd2e1f60cb3, type: 3}
-  - {fileID: 2929232023256113801, guid: d457401d0c26133488ea36866a5e23c1, type: 3}
-  - {fileID: 2929232023256113801, guid: e804d55fc9f1c114781f3bcc2237cdaf, type: 3}
-  - {fileID: 8084936785278095536, guid: b1ab196056bb902469744d64131211b1, type: 3}
-  - {fileID: 1425640064618946733, guid: 7f6d32e7723fc0149a86c90fd0d5be7b, type: 3}
-  - {fileID: 5905266820976307603, guid: 73bcba6a8d9f7764db126985e784de59, type: 3}
-  - {fileID: 5161345734266977120, guid: 9c234299993417748a342c73adb86855, type: 3}
-  - {fileID: 5541025160145569569, guid: 80bb05ea1757fad4b97a0dd009723495, type: 3}
-  - {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091, type: 3}
-  - {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f, type: 3}
-  - {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b, type: 3}
-  - {fileID: 6624169740486630875, guid: 5b0a6bed4109d2144b0279826ee42655, type: 3}
-  - {fileID: 731759395191873786, guid: 283a7a893927ea84f9c61e3367221a46, type: 3}
-  - {fileID: 3312965024029319640, guid: 55a9969e8ba48da449cb28699d996a79, type: 3}
   - {fileID: 0}
-  - {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c, type: 3}
-  - {fileID: 6739011661087431237, guid: 302b725af59c27942abb2cc52411cb24, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -319,7 +290,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidTargetDevices: 1
   AndroidSplashScreenScale: 0
-  androidSplashScreen: {fileID: 0}
+  androidSplashScreen: {fileID: 2800000, guid: fb92cd60d89f3d24fb299cc740469c67, type: 3}
   AndroidKeystoreName: '{inproject}: mgc1.keystore'
   AndroidKeyaliasName: mgc1
   AndroidBuildApkPerCpuArchitecture: 0
@@ -344,7 +315,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 31292cb8bb4b6a54a954c30dc00d996d, type: 3}
+      m_Icon: {fileID: 2800000, guid: b7eef8136dab9db4da1be6232911673f, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -849,7 +820,7 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    Android: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;NICE_VIBRATIONS_3_9;MOREMOUNTAINS_NICEVIBRATIONS;MOREMOUNTAINS_NICEVIBRATIONS_RUMBLE;ADMOB_API
+    Android: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;ADMOB_API;FIREBASE;NICE_VIBRATIONS_3_9;MOREMOUNTAINS_NICEVIBRATIONS;MOREMOUNTAINS_NICEVIBRATIONS_RUMBLE;APPODEAL_3
     CloudRendering: UNITY_POST_PROCESSING_STACK_V2
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
@@ -862,7 +833,7 @@ PlayerSettings:
     WebGL: UNITY_POST_PROCESSING_STACK_V2
     Windows Store Apps: UNITY_POST_PROCESSING_STACK_V2
     XboxOne: UNITY_POST_PROCESSING_STACK_V2
-    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;AT_SUPPORT_API_ENABLED;ADMOB_API;UNITY_ADS_API
+    iPhone: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;AS_SUPPORT_API_ENABLED;APP_DELEGATE_ENABLED;GAME_KIT_API_ENABLED;AT_SUPPORT_API_ENABLED;ADMOB_API;UNITY_ADS_API;MOREMOUNTAINS_NICEVIBRATIONS;MOREMOUNTAINS_NICEVIBRATIONS_RUMBLE;FIREBASE
     tvOS: UNITY_POST_PROCESSING_STACK_V2
   additionalCompilerArguments: {}
   platformArchitecture:

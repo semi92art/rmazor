@@ -1,14 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
+using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -21,12 +24,17 @@ namespace RMAZOR.UI.Panels
 {
     public class TutorialDialogPanelInfo
     {
-        public string TextLocalizationKey { get; }
-        public string VideoClipAssetKey   { get; }
+        public string TitleLocalizationKey       { get; }
+        public string DescriptionLocalizationKey { get; }
+        public string VideoClipAssetKey          { get; }
         
-        public TutorialDialogPanelInfo(string _TextLocalizationKey, string _VideoClipAssetKey)
+        public TutorialDialogPanelInfo(
+            string _TitleLocalizationKey, 
+            string _DescriptionLocalizationKey,
+            string _VideoClipAssetKey)
         {
-            TextLocalizationKey = _TextLocalizationKey;
+            TitleLocalizationKey = _TitleLocalizationKey;
+            DescriptionLocalizationKey = _DescriptionLocalizationKey;
             VideoClipAssetKey = _VideoClipAssetKey;
         }
     }
@@ -43,6 +51,7 @@ namespace RMAZOR.UI.Panels
         #region nonpublic members
 
         private TutorialDialogPanelInfo m_Info;
+        private TextMeshProUGUI         m_Title;
         private TextMeshProUGUI         m_Description;
         private VideoPlayer             m_VideoPlayer;
         private Button                  m_ButtonClose;
@@ -76,12 +85,11 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
         public override EUiCategory       Category         => EUiCategory.Tutorial;
-        public override bool              AllowMultiple    => false;
         public override Animator          Animator         => m_Animator;
 
-        public bool IsVideoReady => m_VideoPlayer.isPrepared;
+        public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPrepared;
 
         public void SetPanelInfo(TutorialDialogPanelInfo _Info)
         {
@@ -99,30 +107,36 @@ namespace RMAZOR.UI.Panels
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            if (m_Info == null)
-            {
-                Dbg.LogError("Tutorial Dialog Panel info was not set.");
-                return;
-            }
             base.LoadPanel(_Container, _OnClose);
             var go = Managers.PrefabSetManager.InitUiPrefab(
-                _Container,
+                UIUtils.UiRectTransform(
+                    _Container,
+                    RectTransformLite.FullFill),
                 CommonPrefabSetNames.DialogPanels,
                 "tutorial_panel");
             PanelRectTransform = go.RTransform();
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
             panel.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
+            m_Title = go.GetCompItem<TextMeshProUGUI>("title");
             m_Description = go.GetCompItem<TextMeshProUGUI>("description");
             m_ButtonClose = go.GetCompItem<Button>("button_close");
             m_Animator    = go.GetCompItem<Animator>("animator");
-            var locInfo = new LocalizableTextObjectInfo(m_Description, ETextType.MenuUI, m_Info.TextLocalizationKey);
-            Managers.LocalizationManager.AddTextObject(locInfo);
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
-            m_VideoPlayer.Play();
         }
 
         public override void OnDialogStartAppearing()
         {
+            m_VideoPlayer.Play();
+            var locInfoTitle = new LocalizableTextObjectInfo(
+                m_Title, ETextType.MenuUI, m_Info.TitleLocalizationKey,
+                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
+            Managers.LocalizationManager.RemoveTextObject(locInfoTitle);
+            Managers.LocalizationManager.AddTextObject(locInfoTitle);
+            var locInfoDescription = new LocalizableTextObjectInfo(
+                m_Description, ETextType.MenuUI, m_Info.DescriptionLocalizationKey,
+                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
+            Managers.LocalizationManager.RemoveTextObject(locInfoDescription);
+            Managers.LocalizationManager.AddTextObject(locInfoDescription);
             CommandsProceeder.LockCommands(
                 GetCommandsToLock(), 
                 nameof(ITutorialDialogPanel));

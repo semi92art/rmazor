@@ -90,7 +90,7 @@ namespace RMAZOR.Views.MazeItems
             base.OnLevelStageChanged(_Args);
             switch (_Args.LevelStage)
             {
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                     HighlightEnabled = true;
                     break;
             }

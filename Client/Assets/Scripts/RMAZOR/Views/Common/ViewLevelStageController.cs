@@ -10,6 +10,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using Common.Utils;
 using Lean.Touch;
 using RMAZOR.Helpers;
@@ -183,7 +184,7 @@ namespace RMAZOR.Views.Common
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
                 return;
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium);
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
             var cp = dv.CurrentPanel;
             if (cp == null || cp.Category != EUiCategory.FinishGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
@@ -420,7 +421,7 @@ namespace RMAZOR.Views.Common
                     {
                         var panel = DialogPanelsSet.CharacterDiedDialogPanel;
                         var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
-                        panel.LoadPanel(dv.Container, dv.Back);
+                        CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                         dv.Show(panel, 3f);
                     }
                 });
@@ -471,8 +472,7 @@ namespace RMAZOR.Views.Common
             BetweenLevelAdLoader.ShowAd = false;
             if (MoneyCounter.CurrentLevelGroupMoney == 0)
                 return;
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium);
-            FinishLevelGroupDialogPanel.LoadPanel(dv.Container, dv.Back);
+            var dv = DialogViewersController.GetViewer(FinishLevelGroupDialogPanel.DialogViewerType);
             dv.Show(FinishLevelGroupDialogPanel);
         }
         
@@ -544,6 +544,7 @@ namespace RMAZOR.Views.Common
                 {
                     {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
                 });
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex));
         }
 
         private static bool CheckIfLevelWasFinishedAtLeastOnce(long _LevelIndex)

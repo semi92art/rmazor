@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Common;
+using Common.Entities;
 using Common.Helpers;
+using Common.Utils;
 
 namespace RMAZOR.Managers
 {
@@ -17,7 +19,10 @@ namespace RMAZOR.Managers
         
         public override async void Init()
         {
-            await FetchConfigs();
+            if (NetworkUtils.IsInternetConnectionAvailable())
+                await FetchConfigs();
+            else 
+                base.Init();
         }
         
         public void SetRemoteCachedPropertyInfos(List<RemoteConfigPropertyInfo> _Infos)

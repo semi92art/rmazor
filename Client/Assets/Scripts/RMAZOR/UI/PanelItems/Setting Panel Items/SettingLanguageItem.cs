@@ -21,6 +21,8 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         [SerializeField] private Image iconCheck;
         
         #endregion
+
+        #region nonpublic members
         
         private ELanguage                        m_Language;
         private bool                             m_Initialized;
@@ -28,6 +30,10 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         private UnityAction<ELanguage>           m_Select;
         private Func<bool>                       m_ReadyToSelect;
         private bool                             m_IsTitleNotNull;
+
+        #endregion
+
+        #region constructors
         
         public void Init(
             IUITicker               _UITicker,
@@ -35,7 +41,6 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             ILocalizationManager    _LocalizationManager,
             ELanguage               _Language,
             UnityAction<ELanguage>  _Select,
-            bool                    _IsOn,
             Func<ELanguage, Sprite> _GetIconFunc,
             Func<bool>              _ReadyToSelect)
         {
@@ -45,12 +50,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             m_ReadyToSelect = _ReadyToSelect;
             m_Initialized = true;
             languageIcon.sprite = _GetIconFunc(m_Language);
-            if (!_IsOn)
-            {
-                SetNormalState();
-                return;
-            }
-            SetSelectedState();
+            Select();
             Cor.Run(Cor.WaitWhile(
                 () => m_Items == null, () => Select(null)));
         }
@@ -63,12 +63,16 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             throw new NotSupportedException();
         }
 
+        #endregion
+
+        #region api
+        
         public void SetItems(IEnumerable<SettingLanguageItem> _Items)
         {
             m_Items = _Items;
         }
 
-        public void Select(BaseEventData _BaseEventData)
+        public void Select(BaseEventData _)
         {
             if (!m_Initialized || !m_ReadyToSelect()) 
                 return;
@@ -79,19 +83,21 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             {
                 if (item == this)
                     continue;
-                item.SetNormalState();
+                item.DeSelect();
             }
-            SetSelectedState();
+            Select();
         }
 
-        private void SetNormalState()
-        {
-            iconCheck.enabled = false;
-        }
-        
-        private void SetSelectedState()
+        public void Select()
         {
             iconCheck.enabled = true;
         }
+        
+        public void DeSelect()
+        {
+            iconCheck.enabled = false;
+        }
+
+        #endregion
     }
 }

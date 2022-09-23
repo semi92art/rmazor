@@ -28,14 +28,14 @@ namespace RMAZOR.Views.Rotation
         
         #region nonpublic methods
 
-        protected static float GetAngleByOrientation(MazeOrientation _Orientation)
+        protected static float GetAngleByOrientation(EMazeOrientation _Orientation)
         {
             switch (_Orientation)
             {
-                case MazeOrientation.North: return 0;
-                case MazeOrientation.East:  return 270;
-                case MazeOrientation.South: return 180;
-                case MazeOrientation.West:  return 90;
+                case EMazeOrientation.North: return 0;
+                case EMazeOrientation.East:  return 270;
+                case EMazeOrientation.South: return 180;
+                case EMazeOrientation.West:  return 90;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }
         }

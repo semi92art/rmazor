@@ -83,7 +83,7 @@ namespace RMAZOR.Views.Common
         public IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
             const float amplitude = 0.5f;
-            var dir = RmazorUtils.GetDirectionVector(_Args.Direction, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Args.Direction, EMazeOrientation.North);
             const float duration = 0.1f;
             yield return Cor.Lerp(
                 GameTicker,

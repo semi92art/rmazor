@@ -11,14 +11,14 @@ namespace RMAZOR.Models
     public class MazeRotationEventArgs
     {
         public EMazeRotateDirection Direction          { get; }
-        public MazeOrientation      CurrentOrientation { get; }
-        public MazeOrientation      NextOrientation    { get; }
+        public EMazeOrientation      CurrentOrientation { get; }
+        public EMazeOrientation      NextOrientation    { get; }
         public bool                 Instantly          { get; }
 
         public MazeRotationEventArgs(
             EMazeRotateDirection _Direction,
-            MazeOrientation      _CurrentOrientation,
-            MazeOrientation      _NextOrientation,
+            EMazeOrientation      _CurrentOrientation,
+            EMazeOrientation      _NextOrientation,
             bool                 _Instantly)
         {
             Direction          = _Direction;
@@ -32,10 +32,10 @@ namespace RMAZOR.Models
     
     public interface IModelMazeRotation : IInit, IOnLevelStageChanged
     {
-        MazeOrientation Orientation        { get; set; }
+        EMazeOrientation Orientation        { get; set; }
         event MazeOrientationHandler RotationStarted;
         event MazeOrientationHandler RotationFinished;
-        void StartRotation(EMazeRotateDirection _Direction, MazeOrientation? _NextOrientation = null);
+        void StartRotation(EMazeRotateDirection _Direction, EMazeOrientation? _NextOrientation = null);
         void OnRotationFinished(MazeRotationEventArgs _Args);
     }
     
@@ -48,13 +48,13 @@ namespace RMAZOR.Models
             Data = _Data;
         }
 
-        public MazeOrientation              Orientation { get; set; }
+        public EMazeOrientation              Orientation { get; set; }
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinished;
 
         public void StartRotation(
             EMazeRotateDirection _Direction,
-            MazeOrientation?     _NextOrientation = null)
+            EMazeOrientation?     _NextOrientation = null)
         {
             if (!Data.ProceedingControls)
                 return;
@@ -75,13 +75,13 @@ namespace RMAZOR.Models
             switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.CharacterKilled:
-                    if (Orientation == MazeOrientation.North)
+                    if (Orientation == EMazeOrientation.North)
                         return;
                     var rotDir = (int) Orientation < 2
                         ? EMazeRotateDirection.CounterClockwise
                         : EMazeRotateDirection.Clockwise;
                     var currentOrientation = Orientation;
-                    Orientation = MazeOrientation.North;
+                    Orientation = EMazeOrientation.North;
                 {
                     var args = new MazeRotationEventArgs(
                         rotDir, currentOrientation, Orientation, false);
@@ -89,7 +89,7 @@ namespace RMAZOR.Models
                 }
                 break;
                 case ELevelStage.Unloaded:
-                    Orientation = MazeOrientation.North;
+                    Orientation = EMazeOrientation.North;
                 {
                     var args = new MazeRotationEventArgs(
                         default, default, Orientation, true);
@@ -99,9 +99,9 @@ namespace RMAZOR.Models
             }
         }
         
-        private static MazeOrientation GetNextOrientation(
+        private static EMazeOrientation GetNextOrientation(
             EMazeRotateDirection _Direction,
-            MazeOrientation      _Orientation)
+            EMazeOrientation      _Orientation)
         {
             int orient = (int) _Orientation;
             orient = _Direction switch
@@ -110,7 +110,7 @@ namespace RMAZOR.Models
                 EMazeRotateDirection.CounterClockwise => MathUtils.ClampInverse(orient - 1, 0, 3),
                 _                                     => throw new SwitchCaseNotImplementedException(_Direction)
             };
-            return (MazeOrientation) orient;
+            return (EMazeOrientation) orient;
         }
     }
 }

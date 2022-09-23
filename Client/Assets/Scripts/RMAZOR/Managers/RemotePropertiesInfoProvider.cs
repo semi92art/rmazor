@@ -56,7 +56,11 @@ namespace RMAZOR.Managers
             {
                 new RemoteConfigPropertyInfo(filter, typeof(float), "character_speed",
                     _Value => Execute(
-                        _Value, _V => ModelSettings.characterSpeed = ToFloat(_V))),
+                        _Value, _V =>
+                        {
+                            Dbg.Log("Character speed: " + ToFloat(_V));
+                            ModelSettings.characterSpeed = ToFloat(_V);
+                        })),
                 new RemoteConfigPropertyInfo(filter, typeof(float), "mazeitems_gravityblock_speed",
                     _Value => Execute(
                         _Value, _V => ModelSettings.gravityBlockSpeed = ToFloat(_V))),
@@ -66,12 +70,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(float), "shredinger_block_time",
                     _Value => Execute(
                         _Value, _V => ModelSettings.shredingerBlockProceedTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "turret_pre_shoot_interval",
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.turretPreShootInterval = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "turret_projectile_speed",
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.turretProjectileSpeed = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(filter, typeof(float), "trap_increasing_idle_time",
                     _Value => Execute(
                         _Value, _V => ModelSettings.trapIncreasingIdleTime = ToFloat(_V))),
@@ -109,6 +107,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(int), "first_level_to_rate_game",
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGame = ToInt(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(int), "first_level_to_rate_game_this_session",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.firstLevelToRateGameThisSession = ToInt(_V))),
                 new RemoteConfigPropertyInfo(filter, typeof(float), "maze_item_transition_time",
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
@@ -201,6 +202,53 @@ namespace RMAZOR.Managers
 
         #region nonpublic methods
 
+        private GameDataFieldFilter GetFilter()
+        {
+            var fieldIds = new []
+            {
+                CommonUtils.StringToHash("additional_color_props_set"),
+                CommonUtils.StringToHash("ads_first_level_to_show_ads"),
+                CommonUtils.StringToHash("ads_providers_infos"),
+                CommonUtils.StringToHash("ads_show_ad_every_level"),
+                CommonUtils.StringToHash("animate_path_fill"),
+                CommonUtils.StringToHash("background_texture_triangles2_props_set"),
+                CommonUtils.StringToHash("character_speed"),
+                CommonUtils.StringToHash("color_grading_props_1"),
+                CommonUtils.StringToHash("first_level_to_rate_game"),
+                CommonUtils.StringToHash("first_level_to_rate_game_this_session"),
+                CommonUtils.StringToHash("hammer_shot_pause"),
+                CommonUtils.StringToHash("inapp_notifications_list"),
+                CommonUtils.StringToHash("interstitial_ads_ratio"),
+                CommonUtils.StringToHash("levels_in_group"),
+                CommonUtils.StringToHash("line_thickness"),
+                CommonUtils.StringToHash("main_color_props_set"),
+                CommonUtils.StringToHash("maze_item_transition_time"),
+                CommonUtils.StringToHash("maze_rotation_speed"),
+                CommonUtils.StringToHash("mazeitems_gravityblock_speed"),
+                CommonUtils.StringToHash("mazeitems_movingtrap_speed"),
+                CommonUtils.StringToHash("money_item_coast"),
+                CommonUtils.StringToHash("moving_trap_pause"),
+                CommonUtils.StringToHash("moving_trap_speed"),
+                CommonUtils.StringToHash("pay_to_continue_money_count"),
+                CommonUtils.StringToHash("show_full_tutorial"),
+                CommonUtils.StringToHash("shredinger_block_time"),
+                CommonUtils.StringToHash("skip_button_seconds"),
+                CommonUtils.StringToHash("spear_projectile_speed"),
+                CommonUtils.StringToHash("test_device_ids"),
+                CommonUtils.StringToHash("test_device_ids_for_admob"),
+                CommonUtils.StringToHash("trap_increasing_idle_time"),
+                CommonUtils.StringToHash("trap_increasing_increased_time"),
+            }
+                .Select(_Id => (ushort) _Id)
+                .ToArray();
+            return new GameDataFieldFilter(
+                    GameClient, 
+                    GameClientUtils.AccountId, 
+                    CommonData.GameId,
+                    fieldIds) 
+                {OnlyLocal = true};
+        }
+        
         private static void Execute(object _Value, UnityAction<object> _Action)
         {
             if (_Value == null)
@@ -218,53 +266,6 @@ namespace RMAZOR.Managers
             return Convert.ToInt32(_Value);
         }
         
-        private GameDataFieldFilter GetFilter()
-        {
-            var fieldIds = new []
-            {
-                CommonUtils.StringToHash("ads_first_level_to_show_ads"),
-                CommonUtils.StringToHash("ads_providers_infos"),
-                CommonUtils.StringToHash("ads_show_ad_every_level"),
-                CommonUtils.StringToHash("character_speed"),
-                CommonUtils.StringToHash("additional_color_props_set"),
-                CommonUtils.StringToHash("background_texture_triangles2_props_set"),
-                CommonUtils.StringToHash("first_level_to_rate_game"),
-                CommonUtils.StringToHash("main_color_props_set"),
-                CommonUtils.StringToHash("maze_item_transition_time"),
-                CommonUtils.StringToHash("money_item_coast"),
-                CommonUtils.StringToHash("pay_to_continue_money_count"),
-                CommonUtils.StringToHash("mazeitems_gravityblock_speed"),
-                CommonUtils.StringToHash("mazeitems_movingtrap_speed"),
-                CommonUtils.StringToHash("test_device_ids_for_admob"),
-                CommonUtils.StringToHash("test_device_ids"),
-                CommonUtils.StringToHash("animate_path_fill"),
-                CommonUtils.StringToHash("skip_button_seconds"),
-                CommonUtils.StringToHash("line_thickness"),
-                CommonUtils.StringToHash("maze_rotation_speed"),
-                CommonUtils.StringToHash("hammer_shot_pause"),
-                CommonUtils.StringToHash("shredinger_block_time"),
-                CommonUtils.StringToHash("turret_pre_shoot_interval"),
-                CommonUtils.StringToHash("turret_projectile_speed"),
-                CommonUtils.StringToHash("trap_increasing_idle_time"),
-                CommonUtils.StringToHash("trap_increasing_increased_time"),
-                CommonUtils.StringToHash("moving_trap_speed"),
-                CommonUtils.StringToHash("moving_trap_pause"),
-                CommonUtils.StringToHash("spear_projectile_speed"),
-                CommonUtils.StringToHash("inapp_notifications_list"),
-                CommonUtils.StringToHash("color_grading_props_1"),
-                CommonUtils.StringToHash("levels_in_group"),
-                CommonUtils.StringToHash("show_full_tutorial"),
-                CommonUtils.StringToHash("interstitial_ads_ratio")
-            }.Select(_Id => (ushort) _Id)
-                .ToArray();
-            return new GameDataFieldFilter(
-                    GameClient, 
-                    GameClientUtils.AccountId, 
-                    CommonData.GameId,
-                    fieldIds) 
-                {OnlyLocal = true};
-        }
-
         #endregion
     }
 }

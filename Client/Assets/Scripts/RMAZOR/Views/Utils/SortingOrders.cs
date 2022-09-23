@@ -38,10 +38,11 @@ namespace RMAZOR.Views.Utils
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
-                case EMazeItemType.Springboard:
                     return Path + 154;
                 case EMazeItemType.Turret:
-                    return Path + 200;
+                    return Path + 155;
+                case EMazeItemType.Springboard:
+                    return Path + 156;
                 case EMazeItemType.TrapReact:
                     return Path + 300;
                 case EMazeItemType.Hammer:

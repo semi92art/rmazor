@@ -12,8 +12,8 @@ namespace Common.Entities
         [Serializable]
         public class Prefab
         {
-            public Object item;
             public string name;
+            public Object item;
             public bool   bundle;
         }
     

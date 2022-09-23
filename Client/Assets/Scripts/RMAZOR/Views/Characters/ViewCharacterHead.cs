@@ -50,7 +50,7 @@ namespace RMAZOR.Views.Characters
         private static int AnimKeyBump         => AnimKeys.Anim2;
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
 
-        private MazeOrientation    m_MazeOrientation;
+        private EMazeOrientation   m_LastMazeOrientation;
         private EMazeMoveDirection m_PrevHorDir = EMazeMoveDirection.Right;
         private GameObject         m_Head;
         private GameObject         m_Border;
@@ -72,7 +72,6 @@ namespace RMAZOR.Views.Characters
         private IPrefabSetManager           PrefabSetManager    { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IRendererAppearTransitioner AppearTransitioner  { get; }
-        private IModelGame                  Model               { get; }
 
         private ViewCharacterHead(
             ViewSettings                _ViewSettings,
@@ -80,8 +79,7 @@ namespace RMAZOR.Views.Characters
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
             ICoordinateConverter        _CoordinateConverter,
-            IRendererAppearTransitioner _AppearTransitioner,
-            IModelGame                  _Model)
+            IRendererAppearTransitioner _AppearTransitioner)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -89,7 +87,6 @@ namespace RMAZOR.Views.Characters
             PrefabSetManager    = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
             AppearTransitioner  = _AppearTransitioner;
-            Model               = _Model;
         }
         
         #endregion
@@ -123,7 +120,7 @@ namespace RMAZOR.Views.Characters
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
-            m_MazeOrientation = _Args.NextOrientation;
+            m_LastMazeOrientation = _Args.NextOrientation;
         }
 
         public void OnPathCompleted(V2Int _LastPath)
@@ -138,12 +135,16 @@ namespace RMAZOR.Views.Characters
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
-                    m_MazeOrientation = MazeOrientation.North;
+                    m_LastMazeOrientation = EMazeOrientation.North;
                     SetOrientation(EMazeMoveDirection.Right, false);
                     break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
-                    SetOrientation(EMazeMoveDirection.Right, false);
+                case ELevelStage.ReadyToStart when 
+                    _Args.PreviousStage == ELevelStage.Paused 
+                    && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
+                {
+                    SetOrientation(EMazeMoveDirection.Right, false, EMazeOrientation.North);
                     ActivateShapes(true);
+                }
                     break;
                 case ELevelStage.CharacterKilled:
                     ActivateShapes(false);
@@ -233,6 +234,7 @@ namespace RMAZOR.Views.Characters
             m_Eye1Shape         = go.GetCompItem<Rectangle>("eye_1").SetSortingOrder(SortingOrders.Character + 1);
             m_Eye2Shape         = go.GetCompItem<Rectangle>("eye_2").SetSortingOrder(SortingOrders.Character + 1);
             m_BorderShape       = go.GetCompItem<Rectangle>("border").SetSortingOrder(SortingOrders.Character - 1);
+            m_HeadCollider.gameObject.layer = LayerMask.NameToLayer("γ Gamma");
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
         }
         
@@ -245,12 +247,15 @@ namespace RMAZOR.Views.Characters
             m_Animator.SetTrigger(AnimKeyStartJumping);
         }
         
-        private void SetOrientation(EMazeMoveDirection _Direction, bool _OnFinish)
+        private void SetOrientation(
+            EMazeMoveDirection _Direction,
+            bool               _OnFinish,
+            EMazeOrientation?   _Orientation = null)
         {
             void LookAtByOrientationFinal(bool _VerticalInverse)
             {
                 if (!_OnFinish)
-                    LookAtByOrientationOnMoveStart(_Direction, _VerticalInverse);
+                    LookAtByOrientationOnMoveStart(_Direction, _VerticalInverse, _Orientation);
                 else 
                     LookAtByOrientationOnMoveFinish(_Direction);
             }
@@ -267,7 +272,10 @@ namespace RMAZOR.Views.Characters
                 m_PrevHorDir = _Direction;
         }
         
-        private void LookAtByOrientationOnMoveStart(EMazeMoveDirection _Direction, bool _VerticalInverse)
+        private void LookAtByOrientationOnMoveStart(
+            EMazeMoveDirection _Direction,
+            bool               _VerticalInverse,
+            EMazeOrientation?   _Orientation = null)
         {
             float angle, horScale;
             (angle, horScale) = _Direction switch
@@ -280,7 +288,8 @@ namespace RMAZOR.Views.Characters
             };
             m_HorizontalScaleInverse = horScale < 0f;
             m_VerticalScaleInverse = _VerticalInverse;
-            var localRot = Quaternion.Euler(Vector3.forward * (angle + GetMazeAngleByCurrentOrientation()));
+            var localRot = Quaternion.Euler(
+                Vector3.forward * (angle + GetMazeAngleByCurrentOrientation(_Orientation)));
             m_Head.transform.localRotation = localRot;
             m_Border.transform.localRotation = localRot;
             float vertScale = _VerticalInverse ? -1f : 1f;
@@ -290,7 +299,9 @@ namespace RMAZOR.Views.Characters
             m_Border.transform.localScale = localScale;
         }
         
-        private void LookAtByOrientationOnMoveFinish(EMazeMoveDirection _Direction)
+        private void LookAtByOrientationOnMoveFinish(
+            EMazeMoveDirection _Direction,
+            EMazeOrientation? _Orientation = null)
         {
             float angle, vertScale;
             (angle, vertScale) = _Direction switch
@@ -301,7 +312,8 @@ namespace RMAZOR.Views.Characters
                 EMazeMoveDirection.Up    => (0f, -1f),
                 _                        => throw new SwitchCaseNotImplementedException(_Direction)
             };
-            var localRot = Quaternion.Euler(Vector3.forward * (angle + GetMazeAngleByCurrentOrientation()));
+            var localRot = Quaternion.Euler(
+                Vector3.forward * (angle + GetMazeAngleByCurrentOrientation(_Orientation)));
             m_Head.transform.localRotation = localRot;
             m_Border.transform.localRotation = localRot;
             float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
@@ -318,15 +330,16 @@ namespace RMAZOR.Views.Characters
             m_Eye2Shape.enabled   = _Active;
         }
         
-        private float GetMazeAngleByCurrentOrientation()
+        private float GetMazeAngleByCurrentOrientation(EMazeOrientation? _Orientation)
         {
-            return m_MazeOrientation switch
+            var oritentation = _Orientation ?? m_LastMazeOrientation;
+            return oritentation switch
             {
-                MazeOrientation.North => 0f,
-                MazeOrientation.East  => 90f,
-                MazeOrientation.South => 180f,
-                MazeOrientation.West  => 270f,
-                _                     => throw new SwitchExpressionException(m_MazeOrientation)
+                EMazeOrientation.North => 0f,
+                EMazeOrientation.East  => 90f,
+                EMazeOrientation.South => 180f,
+                EMazeOrientation.West  => 270f,
+                _                     => throw new SwitchExpressionException(oritentation)
             };
         }
 

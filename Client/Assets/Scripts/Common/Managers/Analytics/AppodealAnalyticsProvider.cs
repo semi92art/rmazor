@@ -9,8 +9,6 @@ namespace Common.Managers.Analytics
     
     public class AppodealAnalyticsProvider : AnalyticsProviderBase, IAppodealAnalyticsProvider
     {
-        protected override Dictionary<string, string> ValidIdsAndNamesTranslations => null;
-
         protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
             if (_EventData == null)
@@ -23,6 +21,16 @@ namespace Common.Managers.Analytics
                     _Kvp => _Kvp.Key,
                     _Kvp => _Kvp.Value);
             Appodeal.LogEvent(_AnalyticId, validEventData);
+        }
+
+        protected override string GetRealAnalyticId(string  _AnalyticId)
+        {
+            return _AnalyticId;
+        }
+
+        protected override string GetRealParameterId(string _ParameterId)
+        {
+            return _ParameterId;
         }
     }
 }

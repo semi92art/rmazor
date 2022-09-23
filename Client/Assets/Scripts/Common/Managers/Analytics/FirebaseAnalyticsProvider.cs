@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if FIREBASE
+using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
 using Firebase;
@@ -100,3 +101,4 @@ namespace Common.Managers.Analytics
         #endregion
     }
 }
+#endif

@@ -31,19 +31,20 @@ namespace RMAZOR
     {
         #region inject
 
-        private IRemotePropertiesCommon RemoteProperties     { get; set; }
-        private GlobalGameSettings      GlobalGameSettings   { get; set; }
-        private IGameClient             GameClient           { get; set; }
-        private IAdsManager             AdsManager           { get; set; }
-        private ILocalizationManager    LocalizationManager  { get; set; }
-        private ILevelsLoader           LevelsLoader         { get; set; }
-        private IScoreManager           ScoreManager         { get; set; }
-        private IHapticsManager         HapticsManager       { get; set; }
-        private IShopManager            ShopManager          { get; set; }
-        private IRemoteConfigManager    RemoteConfigManager  { get; set; }
-        private IPermissionsRequester   PermissionsRequester { get; set; }
-        private IAssetBundleManager     AssetBundleManager   { get; set; }
-        private ICommonTicker           CommonTicker         { get; set; }
+        private IRemotePropertiesCommon RemoteProperties      { get; set; }
+        private GlobalGameSettings      GlobalGameSettings    { get; set; }
+        private IGameClient             GameClient            { get; set; }
+        private IAdsManager             AdsManager            { get; set; }
+        private ILocalizationManager    LocalizationManager   { get; set; }
+        private ILevelsLoader           LevelsLoader          { get; set; }
+        private IScoreManager           ScoreManager          { get; set; }
+        private IHapticsManager         HapticsManager        { get; set; }
+        private IShopManager            ShopManager           { get; set; }
+        private IRemoteConfigManager    RemoteConfigManager   { get; set; }
+        private IPermissionsRequester   PermissionsRequester  { get; set; }
+        private IAssetBundleManager     AssetBundleManager    { get; set; }
+        private ICommonTicker           CommonTicker          { get; set; }
+        private ISRDebuggerInitializer  SrDebuggerInitializer { get; set; }
         
 // #if UNITY_ANDROID
 //         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
@@ -52,35 +53,37 @@ namespace RMAZOR
         
         [Inject] 
         private void Inject(
-            IRemotePropertiesCommon        _RemoteProperties,
-            GlobalGameSettings             _GameSettings,
-            IGameClient                    _GameClient,
-            IAdsManager                    _AdsManager,
-            ILocalizationManager           _LocalizationManager,
-            ILevelsLoader                  _LevelsLoader,
-            IScoreManager                  _ScoreManager,
-            IHapticsManager                _HapticsManager,
-            IAssetBundleManager            _AssetBundleManager,
-            IShopManager                   _ShopManager,
-            IRemoteConfigManager           _RemoteConfigManager,
-            ICameraProvider                _CameraProvider,
-            IPermissionsRequester          _PermissionsRequester,
-            ICommonTicker                  _CommonTicker,
-            CompanyLogo                    _CompanyLogo)
+            IRemotePropertiesCommon  _RemoteProperties,
+            GlobalGameSettings       _GameSettings,
+            IGameClient              _GameClient,
+            IAdsManager              _AdsManager,
+            ILocalizationManager     _LocalizationManager,
+            ILevelsLoader            _LevelsLoader,
+            IScoreManager            _ScoreManager,
+            IHapticsManager          _HapticsManager,
+            IAssetBundleManager      _AssetBundleManager,
+            IShopManager             _ShopManager,
+            IRemoteConfigManager     _RemoteConfigManager,
+            ICameraProvider          _CameraProvider,
+            IPermissionsRequester    _PermissionsRequester,
+            ICommonTicker            _CommonTicker,
+            ISRDebuggerInitializer   _SrDebuggerInitializer,
+            CompanyLogo              _CompanyLogo)
         {
-            RemoteProperties     = _RemoteProperties;
-            GlobalGameSettings   = _GameSettings;
-            GameClient           = _GameClient;
-            AdsManager           = _AdsManager;
-            LocalizationManager  = _LocalizationManager;
-            LevelsLoader         = _LevelsLoader;
-            ScoreManager         = _ScoreManager;
-            HapticsManager       = _HapticsManager;
-            AssetBundleManager   = _AssetBundleManager;
-            ShopManager          = _ShopManager;
-            RemoteConfigManager  = _RemoteConfigManager;
-            PermissionsRequester = _PermissionsRequester;
-            CommonTicker         = _CommonTicker;
+            RemoteProperties      = _RemoteProperties;
+            GlobalGameSettings    = _GameSettings;
+            GameClient            = _GameClient;
+            AdsManager            = _AdsManager;
+            LocalizationManager   = _LocalizationManager;
+            LevelsLoader          = _LevelsLoader;
+            ScoreManager          = _ScoreManager;
+            HapticsManager        = _HapticsManager;
+            AssetBundleManager    = _AssetBundleManager;
+            ShopManager           = _ShopManager;
+            RemoteConfigManager   = _RemoteConfigManager;
+            PermissionsRequester  = _PermissionsRequester;
+            CommonTicker          = _CommonTicker;
+            SrDebuggerInitializer = _SrDebuggerInitializer;
         }
         
         #endregion
@@ -96,7 +99,6 @@ namespace RMAZOR
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
             LogAppInfo();
-            yield return Cor.Delay(0.5f, CommonTicker); // для более плавной загрузки логотипа компании
             yield return PermissionsRequestCoroutine();
             InitStartData();
             InitGameManagers();
@@ -184,7 +186,7 @@ namespace RMAZOR
         private void InitRemoteConfigManager()
         {
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
-            RemoteConfigManager.Initialize += InitSrDebugger;
+            RemoteConfigManager.Initialize += SrDebuggerInitializer.Init;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
             try
@@ -421,15 +423,6 @@ namespace RMAZOR
                 {Level900Finished, ios ? "level_0900_finished" : "CgkI1IvonNkDEAIQEA"},
                 {Level1000Finished, ios ? "level_1000_finished" : "CgkI1IvonNkDEAIQEQ"},
             };
-        }
-        
-        private void InitSrDebugger()
-        {
-            if (GlobalGameSettings.apkForAppodeal ||
-                (RemoteProperties.DebugEnabled && !Application.isEditor))
-            {
-                SRDebug.Init();
-            }
         }
 
         #endregion

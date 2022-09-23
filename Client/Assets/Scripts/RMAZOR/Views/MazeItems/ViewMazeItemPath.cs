@@ -350,7 +350,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected bool MustInitBorder(EMazeMoveDirection _Side)
         {
-            var pos = Props.Position + RmazorUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            var pos = Props.Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return !TurretExist(pos) && !PathExist(pos);
         }
 
@@ -476,7 +476,7 @@ namespace RMAZOR.Views.MazeItems
             _AdjustEnd = false;
             if (PathExist(_Position + _Direction) || !_BorderInitialized) 
                 return;
-            var dir = RmazorUtils.GetMoveDirection(_Direction, MazeOrientation.North);
+            var dir = RmazorUtils.GetMoveDirection(_Direction, EMazeOrientation.North);
             var (start, end, _) = GetBorderPointsAndDashed(dir, true, true);
             if (PathExist(_Position + _Direction + dir1)
                 || TurretExist(_Position + _Direction + dir1))
@@ -648,7 +648,7 @@ namespace RMAZOR.Views.MazeItems
             (start, end) = GetBorderPointsRaw(_Side, _StartLimit, _EndLimit, 1f + AdditionalScale);
             start = CoordinateConverter.ToLocalMazeItemPosition(start);
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
-            var dir = RmazorUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             bool dashed = Model.GetAllProceedInfos().Any(_Item =>
                 _Item.CurrentPosition == Props.Position + dir 
                 && (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir
@@ -711,7 +711,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected bool IsBorderNearTrapReact(EMazeMoveDirection _Side)
         {
-            var dir = RmazorUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
                 _Item.CurrentPosition == Props.Position + dir
                 && _Item.Type == EMazeItemType.TrapReact 
@@ -720,7 +720,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected bool IsBorderNearTrapIncreasing(EMazeMoveDirection _Side)
         {
-            var dir = RmazorUtils.GetDirectionVector(_Side, MazeOrientation.North);
+            var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
                 _Item.CurrentPosition == Props.Position + dir
                 && _Item.Type == EMazeItemType.TrapIncreasing);

@@ -77,7 +77,9 @@ namespace Mono_Installers
             
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>() .AsSingle();
             Container.Bind<IUnityAnalyticsProvider>()      .To<UnityAnalyticsProvider>()       .AsSingle();
+#if FIREBASE
             Container.Bind<IFirebaseAnalyticsProvider>()   .To<FirebaseAnalyticsProvider>()    .AsSingle();
+#endif
 #if APPODEAL_3
             Container.Bind<IAppodealAnalyticsProvider>()   .To<AppodealAnalyticsProvider>()    .AsSingle();
 #endif
@@ -86,7 +88,7 @@ namespace Mono_Installers
             Container.Bind<IScoreManager>()                .To<ScoreManager>()                 .AsSingle();
             Container.Bind<IAchievementsProvider>()        .To<AchievementsProvider>()         .AsSingle();
             Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
-            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()           .AsSingle();
+            Container.Bind<ISavedGameProvider>().To<SavedGamesProvider>().AsSingle();
             
 // #if UNITY_ANDROID
 //             Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
@@ -105,6 +107,7 @@ namespace Mono_Installers
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManager>()           .AsSingle();
                 Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
+                // Container.Bind<IRemoteConfigProvider>().To<UnityRemoteConfigProvider>()  .AsSingle();
 #if UNITY_ANDROID
                 Container.Bind<IAnalyticsManager>()    .To<AnalyticsManager>()              .AsSingle();
                 Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>()      .AsSingle();
@@ -136,8 +139,8 @@ namespace Mono_Installers
 #endif
             Container.Bind<IAdsManager>()               .To<AdsManager>()                   .AsSingle();
             Container.Bind<IPrefabSetManager>()         .To<PrefabSetManager>()             .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
+            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
+            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
 
             #endregion
             
@@ -167,8 +170,9 @@ namespace Mono_Installers
             Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
 
             Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
-            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
-            // Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
+            // Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
+            Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
+            Container.Bind<ISRDebuggerInitializer>().To<SRDebuggerInitializer>().AsSingle();
         }
     }
 }

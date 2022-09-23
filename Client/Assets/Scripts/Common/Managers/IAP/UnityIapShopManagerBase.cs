@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Extensions;
 using Common.Utils;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -30,10 +29,10 @@ namespace Common.Managers.IAP
         private IStoreController   m_StoreController;
         private IExtensionProvider m_StoreExtensionProvider;
 
-        private readonly Dictionary<int, UnityAction> m_OnPurchaseActions =
-            new Dictionary<int, UnityAction>();
-        private readonly Dictionary<int, UnityAction> m_OnDeferredActions =
-            new Dictionary<int, UnityAction>();
+        private readonly Dictionary<int, Dictionary<int,UnityAction>> m_OnPurchaseActionsDictDict =
+            new Dictionary<int, Dictionary<int,UnityAction>>();
+        private readonly Dictionary<int, Dictionary<int,UnityAction>> m_OnDeferredActionsDictDict =
+            new Dictionary<int, Dictionary<int,UnityAction>>();
 
         #endregion
 
@@ -109,14 +108,14 @@ namespace Common.Managers.IAP
             return res;
         }
 
-        public override void SetPurchaseAction(int _Key, UnityAction _OnPurchase)
+        public override void AddPurchaseAction(int _ProductKey, int _ActionKey, UnityAction _Action)
         {
-            m_OnPurchaseActions.SetSafe(_Key, _OnPurchase);
+            AddTranstactionAction(_ProductKey, _ActionKey, _Action, false);
         }
 
-        public override void SetDeferredAction(int _Key, UnityAction _Action)
+        public override void AddDeferredAction(int _ProductKey, int _ActionKey, UnityAction _Action)
         {
-            m_OnDeferredActions.SetSafe(_Key, _Action);
+            AddTranstactionAction(_ProductKey, _ActionKey, _Action, true);
         }
 
         public override void RestorePurchases()
@@ -147,7 +146,16 @@ namespace Common.Managers.IAP
                         if (info.Result() == EShopProductResult.Fail)
                             return;
                         if (info.HasReceipt)
-                            m_OnPurchaseActions[product.Key]?.Invoke();
+                        {
+                            if (m_OnPurchaseActionsDictDict.ContainsKey(product.Key))
+                            {
+                                var actionsDict = m_OnPurchaseActionsDictDict[product.Key];
+                                foreach (var action in actionsDict.Values)
+                                {
+                                    action?.Invoke();
+                                }
+                            }
+                        }
                     }));
             }
         }
@@ -162,13 +170,16 @@ namespace Common.Managers.IAP
                 Dbg.LogError($"Product with id {id} does not have product");
                 return PurchaseProcessingResult.Complete;
             }
-            var action = m_OnPurchaseActions.GetSafe(info.Key, out bool containsKey);
-            if (!containsKey)
+            if (!m_OnPurchaseActionsDictDict.ContainsKey(info.Key))
             {
                 Dbg.LogWarning($"Product with id {id} does not have purchase action");
                 return PurchaseProcessingResult.Complete;
             }
-            action?.Invoke();
+            var actions = m_OnPurchaseActionsDictDict[info.Key];
+            foreach (var action in actions.Values)
+            {
+                action?.Invoke();
+            }
             Dbg.Log($"ProcessPurchase: PASS. Product: '{_Args.purchasedProduct.definition.id}'");
             return PurchaseProcessingResult.Complete;
         }
@@ -176,6 +187,17 @@ namespace Common.Managers.IAP
         #endregion
         
         #region nonpublic methods
+        
+        private void AddTranstactionAction(int _ProductKey, int _ActionKey, UnityAction _Action, bool _Deferred)
+        {
+            var actionsDictDict = _Deferred ?
+                m_OnDeferredActionsDictDict : m_OnPurchaseActionsDictDict;
+            if (!actionsDictDict.ContainsKey(_ProductKey))
+                actionsDictDict.Add(_ProductKey, new Dictionary<int, UnityAction>());
+            var actionsDict = actionsDictDict[_ProductKey];
+            if (!actionsDict.ContainsKey(_ActionKey))
+                actionsDict.Add(_ActionKey, _Action);
+        }
         
         private void InitializePurchasing()
         {
@@ -244,23 +266,34 @@ namespace Common.Managers.IAP
         
         protected void OnDeferredPurchase(Product _Product)
         {
-            var key = Products.FirstOrDefault(_P => _P.Id == _Product.definition.id)?.Key;
-            if (!key.HasValue)
+            string id = _Product.definition.id;
+            var info = Products.FirstOrDefault(_P => _P.Id == _Product.definition.id);
+            if (info == null)
             {
-                Dbg.LogError($"Purchase of {_Product.definition.id} was not deferred");
+                Dbg.LogError($"Product with id {id} does not have product");
                 return;
             }
-            var action = m_OnDeferredActions.GetSafe(key.Value, out _);
-            if (action != null)
+            if (!m_OnPurchaseActionsDictDict.ContainsKey(info.Key))
             {
-                action.Invoke();
-                Dbg.Log($"Purchase of {_Product.definition.id} is deferred");
+                Dbg.LogWarning($"Product with id {id} does not have purchase action");
+                return;
             }
-            else
+            var actions = m_OnPurchaseActionsDictDict[info.Key];
+            foreach (var action in actions.Values)
             {
-                Dbg.LogWarning("Deferred action was not set of " +
-                               $"product with id {_Product.definition.id} was not set" +
-                               ", but it's okay, let this product be free");
+                action?.Invoke();
+                if (action != null)
+                {
+                    Dbg.Log($"Purchase of {_Product.definition.id} is deferred");
+                    action();
+
+                }
+                else
+                {
+                    Dbg.LogWarning("Deferred action was not set of " +
+                                   $"product with id {_Product.definition.id} was not set" +
+                                   ", but it's okay, let this product be free");
+                }
             }
         }
 

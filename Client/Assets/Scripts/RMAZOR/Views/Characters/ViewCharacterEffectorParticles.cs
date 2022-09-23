@@ -173,7 +173,7 @@ namespace RMAZOR.Views.Characters
             if (m_MoveDirection.HasValue && _Death)
             {
                 float sqrt2 = Mathf.Sqrt(2f);
-                Vector2 moveDir = RmazorUtils.GetDirectionVector(m_MoveDirection.Value, MazeOrientation.North);
+                Vector2 moveDir = RmazorUtils.GetDirectionVector(m_MoveDirection.Value, EMazeOrientation.North);
                 for (int i = 0; i < deathShapesCount; i++)
                 {
                     float dist = Vector2.Distance(moveDir, startDirections[i]);
@@ -215,7 +215,7 @@ namespace RMAZOR.Views.Characters
                 return Mathf.Abs(_DirectionCoordinate) < MathUtils.Epsilon ? 
                     _OrthogonalDirection * Random.value * orthogonalSpeedCoeficient : 0f;
             }
-            Vector2 moveDir = RmazorUtils.GetDirectionVector(_MoveDirection, MazeOrientation.North);
+            Vector2 moveDir = RmazorUtils.GetDirectionVector(_MoveDirection, EMazeOrientation.North);
             for (int i = 0; i < 6; i++)
             {
                 float orthDirCoeff = i % 2 == 0 ? 1f : -1f;

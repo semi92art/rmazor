@@ -55,14 +55,14 @@ namespace RMAZOR
             EMazeItemType.GravityTrap
         };
         
-        public static V2Int GetDropDirection(MazeOrientation _Orientation)
+        public static V2Int GetDropDirection(EMazeOrientation _Orientation)
         {
             return _Orientation switch
             {
-                MazeOrientation.North => V2Int.Down,
-                MazeOrientation.South => V2Int.Up,
-                MazeOrientation.East  => V2Int.Right,
-                MazeOrientation.West  => V2Int.Left,
+                EMazeOrientation.North => V2Int.Down,
+                EMazeOrientation.South => V2Int.Up,
+                EMazeOrientation.East  => V2Int.Right,
+                EMazeOrientation.West  => V2Int.Left,
                 _                     => throw new SwitchCaseNotImplementedException(_Orientation)
             };
         }
@@ -73,11 +73,11 @@ namespace RMAZOR
                 .Any(_Info => GravityItemTypes.ContainsAlt(_Info.Type));
         }
         
-        public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, MazeOrientation _Orientation)
+        public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, EMazeOrientation _Orientation)
         {
             return _Orientation switch
             {
-                MazeOrientation.North => _Direction switch
+                EMazeOrientation.North => _Direction switch
                 {
                     EMazeMoveDirection.Up    => V2Int.Up,
                     EMazeMoveDirection.Right => V2Int.Right,
@@ -85,7 +85,7 @@ namespace RMAZOR
                     EMazeMoveDirection.Left  => V2Int.Left,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
-                MazeOrientation.East => _Direction switch
+                EMazeOrientation.East => _Direction switch
                 {
                     EMazeMoveDirection.Up    => V2Int.Left,
                     EMazeMoveDirection.Right => V2Int.Up,
@@ -93,7 +93,7 @@ namespace RMAZOR
                     EMazeMoveDirection.Left  => V2Int.Down,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
-                MazeOrientation.South => _Direction switch
+                EMazeOrientation.South => _Direction switch
                 {
                     EMazeMoveDirection.Up    => V2Int.Down,
                     EMazeMoveDirection.Right => V2Int.Left,
@@ -101,7 +101,7 @@ namespace RMAZOR
                     EMazeMoveDirection.Left  => V2Int.Right,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
-                MazeOrientation.West => _Direction switch
+                EMazeOrientation.West => _Direction switch
                 {
                     EMazeMoveDirection.Up    => V2Int.Right,
                     EMazeMoveDirection.Right => V2Int.Down,
@@ -113,11 +113,11 @@ namespace RMAZOR
             };
         }
 
-        public static EMazeMoveDirection GetMoveDirection(V2Int _DirectionVector, MazeOrientation _Orientation)
+        public static EMazeMoveDirection GetMoveDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
         {
             switch (_Orientation)
             {
-                case MazeOrientation.North:
+                case EMazeOrientation.North:
                     if (_DirectionVector == V2Int.Up)
                         return EMazeMoveDirection.Up;
                     else if (_DirectionVector == V2Int.Right)
@@ -127,7 +127,7 @@ namespace RMAZOR
                     else if (_DirectionVector == V2Int.Left)
                         return EMazeMoveDirection.Left;
                     break;
-                case MazeOrientation.East:
+                case EMazeOrientation.East:
                     if (_DirectionVector == V2Int.Left)
                         return EMazeMoveDirection.Up;
                     else if (_DirectionVector == V2Int.Up)
@@ -137,7 +137,7 @@ namespace RMAZOR
                     else if (_DirectionVector == V2Int.Down)
                         return EMazeMoveDirection.Left;
                     break;
-                case MazeOrientation.South:
+                case EMazeOrientation.South:
                     if (_DirectionVector == V2Int.Down)
                         return EMazeMoveDirection.Up;
                     else if (_DirectionVector == V2Int.Left)
@@ -147,7 +147,7 @@ namespace RMAZOR
                     else if (_DirectionVector == V2Int.Right)
                         return EMazeMoveDirection.Left;
                     break;
-                case MazeOrientation.West:
+                case EMazeOrientation.West:
                     if (_DirectionVector == V2Int.Right)
                         return EMazeMoveDirection.Up;
                     else if (_DirectionVector == V2Int.Down)

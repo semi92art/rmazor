@@ -13,6 +13,7 @@ namespace RMAZOR.Views.InputConfigurators
 {
     public interface IViewInputCommandsProceeder : IInit
     {
+        List<Tuple<EInputCommand, object[]>>       CommandsHistory       { get; }
         float                                      SecondsWithoutCommand { get; }
         event UnityAction<EInputCommand, object[]> Command; 
         event UnityAction<EInputCommand, object[]> InternalCommand; 
@@ -53,6 +54,9 @@ namespace RMAZOR.Views.InputConfigurators
         #endregion
 
         #region api
+
+        public List<Tuple<EInputCommand, object[]>> CommandsHistory { get; } =
+            new List<Tuple<EInputCommand, object[]>>();
 
         public float SecondsWithoutCommand { get; private set; }
         
@@ -124,6 +128,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         public virtual bool RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
         {
+            CommandsHistory.Add(new Tuple<EInputCommand, object[]>(_Key, _Args));
             SecondsWithoutCommand = 0f;
             InternalCommand?.Invoke(_Key, _Args);
             if (_Forced)

@@ -39,8 +39,8 @@ namespace Common.Managers.IAP
         public abstract void         Purchase(int _Key);
         public abstract bool         RateGame();
         public abstract ShopItemArgs GetItemInfo(int       _Key);
-        public abstract void         SetPurchaseAction(int _Key, UnityAction _Action);
-        public abstract void         SetDeferredAction(int _Key, UnityAction _Action);
+        public abstract void         AddPurchaseAction(int _ProductKey, int _ActionKey, UnityAction _Action);
+        public abstract void         AddDeferredAction(int _ProductKey, int _ActionKey, UnityAction _Action);
 
         #endregion
 

@@ -112,7 +112,7 @@ namespace RMAZOR.Models.ItemProceeders
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused && StopProceedOnLevelFinish:
                     ClearCoroutines();
                     break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.CharacterKilled:
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Paused && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                 case ELevelStage.Finished:
                 case ELevelStage.ReadyToUnloadLevel: 
                 case ELevelStage.Unloaded:

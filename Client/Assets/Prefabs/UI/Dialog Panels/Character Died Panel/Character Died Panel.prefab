@@ -58,7 +58,7 @@ GameObject:
   - component: {fileID: 7475890742584236272}
   - component: {fileID: 6018941997595024119}
   m_Layer: 0
-  m_Name: Money Count Text
+  m_Name: Money In Bank Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -217,10 +217,10 @@ RectTransform:
   m_Father: {fileID: 7268738983295307038}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -52.08588}
-  m_SizeDelta: {x: -40.4511, y: -179.9178}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 184.41412}
+  m_SizeDelta: {x: 425.5489, y: 293.0822}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8680945749832285649
 CanvasRenderer:
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 3701211848015619911}
   - component: {fileID: 4719008432578410783}
   m_Layer: 0
-  m_Name: Money Count Title
+  m_Name: Money In Bank Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -569,7 +569,7 @@ GameObject:
   - component: {fileID: 8109337018581747672}
   - component: {fileID: 58048594227559572}
   m_Layer: 0
-  m_Name: Money Count Image
+  m_Name: Money In Bank Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -727,7 +727,7 @@ MonoBehaviour:
       name: money_count_text
     - item: {fileID: 6733458195154846334}
       name: money_icon_1
-    - item: {fileID: 6733458195154846334}
+    - item: {fileID: 3737749773780279311}
       name: money_icon_2
     - item: {fileID: 4872558346837938354}
       name: continue_text
@@ -1056,6 +1056,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8ae401a986f056a48a1bb6d68014b7c5, type: 3}
+--- !u!1 &3737749773780279311 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4268099591376650662, guid: 8ae401a986f056a48a1bb6d68014b7c5,
+    type: 3}
+  m_PrefabInstance: {fileID: 640762849480057257}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3819194354661020226 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4459957182514459627, guid: 8ae401a986f056a48a1bb6d68014b7c5,

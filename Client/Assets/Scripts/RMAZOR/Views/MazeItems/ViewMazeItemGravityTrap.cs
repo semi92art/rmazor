@@ -225,10 +225,10 @@ namespace RMAZOR.Views.MazeItems
         {
             return Model.MazeRotation.Orientation switch
             {
-                MazeOrientation.North => new Vector3(_DropDirection.y, _DropDirection.x),
-                MazeOrientation.South => new Vector3(-_DropDirection.y, -_DropDirection.x),
-                MazeOrientation.East  => -_DropDirection,
-                MazeOrientation.West  => _DropDirection,
+                EMazeOrientation.North => new Vector3(_DropDirection.y, _DropDirection.x),
+                EMazeOrientation.South => new Vector3(-_DropDirection.y, -_DropDirection.x),
+                EMazeOrientation.East  => -_DropDirection,
+                EMazeOrientation.West  => _DropDirection,
                 _                     => throw new SwitchCaseNotImplementedException(Model.MazeRotation.Orientation)
             };
         }

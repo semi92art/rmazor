@@ -10,6 +10,7 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.UI;
+using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -62,7 +63,6 @@ namespace RMAZOR.UI.Panels
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Fullscreen;
         public override EUiCategory       Category         => EUiCategory.RateGame;
-        public override bool              AllowMultiple    => false;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -91,19 +91,19 @@ namespace RMAZOR.UI.Panels
             
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(m_TextTitle, ETextType.MenuUI, "rate_game_panel_title",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+                    _T => _T.ToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(m_TextMessage, ETextType.MenuUI, "rate_game_panel_text",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(rateButtonText, ETextType.MenuUI, "rate_game",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(laterButtonText, ETextType.MenuUI, "later",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(neverButtonText, ETextType.MenuUI, "never",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture)));
+                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
         }
 
         public override void OnDialogStartAppearing()

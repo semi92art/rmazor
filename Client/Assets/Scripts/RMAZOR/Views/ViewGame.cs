@@ -9,7 +9,6 @@ using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Notifications;
 using Common.Providers;
 using Common.Ticker;
-using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -215,7 +214,7 @@ namespace RMAZOR.Views
             else
             {
                 float secondsLeft = SystemTicker.Time - m_LastPauseTime;
-                if (secondsLeft / 60f > 6f)
+                if (secondsLeft / (60f * 60f) > 6f)
                     ReloadGame();
             }
         }

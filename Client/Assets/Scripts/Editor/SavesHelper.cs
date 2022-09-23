@@ -32,12 +32,12 @@ namespace Editor
                 var p = new Process {StartInfo = new ProcessStartInfo {FileName = Application.persistentDataPath}};
                 Task.Run(() => p.Start());
             });
-            EditorUtilsEx.GuiButtonAction("Reset static variables", () =>
+            EditorUtilsEx.GuiButtonAction("Reload Saves File", () =>
             {
                 SaveKeysRmazor.ResetState();
                 SaveKeysCommon.ResetState();
+                SaveUtils.ReloadSaves();
             });
-            EditorUtilsEx.GuiButtonAction("Reload Saves File", SaveUtils.ReloadSaves);
             EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>
             {
                 if(File.Exists(SaveUtils.SavesPath))

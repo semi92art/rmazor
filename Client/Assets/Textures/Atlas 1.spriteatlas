@@ -91,7 +91,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c426b035919094016adb99e1349aa315, type: 3}
   - {fileID: 21300000, guid: 0926fd55c6e20ee42b6bbf6dcb31c986, type: 3}
   - {fileID: 21300000, guid: dd77367546bf4433dbbb2317a935df54, type: 3}
-  - {fileID: 21300000, guid: 3a5b10b5b94926944b1561fad76d691f, type: 3}
   - {fileID: 21300000, guid: 165fa3c519486b24c825895beee1992a, type: 3}
   - {fileID: 21300000, guid: 44d3e5d54bd44457baab1fd96d8c39bc, type: 3}
   - {fileID: 21300000, guid: 70f78e062098c4496b852abefff63acf, type: 3}
@@ -132,7 +131,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9486317a5007c4a7a8fad68173188178, type: 3}
   - {fileID: 21300000, guid: c7ade68a31f1d4e12a57617409b6ee8a, type: 3}
   - {fileID: 21300000, guid: 7b3d669a4bd374949bd345582865e998, type: 3}
-  - {fileID: 21300000, guid: 0a532e9a467932448a7d69fab8b00065, type: 3}
   - {fileID: 21300000, guid: cbfbd5aa7d738454f8fe1b922499a3fe, type: 3}
   - {fileID: 21300000, guid: 68c9d8dac9c154c78a81912758e4fa3d, type: 3}
   - {fileID: 21300000, guid: 2c6b30fa55462274c9ae754eb1254e0f, type: 3}
@@ -207,7 +205,6 @@ SpriteAtlas:
   - Toggle_Switch_On_Handle
   - icon_5_stars
   - Frame_ItemFrame01_Color_Brown
-  - trap_react
   - icon_settings_2
   - Icon_LanguageFlag_Large_Rou
   - Icon_PictoIcon_Close01
@@ -248,7 +245,6 @@ SpriteAtlas:
   - Slider16_Icon
   - Frame_ItemFrame01_Color_Red
   - shuriken
-  - trap_react2
   - background
   - Icon_LanguageFlag_Large_Chn
   - icon_coin

@@ -119,6 +119,7 @@ namespace RMAZOR.Views.Characters
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
             Head.OnRotationFinished(_Args);
+            Legs.OnRotationFinished(_Args);
         }
 
         public override void OnPathCompleted(V2Int _LastPath)
@@ -185,8 +186,11 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
-                    if (_Args.PreviousStage == ELevelStage.CharacterKilled)
+                    if (_Args.PreviousStage == ELevelStage.Paused 
+                        && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
+                    {
                         SetDefaultPosition();
+                    }
                     EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
@@ -207,6 +211,13 @@ namespace RMAZOR.Views.Characters
         {
             Head.Appear(_Appear);
             Legs.Appear(_Appear);
+        }
+        
+        public void FixedUpdateTick()
+        {
+            if (!m_IsMoving)
+                return;
+            SetPosition(m_NewPosition);
         }
 
         #endregion
@@ -241,12 +252,5 @@ namespace RMAZOR.Views.Characters
         }
 
         #endregion
-
-        public void FixedUpdateTick()
-        {
-            if (!m_IsMoving)
-                return;
-            SetPosition(m_NewPosition);
-        }
     }
 }
