@@ -40,23 +40,23 @@ namespace Common.Debugging
     public interface IFpsCounter : IInit
     {
         FpsCounterRecording GetRecording();
-        void                SetUpdateRate(float _Rate);
         void                Record(float _Duration);
     }
 
     public class FpsCounterFake : InitBase, IFpsCounter
     {
-        public FpsCounterRecording GetRecording()
-        {
-            return default;
-        }
-
-        public void SetUpdateRate(float _Rate)     { }
-        public void Record(float        _Duration) { }
+        public FpsCounterRecording GetRecording()          => default;
+        public void                Record(float _Duration) { }
     }
     
     public class FpsCounter : InitBase, IFpsCounter, IUpdateTick
     {
+        #region constants
+
+        private const float UpdateRate = 4f;
+
+        #endregion
+        
         #region nonpublic members
 
         private TextMeshPro m_FpsText;
@@ -66,9 +66,8 @@ namespace Common.Debugging
         private float m_FpsMax;
         private int   m_FramesCount;
         private float m_Dt;
-        private float m_UpdateRate = 4f;
-
-        private          bool        m_DoRecord;
+        private bool  m_DoRecord;
+        
         private readonly List<float> m_FpsValues = new List<float>();
 
         #endregion
@@ -78,9 +77,9 @@ namespace Common.Debugging
         private IRemotePropertiesCommon RemotePropertiesCommon { get; }
         private ICommonTicker           CommonTicker           { get; }
 
-        public FpsCounter(
+        private FpsCounter(
             IRemotePropertiesCommon _RemotePropertiesCommon,
-            ICommonTicker _CommonTicker)
+            ICommonTicker           _CommonTicker)
         {
             RemotePropertiesCommon = _RemotePropertiesCommon;
             CommonTicker           = _CommonTicker;
@@ -92,7 +91,7 @@ namespace Common.Debugging
 
         public override void Init()
         {
-            if (!RemotePropertiesCommon.DebugEnabled && !Application.isEditor)
+            if (!RemotePropertiesCommon.DebugEnabled)
                 return;
             InitFpsText();
             CommonTicker.Register(this);
@@ -104,11 +103,6 @@ namespace Common.Debugging
             return new FpsCounterRecording(m_FpsMin, m_FpsMax, m_FpsValues);
         }
 
-        public void SetUpdateRate(float _Rate)
-        {
-            m_UpdateRate = _Rate;
-        }
-        
         public void Record(float _Duration)
         {
             Clear();
@@ -125,13 +119,13 @@ namespace Common.Debugging
                 return;
             m_FramesCount++;
             m_Dt += CommonTicker.DeltaTime;
-            if (!(m_Dt > 1f / m_UpdateRate)) 
+            if (!(m_Dt > 1f / UpdateRate)) 
                 return;
             m_FpsCurrent = m_FramesCount / m_Dt ;
             m_FpsMin = Mathf.Min(m_FpsCurrent, m_FpsMin);
             m_FpsMax = Mathf.Max(m_FpsCurrent, m_FpsMax);
             m_FramesCount = 0;
-            m_Dt -= 1f/m_UpdateRate;
+            m_Dt -= 1f/UpdateRate;
             m_FpsText.text = "FPS: " + Convert.ToInt32(m_FpsCurrent);
             if (!m_DoRecord)
                 return;

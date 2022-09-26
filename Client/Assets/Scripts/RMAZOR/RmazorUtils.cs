@@ -112,6 +112,20 @@ namespace RMAZOR
                 _ => throw new SwitchCaseNotImplementedException(_Orientation)
             };
         }
+        
+        public static V2Int GetDirectionVector(V2Int _DirectionVector, EMazeOrientation _Orientation)
+        {
+            EMazeMoveDirection direction = default;
+            if (_DirectionVector == V2Int.Left)
+                direction = EMazeMoveDirection.Left;
+            else if (_DirectionVector == V2Int.Right)
+                direction = EMazeMoveDirection.Right;
+            else if (_DirectionVector == V2Int.Down)
+                direction = EMazeMoveDirection.Down;
+            else if (_DirectionVector == V2Int.Up)
+                direction = EMazeMoveDirection.Up;
+            return GetDirectionVector(direction, _Orientation);
+        }
 
         public static EMazeMoveDirection GetMoveDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
         {

@@ -1,7 +1,6 @@
 ﻿using Common;
 using Common.Helpers;
 using Common.UI.DialogViewers;
-using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
@@ -78,7 +77,6 @@ namespace RMAZOR.Views.UI
         private void SetThisSessionPanelShowPossibility()
         {
             float randVal = UnityEngine.Random.value;
-            Dbg.Log("SetThisSessionPanelShowPossibility rand val: " + randVal);
             m_CanShowPanelThisSession = randVal < 0.33f;
         }
 
@@ -88,7 +86,7 @@ namespace RMAZOR.Views.UI
                 return false;
             if (_LevelIndex == ViewSettings.firstLevelToRateGame)
                 return true;
-            return m_LevelsFinishedThisSession >= 3
+            return m_LevelsFinishedThisSession >= ViewSettings.firstLevelToRateGameThisSession
                    && m_CanShowPanelThisSession;
         }
 

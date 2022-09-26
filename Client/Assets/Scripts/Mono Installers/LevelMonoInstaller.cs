@@ -212,12 +212,14 @@ namespace Mono_Installers
                 Container.Bind<IViewUICongratsMessage>() .To<ViewUICongratsMessage>()         .AsSingle();
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoMazeBlade>()       .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()             .AsSingle();
-                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
-                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
+                
                 Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
                 // Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()      .AsSingle();
+                
+                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
+                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
             }
         }
 

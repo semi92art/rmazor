@@ -23,7 +23,7 @@ MonoBehaviour:
   trapIncreasingIncreasedTime: 2
   turretPreShootInterval: 1.5
   turretShootInterval: 0.5
-  turretProjectileSpeed: 40
+  turretProjectileSpeed: 15
   shredingerBlockProceedTime: 3
   hammerShotPause: 1.5
   spearAppearPause: 2

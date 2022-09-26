@@ -13,7 +13,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
     public interface ILeaderboardProvider : IInit
     {
         event ScoresEventHandler ScoresChanged;
-        void                     RegisterLeaderboardsMap(Dictionary<ushort, string> _Map);
+        void                     RegisterLeaderboardsSet(Dictionary<ushort, string> _Map);
 
         ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache);
         bool         SetScoreToLeaderboard(ushort   _Key, long _Value, bool _OnlyToCache);
@@ -44,7 +44,7 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
 
         public event ScoresEventHandler ScoresChanged;
 
-        public void RegisterLeaderboardsMap(Dictionary<ushort, string> _Map)
+        public void RegisterLeaderboardsSet(Dictionary<ushort, string> _Map)
         {
             m_LeaderboardsMap = _Map;
         }

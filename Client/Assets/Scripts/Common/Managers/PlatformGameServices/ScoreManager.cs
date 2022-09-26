@@ -113,9 +113,9 @@ namespace Common.Managers.PlatformGameServices
             SavedGameProvider.FetchSavedGames();
         }
 
-        public void RegisterLeaderboardsMap(Dictionary<ushort, string> _Map)
+        public void RegisterLeaderboardsSet(Dictionary<ushort, string> _Map)
         {
-            LeaderboardProvider.RegisterLeaderboardsMap(_Map);
+            LeaderboardProvider.RegisterLeaderboardsSet(_Map);
         }
 
         public virtual ScoresEntity GetScoreFromLeaderboard(ushort _Key, bool _FromCache)
@@ -133,9 +133,9 @@ namespace Common.Managers.PlatformGameServices
             return LeaderboardProvider.ShowLeaderboard(_Key);
         }
         
-        public void RegisterAchievementsMap(Dictionary<ushort, string> _Map)
+        public void RegisterAchievementsSet(Dictionary<ushort, string> _Map)
         {
-            AchievementsProvider.RegisterAchievementsMap(_Map);
+            AchievementsProvider.RegisterAchievementsSet(_Map);
         }
 
         public Entity<IAchievement> UnlockAchievement(ushort _Key)

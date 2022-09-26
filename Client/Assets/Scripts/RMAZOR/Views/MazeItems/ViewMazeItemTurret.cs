@@ -414,25 +414,40 @@ namespace RMAZOR.Views.MazeItems
         {
             TurretBody.HighlightBarrel(_Open, _Instantly, _Forced);
         }
-
+        
         private IEnumerator DoShoot(TurretShotEventArgs _Args)
         {
             m_ProjectileMovingLocked = false;
             m_LastShotArgs = _Args;
             Managers.AudioManager.PlayClip(GetAudioClipArgsShurikenFly());
+            Vector2 projectilePos = _Args.From;
             Projectile.Tail.ShowTail(_Args);
             m_ProjRotating = true;
             m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed;
-            var velocity = (Vector2) _Args.Direction
-                           * Model.Settings.turretProjectileSpeed;
-            Projectile.SetVelocity(velocity);
-            yield return Cor.WaitWhile(() => !m_ProjectileMovingLocked,
-                () =>
-                {
-                    m_ProjRotating = false;
-                    Projectile.Show(false);
-                    Projectile.Tail.HideTail();
-                }, _Ticker: GameTicker);
+            bool CorPredicate()
+            {
+                return !m_ProjectileMovingLocked;
+            }
+            void CorAction()
+            {
+                projectilePos += (Vector2)_Args.Direction
+                                 * Model.Settings.turretProjectileSpeed
+                                 * GameTicker.FixedDeltaTime;
+                var newProjPos = CoordinateConverter.ToLocalMazeItemPosition(projectilePos);
+                Projectile.SetPosition(newProjPos);
+            }
+            void CorFinish()
+            {
+                m_ProjRotating = false;
+                Projectile.Show(false);
+                Projectile.Tail.HideTail();
+            }
+            yield return Cor.DoWhile(
+                CorPredicate,
+                CorAction,
+                CorFinish,
+                GameTicker,
+                _FixedUpdate: true);
         }
         
         private void StopProceedingTurret()

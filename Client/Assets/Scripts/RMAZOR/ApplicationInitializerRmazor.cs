@@ -23,7 +23,6 @@ using UnityEngine;
 using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
 using Zenject;
-using static Common.Managers.Achievements.AchievementKeys;
 
 namespace RMAZOR
 {
@@ -43,18 +42,19 @@ namespace RMAZOR
         private IRemoteConfigManager    RemoteConfigManager   { get; set; }
         private IPermissionsRequester   PermissionsRequester  { get; set; }
         private IAssetBundleManager     AssetBundleManager    { get; set; }
-        private ICommonTicker           CommonTicker          { get; set; }
         private ISRDebuggerInitializer  SrDebuggerInitializer { get; set; }
+        private IAchievementsSet        AchievementsSet       { get; set; }
+        private ILeaderboardsSet        LeaderboardsSet       { get; set; }
+        private CompanyLogo             CompanyLogo           { get; set; }
         
 // #if UNITY_ANDROID
 //         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
 // #endif
 
-        
         [Inject] 
         private void Inject(
-            IRemotePropertiesCommon  _RemoteProperties,
             GlobalGameSettings       _GameSettings,
+            IRemotePropertiesCommon  _RemoteProperties,
             IGameClient              _GameClient,
             IAdsManager              _AdsManager,
             ILocalizationManager     _LocalizationManager,
@@ -68,10 +68,12 @@ namespace RMAZOR
             IPermissionsRequester    _PermissionsRequester,
             ICommonTicker            _CommonTicker,
             ISRDebuggerInitializer   _SrDebuggerInitializer,
+            IAchievementsSet         _AchievementsSet,
+            ILeaderboardsSet         _LeaderboardsSet,
             CompanyLogo              _CompanyLogo)
         {
-            RemoteProperties      = _RemoteProperties;
             GlobalGameSettings    = _GameSettings;
+            RemoteProperties      = _RemoteProperties;
             GameClient            = _GameClient;
             AdsManager            = _AdsManager;
             LocalizationManager   = _LocalizationManager;
@@ -82,8 +84,10 @@ namespace RMAZOR
             ShopManager           = _ShopManager;
             RemoteConfigManager   = _RemoteConfigManager;
             PermissionsRequester  = _PermissionsRequester;
-            CommonTicker          = _CommonTicker;
             SrDebuggerInitializer = _SrDebuggerInitializer;
+            AchievementsSet       = _AchievementsSet;
+            LeaderboardsSet       = _LeaderboardsSet;
+            CompanyLogo           = _CompanyLogo;
         }
         
         #endregion
@@ -95,6 +99,7 @@ namespace RMAZOR
 // #if UNITY_ANDROID
 //             InitAndroidPerformanceClient();
 // #endif
+            CompanyLogo.Init();
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
@@ -228,8 +233,8 @@ namespace RMAZOR
         {
             try
             {
-                ScoreManager.RegisterLeaderboardsMap(GetLeaderboardsMap());
-                ScoreManager.RegisterAchievementsMap(GetAchievementsMap());
+                ScoreManager.RegisterLeaderboardsSet(LeaderboardsSet.GetSet());
+                ScoreManager.RegisterAchievementsSet(AchievementsSet.GetSet());
                 ScoreManager       .Initialize += OnScoreManagerInitialize;
                 ScoreManager       .Init();
             }
@@ -393,35 +398,6 @@ namespace RMAZOR
                 new ProductInfo(PurchaseKeys.Money2,    $"medium_pack_of_coins{suffix}",          ptCons),
                 new ProductInfo(PurchaseKeys.Money3,    $"big_pack_of_coins{suffix}",             ptCons),
                 new ProductInfo(PurchaseKeys.NoAds,     $"disable_mandatory_advertising{suffix}", ptNonCons),
-            };
-        }
-
-        private static Dictionary<ushort, string> GetLeaderboardsMap()
-        {
-            bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
-            return new Dictionary<ushort, string>
-            {
-                { DataFieldIds.Level, ios ? "level" : "CgkI1IvonNkDEAIQBg"}
-            };
-        }
-
-        private static Dictionary<ushort, string> GetAchievementsMap()
-        {
-            bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
-            return new Dictionary<ushort, string>
-            {
-                {Level10Finished, ios ? "level_0010_finished" : "CgkI1IvonNkDEAIQBQ"},
-                {Level50Finished, ios ? "level_0050_finished" : "CgkI1IvonNkDEAIQCA"},
-                {Level100Finished, ios ? "level_0100_finished" : "CgkI1IvonNkDEAIQBw"},
-                {Level200Finished, ios ? "level_0200_finished" : "CgkI1IvonNkDEAIQCQ"},
-                {Level300Finished, ios ? "level_0300_finished" : "CgkI1IvonNkDEAIQCg"},
-                {Level400Finished, ios ? "level_0400_finished" : "CgkI1IvonNkDEAIQCw"},
-                {Level500Finished, ios ? "level_0500_finished" : "CgkI1IvonNkDEAIQDA"},
-                {Level600Finished, ios ? "level_0600_finished" : "CgkI1IvonNkDEAIQDQ"},
-                {Level700Finished, ios ? "level_0700_finished" : "CgkI1IvonNkDEAIQDg"},
-                {Level800Finished, ios ? "level_0800_finished" : "CgkI1IvonNkDEAIQDw"},
-                {Level900Finished, ios ? "level_0900_finished" : "CgkI1IvonNkDEAIQEA"},
-                {Level1000Finished, ios ? "level_1000_finished" : "CgkI1IvonNkDEAIQEQ"},
             };
         }
 

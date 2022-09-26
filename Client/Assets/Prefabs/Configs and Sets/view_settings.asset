@@ -30,6 +30,7 @@ MonoBehaviour:
   afterRotationEnableMoveDelay: 0.1
   levelsCountMain: 420
   firstLevelToRateGame: 4
+  firstLevelToRateGameThisSession: 0
   betweenLevelTransitionTime: 1
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5

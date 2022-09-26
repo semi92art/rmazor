@@ -190,21 +190,21 @@ namespace RMAZOR.Views.MazeItems
             var cTL  = Object.AddComponentOnNewChild<Disc>("Top Left Corner",        out _);
             var cBR  = Object.AddComponentOnNewChild<Disc>("Bottom Right Corner",    out _);
             var cTR  = Object.AddComponentOnNewChild<Disc>("Top Right Corner",       out _);
-            var cBC1 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _);
-            var cBC2 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _);
-            var cTC1 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _);
-            var cTC2 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _);
+            var cBc1 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 1", out _);
+            var cBc2 = Object.AddComponentOnNewChild<Disc>("Bottom Center Corner 2", out _);
+            var cTc1 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 1",    out _);
+            var cTc2 = Object.AddComponentOnNewChild<Disc>("Top Center Corner 2",    out _);
             (cBL.transform.localPosition, cBL.AngRadiansStart, cBL.AngRadiansEnd)    = (cPoss[0], cAngs[0].x, cAngs[0].y);
             (cTL.transform.localPosition, cTL.AngRadiansStart, cTL.AngRadiansEnd)    = (cPoss[1], cAngs[1].x, cAngs[1].y);
             (cBR.transform.localPosition, cBR.AngRadiansStart, cBR.AngRadiansEnd)    = (cPoss[2], cAngs[2].x, cAngs[2].y);
             (cTR.transform.localPosition, cTR.AngRadiansStart, cTR.AngRadiansEnd)    = (cPoss[3], cAngs[3].x, cAngs[3].y);
-            (cBC1.transform.localPosition, cBC1.AngRadiansStart, cBC1.AngRadiansEnd) = (cPoss[4], cAngs[4].x, cAngs[4].y);
-            (cBC2.transform.localPosition, cBC2.AngRadiansStart, cBC2.AngRadiansEnd) = (cPoss[5], cAngs[5].x, cAngs[5].y);
-            (cTC1.transform.localPosition, cTC1.AngRadiansStart, cTC1.AngRadiansEnd) = (cPoss[6], cAngs[6].x, cAngs[6].y);
-            (cTC2.transform.localPosition, cTC2.AngRadiansStart, cTC2.AngRadiansEnd) = (cPoss[7], cAngs[7].x, cAngs[7].y);
+            (cBc1.transform.localPosition, cBc1.AngRadiansStart, cBc1.AngRadiansEnd) = (cPoss[4], cAngs[4].x, cAngs[4].y);
+            (cBc2.transform.localPosition, cBc2.AngRadiansStart, cBc2.AngRadiansEnd) = (cPoss[5], cAngs[5].x, cAngs[5].y);
+            (cTc1.transform.localPosition, cTc1.AngRadiansStart, cTc1.AngRadiansEnd) = (cPoss[6], cAngs[6].x, cAngs[6].y);
+            (cTc2.transform.localPosition, cTc2.AngRadiansStart, cTc2.AngRadiansEnd) = (cPoss[7], cAngs[7].x, cAngs[7].y);
             m_OpenedCorners.AddRange(new []
             {
-                cBL, cTL, cBR, cTR, cBC1, cBC2, cTC1, cTC2
+                cBL, cTL, cBR, cTR, cBc1, cBc2, cTc1, cTc2
             });
             m_OpenedCorners.ForEach(_Corner => _Corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(ArcEndCap.Round)
@@ -215,7 +215,7 @@ namespace RMAZOR.Views.MazeItems
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             float scale = CoordinateConverter.Scale;
-            m_ClosedBlock.SetSize(scale * 0.9f)
+            m_ClosedBlock.SetSize(scale * (1f + ViewSettings.LineThickness * 0.5f))
                 .SetCornerRadius(ViewSettings.CornerRadius * scale)
                 .SetThickness(ViewSettings.LineThickness * scale);
             foreach (var corner in m_OpenedCorners)

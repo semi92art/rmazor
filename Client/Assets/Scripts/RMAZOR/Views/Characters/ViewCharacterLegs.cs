@@ -29,13 +29,11 @@ namespace RMAZOR.Views.Characters
         IOnPathCompleted,
         IAppear
     {
-        Func<ViewCharacterInfo> GetCharacterObjects { set; }
         void                    OnRotationFinished(MazeRotationEventArgs _Args);
     }
 
     public class ViewCharacterLegsFake : InitBase, IViewCharacterLegs
     {
-        public Func<ViewCharacterInfo> GetCharacterObjects { private get; set; }
         public void OnRotationFinished(MazeRotationEventArgs _Args) { }
 
         public EAppearingState         AppearingState => EAppearingState.Dissapeared;
@@ -111,8 +109,7 @@ namespace RMAZOR.Views.Characters
                     UpdatePrefab();
             }
         }
-        public EAppearingState         AppearingState      { get;         private set; }
-        public Func<ViewCharacterInfo> GetCharacterObjects { private get; set; }
+        public EAppearingState         AppearingState      { get; private set; }
         
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
@@ -233,8 +230,7 @@ namespace RMAZOR.Views.Characters
             m_Leg2Body.transform.SetLocalScaleXY(localScale);
             SetLegsTransform(EMazeMoveDirection.Down);
         }
-
-        // FIXME ебаный костыльный алгоритм, набо поправить
+        
         private void SetLegsTransform(EMazeMoveDirection _Direction, bool _ByLastOrientation = false)
         {
             float scale = CoordinateConverter.Scale;
@@ -246,13 +242,14 @@ namespace RMAZOR.Views.Characters
             m_Leg1Body.transform.localPosition = b * scale - dir * m_Leg1Body.Height * 2f;
             m_Leg2Body.transform.localPosition = c * scale - dir * m_Leg1Body.Height * 2f;
             var orientationForAngle = _ByLastOrientation ? m_LastMazeOrientation : Model.MazeRotation.Orientation;
-            bool orth = (orientationForAngle == EMazeOrientation.East || orientationForAngle == EMazeOrientation.West) && _ByLastOrientation;
+            bool orth = (orientationForAngle == EMazeOrientation.East || orientationForAngle == EMazeOrientation.West) 
+                        && _ByLastOrientation;
             float legsAngle = _Direction switch
             {
+                EMazeMoveDirection.Down  => !orth ? 0f   : 270f,
+                EMazeMoveDirection.Right => !orth ? 90f  : 180f,
                 EMazeMoveDirection.Up    => !orth ? 180f : 90f,
-                EMazeMoveDirection.Down  => !orth ? 0f : 90f,
                 EMazeMoveDirection.Left  => !orth ? 270f : 0f,
-                EMazeMoveDirection.Right => !orth ? 90f : 0f,
                 _                        => default
             };
             var rotation =  Quaternion.Euler(Vector3.forward * legsAngle);

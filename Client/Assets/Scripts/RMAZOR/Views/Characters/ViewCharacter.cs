@@ -103,7 +103,6 @@ namespace RMAZOR.Views.Characters
                 Managers.AudioManager.InitClip(args);
             }
             Tail.GetCharacterObjects = GetObjects;
-            Legs.GetCharacterObjects = GetObjects;
             Head.Init();
             Tail.Init();
             Legs.Init();

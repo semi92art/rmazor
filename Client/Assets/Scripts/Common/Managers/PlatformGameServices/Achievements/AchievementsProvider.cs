@@ -11,7 +11,7 @@ namespace Common.Managers.PlatformGameServices.Achievements
 {
     public interface IAchievementsProvider : IInit
     {
-        void RegisterAchievementsMap(Dictionary<ushort, string> _Map);
+        void RegisterAchievementsSet(Dictionary<ushort, string> _Map);
 
         Entity<IAchievement> UnlockAchievement(ushort _Key);
         Entity<IAchievement> GetAchievement(ushort    _Key);
@@ -48,7 +48,7 @@ namespace Common.Managers.PlatformGameServices.Achievements
             base.Init();
         }
 
-        public void RegisterAchievementsMap(Dictionary<ushort, string> _Map)
+        public void RegisterAchievementsSet(Dictionary<ushort, string> _Map)
         {
             m_AchievementsMap = _Map;
         }

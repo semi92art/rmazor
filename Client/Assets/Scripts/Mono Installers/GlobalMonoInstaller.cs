@@ -166,13 +166,16 @@ namespace Mono_Installers
             Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
             Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 #endif
-            Container.Bind<IAdsProvidersSet>().To<AdsProvidersSet>().AsSingle();
-            Container.Bind<IAnalyticsProvidersSet>().To<AnalyticsProvidersSet>().AsSingle();
+            Container.Bind<IAdsProvidersSet>()          .To<AdsProvidersSet>()              .AsSingle();
+            Container.Bind<IAnalyticsProvidersSet>()    .To<AnalyticsProvidersSet>()        .AsSingle();
 
-            Container.Bind<IFontProvider>().To<DefaultFontProvider>().AsSingle();
-            // Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
-            Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
-            Container.Bind<ISRDebuggerInitializer>().To<SRDebuggerInitializer>().AsSingle();
+            Container.Bind<IFontProvider>()             .To<DefaultFontProvider>()          .AsSingle();
+            Container.Bind<ISRDebuggerInitializer>()    .To<SRDebuggerInitializer>()        .AsSingle();
+            Container.Bind<ILeaderboardsSet>()          .To<LeaderboardsSetRmazor>()        .AsSingle();
+            Container.Bind<IAchievementsSet>()          .To<AchievementsSetRmazor>()        .AsSingle();
+            
+            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
+            // Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
         }
     }
 }
