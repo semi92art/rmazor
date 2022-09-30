@@ -14,7 +14,13 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
     {
         MeshRenderer Renderer { get; }
         void         Activate(bool _Active);
-        void         Show(float    _Time, Color _ColorFrom1, Color _ColorFrom2, Color _ColorTo1, Color _ColorTo2);
+        
+        void         Show(
+            float    _Time,
+            Color _ColorFrom1,
+            Color _ColorFrom2, 
+            Color _ColorTo1,
+            Color _ColorTo2);
     }
 
     public abstract class FullscreenTextureProviderBase :
@@ -83,7 +89,13 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
                 case ColorIds.Background2: Material.SetColor(Color2Id, _Color); break;
             }
         }
-        
+
+        protected override void InitTexture()
+        {
+            base.InitTexture();
+            Renderer.gameObject.layer = LayerMask.NameToLayer("μ Mu");
+        }
+
         private IEnumerator ShowTexture(
             float _Time,
             Color _ColorFrom1, 

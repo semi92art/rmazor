@@ -47,9 +47,9 @@ namespace RMAZOR
         private ILeaderboardsSet        LeaderboardsSet       { get; set; }
         private CompanyLogo             CompanyLogo           { get; set; }
         
-// #if UNITY_ANDROID
-//         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
-// #endif
+#if UNITY_ANDROID
+        [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
+#endif
 
         [Inject] 
         private void Inject(

@@ -35,15 +35,57 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
-    - main: {r: 0.9254902, g: 0.700985, b: 0.27450988, a: 1}
+    - main: {r: 0.73625934, g: 0.9254902, b: 0.27450988, a: 1}
       bacground1: {r: 0.116011046, g: 0.19750719, b: 0.31132078, a: 1}
-      bacground2: {r: 0.8396226, g: 0.50014764, b: 0.19406372, a: 1}
+      bacground2: {r: 0.50036144, g: 0.6603774, b: 0.15263441, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 1
-      uiBackgroundFillType: 0
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 0
+        diffusion: 0.3
+        color: {r: 0.87843144, g: 0.65882355, b: 0.019607844, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.3
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 7
+    - main: {r: 0.8679245, g: 0.24410377, b: 0, a: 1}
+      bacground1: {r: 0.32063267, g: 0.28555533, b: 0.6509434, a: 1}
+      bacground2: {r: 0.9056604, g: 0.35453612, b: 0.14097545, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 1
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 0
+        diffusion: 0.3
+        color: {r: 0.87843144, g: 0.65882355, b: 0.019607844, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.3
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 7
+    - main: {r: 0, g: 0.49224067, b: 1, a: 1}
+      bacground1: {r: 0.09077964, g: 0.16021204, b: 0.2264151, a: 1}
+      bacground2: {r: 0, g: 0.28211603, b: 0.6226415, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 0
+      characterBorderFillType: 1
+      uiBackgroundFillType: 1
       bloom:
         enableBloom: 0
         diffusion: 0.3

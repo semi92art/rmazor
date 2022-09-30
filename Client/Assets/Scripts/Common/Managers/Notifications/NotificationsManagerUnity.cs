@@ -97,7 +97,12 @@ namespace Common.Managers.Notifications
         void ClearAllNotifications();
     }
 
-    public class NotificationsManagerUnity : InitBase, INotificationsManager, IUpdateTick, IApplicationFocus, IDestroy
+    public class NotificationsManagerUnity 
+        : InitBase,
+          INotificationsManager,
+          IUpdateTick,
+          IApplicationFocus,
+          IDestroy
     {
         #region constants
 

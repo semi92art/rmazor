@@ -21,9 +21,9 @@ namespace Common
         private static SaveKey<string>       _login;        
         private static SaveKey<string>       _passwordHash;
         private static SaveKey<int?>         _previousAccountId; 
-        private static SaveKey<DateTime>     _timeSinceLastIapReviewDialogShown;
         private static SaveKey<List<int>>    _boughtPurchaseIds;
         private static SaveKey<List<string>> _debugConsoleCommandsHistory;
+        private static SaveKey<bool>         _lowPerformanceDevice;
         
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
@@ -48,26 +48,27 @@ namespace Common
                 _login                             = null;
                 _passwordHash                      = null;
                 _previousAccountId                 = null;
-                _timeSinceLastIapReviewDialogShown = null;
                 _boughtPurchaseIds                 = null;
                 _debugConsoleCommandsHistory       = null;
+                _lowPerformanceDevice              = null;
             }
-            SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               true);
-            SaveUtils.PutValue(SettingNotificationsOn,      SaveUtils.GetValue(SettingNotificationsOn),     true);
-            SaveUtils.PutValue(SettingHapticsOn,            SaveUtils.GetValue(SettingHapticsOn),           true);
-            SaveUtils.PutValue(SettingSoundOn,              SaveUtils.GetValue(SettingSoundOn),             true);
-            SaveUtils.PutValue(SettingMusicOn,              SaveUtils.GetValue(SettingMusicOn),             true);
-            SaveUtils.PutValue(DisableAds,                  SaveUtils.GetValue(DisableAds),                 true);
-            SaveUtils.PutValue(LastDbConnectionSuccess,     SaveUtils.GetValue(LastDbConnectionSuccess),    true);
-            SaveUtils.PutValue(NotFirstLaunch,              SaveUtils.GetValue(NotFirstLaunch),             true);
-            SaveUtils.PutValue(DebugUtilsOn,                SaveUtils.GetValue(DebugUtilsOn),               true);
-            SaveUtils.PutValue(AccountId,                   SaveUtils.GetValue(AccountId),                  true);
-            SaveUtils.PutValue(Login,                       SaveUtils.GetValue(Login),                      true);
-            SaveUtils.PutValue(PasswordHash,                SaveUtils.GetValue(PasswordHash),               true);
-            SaveUtils.PutValue(PreviousAccountId,           SaveUtils.GetValue(PreviousAccountId),          true);
-            SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          true);
-            SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory), true);
-            SaveUtils.PutValue(TimeSinceLastIapReviewDialogShown, SaveUtils.GetValue(TimeSinceLastIapReviewDialogShown),  true);
+            const bool onlyCache = true;
+            SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               onlyCache);
+            SaveUtils.PutValue(SettingNotificationsOn,      SaveUtils.GetValue(SettingNotificationsOn),     onlyCache);
+            SaveUtils.PutValue(SettingHapticsOn,            SaveUtils.GetValue(SettingHapticsOn),           onlyCache);
+            SaveUtils.PutValue(SettingSoundOn,              SaveUtils.GetValue(SettingSoundOn),             onlyCache);
+            SaveUtils.PutValue(SettingMusicOn,              SaveUtils.GetValue(SettingMusicOn),             onlyCache);
+            SaveUtils.PutValue(DisableAds,                  SaveUtils.GetValue(DisableAds),                 onlyCache);
+            SaveUtils.PutValue(LastDbConnectionSuccess,     SaveUtils.GetValue(LastDbConnectionSuccess),    onlyCache);
+            SaveUtils.PutValue(NotFirstLaunch,              SaveUtils.GetValue(NotFirstLaunch),             onlyCache);
+            SaveUtils.PutValue(DebugUtilsOn,                SaveUtils.GetValue(DebugUtilsOn),               onlyCache);
+            SaveUtils.PutValue(AccountId,                   SaveUtils.GetValue(AccountId),                  onlyCache);
+            SaveUtils.PutValue(Login,                       SaveUtils.GetValue(Login),                      onlyCache);
+            SaveUtils.PutValue(PasswordHash,                SaveUtils.GetValue(PasswordHash),               onlyCache);
+            SaveUtils.PutValue(PreviousAccountId,           SaveUtils.GetValue(PreviousAccountId),          onlyCache);
+            SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          onlyCache);
+            SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory),onlyCache);
+            SaveUtils.PutValue(LowPerformanceDevice,        SaveUtils.GetValue(LowPerformanceDevice),       onlyCache);
         }
 
         public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
@@ -110,12 +111,12 @@ namespace Common
             new SaveKey<string>(nameof(ServerUrl));
         public static SaveKey<string> AppVersion               =>
             new SaveKey<string>(nameof(AppVersion));
-        public static SaveKey<DateTime> TimeSinceLastIapReviewDialogShown => 
-            _timeSinceLastIapReviewDialogShown ??= new SaveKey<DateTime>(nameof(TimeSinceLastIapReviewDialogShown));
         public static SaveKey<List<int>> BoughtPurchaseIds     => 
             _boughtPurchaseIds ??= new SaveKey<List<int>>(nameof(BoughtPurchaseIds));
         public static SaveKey<List<string>> DebugConsoleCommandsHistory =>
             _debugConsoleCommandsHistory ??= new SaveKey<List<string>>(nameof(DebugConsoleCommandsHistory));
+        public static SaveKey<bool> LowPerformanceDevice       =>
+            _lowPerformanceDevice ??= new SaveKey<bool>(nameof(LowPerformanceDevice));
         
         public static SaveKey<uint> BundleVersion(string _BundleName)
         {

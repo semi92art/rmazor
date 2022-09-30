@@ -18,6 +18,5 @@
     {
         void PlayPreset(EHapticsPresetType _Preset);
         void Play(float                    _Amplitude, float _Frequency, float? _Duration = null);
-        bool IsHapticsSupported();
     }
 }

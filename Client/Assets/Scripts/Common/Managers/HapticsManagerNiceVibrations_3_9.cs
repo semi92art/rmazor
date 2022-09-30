@@ -1,14 +1,32 @@
 ﻿#if NICE_VIBRATIONS_3_9
 using Common.Exceptions;
 using Common.Helpers;
+using Common.Settings;
 using MoreMountains.NiceVibrations;
+using Zenject;
 
 namespace Common.Managers
 {
     public class HapticsManagerNiceVibrations_3_9 : InitBase, IHapticsManager
     {
+        #region inject
+        
+        private IHapticsSetting Setting { get; set; }
+
+        [Inject]
+        private void Inject(IHapticsSetting _Setting)
+        {
+            Setting = _Setting;
+        }
+
+        #endregion
+
+        #region api
+
         public void PlayPreset(EHapticsPresetType _Preset)
         {
+            if (!Setting.Get())
+                return;
             if (!IsHapticsSupported())
                 return;
             MMVibrationManager.StopAllHaptics(true);
@@ -53,6 +71,8 @@ namespace Common.Managers
 
         public void Play(float  _Amplitude, float _Frequency, float? _Duration = null)
         {
+            if (!Setting.Get())
+                return;
             MMVibrationManager.StopAllHaptics(true);
             if (!_Duration.HasValue)
                 MMVibrationManager.TransientHaptic(_Amplitude, _Frequency);
@@ -64,6 +84,8 @@ namespace Common.Managers
         {
             return MMVibrationManager.HapticsSupported();
         }
+
+        #endregion
     }
 }
 #endif

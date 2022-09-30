@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
+using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Ticker;
@@ -15,22 +17,26 @@ namespace Common.Debugging
     public readonly struct FpsCounterRecording
     {
         public FpsCounterRecording(
+            float _Fps,
             float _FpsMin, 
             float _FpsMax, List<float> _FpsValues)
         {
+            Fps        = _Fps;
             FpsMin     = _FpsMin;
             FpsMax     = _FpsMax;
             FpsValues  = _FpsValues;
         }
 
-        public float       FpsMin     { get; }
-        public float       FpsMax     { get; }
-        public List<float> FpsValues  { get; }
+        public float       Fps       { get; }
+        public float       FpsMin    { get; }
+        public float       FpsMax    { get; }
+        public List<float> FpsValues { get; }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Min FPS: " + FpsMin + ", max FPS: " + FpsMax + ", Values:");
+            sb.Append($"Average Fps: {Fps}, min FPS: {FpsMin}, max FPS: {FpsMax}");
+            sb.AppendLine(", values:");
             foreach (float fpsValue in FpsValues)
                 sb.AppendLine(fpsValue.ToString(CultureInfo.InvariantCulture));
             return sb.ToString();
@@ -39,12 +45,18 @@ namespace Common.Debugging
 
     public interface IFpsCounter : IInit
     {
+        Entity<bool>        IsLowPerformance { get; }
         FpsCounterRecording GetRecording();
         void                Record(float _Duration);
     }
 
     public class FpsCounterFake : InitBase, IFpsCounter
     {
+        public Entity<bool>        IsLowPerformance        => new Entity<bool>
+        {
+            Value = false,
+            Result = EEntityResult.Success
+        };
         public FpsCounterRecording GetRecording()          => default;
         public void                Record(float _Duration) { }
     }
@@ -62,8 +74,6 @@ namespace Common.Debugging
         private TextMeshPro m_FpsText;
         
         private float m_FpsCurrent;
-        private float m_FpsMin;
-        private float m_FpsMax;
         private int   m_FramesCount;
         private float m_Dt;
         private bool  m_DoRecord;
@@ -91,22 +101,31 @@ namespace Common.Debugging
 
         public override void Init()
         {
-            if (!RemotePropertiesCommon.DebugEnabled)
-                return;
-            InitFpsText();
+            if (RemotePropertiesCommon.DebugEnabled)
+                InitFpsText();
+            MeasurePerformanceOnInit();
             CommonTicker.Register(this);
             base.Init();
         }
 
+        public Entity<bool> IsLowPerformance { get; } = new Entity<bool>
+        {
+            Result = EEntityResult.Pending
+        };
+
         public FpsCounterRecording GetRecording()
         {
-            return new FpsCounterRecording(m_FpsMin, m_FpsMax, m_FpsValues);
+            float fpsAverage = m_FpsValues.Count > 0f ? m_FpsValues.Average() : 0f;
+            float fpsMin = m_FpsValues.Count > 0f ? m_FpsValues.Min() : 0f;
+            float fpsMax = m_FpsValues.Count > 0f ? m_FpsValues.Max() : 0f;
+            return new FpsCounterRecording(fpsAverage, fpsMin, fpsMax, m_FpsValues);
         }
 
         public void Record(float _Duration)
         {
             Clear();
             m_DoRecord = true;
+            m_FpsValues.Clear();
             Cor.Run(Cor.Delay(
                 _Duration,
                 CommonTicker, 
@@ -122,20 +141,32 @@ namespace Common.Debugging
             if (!(m_Dt > 1f / UpdateRate)) 
                 return;
             m_FpsCurrent = m_FramesCount / m_Dt ;
-            m_FpsMin = Mathf.Min(m_FpsCurrent, m_FpsMin);
-            m_FpsMax = Mathf.Max(m_FpsCurrent, m_FpsMax);
             m_FramesCount = 0;
             m_Dt -= 1f/UpdateRate;
-            m_FpsText.text = "FPS: " + Convert.ToInt32(m_FpsCurrent);
-            if (!m_DoRecord)
-                return;
-            m_FpsValues.Add(m_FpsCurrent);
+            if (RemotePropertiesCommon.DebugEnabled)
+                m_FpsText.text = "FPS: " + Convert.ToInt32(m_FpsCurrent);
+            if (m_DoRecord)
+                m_FpsValues.Add(m_FpsCurrent);
         }
 
         #endregion
 
         #region nonpublic methods
 
+        private void MeasurePerformanceOnInit()
+        {
+            Record(3f);
+            Cor.Run(Cor.WaitWhile(() => m_DoRecord,
+                () =>
+                {
+                    float fpsAverage = m_FpsValues.Count > 0f ? m_FpsValues.Average() : 0f;
+                    IsLowPerformance.Value = fpsAverage < CommonUtils.FpsThresholdLowPerformance;
+                    IsLowPerformance.Result = EEntityResult.Success;
+                    if (IsLowPerformance.Value)
+                        SaveUtils.PutValue(SaveKeysCommon.LowPerformanceDevice, true);
+                }));
+        }
+        
         private void InitFpsText()
         {
             var textGo = new GameObject("Fps Counter Text");
@@ -152,11 +183,9 @@ namespace Common.Debugging
         
         private void Clear()
         {
-            m_FpsMin = float.PositiveInfinity;
-            m_FpsMax = float.NegativeInfinity;
-            m_FpsCurrent = 0f;
             m_FramesCount = 0;
-            m_Dt = 0f;
+            m_FpsCurrent  = 0f;
+            m_Dt          = 0f;
         }
 
         #endregion

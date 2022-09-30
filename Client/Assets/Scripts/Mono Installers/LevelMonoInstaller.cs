@@ -300,6 +300,12 @@ namespace Mono_Installers
             Container.Bind<IFullscreenTextureProviderLogichroma>()
                 .To<FullscreenTextureProviderLogichroma>()
                 .AsSingle();
+            Container.Bind<IFullscreenTextureProviderGradient>()
+                .To<FullscreenTextureProviderGradient>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderSolid>()
+                .To<FullscreenTextureProviderSolid>()
+                .AsSingle();
             
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()

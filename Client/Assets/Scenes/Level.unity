@@ -180,6 +180,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Level Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 4521276296573485170, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294442807
+      objectReference: {fileID: 0}
     - target: {fileID: 4521276296573485171, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
         type: 3}
       propertyPath: m_RootOrder

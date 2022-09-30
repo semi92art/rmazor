@@ -79,7 +79,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             tr.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;
         }
         
-        private void InitTexture()
+        protected virtual void InitTexture()
         {
             var parent = ContainersGetter.GetContainer(ContainerNames.Background);
             var go = PrefabSetManager.InitPrefab(

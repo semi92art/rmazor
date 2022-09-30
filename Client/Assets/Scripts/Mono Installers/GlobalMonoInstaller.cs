@@ -90,9 +90,9 @@ namespace Mono_Installers
             Container.Bind<IRemoteSavedGameProvider>()     .To<FakeRemoteSavedGameProvider>()  .AsSingle();
             Container.Bind<ISavedGameProvider>().To<SavedGamesProvider>().AsSingle();
             
-// #if UNITY_ANDROID
-//             Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
-// #endif
+#if UNITY_ANDROID
+            Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
+#endif
             if (Application.isEditor)
             {
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();

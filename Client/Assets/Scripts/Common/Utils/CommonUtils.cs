@@ -14,6 +14,8 @@ namespace Common.Utils
     public static class CommonUtils
     {
         private static readonly object Lock = new object();
+
+        public const float FpsThresholdLowPerformance = 30f;
         
         public static RuntimePlatform Platform 
         { 

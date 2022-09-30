@@ -63,8 +63,6 @@ namespace RMAZOR.Views.Common
             AnimateColorGradingPropsOnBetweenLevel(_Appear);
         }
         
-        #if UNITY_EDITOR
-
         public void SetBloom(BloomPropsAlt _BloomPropsAlt)
         {
             var props = _BloomPropsAlt.ToBloomProps(out bool enableBloom);
@@ -74,8 +72,6 @@ namespace RMAZOR.Views.Common
             CameraProvider.SetEffectProps(ECameraEffect.Bloom, props);
         }
         
-        #endif
-
         #endregion
 
         #region nonpublic methods

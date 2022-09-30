@@ -86,11 +86,6 @@ namespace Common.Managers
                 HapticPatterns.PlayEmphasis(_Amplitude, _Frequency);
         }
 
-        public bool IsHapticsSupported()
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         #region nonpublic methods

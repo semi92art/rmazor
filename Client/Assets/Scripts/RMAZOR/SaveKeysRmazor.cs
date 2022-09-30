@@ -15,7 +15,7 @@ namespace RMAZOR
 
         private static SaveKey<bool>       _allLevelsPassed;
         private static SaveKey<bool>       _movementTutorialFinished;
-        private static SaveKey<bool>       _moneyFromServerLoadedFirstTime;
+        private static SaveKey<bool>       _sgFromRemoteLoadedOnce;
         private static SaveKey<int>        _ratePanelShowsCount;
         private static SaveKey<long>       _currentLevelGroupMoney;
         private static SaveKey<List<long>> _levelsFinishedOnce;
@@ -25,18 +25,23 @@ namespace RMAZOR
         {
             if (Application.isEditor)
             {
-                _allLevelsPassed                = null;
-                _movementTutorialFinished       = null;
-                _mazeItemsTutorialsFinished     = null;
-                _moneyFromServerLoadedFirstTime = null;
-                _currentLevelGroupMoney         = null;
+                _mazeItemsTutorialsFinished = null;
+                _allLevelsPassed            = null;
+                _movementTutorialFinished   = null;
+                _sgFromRemoteLoadedOnce     = null;
+                _ratePanelShowsCount        = null;
+                _currentLevelGroupMoney     = null;
+                _levelsFinishedOnce         = null;
             }
-            SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          true);
-            SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), true);
-            SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      true);
-            SaveUtils.PutValue(SavedGameFromServerLoadedAtLeastOnce, SaveUtils.GetValue(SavedGameFromServerLoadedAtLeastOnce), true);
-            SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney), true);
-            SaveUtils.PutValue(LevelsFinishedOnce,   SaveUtils.GetValue(LevelsFinishedOnce), true);
+
+            const bool onlyCache = true;
+            SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          onlyCache);
+            SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), onlyCache);
+            SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      onlyCache);
+            SaveUtils.PutValue(SgFromRemoteLoadedOnce,   SaveUtils.GetValue(SgFromRemoteLoadedOnce),   onlyCache);
+            SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney),   onlyCache);
+            SaveUtils.PutValue(LevelsFinishedOnce,       SaveUtils.GetValue(LevelsFinishedOnce),       onlyCache);
+            
             var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
             foreach (var mazeItemType in mazeItemTypes)
             {
@@ -49,13 +54,13 @@ namespace RMAZOR
             _allLevelsPassed ??= new SaveKey<bool>(nameof(AllLevelsPassed));
         public static SaveKey<bool>  MovementTutorialFinished => 
             _movementTutorialFinished ??= new SaveKey<bool>(nameof(MovementTutorialFinished));
-        public static SaveKey<bool>  SavedGameFromServerLoadedAtLeastOnce =>
-            _moneyFromServerLoadedFirstTime ??= new SaveKey<bool>(nameof(SavedGameFromServerLoadedAtLeastOnce));
-        public static SaveKey<int>  RatePanelShowsCount      =>
+        public static SaveKey<bool>  SgFromRemoteLoadedOnce   =>
+            _sgFromRemoteLoadedOnce ??= new SaveKey<bool>(nameof(SgFromRemoteLoadedOnce));
+        public static SaveKey<int>  RatePanelShowsCount       =>
             _ratePanelShowsCount ??= new SaveKey<int>(nameof(RatePanelShowsCount));
-        public static SaveKey<long> CurrentLevelGroupMoney =>
+        public static SaveKey<long> CurrentLevelGroupMoney    =>
             _currentLevelGroupMoney ??= new SaveKey<long>(nameof(CurrentLevelGroupMoney));
-        public static SaveKey<List<long>> LevelsFinishedOnce =>
+        public static SaveKey<List<long>> LevelsFinishedOnce  =>
             _levelsFinishedOnce ??= new SaveKey<List<long>>(nameof(LevelsFinishedOnce));
 
         public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
