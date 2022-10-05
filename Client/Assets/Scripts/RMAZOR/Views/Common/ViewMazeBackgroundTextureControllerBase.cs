@@ -119,7 +119,9 @@ namespace RMAZOR.Views.Common
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int setItemIdx = group % colorsSet.Count;
+            int setItemIdx = (group - 1) % colorsSet.Count;
+            if (setItemIdx < 0)
+                setItemIdx = 0;
             var props = colorsSet[setItemIdx];
             return _ColorId switch
             {
