@@ -17,5 +17,6 @@ namespace Common.Helpers
         public bool      rewardedAdReadyForTest;
         public bool      interstitialAdReadyForTest;
         public float     interstitialAdsRatio;
+        public float     moneyItemsRate;
     }
 }

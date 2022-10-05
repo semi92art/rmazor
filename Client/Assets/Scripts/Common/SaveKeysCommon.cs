@@ -24,6 +24,7 @@ namespace Common
         private static SaveKey<List<int>>    _boughtPurchaseIds;
         private static SaveKey<List<string>> _debugConsoleCommandsHistory;
         private static SaveKey<bool>         _lowPerformanceDevice;
+        private static SaveKey<List<int>>    _scheduleNotificationIds;
         
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
@@ -51,6 +52,7 @@ namespace Common
                 _boughtPurchaseIds                 = null;
                 _debugConsoleCommandsHistory       = null;
                 _lowPerformanceDevice              = null;
+                _scheduleNotificationIds           = null;
             }
             const bool onlyCache = true;
             SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               onlyCache);
@@ -117,6 +119,9 @@ namespace Common
             _debugConsoleCommandsHistory ??= new SaveKey<List<string>>(nameof(DebugConsoleCommandsHistory));
         public static SaveKey<bool> LowPerformanceDevice       =>
             _lowPerformanceDevice ??= new SaveKey<bool>(nameof(LowPerformanceDevice));
+
+        public static SaveKey<List<int>> ScheduleNotificationIds =>
+            _scheduleNotificationIds ??= new SaveKey<List<int>>(nameof(ScheduleNotificationIds));
         
         public static SaveKey<uint> BundleVersion(string _BundleName)
         {

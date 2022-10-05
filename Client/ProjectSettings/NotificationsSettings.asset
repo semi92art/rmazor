@@ -32,14 +32,14 @@
                 "UnityNotificationAndroidCustomActivityString"
             ],
             "m_Values": [
-                "True",
+                "False",
                 "False",
                 "com.unity3d.player.MazeBladeNotificationsActivity"
             ]
         },
         "DrawableResources": [
             {
-                "Id": "main_icon",
+                "Id": "small_notification_icon",
                 "Type": 0,
                 "Asset": {
                     "fileID": 2800000,
@@ -48,11 +48,11 @@
                 }
             },
             {
-                "Id": "main_icon_large",
+                "Id": "large_notification_icon",
                 "Type": 1,
                 "Asset": {
                     "fileID": 2800000,
-                    "guid": "cc1b647a4d467a848ae6bb8fa3ea6aec",
+                    "guid": "0263439279b527e4daed4634cc683e25",
                     "type": 3
                 }
             }

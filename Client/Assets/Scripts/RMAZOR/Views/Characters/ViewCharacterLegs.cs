@@ -246,8 +246,8 @@ namespace RMAZOR.Views.Characters
                         && _ByLastOrientation;
             float legsAngle = _Direction switch
             {
-                EMazeMoveDirection.Down  => !orth ? 0f   : 270f,
-                EMazeMoveDirection.Right => !orth ? 90f  : 180f,
+                EMazeMoveDirection.Down  => !orth ? 0f   : 90f,
+                EMazeMoveDirection.Right => !orth ? 90f  : 0f,
                 EMazeMoveDirection.Up    => !orth ? 180f : 90f,
                 EMazeMoveDirection.Left  => !orth ? 270f : 0f,
                 _                        => default

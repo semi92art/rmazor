@@ -124,6 +124,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(bool), "show_full_tutorial",
                     _Value => Execute(
                         _Value, _V => ViewSettings.showFullTutorial = Convert.ToBoolean(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_get_money_button_text_variant",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = Convert.ToInt32(_V))),
                 
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => Execute(
@@ -140,6 +143,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(float), "interstitial_ads_ratio",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.interstitialAdsRatio = ToFloat(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(float), "money_items_fill_rate",
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.moneyItemsRate = ToFloat(_V))),
 
                 new RemoteConfigPropertyInfo(filter, typeof(string), "ads_providers_infos",
                     _Value => Execute(
@@ -238,6 +244,8 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("test_device_ids_for_admob"),
                 CommonUtils.StringToHash("trap_increasing_idle_time"),
                 CommonUtils.StringToHash("trap_increasing_increased_time"),
+                CommonUtils.StringToHash("money_items_fill_rate"),
+                CommonUtils.StringToHash("fin_lev_g_pan_get_money_button_text_variant"),
             }
                 .Select(_Id => (ushort) _Id)
                 .ToArray();

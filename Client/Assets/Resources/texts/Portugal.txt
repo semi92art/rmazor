@@ -77,3 +77,4 @@ tut_title_springboard = Novo bloco: trampolim
 tut_title_hammer = Novo bloco: martelo
 tut_title_spear = Novo bloco: lança
 tut_title_diode = Novo bloco: diodo
+get = pegue

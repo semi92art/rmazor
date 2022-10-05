@@ -77,3 +77,4 @@ tut_title_springboard = new block: springboard
 tut_title_hammer = new block: hammer
 tut_title_spear = new block: spear
 tut_title_diode = new block: diode
+get = get

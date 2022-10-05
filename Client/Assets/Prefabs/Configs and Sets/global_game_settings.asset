@@ -24,3 +24,4 @@ MonoBehaviour:
   rewardedAdReadyForTest: 1
   interstitialAdReadyForTest: 1
   interstitialAdsRatio: 0.3
+  moneyItemsRate: 0.1

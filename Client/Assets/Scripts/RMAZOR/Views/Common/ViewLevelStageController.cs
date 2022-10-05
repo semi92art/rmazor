@@ -8,6 +8,7 @@ using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Managers.Achievements;
 using Common.Ticker;
 using Common.UI;
 using Common.UI.DialogViewers;
@@ -23,7 +24,6 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.UI.Game_Logo;
-using static Common.Managers.Achievements.AchievementKeys;
 
 namespace RMAZOR.Views.Common
 {
@@ -308,7 +308,6 @@ namespace RMAZOR.Views.Common
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
-            UpdateMoneyInBank(_Args);
             CheckForAllLevelsPassed(_Args.LevelIndex);
             CheckForLevelGroupFinished(_Args.LevelIndex);
         }
@@ -434,37 +433,6 @@ namespace RMAZOR.Views.Common
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
         }
 
-        private void UpdateMoneyInBank(LevelStageArgs _Args)
-        {
-            if (MoneyCounter.CurrentLevelMoney <= 0)
-                return;
-            var savedGameEntity = Managers.ScoreManager.
-                GetSavedGameProgress(CommonData.SavedGameFileName, true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}, " +
-                                       $"castSuccess: {castSuccess}, " +
-                                       $"_Value: {savedGameEntity.Value}");
-                        return;
-                    }
-                    long newMoneyCount = savedGame.Money + MoneyCounter.CurrentLevelMoney;
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = CommonData.SavedGameFileName,
-                        Money = newMoneyCount,
-                        Level = _Args.LevelIndex
-                    };
-                    Managers.ScoreManager.SaveGameProgress(
-                        newSavedGame, false);
-                }));
-        }
-
         private void CheckForLevelGroupFinished(long _LevelIndex)
         {
             if (!RmazorUtils.IsLastLevelInGroup(_LevelIndex))
@@ -570,39 +538,10 @@ namespace RMAZOR.Views.Common
 
         private void UnlockAchievementLevelFinishedByIndex(long _LevelIndex)
         {
-            var dict = new Dictionary<long, ushort>
-            {
-                {10,   Level10Finished},
-                {25,   Level25Finished},
-                {50,   Level50Finished},
-                {100,  Level100Finished},
-                {200,  Level200Finished},
-                {300,  Level300Finished},
-                {400,  Level400Finished},
-                {500,  Level500Finished},
-                {600,  Level600Finished},
-                {700,  Level700Finished},
-                {800,  Level800Finished},
-                {900,  Level900Finished},
-                {1000, Level1000Finished},
-            };
-            ushort achievementKey = dict.GetSafe(_LevelIndex + 1, out bool containsKey);
-            if (!containsKey)
+            var achievementKey = AchievementKeys.GetLevelFinishedAchievementKey(_LevelIndex);
+            if (!achievementKey.HasValue)
                 return;
-            var achievementEntity = Managers.ScoreManager.GetAchievement(achievementKey);
-            Cor.Run(Cor.WaitWhile(
-                () => achievementEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (achievementEntity.Result != EEntityResult.Success)
-                        return;
-                    var achievement = achievementEntity.Value;
-                    if (achievement.completed)
-                        return;
-                    Managers.ScoreManager.UnlockAchievement(achievementKey);
-                    var eventData = new Dictionary<string, object> {{AnalyticIds.ParameterAchievementId, achievementKey.ToString()}};
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.AchievementUnlocked, eventData);
-                }));
+            Managers.ScoreManager.UnlockAchievement(achievementKey.Value);
         }
 
         private void UnlockSpecificAchievementOnLevelFinished()

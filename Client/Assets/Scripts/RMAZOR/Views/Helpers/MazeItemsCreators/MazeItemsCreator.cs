@@ -13,8 +13,11 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
     {
         #region inject
         
+        private IMoneyItemsOnPathItemsDistributor MoneyItemsOnPathItemsDistributor { get; }
+        
         [Inject]
         private MazeItemsCreator(
+            IMoneyItemsOnPathItemsDistributor _MoneyItemsOnPathItemsDistributor,
             IViewMazeItemPath             _ItemPath,
             IViewMazeItemGravityBlock     _GravityBlock,
             IViewMazeItemMovingTrap       _MovingTrap,
@@ -43,7 +46,10 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             _GravityBlockFree,
             _Hammer,
             _Spear,
-            _Diode) { }
+            _Diode)
+        {
+            MoneyItemsOnPathItemsDistributor = _MoneyItemsOnPathItemsDistributor;
+        }
         
         #endregion
         
@@ -51,20 +57,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            var moneyItemIndices = new List<int>();
-            int pathCount = _Info.PathItems.Count;
-            if (pathCount > 10)
-                moneyItemIndices.Add(5);
-            if (pathCount > 20)
-                moneyItemIndices.Add(20);
-            if (pathCount > 30)
-                moneyItemIndices.Add(15);
-            if (pathCount > 40)
-                moneyItemIndices.Add(40);
-            if (pathCount > 50)
-                moneyItemIndices.Add(25);
-
-            for (int i = 0; i < pathCount; i++)
+            var moneyItemIndices = MoneyItemsOnPathItemsDistributor.GetMoneyItemIndices(_Info);
+            for (int i = 0; i < _Info.PathItems.Count; i++)
             {
                 var pathItemPos = _Info.PathItems[i].Position;
                 var props = new ViewMazeItemProps

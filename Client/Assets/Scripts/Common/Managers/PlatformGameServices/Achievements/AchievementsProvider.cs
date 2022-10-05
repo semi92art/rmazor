@@ -11,7 +11,7 @@ namespace Common.Managers.PlatformGameServices.Achievements
 {
     public interface IAchievementsProvider : IInit
     {
-        void RegisterAchievementsSet(Dictionary<ushort, string> _Map);
+        void RegisterAchievementsSet(Dictionary<ushort, string> _Set);
 
         Entity<IAchievement> UnlockAchievement(ushort _Key);
         Entity<IAchievement> GetAchievement(ushort    _Key);
@@ -21,8 +21,8 @@ namespace Common.Managers.PlatformGameServices.Achievements
     {
         #region nonpublic members
 
-        private Dictionary<ushort, string> m_AchievementsMap;
-        private IAchievement[]             m_Achievements;
+        private Dictionary<ushort, string> m_AssumedAchievementsSet;
+        private IAchievement[]             m_LoadedAchievements;
         
         #endregion
 
@@ -48,14 +48,15 @@ namespace Common.Managers.PlatformGameServices.Achievements
             base.Init();
         }
 
-        public void RegisterAchievementsSet(Dictionary<ushort, string> _Map)
+        public void RegisterAchievementsSet(Dictionary<ushort, string> _Set)
         {
-            m_AchievementsMap = _Map;
+            m_AssumedAchievementsSet = _Set;
         }
 
         public Entity<IAchievement> UnlockAchievement(ushort _Key)
         {
             var entity = new Entity<IAchievement>();
+#if UNITY_ANDROID
             Entity<IAchievement> Failed(string _Message)
             {
                 Dbg.LogError(_Message);
@@ -75,6 +76,28 @@ namespace Common.Managers.PlatformGameServices.Achievements
             });
             entity.Value = achievement;
             return entity;
+#elif UNITY_IOS
+            string id = m_AssumedAchievementsSet.GetSafe(_Key, out bool containsKey);
+            if (!containsKey)
+                Dbg.LogError("Achievement with this key was not found in key-id map.");
+            SA.iOS.GameKit.ISN_GKAchievement achievement = new SA.iOS.GameKit.ISN_GKAchievement(id);
+            achievement.PercentComplete = 100.0f;
+            achievement.Report((result) => {
+                if(result.IsSucceeded)
+                {
+                    entity.Result = EEntityResult.Success;
+                    Dbg.Log("Achievement reported");
+                } else
+                {
+                    entity.Result = EEntityResult.Fail;
+                    Dbg.LogError($"Achievement report failed! Code: {result.Error.Code} Message: {result.Error.Message}");
+                }
+            });
+            return entity;
+#endif
+
+
+
         }
 
         public Entity<IAchievement> GetAchievement(ushort _Key)
@@ -107,21 +130,21 @@ namespace Common.Managers.PlatformGameServices.Achievements
                 {
                     Dbg.Log("Achievement loaded: " + ach.id);
                 }
-                m_Achievements = _Achievements;
+                m_LoadedAchievements = _Achievements;
             });
         }
         
         private IAchievement GetAchievementCore(ushort _Key, out string _Error)
         {
             _Error = null;
-            if (m_AchievementsMap == null)
+            if (m_AssumedAchievementsSet == null)
                 _Error = "Achievements map was not registered.";
-            if (m_Achievements == null)
+            if (m_LoadedAchievements == null)
                 _Error = "Achievements were not loaded from server.";
-            string id = m_AchievementsMap.GetSafe(_Key, out bool containsKey);
+            string id = m_AssumedAchievementsSet.GetSafe(_Key, out bool containsKey);
             if (!containsKey)
                 _Error = "Achievement with this key was not found in key-id map.";
-            var result = m_Achievements?.FirstOrDefault(_Ach => _Ach.id == id);
+            var result = m_LoadedAchievements?.FirstOrDefault(_Ach => _Ach.id == id);
             if (result == null)
                 _Error = "Achievement with this key was not found in loaded achievements.";
             return result;

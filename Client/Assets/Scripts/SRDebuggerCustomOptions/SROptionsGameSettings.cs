@@ -34,15 +34,16 @@ namespace SRDebuggerCustomOptions
 {
     public partial class SROptions
     {
-        private const string CategoryMazeItems  = "Maze Items";
-        private const string CategoryCharacter  = "Character";
-        private const string CategoryCommon     = "Common";
-        private const string CategoryLevels     = "Levels";
-        private const string CategoryHaptics    = "Haptics";
-        private const string CategoryAds        = "Ads";
-        private const string CategoryAudio      = "Audio";
-        private const string CategoryFps        = "Fps";
-        private const string CategoryBackground = "Background";
+        private const string CategoryMazeItems     = "Maze Items";
+        private const string CategoryCharacter     = "Character";
+        private const string CategoryCommon        = "Common";
+        private const string CategoryLevels        = "Levels";
+        private const string CategoryHaptics       = "Haptics";
+        private const string CategoryAds           = "Ads";
+        private const string CategoryAudio         = "Audio";
+        private const string CategoryFps           = "Fps";
+        private const string CategoryBackground    = "Background";
+        private const string CategoryNotifications = "Notifications";
 
         private static int  _adsNetworkIdx;
         private static bool _debugConsoleVisible;
@@ -620,22 +621,6 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryCommon)]
-        public bool Test_Notification
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                _managers.NotificationsManager.SendNotification(
-                    "Come back! We are waiting for you!", 
-                    string.Empty, 
-                    DateTime.Now.AddSeconds(10),
-                    _SmallIcon: "main_icon");
-            }
-        }
-
-        [Category(CategoryCommon)]
         public bool Send_Test_Analytic
         {
             get => false;
@@ -930,6 +915,27 @@ namespace SRDebuggerCustomOptions
                 foreach (float fpsValue in recording.FpsValues)
                     sb.AppendLine(fpsValue.ToString("F1"));
                 Dbg.Log(sb.ToString());
+            }
+        }
+
+        #endregion
+
+        #region notifications
+
+        [Category(CategoryNotifications)]
+        public bool Test_Notification
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromSeconds(10d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
             }
         }
 

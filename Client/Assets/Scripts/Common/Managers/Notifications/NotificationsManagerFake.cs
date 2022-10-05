@@ -9,7 +9,7 @@ namespace Common.Managers.Notifications
         public event Action<PendingNotification> LocalNotificationDelivered;
         public event Action<PendingNotification> LocalNotificationExpired;
 
-        public ENotificationsOperatingMode OperatingMode        { get; set; } = ENotificationsOperatingMode.NoQueue;
+        public ENotificationsOperatingMode OperatingMode        { get; set; }
         public List<PendingNotification>   PendingNotifications => new List<PendingNotification>();
         public int?                        LastNotificationsCountToReschedule { get; set; }
 
@@ -21,7 +21,7 @@ namespace Common.Managers.Notifications
         public void SendNotification(
             string   _Title,
             string   _Body,
-            DateTime _DeliveryTime,
+            TimeSpan _Span,
             int?     _BadgeNumber = null,
             bool     _Reschedule  = false,
             string   _ChannelId   = null,

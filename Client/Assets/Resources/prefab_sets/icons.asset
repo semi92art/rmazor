@@ -14,21 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
-      name: finger_texture
+    - name: finger_texture
+      item: {fileID: 2800000, guid: 25c48be3a87ea0f489a6d41c9c9a2194, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: d9400f11787c40d4d9ff6a2f29623b8a, type: 3}
-      name: icon_no_ads
+    - name: icon_no_ads
+      item: {fileID: 21300000, guid: d9400f11787c40d4d9ff6a2f29623b8a, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
-      name: icon_square_100x100
+    - name: icon_square_100x100
+      item: {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
-      name: icon_coin_ui
+    - name: icon_coin_ui
+      item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
-      name: icon_coin_ui_multiplied
+    - name: icon_coin_ui_multiplied
+      item: {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 4e8b812ab2cc280439984225c94b532d, type: 3}
-      name: icon_coin
+    - name: icon_coin
+      item: {fileID: 21300000, guid: 4e8b812ab2cc280439984225c94b532d, type: 3}
+      bundle: 0
+    - name: large_notification_icon
+      item: {fileID: 2800000, guid: b7eef8136dab9db4da1be6232911673f, type: 3}
       bundle: 0

@@ -100,6 +100,7 @@ namespace Mono_Installers
                 .AsSingle();
             Container.Bind<IMazeShaker>()             .To<MazeShaker>()             .AsSingle();
             Container.Bind<IMazeItemsCreator>()       .To<MazeItemsCreator>()       .AsSingle();
+            Container.Bind<IMoneyItemsOnPathItemsDistributor>().To<MoneyItemsOnPathItemsDistributor>().AsSingle();
             Container.Bind<IViewGame>()               .To<ViewGame>()               .AsSingle();
             Container.Bind<IViewMazeCommon>()         .To<ViewMazeCommon>()         .AsSingle();
             Container.Bind<IViewMazeRotation>()       .To<ViewMazeRotation>()       .AsSingle();
@@ -322,7 +323,7 @@ namespace Mono_Installers
             Container.Bind<IManagersGetter>()          .To<ManagersGetter>()          .AsSingle();
             Container.Bind<IViewBetweenLevelAdLoader>().To<ViewBetweenLevelAdLoader>().AsSingle();
             Container.Bind<IMoneyCounter>()            .To<MoneyCounter>()            .AsSingle();
-            
+
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()
                 .AsSingle();

@@ -343,9 +343,10 @@ namespace RMAZOR.Views
                 notMan.SendNotification(
                     notification.Message, 
                     string.Empty, 
-                    DateTime.Now.Add(notification.TimeSpan),
+                    notification.TimeSpan,
                     _Reschedule: Application.platform == RuntimePlatform.Android,
-                    _SmallIcon: "main_icon");
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
             }
         }
 

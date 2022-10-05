@@ -133,9 +133,9 @@ namespace Common.Managers.PlatformGameServices
             return LeaderboardProvider.ShowLeaderboard(_Key);
         }
         
-        public void RegisterAchievementsSet(Dictionary<ushort, string> _Map)
+        public void RegisterAchievementsSet(Dictionary<ushort, string> _Set)
         {
-            AchievementsProvider.RegisterAchievementsSet(_Map);
+            AchievementsProvider.RegisterAchievementsSet(_Set);
         }
 
         public Entity<IAchievement> UnlockAchievement(ushort _Key)

@@ -238,36 +238,34 @@ namespace RMAZOR.Views.Common
         {
             foreach (var texProvider in GetProviders())
                 texProvider.Activate(false);
-
             if (m_IsLowPerformance)
             {
                 TextureProviderBluePurplePlaid.Activate(true);
                     _Provider = TextureProviderBluePurplePlaid;
                     return;
             }
-            
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int c = group % 6;
             switch (c)
             {
-                case 0: _Provider = TextureProviderRaveSquares;     break;
-                case 1: _Provider = TextureProviderSwirlForPlanet;
+                case 1: _Provider = TextureProviderRaveSquares;     break;
+                case 2: _Provider = TextureProviderSwirlForPlanet;
                     if (AdditionalInfo != null)
                     {
                         TextureProviderSwirlForPlanet.SetAdditionalParams(
                             new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
                     }
                     break;
-                case 2:
+                case 3:
                     int idx = group % m_TextureSetItems.Count;
                     var setItem = m_TextureSetItems[idx];
                     TextureProviderTriangles2.Activate(true);
                     TextureProviderTriangles2.SetProperties((Triangles2TextureProps)setItem);
                     _Provider = TextureProviderTriangles2;
                     break;
-                case 3: _Provider = TextureProviderFallInDeep;      break;
-                case 4: _Provider = TextureProviderBluePurplePlaid; break;
-                case 5: _Provider = TextureProviderLogichroma;      break;
+                case 4: _Provider = TextureProviderFallInDeep;      break;
+                case 5: _Provider = TextureProviderBluePurplePlaid; break;
+                case 0: _Provider = TextureProviderLogichroma;      break;
                 default: throw new SwitchCaseNotImplementedException(c);
             }
             _Provider.Activate(true);

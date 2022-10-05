@@ -77,3 +77,4 @@ tut_title_springboard = neuer Block: Sprungbrett
 tut_title_hammer = neuer Block: Hammer
 tut_title_spear = neuer Block: Speer
 tut_title_diode = neuer Block: Diode
+get = erhalten

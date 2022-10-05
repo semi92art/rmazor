@@ -174,5 +174,28 @@ namespace Common.Utils
             else
                 _InitObject.Initialize += _Action;
         }
+
+        public static bool IsDarkTheme()
+        {
+#if UNITY_EDITOR
+            return false;
+#elif UNITY_ANDROID
+            if (SA.Android.OS.AN_Build.VERSION.SDK_INT < SA.Android.OS.AN_Build.VERSION_CODES.Q) {
+                Dbg.LogWarning("Get system color theme is not supported");
+                return false;
+            }
+            var configuration = SA.Android.App.AN_MainActivity.Instance.GetResources().GetConfiguration();
+            int currentNightMode =  configuration.UIMode & SA.Android.Content.Res.AN_Configuration.UI_MODE_NIGHT_MASK;
+            return currentNightMode switch
+            {
+                SA.Android.Content.Res.AN_Configuration.UI_MODE_NIGHT_NO => false,
+                SA.Android.Content.Res.AN_Configuration.UI_MODE_NIGHT_YES => true,
+                _                                                        => false
+            };
+#elif UNITY_IOS
+            var userInterfaceStyle = SA.iOS.UIKit.ISN_UIScreen.MainScreen.TraitCollection.UserInterfaceStyle;
+            return userInterfaceStyle == SA.iOS.UIKit.ISN_UIUserInterfaceStyle.Dark;
+#endif
+        }
     }
 }

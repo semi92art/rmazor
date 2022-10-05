@@ -33,7 +33,6 @@ namespace RMAZOR.UI.Panels
     {
         public EDialogViewerType DialogViewerType   => default;
         public EUiCategory       Category           => default;
-        public bool              AllowMultiple      => false;
         public EAppearingState   AppearingState     { get; set; }
         public RectTransform     PanelRectTransform => null;
         public Animator          Animator           => null;
@@ -56,7 +55,7 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI             m_TitleText;
         private TextMeshProUGUI             m_MoneyCountText;
         private TextMeshProUGUI             m_MultiplyButtonText;
-        private TextMeshProUGUI             m_SkipButtonText;
+        private TextMeshProUGUI             m_GetMoneyButtonText;
         private TextMeshProUGUI             m_ContinueButtonText;
         private Animator                    m_AnimLoadingAds;
         private AnimationTriggerer          m_Triggerer;
@@ -67,13 +66,15 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region inject
-        
+
+        private ViewSettings                ViewSettings      { get; }
         private IViewUIPrompt               Prompt            { get; }
         private IViewInputCommandsProceeder CommandsProceeder { get; }
         private IModelGame                  Model             { get; }
         private IMoneyCounter               MoneyCounter      { get; }
 
         private FinishLevelGroupDialogPanel(
+            ViewSettings                _ViewSettings,
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
             ICameraProvider             _CameraProvider,
@@ -88,6 +89,7 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
+            ViewSettings = _ViewSettings;
             Prompt            = _Prompt;
             CommandsProceeder = _CommandsProceeder;
             Model             = _Model;
@@ -121,7 +123,7 @@ namespace RMAZOR.UI.Panels
             m_TitleText               = go.GetCompItem<TextMeshProUGUI>("title_text");
             m_MoneyCountText          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
             m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
-            m_SkipButtonText          = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
+            m_GetMoneyButtonText          = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
             m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
             m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
             m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
@@ -150,8 +152,14 @@ namespace RMAZOR.UI.Panels
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_MultiplyButtonText, ETextType.MenuUI, "multiply",
                     _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            string getMoneyButtonTextLocKey = ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant switch
+            {
+                1 => "get",
+                2 => "skip",
+                _ => "get"
+            };
             locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_SkipButtonText, ETextType.MenuUI, "skip",
+                m_GetMoneyButtonText, ETextType.MenuUI, getMoneyButtonTextLocKey,
                     _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_ContinueButtonText, ETextType.MenuUI, "continue",

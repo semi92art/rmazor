@@ -54,7 +54,13 @@ MonoBehaviour:
     ChildrenIds: []
   - Name: NSUserTrackingUsageDescription
     Type: 0
-    StringValue: Your data will be safely used to deliver personalized ads for you.
+    StringValue: 'Check out our privacy policy to know our partners and what data
+      they process. You can withdraw your consent later in your device and App settings.
+
+
+
+      Tap
+      "Allow" to let our ad partners reach you with more relevant ads.'
     IntegerValue: 0
     FloatValue: 0
     BooleanValue: 1
@@ -1446,6 +1452,42 @@ MonoBehaviour:
       BooleanValue: 1
       ChildrenIds: []
     uniqueIdKey: lXXj1NruiPbQTO6Ug0Pj
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 60XKs4eoPqXKsKCK6pYh
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: 4J8ptcbD52W49AxaR2wv
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: instagram
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: YjeMBsnowb6hwa5Bm5cY
+  - VariableValue:
+      Name: 
+      Type: 0
+      StringValue: whatsapp
+      IntegerValue: 0
+      FloatValue: 0
+      BooleanValue: 1
+      ChildrenIds: []
+    uniqueIdKey: bTnq1wwVbnBlXifSBrIK
   Languages: []
   ShellScripts: []
   m_BuildProperties:

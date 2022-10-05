@@ -15,90 +15,8 @@ using UnityEngine;
 
 namespace Common.Managers.Notifications
 {
-    [Flags]
-    public enum ENotificationsOperatingMode
-    {
-        /// <summary>
-        /// Do not perform any queueing at all. All notifications are scheduled with the operating system
-        /// immediately.
-        /// </summary>
-        NoQueue = 0x00,
-
-        /// <summary>
-        /// <para>
-        /// Queue messages that are scheduled with this manager.
-        /// No messages will be sent to the operating system until the application is backgrounded.
-        /// </para>
-        /// <para>
-        /// If badge numbers are not set, will automatically increment them. This will only happen if NO badge numbers
-        /// for pending notifications are ever set.
-        /// </para>
-        /// </summary>
-        Queue = 0x01,
-
-        /// <summary>
-        /// When the application is foregrounded, clear all pending notifications.
-        /// </summary>
-        ClearOnForegrounding = 0x02,
-
-        /// <summary>
-        /// After clearing events, will put future ones back into the queue if they are marked with <see cref="PendingNotification.Reschedule"/>.
-        /// </summary>
-        /// <remarks>
-        /// Only valid if <see cref="ClearOnForegrounding"/> is also set.
-        /// </remarks>
-        RescheduleAfterClearing = 0x04,
-
-        /// <summary>
-        /// Combines the behaviour of <see cref="Queue"/> and <see cref="ClearOnForegrounding"/>.
-        /// </summary>
-        QueueAndClear = Queue | ClearOnForegrounding,
-
-        /// <summary>
-        /// <para>
-        /// Combines the behaviour of <see cref="Queue"/>, <see cref="ClearOnForegrounding"/> and
-        /// <see cref="RescheduleAfterClearing"/>.
-        /// </para>
-        /// <para>
-        /// Ensures that messages will never be displayed while the application is in the foreground.
-        /// </para>
-        /// </summary>
-        QueueClearAndReschedule = Queue | ClearOnForegrounding | RescheduleAfterClearing,
-    }
-
-    public interface INotificationsManager : IInit
-    {
-        /// <summary>
-        /// Event fired when a scheduled local notification is delivered while the app is in the foreground.
-        /// </summary>
-        event Action<PendingNotification> LocalNotificationDelivered;
-
-        /// <summary>
-        /// Event fired when a queued local notification is cancelled because the application is in the foreground
-        /// when it was meant to be displayed.
-        /// </summary>
-        /// <seealso cref="ENotificationsOperatingMode.Queue"/>
-        event Action<PendingNotification> LocalNotificationExpired;
-
-        ENotificationsOperatingMode OperatingMode { get; set; }
-
-        void SendNotification(
-            string   _Title,
-            string   _Body,
-            DateTime _DeliveryTime,
-            int?     _BadgeNumber = null,
-            bool     _Reschedule  = false,
-            string   _ChannelId   = null,
-            string   _SmallIcon   = null,
-            string   _LargeIcon   = null);
-
-        int? LastNotificationsCountToReschedule { get; set; }
-        
-        void ClearAllNotifications();
-    }
-
     public class NotificationsManagerUnity 
-        : InitBase,
+        : NotificationsManagerBase,
           INotificationsManager,
           IUpdateTick,
           IApplicationFocus,
@@ -139,18 +57,15 @@ namespace Common.Managers.Notifications
 
         #region inject
 
-        private ICommonTicker              Ticker                    { get; }
-        private INotificationSetting       Setting                   { get; }
-        // private IPushNotificationsProvider PushNotificationsProvider { get; }
+        private ICommonTicker        Ticker  { get; }
+        private INotificationSetting Setting { get; }
 
         private NotificationsManagerUnity(
             ICommonTicker              _Ticker,
             INotificationSetting       _Setting)
-            // IPushNotificationsProvider _PushNotificationsProvider)
         {
             Ticker                    = _Ticker;
             Setting                   = _Setting;
-            // PushNotificationsProvider = _PushNotificationsProvider;
         }
 
         #endregion
@@ -176,10 +91,10 @@ namespace Common.Managers.Notifications
             OnForegrounding();
         }
 
-        public void SendNotification(
+        public override void SendNotification(
             string   _Title,
             string   _Body,
-            DateTime _DeliveryTime,
+            TimeSpan _TimeSpan,
             int?     _BadgeNumber = null,
             bool     _Reschedule  = false,
             string   _ChannelId   = null,
@@ -194,7 +109,7 @@ namespace Common.Managers.Notifications
             notification.Title = _Title;
             notification.Body = _Body;
             notification.Group = !string.IsNullOrEmpty(_ChannelId) ? _ChannelId : ChannelId;
-            notification.DeliveryTime = _DeliveryTime;
+            notification.DeliveryTime = DateTime.Now.Add(_TimeSpan);
             notification.SmallIcon = _SmallIcon;
             notification.LargeIcon = _LargeIcon;
             if (_BadgeNumber != null)
@@ -204,10 +119,10 @@ namespace Common.Managers.Notifications
             Dbg.Log("Sending notification: \n" +
                     "Title: " + _Title + ", \n" +
                     "Body: " + _Body + ", \n" +
-                    "Delivery time: " + _DeliveryTime);
+                    "Span: " + _TimeSpan);
         }
         
-        public void ClearAllNotifications()
+        public override void ClearAllNotifications()
         {
             Platform.CancelAllScheduledNotifications();
             m_Serializer.Serialize(new List<PendingNotification>());

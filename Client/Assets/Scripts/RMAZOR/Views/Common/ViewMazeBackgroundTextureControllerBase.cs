@@ -138,10 +138,9 @@ namespace RMAZOR.Views.Common
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int setItemIdx = group % colorsSet.Count;
+            int setItemIdx = (group - 1) % colorsSet.Count;
             m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
             AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
-            
             ColorProvider.SetColor(ColorIds.PathItem, GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathFill, GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathBackground, GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
