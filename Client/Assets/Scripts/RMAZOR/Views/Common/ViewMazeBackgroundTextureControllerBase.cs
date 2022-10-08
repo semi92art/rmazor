@@ -125,14 +125,15 @@ namespace RMAZOR.Views.Common
             var props = colorsSet[setItemIdx];
             return _ColorId switch
             {
-                ColorIds.Background1    => props.bacground1,
-                ColorIds.Background2    => props.bacground2,
-                ColorIds.PathItem       => props.GetColor(props.pathItemFillType),
-                ColorIds.PathBackground => props.GetColor(props.pathBackgroundFillType),
-                ColorIds.PathFill       => props.GetColor(props.pathFillFillType),
-                ColorIds.Character2     => props.GetColor(props.characterBorderFillType),
-                ColorIds.UiBackground   => props.GetColor(props.uiBackgroundFillType),
-                _                       => Color.magenta
+                ColorIds.Background1     => props.bacground1,
+                ColorIds.Background2     => props.bacground2,
+                ColorIds.PathItem        => props.GetColor(props.pathItemFillType),
+                ColorIds.PathBackground  => props.GetColor(props.pathBackgroundFillType),
+                ColorIds.PathFill        => props.GetColor(props.pathFillFillType),
+                ColorIds.Character2      => props.GetColor(props.characterBorderFillType),
+                ColorIds.UiBackground    => props.GetColor(props.uiBackgroundFillType),
+                ColorIds.RotationButtons => props.GetColor(props.uiBackgroundFillType),
+                _                        => Color.magenta
             };
         }
 
@@ -143,11 +144,12 @@ namespace RMAZOR.Views.Common
             int setItemIdx = (group - 1) % colorsSet.Count;
             m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
             AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
-            ColorProvider.SetColor(ColorIds.PathItem, GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.PathFill, GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.PathBackground, GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.Character2,  GetBackgroundColor(ColorIds.Character2, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.UiBackground,  GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.PathItem,        GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.PathFill,        GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.PathBackground,  GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.Character2,      GetBackgroundColor(ColorIds.Character2, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.UiBackground,    GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.RotationButtons, GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
             const int idx1 = ColorIds.Background1;
             const int idx2 = ColorIds.Background2;
             BackCol1Current = GetBackgroundColor(idx1, _LevelIndex);

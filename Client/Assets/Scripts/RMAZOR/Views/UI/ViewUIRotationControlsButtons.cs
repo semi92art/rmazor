@@ -110,7 +110,7 @@ namespace RMAZOR.Views.UI
         {
             switch (_ColorId)
             {
-                case ColorIds.Main:
+                case ColorIds.RotationButtons:
                     foreach (var shapeComp in m_RotatingButtonShapes)
                         shapeComp.Color = _Color;
                     foreach (var shapeComp in m_RotatingButtonShapes2)

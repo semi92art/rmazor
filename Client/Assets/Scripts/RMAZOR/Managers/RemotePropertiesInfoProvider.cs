@@ -127,6 +127,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_get_money_button_text_variant",
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = Convert.ToInt32(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_background_variant",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.finishLevelGroupPanelBackgroundVariant = Convert.ToInt32(_V))),
                 
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => Execute(
@@ -246,6 +249,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("trap_increasing_increased_time"),
                 CommonUtils.StringToHash("money_items_fill_rate"),
                 CommonUtils.StringToHash("fin_lev_g_pan_get_money_button_text_variant"),
+                CommonUtils.StringToHash("fin_lev_g_pan_background_variant"),
             }
                 .Select(_Id => (ushort) _Id)
                 .ToArray();

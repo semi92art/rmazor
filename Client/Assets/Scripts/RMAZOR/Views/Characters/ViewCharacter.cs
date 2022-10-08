@@ -1,4 +1,5 @@
-﻿using Common.Constants;
+﻿using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Helpers;
@@ -185,6 +186,8 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
+                    if (!CommonData.Release)
+                        CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
                     if (_Args.PreviousStage == ELevelStage.Paused 
                         && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
                     {

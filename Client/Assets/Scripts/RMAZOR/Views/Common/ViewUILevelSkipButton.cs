@@ -163,7 +163,7 @@ namespace RMAZOR.Views.Common
                     switch (_ColorId)
                     {
                         case ColorIds.UiBorder:     m_Border.color     = _Color; break;
-                        case ColorIds.UiBackground: m_Background.color = _Color; break;
+                        case ColorIds.Background1:  m_Background.color = _Color; break;
                     }
                 }));
         }

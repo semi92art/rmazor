@@ -45,3 +45,5 @@ MonoBehaviour:
   highlightPathItem: 1
   showFullTutorial: 1
   levelsInGroup: 3,3,3
+  finishLevelGroupPanelGetMoneyButtonTextVariant: 1
+  finishLevelGroupPanelBackgroundVariant: 1

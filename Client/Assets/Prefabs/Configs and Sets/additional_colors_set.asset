@@ -22,7 +22,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -43,7 +43,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -56,15 +56,15 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.3
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
-    - main: {r: 0.8679245, g: 0.24410377, b: 0, a: 1}
-      bacground1: {r: 0.32063267, g: 0.28555533, b: 0.6509434, a: 1}
-      bacground2: {r: 0.9056604, g: 0.35453612, b: 0.14097545, a: 1}
+    - main: {r: 0, g: 0, b: 0, a: 1}
+      bacground1: {r: 0.5377358, g: 0.5377358, b: 0.5377358, a: 1}
+      bacground2: {r: 0.3962264, g: 0, b: 0.3169812, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
-      characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -85,7 +85,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -106,7 +106,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.3
@@ -127,7 +127,7 @@ MonoBehaviour:
       pathBackgroundFillType: 1
       pathFillFillType: 0
       characterBorderFillType: 1
-      uiBackgroundFillType: 1
+      uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
         diffusion: 0.5

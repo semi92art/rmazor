@@ -47,7 +47,7 @@ namespace RMAZOR.UI.Panels
             Anchor = UiAnchor.Create(0, 1, 0, 1),
             AnchoredPosition = Vector2.zero,
             Pivot = Vector2.one * 0.5f,
-            SizeDelta = new Vector2(406f, 87f)
+            SizeDelta = new Vector2(406f, 100f)
         };
 
         private readonly RectTransformLite m_MiniButtonRectLite = new RectTransformLite

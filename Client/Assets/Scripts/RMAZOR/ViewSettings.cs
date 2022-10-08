@@ -42,6 +42,7 @@ namespace RMAZOR
         public bool   showFullTutorial;
         public string levelsInGroup;
         public int    finishLevelGroupPanelGetMoneyButtonTextVariant;
+        public int    finishLevelGroupPanelBackgroundVariant;
         
 
         public float LineThickness

@@ -144,6 +144,9 @@ namespace RMAZOR.Views.Characters
         {
             switch (_Args.LevelStage)
             {
+                case ELevelStage.Loaded:
+                    m_LastMazeOrientation = EMazeOrientation.North;
+                    break;
                 case ELevelStage.ReadyToStart when 
                     _Args.PreviousStage == ELevelStage.Paused 
                     && _Args.PrePreviousStage == ELevelStage.CharacterKilled:

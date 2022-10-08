@@ -374,7 +374,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 87}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &390225296816655433
 CanvasRenderer:
@@ -410,12 +410,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 2144869515708498312}
-  border: {fileID: 0}
   texts:
   - {fileID: 4995945050869460951}
   - {fileID: 0}
-  images: []
-  dialogBackground: {fileID: 0}
   languageIcon: {fileID: 7784179980691445468}
   title: {fileID: 4995945050869460951}
   button: {fileID: 7908894390656080150}

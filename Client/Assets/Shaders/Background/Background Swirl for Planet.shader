@@ -77,7 +77,8 @@ Shader "RMAZOR/Background/Swirl for Planet"
                 frag_coord.y *= 0.9;
                 float time = _Time.y * 0.1 + 23.0;
                 float2 uv = frag_coord.xy / _ScreenParams.xy;
-                float2 uv_square = float2(uv.x * _ScreenParams.x / _ScreenParams.y, uv.y);
+                float2 uv_scaled = uv / _Scale;
+                float2 uv_square = float2(uv_scaled.x * _ScreenParams.x / _ScreenParams.y, uv_scaled.y);
                 float dist_center = pow(2.0 * length(uv - 0.5), 2.0);
 
                 float foaminess = smoothstep(0.4, 1.8, dist_center);

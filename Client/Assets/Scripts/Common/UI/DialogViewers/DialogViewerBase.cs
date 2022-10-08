@@ -151,19 +151,26 @@ namespace Common.UI.DialogViewers
 
         private IEnumerator DoTranslucentBackgroundTransition(bool _Disappear, float _Time)
         {
+            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, !_Disappear);
+            CameraProvider.EnableEffect(ECameraEffect.Glitch, !_Disappear);
             if (_Disappear)
-            {
-                CameraProvider.EnableEffect(ECameraEffect.DepthOfField, false);
                 yield break;
-            }
-            CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
             float currTime = Ticker.Time;
             while (Ticker.Time < currTime + _Time)
             {
                 float timeCoeff = (currTime + _Time - Ticker.Time) / _Time;
-                float blurAmount = (1 - timeCoeff) * 0.3f;
-                CameraProvider.SetEffectProps(
-                    ECameraEffect.DepthOfField, new FastDofProps {BlurAmount = blurAmount});
+                var depthOfFieldProps = new FastDofProps
+                {
+                    BlurAmount = (1 - timeCoeff) * 0.3f
+                };
+                CameraProvider.SetEffectProps(ECameraEffect.DepthOfField, depthOfFieldProps);
+                var glitchProps = new FastGlitchProps
+                {
+                    ChromaticGlitch = 0.03f,
+                    FrameGlitch = 0.03f,
+                    PixelGlitch = 0.3f
+                };
+                CameraProvider.SetEffectProps(ECameraEffect.Glitch, glitchProps);
                 yield return new WaitForEndOfFrame();
             }
         }

@@ -253,7 +253,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 400, y: 87.157}
+  m_SizeDelta: {x: 400, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7768260980947468435
 CanvasRenderer:
@@ -276,17 +276,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 4783536854099458902}
-  border: {fileID: 0}
   texts:
   - {fileID: 7847463491711403019}
   - {fileID: 0}
   - {fileID: 0}
-  images:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  dialogBackground: {fileID: 0}
   title: {fileID: 7847463491711403019}
   button: {fileID: 4079629580223692092}
   toggleOnObj: {fileID: 5777368699835341354}

@@ -44,11 +44,11 @@ namespace RMAZOR.UI.Panels
     {
         #region nonpublic members
 
-        private Animator                    m_StarsAndRibbonAnimator;
         private Animator                    m_PanelAnimator;
         private MultiplyMoneyWheelPanelView m_WheelPanelView;
         private Image                       m_MoneyIcon;
         private Image                       m_IconWatchAds;
+        private Image                       m_Background;
         private Button                      m_ButtonMultiplyMoney;
         private Button                      m_ButtonSkip;
         private Button                      m_ButtonContinue;
@@ -114,58 +114,28 @@ namespace RMAZOR.UI.Panels
                 CommonPrefabSetNames.DialogPanels, "finish_level_group_panel");
             PanelRectTransform = go.RTransform();
             go.SetActive(false);
-            m_StarsAndRibbonAnimator  = go.GetCompItem<Animator>("stars_and_ribbon_animator");
-            m_WheelPanelView          = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
-            m_PanelAnimator           = go.GetCompItem<Animator>("panel_animator");
-            m_ButtonMultiplyMoney     = go.GetCompItem<Button>("multiply_money_button");
-            m_ButtonSkip              = go.GetCompItem<Button>("skip_button");
-            m_ButtonContinue          = go.GetCompItem<Button>("continue_button");
-            m_TitleText               = go.GetCompItem<TextMeshProUGUI>("title_text");
-            m_MoneyCountText          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
-            m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
-            m_GetMoneyButtonText          = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
-            m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
-            m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
-            m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
-            m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
-            m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_MoneyIcon.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
+            GetPrefabContentObjects(go);
+            LocalizeTextObjectsOnLoad();
+            SubscribeEventObjectsOnActions();
+            var psm = Managers.PrefabSetManager;
+            m_MoneyIcon.sprite = psm.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
-            m_MultipliedMoneySprite = Managers.PrefabSetManager.GetObject<Sprite>(
+            m_MultipliedMoneySprite = psm.GetObject<Sprite>(
                 "icons", 
                 "icon_coin_ui_multiplied");
-            var locMan = Managers.LocalizationManager;
             m_WheelPanelView.Init(
                 Ticker,
                 Managers.AudioManager,
-                locMan);
-            m_ButtonMultiplyMoney.onClick.AddListener(OnMultiplyButtonPressed);
-            m_ButtonSkip.onClick.AddListener(OnSkipButtonPressed);
-            m_ButtonContinue.onClick.AddListener(OnContinueButtonPressed);
-            m_MoneyCountText.text = m_MultiplyWord + ": " + MoneyCounter.CurrentLevelGroupMoney;
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_TitleText, ETextType.MenuUI, "stage_finished"));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MoneyCountText, ETextType.MenuUI, "reward",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture) 
-                          + ": " + MoneyCounter.CurrentLevelGroupMoney));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MultiplyButtonText, ETextType.MenuUI, "multiply",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
-            string getMoneyButtonTextLocKey = ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant switch
+                Managers.LocalizationManager);
+            const string backgroundSpriteNameRaw = "finish_level_group_panel_background";
+            string backgroundSpriteName = ViewSettings.finishLevelGroupPanelBackgroundVariant switch
             {
-                1 => "get",
-                2 => "skip",
-                _ => "get"
+                1 => $"{backgroundSpriteNameRaw}_1",
+                2 => $"{backgroundSpriteNameRaw}_2",
+                3 => $"{backgroundSpriteNameRaw}_3",
+                _ => $"{backgroundSpriteNameRaw}_1",
             };
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_GetMoneyButtonText, ETextType.MenuUI, getMoneyButtonTextLocKey,
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_ContinueButtonText, ETextType.MenuUI, "continue",
-                    _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
-            m_Triggerer.Trigger1 += OnStartAppearingAnimationFinished;
-            m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
+            m_Background.sprite = psm.GetObject<Sprite>("views", backgroundSpriteName);
         }
 
         public override void OnDialogStartAppearing()
@@ -179,7 +149,6 @@ namespace RMAZOR.UI.Panels
             m_MoneyCountText.text = Managers.LocalizationManager.GetTranslation("reward")
                                         .ToUpper(CultureInfo.CurrentUICulture)
                                     + ": " + MoneyCounter.CurrentLevelGroupMoney;
-            m_StarsAndRibbonAnimator.SetTrigger(AnimKeys.Anim);
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
             m_ButtonContinue.gameObject.SetActive(false);
@@ -209,6 +178,67 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region nonpublic methods
+
+        private void GetPrefabContentObjects(GameObject _GameObject)
+        {
+            var go = _GameObject;
+            m_WheelPanelView          = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
+            m_PanelAnimator           = go.GetCompItem<Animator>("panel_animator");
+            m_ButtonMultiplyMoney     = go.GetCompItem<Button>("multiply_money_button");
+            m_ButtonSkip              = go.GetCompItem<Button>("skip_button");
+            m_ButtonContinue          = go.GetCompItem<Button>("continue_button");
+            m_TitleText               = go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_MoneyCountText          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
+            m_GetMoneyButtonText      = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
+            m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
+            m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
+            m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
+            m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
+            m_Background              = go.GetCompItem<Image>("background");
+            m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
+        }
+        
+        private void LocalizeTextObjectsOnLoad()
+        {
+            var locMan = Managers.LocalizationManager;
+            m_WheelPanelView.Init(
+                Ticker,
+                Managers.AudioManager,
+                locMan);
+            // m_MoneyCountText.text = m_MultiplyWord + ": " + MoneyCounter.CurrentLevelGroupMoney;
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_TitleText, ETextType.MenuUI, "stage_finished",
+                _T => _T.ToUpper(CultureInfo.CurrentUICulture)));
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_MoneyCountText, ETextType.MenuUI, "reward",
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture) 
+                      + ": " + MoneyCounter.CurrentLevelGroupMoney));
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_MultiplyButtonText, ETextType.MenuUI, "multiply",
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            string getMoneyButtonTextLocKey = ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant switch
+            {
+                1 => "get",
+                2 => "skip",
+                _ => "get"
+            };
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_GetMoneyButtonText, ETextType.MenuUI, getMoneyButtonTextLocKey,
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_ContinueButtonText, ETextType.MenuUI, "continue",
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+        }
+
+        private void SubscribeEventObjectsOnActions()
+        {
+            m_ButtonMultiplyMoney.onClick.AddListener(     OnMultiplyButtonPressed);
+            m_ButtonSkip.onClick.AddListener(              OnSkipButtonPressed);
+            m_ButtonContinue.onClick.AddListener(          OnContinueButtonPressed);
+            m_Triggerer.Trigger1                        += OnStartAppearingAnimationFinished;
+            m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
+        }
         
         private void IndicateAdsLoading(bool _Indicate)
         {

@@ -78,3 +78,4 @@ tut_title_hammer = 새로운 블록 : 망치
 tut_title_spear = 새로운 블록 : 스피어
 tut_title_diode = 새로운 블록 : 다이오드
 get = 가져 오기
+revive? = 부활 하시겠습니까?

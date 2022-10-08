@@ -256,16 +256,16 @@ namespace RMAZOR.Views.Common
                             new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
                     }
                     break;
-                case 3:
+                case 3: _Provider = TextureProviderLogichroma;      break;
+                case 4: _Provider = TextureProviderFallInDeep;      break;
+                case 5: _Provider = TextureProviderBluePurplePlaid; break;
+                case 0:
                     int idx = group % m_TextureSetItems.Count;
                     var setItem = m_TextureSetItems[idx];
                     TextureProviderTriangles2.Activate(true);
                     TextureProviderTriangles2.SetProperties((Triangles2TextureProps)setItem);
                     _Provider = TextureProviderTriangles2;
                     break;
-                case 4: _Provider = TextureProviderFallInDeep;      break;
-                case 5: _Provider = TextureProviderBluePurplePlaid; break;
-                case 0: _Provider = TextureProviderLogichroma;      break;
                 default: throw new SwitchCaseNotImplementedException(c);
             }
             _Provider.Activate(true);

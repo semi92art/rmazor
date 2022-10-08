@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using Common;
 using Common.CameraProviders;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
@@ -47,17 +46,18 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI    m_MoneyInBankText;
         private TextMeshProUGUI    m_TextContinue;
         private TextMeshProUGUI    m_TextPayMoneyCount;
-        private TextMeshProUGUI    m_TextNotEnoughMoney;
+        private TextMeshProUGUI    m_TextRevive;
         private Button             m_ButtonWatchAds;
         private Button             m_ButtonPayMoney;
         private Animator           m_AnimLoadingAds;
-        private Image              m_RoundFilledBorder;
+        private Image              m_Countdown;
+        private Image              m_CountdownBackground;
         private bool               m_AdsWatched;
         private bool               m_MoneyPayed;
         private long               m_MoneyCount;
         private bool               m_PanelShowing;
         private bool               m_WentToShopPanel;
-        private float              m_BorderFillAmount;
+        private float              m_CountdownValue;
 
         #endregion
 
@@ -115,12 +115,13 @@ namespace RMAZOR.UI.Panels
             m_MoneyInBankText         = go.GetCompItem<TextMeshProUGUI>(   "money_count_text");
             m_TextPayMoneyCount       = go.GetCompItem<TextMeshProUGUI>(   "pay_money_count_text");
             m_TextContinue            = go.GetCompItem<TextMeshProUGUI>(   "continue_text");
-            m_TextNotEnoughMoney      = go.GetCompItem<TextMeshProUGUI>(   "not_enough_money_text");
+            m_TextRevive              = go.GetCompItem<TextMeshProUGUI>(   "revive_text");
             m_AnimLoadingAds          = go.GetCompItem<Animator>(          "loading_ads_anim");
             m_MoneyInBankIcon         = go.GetCompItem<Image>(             "money_icon_1");
             m_MoneyIconInPayButton    = go.GetCompItem<Image>(             "money_icon_2");
             m_IconWatchAds            = go.GetCompItem<Image>(             "watch_ads_icon");
-            m_RoundFilledBorder       = go.GetCompItem<Image>(             "round_filled_border");
+            m_Countdown       = go.GetCompItem<Image>(             "round_filled_border");
+            m_CountdownBackground   = go.GetCompItem<Image>(             "round_filled_border_back");
             m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
             m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
             Managers.LocalizationManager.AddTextObject(
@@ -130,7 +131,7 @@ namespace RMAZOR.UI.Panels
                 new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue",
                     _T => _T.ToUpper()));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextNotEnoughMoney, ETextType.MenuUI, "not_enough_money",
+                new LocalizableTextObjectInfo(m_TextRevive, ETextType.MenuUI, "revive?",
                     _T => _T.ToUpper()));
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
@@ -138,7 +139,8 @@ namespace RMAZOR.UI.Panels
             m_MoneyIconInPayButton.sprite = moneyIconSprite;
             m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
             m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
-            m_RoundFilledBorder.color = ColorProvider.GetColor(ColorIds.UiBorder);
+            m_Countdown.color = ColorProvider.GetColor(ColorIds.UiBorder);
+            m_CountdownBackground.color = Color.black;
         }
 
         public void ReturnFromShopPanel()
@@ -168,20 +170,13 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
-            m_BorderFillAmount = 1f;
-            m_AdsWatched = false;
-            m_MoneyPayed = false;
-            m_WentToShopPanel = false;
-            m_PanelShowing = true;
-            m_RoundFilledBorder.fillAmount = 1f;
-            CameraProvider.EnableEffect(ECameraEffect.Glitch, true);
-            var props = new FastGlitchProps
-            {
-                ChromaticGlitch = 0.03f,
-                FrameGlitch = 0.03f,
-                PixelGlitch = 0.3f
-            };
-            CameraProvider.SetEffectProps(ECameraEffect.Glitch, props);
+            m_CountdownValue = 1f;
+            m_AdsWatched       = false;
+            m_MoneyPayed       = false;
+            m_WentToShopPanel  = false;
+            m_PanelShowing     = true;
+            m_Countdown    .fillAmount = 1f;
+            m_CountdownBackground.fillAmount = 1f;
             IndicateAdsLoading(true);
             Cor.Run(Cor.WaitWhile(
                 () => !Managers.AdsManager.RewardedAdReady,
@@ -215,7 +210,6 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogDisappeared()
         {
-            CameraProvider.EnableEffect(ECameraEffect.Glitch, false);
             m_PanelShowing = false;
             CommandsProceeder.UnlockCommands(
                 new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
@@ -232,7 +226,7 @@ namespace RMAZOR.UI.Panels
         {
             base.OnColorChanged(_ColorId, _Color);
             if (_ColorId == ColorIds.UiBorder)
-                m_RoundFilledBorder.color = _Color;
+                m_Countdown.color = _Color;
         }
         
         private void OnWatchAdsButtonClick()
@@ -246,11 +240,9 @@ namespace RMAZOR.UI.Panels
             bool isMoneyEnough = m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount;
             if (!isMoneyEnough)
             {
-                RegisterPurchaseActionsFinishCurrentLevel();
                 CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu,
                     new object[] {CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel}, true);
                 m_WentToShopPanel = true;
-                CameraProvider.EnableEffect(ECameraEffect.Glitch, false);
             }
             else
             {
@@ -281,17 +273,19 @@ namespace RMAZOR.UI.Panels
             m_MoneyIconInPayButton.enabled = true;
             m_TextPayMoneyCount.enabled    = true;
             m_ButtonPayMoney.interactable  = true;
-            m_TextNotEnoughMoney.enabled   = false;
         }
 
         private IEnumerator StartCountdown()
         {
             yield return Cor.Lerp(
                 Ticker,
-                CountdownTime * m_BorderFillAmount,
-                m_BorderFillAmount,
+                CountdownTime * m_CountdownValue,
+                m_CountdownValue,
                 0f,
-                _P => m_RoundFilledBorder.fillAmount = m_BorderFillAmount = _P,
+                _P =>
+                {
+                    (m_CountdownValue, m_Countdown.fillAmount, m_CountdownBackground.fillAmount) = (_P, _P, _P);
+                },
                 _BreakPredicate: () => m_AdsWatched || m_MoneyPayed || m_WentToShopPanel,
                 _OnFinishEx: (_Broken, _) =>
                 {
@@ -303,7 +297,6 @@ namespace RMAZOR.UI.Panels
                             new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
                             true);
                     }
-
                     if (_Broken && m_WentToShopPanel)
                         return;
                     OnClose(() =>
@@ -315,46 +308,7 @@ namespace RMAZOR.UI.Panels
                     });
                 });
         }
-        
-        private void RegisterPurchaseActionsFinishCurrentLevel()
-        {
-            // TODO по идее обновлять инфу нужно сразу после покупки, но хуй с ним
-            // var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
-            //     "shop_items", "shop_money_items_set").set;
-            // foreach (var item in set)
-            // {
-            //     Managers.ShopManager.AddPurchaseAction(item.purchaseKey, 2, () =>
-            //     {
-            //         var commandsHistoryReversed = CommandsProceeder.CommandsHistory.ToArray().Reverse();
-            //         System.Tuple<EInputCommand, object[]> lastShopCommand = commandsHistoryReversed.FirstOrDefault(
-            //             _Command => _Command.Item1 == EInputCommand.ShopMenu);
-            //
-            //         var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-            //             CommonData.SavedGameFileName, 
-            //             true);
-            //         
-            //         if (lastShopCommand == null ||
-            //             !lastShopCommand.Item2.Contains(CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel))
-            //         {
-            //             return;
-            //         }
-            //         var savedGame = new SavedGame
-            //         {
-            //             FileName = CommonData.SavedGameFileName,
-            //             Money = m_MoneyCount - GlobalGameSettings.payToContinueMoneyCount,
-            //             Level = Model.LevelStaging.LevelIndex
-            //         };
-            //         Managers.ScoreManager.SaveGameProgress(savedGame, false);
-            //         m_MoneyPayed = true;
-            //         var dv1 = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerType);
-            //         dv1.Back();
-            //         dv1 = DialogViewersController.GetViewer(DialogViewerType);
-            //         dv1.Back();
-            //         RaiseContinueCommand();
-            //     });
-            // }
-        }
-        
+
         private void RaiseContinueCommand()
         {
             CommandsProceeder.RaiseCommand(
