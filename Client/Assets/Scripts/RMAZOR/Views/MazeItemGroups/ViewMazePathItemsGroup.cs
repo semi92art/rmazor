@@ -9,6 +9,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 
 namespace RMAZOR.Views.MazeItemGroups
 {

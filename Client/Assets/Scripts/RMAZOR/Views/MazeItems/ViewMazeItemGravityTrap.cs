@@ -36,18 +36,18 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region nonpubilc members
+        
+        private static AudioClipArgs AudioClipArgsTrapRotate => 
+            new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true);
 
+        protected override string ObjectName => "Gravity Trap Block";
+        
         private bool      m_Rotate;
         private Vector3   m_RotateDirection;
         private Vector3   m_Angles;
         private Vector2   m_Position;
         private Transform m_MaceTr;
-
-        #endregion
         
-        #region shapes
-
-        protected override string ObjectName => "Gravity Trap Block";
         private Disc m_OuterDisc;
         private Disc m_InnerDisc;
         private List<Cone> m_Cones;
@@ -146,9 +146,9 @@ namespace RMAZOR.Views.MazeItems
             m_RotateDirection = GetRotationDirection(dir);
             m_MaceTr.rotation = Quaternion.Euler(Vector3.zero);
             m_Rotate = true;
-            if (Managers.AudioManager.IsPlaying(GetAudioClipArgsTrapRotate()))
+            if (Managers.AudioManager.IsPlaying(AudioClipArgsTrapRotate))
                 return;
-            Managers.AudioManager.PlayClip(GetAudioClipArgsTrapRotate());
+            Managers.AudioManager.PlayClip(AudioClipArgsTrapRotate);
             if (!MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = true;
         }
@@ -172,7 +172,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 return;
             }
-            Managers.AudioManager.StopClip(GetAudioClipArgsTrapRotate());
+            Managers.AudioManager.StopClip(AudioClipArgsTrapRotate);
             if (MazeShaker.ShakeMaze)
                 MazeShaker.ShakeMaze = false;
         }
@@ -307,11 +307,6 @@ namespace RMAZOR.Views.MazeItems
                     m_InnerDisc.Color = _Color;
                     break;
             }
-        }
-
-        private static AudioClipArgs GetAudioClipArgsTrapRotate()
-        {
-            return new AudioClipArgs("mace_roll", EAudioClipType.GameSound, _Loop: true);
         }
 
         #endregion

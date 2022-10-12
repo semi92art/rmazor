@@ -44,6 +44,18 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region nonpublic members
+        
+        private AudioClipArgs AudioClipInfoSpearOpen =>
+            new AudioClipArgs(
+                "spear_open", 
+                EAudioClipType.GameSound,
+                _Id: m_PositionIndex.ToString());
+
+        private AudioClipArgs AudioClipInfoSpearShot =>
+            new AudioClipArgs(
+                "spear_shot", 
+                EAudioClipType.GameSound,
+                _Id: m_PositionIndex.ToString());
 
         protected override string ObjectName => "Spear Block";
 
@@ -385,7 +397,7 @@ namespace RMAZOR.Views.MazeItems
                         Cor.Run(DisappearCoroutine());
                         return;
                     }
-                    Managers.AudioManager.PlayClip(GetAudioClipInfoSpearShot());
+                    Managers.AudioManager.PlayClip(AudioClipInfoSpearShot);
                     Cor.Run(Cor.Lerp(
                         GameTicker,
                         0.5f,
@@ -430,7 +442,7 @@ namespace RMAZOR.Views.MazeItems
             float finalRadius = ScaleCoefficient * scale * 1.5f;
             m_AdditionalOuterSpearMaskTop.SetRadius(0f).SetThickness(2f * 15f);
             m_AdditionalOuterSpearMaskBottom.SetRadius(0f).SetThickness(2f * 10f);
-            Managers.AudioManager.PlayClip(GetAudioClipInfoSpearOpen());
+            Managers.AudioManager.PlayClip(AudioClipInfoSpearOpen);
             yield return Cor.Lerp(
                 GameTicker,
                 duration,
@@ -445,7 +457,7 @@ namespace RMAZOR.Views.MazeItems
                  _OnFinish: () =>
                  {
                      m_LookAtCharacter = true;
-                     Managers.AudioManager.StopClip(GetAudioClipInfoSpearOpen());
+                     Managers.AudioManager.StopClip(AudioClipInfoSpearOpen);
                  });
         }
         
@@ -553,22 +565,6 @@ namespace RMAZOR.Views.MazeItems
                    && _Position.y > min.y - padding.y
                    && _Position.x < max.x + padding.x
                    && _Position.y < max.y + padding.y;
-        }
-        
-        private AudioClipArgs GetAudioClipInfoSpearOpen()
-        {
-            return new AudioClipArgs(
-                "spear_open", 
-                EAudioClipType.GameSound,
-                _Id: m_PositionIndex.ToString());
-        }
-        
-        private AudioClipArgs GetAudioClipInfoSpearShot()
-        {
-            return new AudioClipArgs(
-                "spear_shot", 
-                EAudioClipType.GameSound,
-                _Id: m_PositionIndex.ToString());
         }
 
         #endregion

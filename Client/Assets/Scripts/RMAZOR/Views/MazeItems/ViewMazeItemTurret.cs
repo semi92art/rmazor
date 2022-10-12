@@ -45,6 +45,9 @@ namespace RMAZOR.Views.MazeItems
         
         #region nonpublic members
 
+        private static AudioClipArgs AudioClipArgsShurikenFly =>
+            new AudioClipArgs("shuriken", EAudioClipType.GameSound);
+        
         protected override string ObjectName => "Turret Block";
         
         private float               m_RotatingSpeed;
@@ -419,7 +422,7 @@ namespace RMAZOR.Views.MazeItems
         {
             m_ProjectileMovingLocked = false;
             m_LastShotArgs = _Args;
-            Managers.AudioManager.PlayClip(GetAudioClipArgsShurikenFly());
+            Managers.AudioManager.PlayClip(AudioClipArgsShurikenFly);
             Vector2 projectilePos = _Args.From;
             Projectile.Tail.ShowTail(_Args);
             m_ProjRotating = true;
@@ -516,11 +519,6 @@ namespace RMAZOR.Views.MazeItems
                 float randScale = 0.5f + 0.3f * UnityEngine.Random.value;
                 ParticlesThrower.ThrowParticle(pos, fullSpeedVector, randScale, 0.1f);
             }
-        }
-        
-        private static AudioClipArgs GetAudioClipArgsShurikenFly()
-        {
-            return new AudioClipArgs("shuriken", EAudioClipType.GameSound);
         }
 
         #endregion

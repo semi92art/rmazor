@@ -27,6 +27,7 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Additional;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
 using RMAZOR.Views.UI.Game_Logo;

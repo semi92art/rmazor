@@ -16,7 +16,6 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -44,6 +43,12 @@ namespace RMAZOR.Views.MazeItems
         
         private static readonly Dictionary<V2Int, Rectangle> Masks        = new Dictionary<V2Int, Rectangle>();
         private static readonly int                          StencilRefId = Shader.PropertyToID("_StencilRef");
+        
+        private AudioClipArgs AudioClipInfoTrapReactOut => 
+            new AudioClipArgs(
+                "trap_react_out", 
+                EAudioClipType.GameSound, 
+                _Id: GetHashCode().ToString());
         
         protected override      string ObjectName => "Trap React Spikes Block";
 
@@ -143,7 +148,7 @@ namespace RMAZOR.Views.MazeItems
                     coroutine = HandlePreReact(); 
                     break;
                 case ModelCommonData.TrapReactStageReact:
-                    Managers.AudioManager.PlayClip(GetAudioClipInfoTrapReactOut());
+                    Managers.AudioManager.PlayClip(AudioClipInfoTrapReactOut);
                     coroutine = HandleReact();
                     break;
                 case ModelCommonData.TrapReactStageAfterReact:
@@ -342,12 +347,7 @@ namespace RMAZOR.Views.MazeItems
                 CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
             }
         }
-        
-        private AudioClipArgs GetAudioClipInfoTrapReactOut()
-        {
-            return new AudioClipArgs("trap_react_out", EAudioClipType.GameSound, _Id: GetHashCode().ToString());
-        }
-        
+
         #endregion
     }
 }

@@ -7,6 +7,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 using UnityEngine;
 
 namespace RMAZOR.Views.MazeItemGroups

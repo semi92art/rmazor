@@ -104,7 +104,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.Main)
+            if (_ColorId != ColorIds.MazeItem2)
                 return;
             m_SolidLine.SetColor(_Color);
             m_IntermittentLine.SetColor(_Color);
@@ -208,7 +208,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var mainCol = ColorProvider.GetColor(ColorIds.Main);
+            var mainCol = ColorProvider.GetColor(ColorIds.MazeItem2);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new [] { m_SolidLine, m_IntermittentLine}, () => mainCol}

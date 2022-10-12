@@ -110,7 +110,7 @@ namespace RMAZOR.Views.UI
         {
             switch (_ColorId)
             {
-                case ColorIds.RotationButtons:
+                case ColorIds.UI:
                     foreach (var shapeComp in m_RotatingButtonShapes)
                         shapeComp.Color = _Color;
                     foreach (var shapeComp in m_RotatingButtonShapes2)
@@ -237,7 +237,7 @@ namespace RMAZOR.Views.UI
             }
             if (_Instantly)
                 return;
-            var mainCol = ColorProvider.GetColor(ColorIds.Main);
+            var mainCol = ColorProvider.GetColor(ColorIds.UI);
             Transitioner.DoAppearTransition(_Show, 
                 new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {

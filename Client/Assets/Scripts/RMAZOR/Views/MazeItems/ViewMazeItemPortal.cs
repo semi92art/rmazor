@@ -41,14 +41,11 @@ namespace RMAZOR.Views.MazeItems
         #region nonpublic members
 
         private static AudioClipArgs AudioClipArgsPortal => new AudioClipArgs("portal", EAudioClipType.GameSound);
-
-        private float m_GravitySpawnTimer;
         
-        #endregion
+        protected override string ObjectName => "Portal Block";
         
-        #region shapes
-
-        protected override string                    ObjectName => "Portal Block";
+        private float  m_GravitySpawnTimer;
+        
         private            Disc                      m_Center;
         private readonly   List<Disc>                m_Orbits       = new List<Disc>();
         private readonly   BehavioursSpawnPool<Disc> m_GravityItems = new BehavioursSpawnPool<Disc>();

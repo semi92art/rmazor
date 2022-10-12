@@ -59,7 +59,8 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI             m_ContinueButtonText;
         private Animator                    m_AnimLoadingAds;
         private AnimationTriggerer          m_Triggerer;
-        private Sprite                      m_MultipliedMoneySprite;
+        private Sprite                      m_SpriteMoney;
+        private Sprite                      m_SpriteMoneyMultiplied;
         private long                        m_MultiplyCoefficient;
         private string                      m_MultiplyWord;
 
@@ -89,7 +90,7 @@ namespace RMAZOR.UI.Panels
                 _CameraProvider,
                 _ColorProvider)
         {
-            ViewSettings = _ViewSettings;
+            ViewSettings      = _ViewSettings;
             Prompt            = _Prompt;
             CommandsProceeder = _CommandsProceeder;
             Model             = _Model;
@@ -118,9 +119,10 @@ namespace RMAZOR.UI.Panels
             LocalizeTextObjectsOnLoad();
             SubscribeEventObjectsOnActions();
             var psm = Managers.PrefabSetManager;
-            m_MoneyIcon.sprite = psm.GetObject<Sprite>(
-                "icons", "icon_coin_ui");
-            m_MultipliedMoneySprite = psm.GetObject<Sprite>(
+            m_SpriteMoney = psm.GetObject<Sprite>(
+                "icons", 
+                "icon_coin_ui");
+            m_SpriteMoneyMultiplied = psm.GetObject<Sprite>(
                 "icons", 
                 "icon_coin_ui_multiplied");
             m_WheelPanelView.Init(
@@ -140,6 +142,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            m_MoneyIcon.sprite = m_SpriteMoney;
             m_MultiplyWord = Managers.LocalizationManager
                 .GetTranslation("multiply")
                 .ToUpper(CultureInfo.CurrentUICulture);
@@ -157,6 +160,7 @@ namespace RMAZOR.UI.Panels
                 CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             }));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
+            m_WheelPanelView.ResetWheel();
             base.OnDialogStartAppearing();
         }
 
@@ -206,7 +210,6 @@ namespace RMAZOR.UI.Panels
                 Ticker,
                 Managers.AudioManager,
                 locMan);
-            // m_MoneyCountText.text = m_MultiplyWord + ": " + MoneyCounter.CurrentLevelGroupMoney;
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_TitleText, ETextType.MenuUI, "stage_finished",
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture)));
@@ -276,7 +279,7 @@ namespace RMAZOR.UI.Panels
             long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
             string rewardWord = Managers.LocalizationManager.GetTranslation("reward").ToUpper();
             m_MoneyCountText.text = rewardWord + ": " + reward;
-            m_MoneyIcon.sprite = m_MultipliedMoneySprite;
+            m_MoneyIcon.sprite = m_SpriteMoneyMultiplied;
             Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
             {
                 Multiply();
@@ -308,7 +311,10 @@ namespace RMAZOR.UI.Panels
                 true);
             void SendAnalytic()
             {
-                var eventData = new Dictionary<string, object> {{AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}};
+                var eventData = new Dictionary<string, object>
+                {
+                    {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}
+                };
                 Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInFinishGroupPanelPressed, eventData);
             }
             void SetMoneyInBank()

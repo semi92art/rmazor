@@ -177,7 +177,7 @@ namespace Editor
             m_ColorProvider.SetColor(ColorIds.PathFill, props.GetColor(props.pathFillFillType));
             m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
             m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType));
-            m_ColorProvider.SetColor(ColorIds.RotationButtons, props.GetColor(props.uiBackgroundFillType));
+            m_ColorProvider.SetColor(ColorIds.GameUiAlternative, props.GetColor(props.uiBackgroundFillType));
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
             CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
         }

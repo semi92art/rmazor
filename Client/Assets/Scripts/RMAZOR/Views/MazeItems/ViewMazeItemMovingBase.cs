@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -84,7 +83,6 @@ namespace RMAZOR.Views.MazeItems
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:

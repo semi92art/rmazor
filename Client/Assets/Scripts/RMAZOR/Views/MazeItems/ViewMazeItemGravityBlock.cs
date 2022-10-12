@@ -31,7 +31,7 @@ namespace RMAZOR.Views.MazeItems
         private ViewMazeItemGravityBlock(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             IRendererAppearTransitioner _Transitioner,
@@ -85,7 +85,7 @@ namespace RMAZOR.Views.MazeItems
         {
             base.UpdateShape();
             float scale = CoordinateConverter.Scale;
-            m_FilledShape.SetSize(scale * 0.9f)
+            m_FilledShape.SetSize(scale * (1f + ViewSettings.LineThickness * 0.5f))
                 .SetThickness(ViewSettings.LineThickness * scale)
                 .SetCornerRadius(ViewSettings.CornerRadius * scale);
         }

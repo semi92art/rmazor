@@ -5,6 +5,7 @@ using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Props;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 using Zenject;
 
 namespace RMAZOR.Views.Helpers.MazeItemsCreators

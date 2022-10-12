@@ -132,7 +132,7 @@ namespace RMAZOR.Views.Common
                 ColorIds.PathFill        => props.GetColor(props.pathFillFillType),
                 ColorIds.Character2      => props.GetColor(props.characterBorderFillType),
                 ColorIds.UiBackground    => props.GetColor(props.uiBackgroundFillType),
-                ColorIds.RotationButtons => props.GetColor(props.uiBackgroundFillType),
+                ColorIds.GameUiAlternative => props.GetColor(props.uiBackgroundFillType),
                 _                        => Color.magenta
             };
         }
@@ -149,7 +149,7 @@ namespace RMAZOR.Views.Common
             ColorProvider.SetColor(ColorIds.PathBackground,  GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
             ColorProvider.SetColor(ColorIds.Character2,      GetBackgroundColor(ColorIds.Character2, _LevelIndex));
             ColorProvider.SetColor(ColorIds.UiBackground,    GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.RotationButtons, GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
+            ColorProvider.SetColor(ColorIds.GameUiAlternative, GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
             const int idx1 = ColorIds.Background1;
             const int idx2 = ColorIds.Background2;
             BackCol1Current = GetBackgroundColor(idx1, _LevelIndex);

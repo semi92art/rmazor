@@ -41,6 +41,13 @@ namespace RMAZOR.Views.MazeItems
 
         #region nonpublic members
 
+        private AudioClipArgs AudioClipInfoHammerShot =>
+            new AudioClipArgs(
+                "hammer_shot",
+                EAudioClipType.GameSound, 
+                0.3f, 
+                _Id: m_ShotAngle.ToString());
+        
         protected override string ObjectName => "Hammer Block";
         
         private List<ShapeRenderer> m_MainShapes;
@@ -282,8 +289,7 @@ namespace RMAZOR.Views.MazeItems
                         SetHammerAngle(angle);
                         SetHammerTailAngles(startAngle, angle, _Back);
                     });
-            var audioClipArgs = GetAudioClipInfoHammerShot();
-            Managers.AudioManager.PlayClip(audioClipArgs);
+            Managers.AudioManager.PlayClip(AudioClipInfoHammerShot);
             Cor.Run(Shaker.ShakeMazeCoroutine(0.05f, 0.1f));
             ThrowParticlesOnShot(_Back);
             Cor.Run(ShotFinishCoroutine(startAngle, endAngle));
@@ -363,11 +369,6 @@ namespace RMAZOR.Views.MazeItems
                 ActivateRenderer(shape, false);
             ActivateRenderer(m_Tail, false);
             m_Collider.enabled = false;
-        }
-
-        private AudioClipArgs GetAudioClipInfoHammerShot()
-        {
-            return new AudioClipArgs("hammer_shot", EAudioClipType.GameSound, 0.3f, _Id: m_ShotAngle.ToString());
         }
         
         private void ThrowParticlesOnShot(bool _Back)

@@ -13,19 +13,19 @@ namespace Common
         public const int UiBackground       = 6;
         public const int UiItemHighlighted  = 7;
 
-        public const int Main            = 101;
-        public const int Background1     = 102;
-        public const int Background2     = 103;
-        public const int Character       = 104;
-        public const int Character2      = 105;
-        public const int CharacterTail   = 106;
-        public const int MazeItem1       = 107;
-        public const int MazeItem2       = 108;
-        public const int MoneyItem       = 111;
-        public const int PathFill        = 112;
-        public const int PathItem        = 113;
-        public const int PathBackground  = 114;
-        public const int RotationButtons = 115;
+        public const int Main              = 101;
+        public const int Background1       = 102;
+        public const int Background2       = 103;
+        public const int Character         = 104;
+        public const int Character2        = 105;
+        public const int CharacterTail     = 106;
+        public const int MazeItem1         = 107;
+        public const int MazeItem2         = 108;
+        public const int MoneyItem         = 111;
+        public const int PathFill          = 112;
+        public const int PathItem          = 113;
+        public const int PathBackground    = 114;
+        public const int GameUiAlternative = 115;
         
         public static int GetColorIdByName(string _ColorName)
         {
@@ -59,7 +59,7 @@ namespace Common
             {PathFill,               nameof(PathFill)              .WithSpaces()},
             {PathItem,               nameof(PathItem)              .WithSpaces()},
             {PathBackground,         nameof(PathBackground)        .WithSpaces()},
-            {RotationButtons,        nameof(RotationButtons)       .WithSpaces()},
+            {GameUiAlternative,      nameof(GameUiAlternative)     .WithSpaces()},
         };
     }
 }

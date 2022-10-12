@@ -61,9 +61,14 @@ namespace Common.UI
             m_DoMoveArrow = true;
         }
 
+        public void ResetWheel()
+        {
+            animator.enabled = true;
+            animator.SetTrigger(AnimKeys.Stop);
+        }
+
         public void StopWheel()
         {
-            animator.SetTrigger(AnimKeys.Stop);
             animator.enabled = false;
             m_DoMoveArrow = false;
         }

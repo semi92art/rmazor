@@ -2,6 +2,7 @@
 using Common.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 
 namespace RMAZOR.Views.Helpers.MazeItemsCreators
 {
