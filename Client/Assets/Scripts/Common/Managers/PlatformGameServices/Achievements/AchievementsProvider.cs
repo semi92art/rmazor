@@ -95,9 +95,6 @@ namespace Common.Managers.PlatformGameServices.Achievements
             });
             return entity;
 #endif
-
-
-
         }
 
         public Entity<IAchievement> GetAchievement(ushort _Key)

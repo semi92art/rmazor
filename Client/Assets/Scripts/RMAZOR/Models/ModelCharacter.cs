@@ -1,14 +1,9 @@
-﻿// ReSharper disable ForCanBeConvertedToForeach
-// ReSharper disable LoopCanBeConvertedToQuery
-
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using Common.Entities;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views;
 using UnityEngine;
@@ -44,24 +39,27 @@ namespace RMAZOR.Models
 
         #region inject
 
-        private ModelSettings      Settings     { get; }
-        private IModelData         Data         { get; }
-        private IModelLevelStaging LevelStaging { get; }
-        private IModelGameTicker   GameTicker   { get; }
-        private IModelMazeRotation Rotation     { get; }
+        private ModelSettings                    Settings          { get; }
+        private IModelData                       Data              { get; }
+        private IModelLevelStaging               LevelStaging      { get; }
+        private IModelGameTicker                 ModelGameTicker        { get; }
+        private IModelMazeRotation               Rotation          { get; }
+        private IModelCharacterPositionValidator PositionValidator { get; }
 
         public ModelCharacter(
-            ModelSettings      _Settings,
-            IModelData         _Data,
-            IModelLevelStaging _LevelStaging,
-            IModelGameTicker   _GameTicker,
-            IModelMazeRotation _Rotation)
+            ModelSettings                    _Settings,
+            IModelData                       _Data,
+            IModelLevelStaging               _LevelStaging,
+            IModelGameTicker                 _ModelGameTicker,
+            IModelMazeRotation               _Rotation,
+            IModelCharacterPositionValidator _PositionValidator)
         {
-            Settings     = _Settings;
-            Data         = _Data;
-            LevelStaging = _LevelStaging;
-            GameTicker   = _GameTicker;
-            Rotation     = _Rotation;
+            Settings          = _Settings;
+            Data              = _Data;
+            LevelStaging      = _LevelStaging;
+            ModelGameTicker        = _ModelGameTicker;
+            Rotation          = _Rotation;
+            PositionValidator = _PositionValidator;
         }
 
         #endregion
@@ -128,12 +126,15 @@ namespace RMAZOR.Models
             
         }
         
-        private V2Int GetNewPosition(V2Int _From, EMazeMoveDirection _Direction, out V2Int? _BlockPositionWhoStopped)
+        private V2Int GetNewPosition(
+            V2Int              _From,
+            EMazeMoveDirection _Direction,
+            out V2Int?         _BlockPositionWhoStopped)
         {
             var nextPos = Position;
             var infos = GetAllProceedInfos();
             var dirVector = RmazorUtils.GetDirectionVector(_Direction, Rotation.Orientation);
-            while (IsNextPositionValid(
+            while (PositionValidator.IsNextPositionValid(
                 infos,
                 Data.PathItems,
                 _From,
@@ -146,206 +147,72 @@ namespace RMAZOR.Models
             return nextPos;
         }
 
-        private static bool IsNextPositionValid(
-            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos,
-            IReadOnlyList<V2Int>                _PathItems,
-            V2Int                               _From,
-            V2Int                               _CurrentPosition,
-            V2Int                               _NextPosition,
-            out V2Int?                          _BlockPositionWhoStopped)
-        {
-            _BlockPositionWhoStopped = null;
-            bool isNode = false;
-            for (int i = 0; i < _PathItems.Count; i++)
-            {
-                if (_PathItems[i] != _NextPosition)
-                    continue;
-                isNode = true;
-                break;
-            }
-            if (!isNode)
-            {
-                for (int i = 0; i < _ProceedInfos.Count; i++)
-                {
-                    var info = _ProceedInfos[i];
-                    if (info.CurrentPosition != _NextPosition)
-                        continue;
-                    if (info.Type != EMazeItemType.Portal)
-                        continue;
-                    return true;
-                }
-                return false;
-            }
-            IMazeItemProceedInfo shredinger = null;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.Type != EMazeItemType.ShredingerBlock)
-                    continue;
-                if (info.CurrentPosition != _NextPosition)
-                    continue;
-                shredinger = info;
-                break;
-            }
-            if (shredinger != null)
-            {
-                _BlockPositionWhoStopped = _NextPosition;
-                return shredinger.ProceedingStage == ModelCommonData.StageIdle;
-            }
-            IMazeItemProceedInfo diode = null;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.Type != EMazeItemType.Diode)
-                    continue;
-                if (info.CurrentPosition != _NextPosition)
-                    continue;
-                diode = info;
-                break;
-            }
-            if (diode != null)
-            {
-                _BlockPositionWhoStopped = _NextPosition;
-                bool nextPosIsInvalid = diode.Direction == -_NextPosition + _CurrentPosition;
-                return !nextPosIsInvalid;
-            }
-            bool isMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.CurrentPosition != _NextPosition)
-                    continue;
-                if (info.Type != EMazeItemType.Block 
-                    && info.Type != EMazeItemType.TrapIncreasing
-                    && info.Type != EMazeItemType.Turret)
-                    continue;
-                isMazeItem = true;
-                break;
-            }
-            if (isMazeItem)
-                return false;
-            bool isBuzyMazeItem = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.Type != EMazeItemType.GravityBlock && info.Type != EMazeItemType.GravityBlockFree)
-                    continue;
-                bool busyPositionsContainNext = false;
-                for (int j = 0; j < info.BusyPositions.Count; j++)
-                {
-                    if (info.BusyPositions[j] != _NextPosition)
-                        continue;
-                    busyPositionsContainNext = true;
-                    break;
-                }
-                if (!busyPositionsContainNext)
-                    continue;
-                isBuzyMazeItem = true;
-                break;
-            }
-            if (isBuzyMazeItem)
-                return false;
-            bool isPrevSpringboard = false;
-            if (_CurrentPosition != _From)
-            {
-                for (int i = 0; i < _ProceedInfos.Count; i++)
-                {
-                    var info = _ProceedInfos[i];
-                    if (info.CurrentPosition != _CurrentPosition)
-                        continue;
-                    if (info.Type != EMazeItemType.Springboard)
-                        continue;
-                    isPrevSpringboard = true;
-                    break;
-                }
-            }
-            if (isPrevSpringboard)
-                return false;
-            bool isPrevPortal = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.CurrentPosition != _CurrentPosition)
-                    continue;
-                if (info.Type != EMazeItemType.Portal)
-                    continue;
-                isPrevPortal = true;
-                break;
-            }
-            bool isStartFromPortal = false;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.CurrentPosition != _From)
-                    continue;
-                if (info.Type != EMazeItemType.Portal)
-                    continue;
-                isStartFromPortal = true;
-                break;
-            }
-            return !isPrevPortal || isStartFromPortal;
-        }
-        
         private IEnumerator MoveCoreCoroutine(
             EMazeMoveDirection _Direction,
-            V2Int _From,
-            V2Int _To,
-            V2Int? _BlockPositionWhoStopped)
+            V2Int              _From,
+            V2Int              _To,
+            V2Int?             _BlockPositionWhoStopped)
         {
             int thisCount = ++m_MovesCount;
             int pathLength = Mathf.RoundToInt(V2Int.Distance(_From, _To));
             float lastProgress = 0f;
-            yield return Cor.Lerp(
-                GameTicker,
-                pathLength / Settings.characterSpeed,
-                _OnProgress: _P =>
+            void OnProgress(float _P)
+            {
+                MovingInfo = new CharacterMovingContinuedEventArgs(
+                    _Direction,
+                    _From,
+                    _To,
+                    _P,
+                    lastProgress);
+                lastProgress = _P;
+                Position = V2Int.Round(MovingInfo.PrecisePosition);
+                CharacterMoveContinued?.Invoke(MovingInfo);
+            }
+            void OnFinish()
+            {
+                var infos = GetAllProceedInfos();
+                IMazeItemProceedInfo blockOnFinish = null;
+                for (int i = 0; i < infos.Length; i++)
                 {
-                    MovingInfo = new CharacterMovingContinuedEventArgs(
-                        _Direction,
-                        _From,
-                        _To,
-                        _P,
-                        lastProgress);
-                    lastProgress = _P;
-                    Position = V2Int.Round(MovingInfo.PrecisePosition);
-                    CharacterMoveContinued?.Invoke(MovingInfo);
-                },
-                _OnFinish: () =>
+                    var info = infos[i];
+                    if (info.StartPosition != _To)
+                        continue;
+                    blockOnFinish = info;
+                    break;
+                }
+                IMazeItemProceedInfo blockWhoStopped = null;
+                if (_BlockPositionWhoStopped.HasValue)
                 {
-                    var infos = GetAllProceedInfos();
-                    IMazeItemProceedInfo blockOnFinish = null;
                     for (int i = 0; i < infos.Length; i++)
                     {
                         var info = infos[i];
-                        if (info.StartPosition != _To)
+                        if (info.StartPosition != _BlockPositionWhoStopped.Value)
                             continue;
-                        blockOnFinish = info;
+                        blockWhoStopped = info;
                         break;
                     }
-                    IMazeItemProceedInfo blockWhoStopped = null;
-                    if (_BlockPositionWhoStopped.HasValue)
-                    {
-                        for (int i = 0; i < infos.Length; i++)
-                        {
-                            var info = infos[i];
-                            if (info.StartPosition != _BlockPositionWhoStopped.Value)
-                                continue;
-                            blockWhoStopped = info;
-                            break;
-                        }
-                    }
-                    var args = new CharacterMovingFinishedEventArgs(
-                        _Direction,
-                        _From,
-                        _To,
-                        blockOnFinish,
-                        blockWhoStopped);
-                    CharacterMoveFinished?.Invoke(args);
-                    IsMoving = false;
-                    Position = _To;
-                },
-                _BreakPredicate: () => thisCount != m_MovesCount || !Alive,
-                _FixedUpdate: true);
+                }
+                var args = new CharacterMovingFinishedEventArgs(
+                    _Direction,
+                    _From,
+                    _To,
+                    blockOnFinish,
+                    blockWhoStopped);
+                CharacterMoveFinished?.Invoke(args);
+                IsMoving = false;
+                Position = _To;
+            }
+            bool BreakPredicate()
+            {
+                return thisCount != m_MovesCount || !Alive;
+            }
+            yield return Cor.Lerp(
+                ModelGameTicker,
+                pathLength / Settings.characterSpeed,
+                _OnProgress:     OnProgress,
+                _OnFinish:       OnFinish,
+                _BreakPredicate: BreakPredicate,
+                _FixedUpdate:    true);
         }
         
         private void Revive(bool _WithNotify = true)

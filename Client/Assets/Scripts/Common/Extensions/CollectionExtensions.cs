@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.SpawnPools;
+using System.Text;
 
 namespace Common.Extensions
 {
@@ -89,6 +89,16 @@ namespace Common.Extensions
         public static bool NullOrEmpty<T>(this IEnumerable<T> _Collection)
         {
             return _Collection == null || !_Collection.Any();
+        }
+
+        public static string ToStringForDisplay<T>(this IEnumerable<T> _Collection)
+        {
+            var collectionCopy = _Collection.ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("Count: " + collectionCopy.Count + ", values: ");
+            foreach (var collectionValue in collectionCopy)
+                sb.AppendLine(collectionValue.ToString());
+            return sb.ToString();
         }
     }
 }

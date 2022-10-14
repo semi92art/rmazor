@@ -13,7 +13,6 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -66,6 +65,17 @@ namespace RMAZOR.Views.MazeItems
         #region api
 
         public override Component[] Renderers => new Component[] {};
+
+        public override bool ActivatedInSpawnPool
+        {
+            get => base.ActivatedInSpawnPool;
+            set
+            {
+                m_SolidLine.enabled        = value;
+                m_IntermittentLine.enabled = value;
+                base.ActivatedInSpawnPool  = value;
+            }
+        }
 
         public override object Clone()
         {
@@ -145,7 +155,7 @@ namespace RMAZOR.Views.MazeItems
             m_DashedOffset += dOffset;
             m_DashedOffset = MathUtils.ClampInverse(m_DashedOffset, 0, maxOffset);
             float offset = m_DashedOffset + 0.5f;
-                m_IntermittentLine.DashOffset = offset;
+            m_IntermittentLine.DashOffset = offset;
         }
         
         private Tuple<Vector2, Vector2> GetLinePoints(
@@ -163,47 +173,45 @@ namespace RMAZOR.Views.MazeItems
             {
                 case EMazeMoveDirection.Up:
                     start = up * sc1 + left * sc2  + (_Intermittent ? down * intermAddict : zero);
-                    end = up * sc1 + right * sc2 + (_Intermittent ? down * intermAddict : zero);
+                    end   = up * sc1 + right * sc2 + (_Intermittent ? down * intermAddict : zero);
                     break;
                 case EMazeMoveDirection.Right:
                     start = right * sc1 + down * sc2 + (_Intermittent ? left * intermAddict : zero);
-                    end = right * sc1 + up * sc2 + (_Intermittent ? left * intermAddict : zero);
+                    end   = right * sc1 + up * sc2 + (_Intermittent ? left * intermAddict : zero);
                     break;
                 case EMazeMoveDirection.Down:
                     start = down * sc1 + left * sc2 + (_Intermittent ? up * intermAddict : zero);
-                    end = down * sc1 + right * sc2 + (_Intermittent ? up * intermAddict : zero);
+                    end   = down * sc1 + right * sc2 + (_Intermittent ? up * intermAddict : zero);
                     break;
                 case EMazeMoveDirection.Left:
                     start = left * sc1 + down * sc2 + (_Intermittent ? right * intermAddict : zero);
-                    end = left * sc1 + up * sc2 + (_Intermittent ? right * intermAddict : zero);
+                    end   = left * sc1 + up * sc2 + (_Intermittent ? right * intermAddict : zero);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(diodeDir);
             }
             float scale = CoordinateConverter.Scale;
             start *= scale;
-            end *= scale;
+            end   *= scale;
             return new Tuple<Vector2, Vector2>(start, end);
         }
 
         protected override void OnAppearStart(bool _Appear)
         {
-            if (_Appear)
-            {
-                m_SolidLine.enabled = true;
-                m_IntermittentLine.enabled = true;
-            }
             base.OnAppearStart(_Appear);
+            if (!_Appear) 
+                return;
+            m_SolidLine.enabled        = true;
+            m_IntermittentLine.enabled = true;
         }
 
         protected override void OnAppearFinish(bool _Appear)
         {
-            if (!_Appear)
-            {
-                m_SolidLine.enabled = false;
-                m_IntermittentLine.enabled = false;
-            }
             base.OnAppearFinish(_Appear);
+            if (_Appear) 
+                return;
+            m_SolidLine.enabled        = false;
+            m_IntermittentLine.enabled = false;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

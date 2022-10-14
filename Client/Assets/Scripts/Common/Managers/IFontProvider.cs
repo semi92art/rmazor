@@ -37,27 +37,27 @@ namespace Common.Managers
             {
                 ETextType.GameUI => _Language switch
                 {
-                    ELanguage.English   => "montserrat-ace-regular",
-                    ELanguage.Russian   => "montserrat-ace-regular",
-                    ELanguage.German    => "montserrat-ace-regular",
-                    ELanguage.Spanish   => "montserrat-ace-regular",
-                    ELanguage.Portugal  => "montserrat-ace-regular",
-                    ELanguage.Japaneese => "japaneese",
-                    ELanguage.Korean    => "korean",
+                    ELanguage.English   => "montserrat_ace_regular",
+                    ELanguage.Russian   => "montserrat_ace_regular",
+                    ELanguage.German    => "montserrat_ace_regular",
+                    ELanguage.Spanish   => "montserrat_ace_regular",
+                    ELanguage.Portugal  => "montserrat_ace_regular",
+                    ELanguage.Japaneese => "japanese_game",
+                    ELanguage.Korean    => "korean_game",
                     _                   => throw new SwitchExpressionException(_Language)
                 },
                 ETextType.MenuUI => _Language switch
                 {
-                    ELanguage.English   => "lilita-one-outline-54",
-                    ELanguage.Russian   => "fulbo-argenta-cirillic",
-                    ELanguage.German    => "fulbo-argenta-cirillic",
-                    ELanguage.Spanish   => "fulbo-argenta-cirillic",
-                    ELanguage.Portugal  => "fulbo-argenta-cirillic",
-                    ELanguage.Japaneese => "japaneese",
-                    ELanguage.Korean    => "korean",
+                    ELanguage.English   => "lilita_one_54_regular",
+                    ELanguage.Russian   => "efour_pro",
+                    ELanguage.German    => "efour_pro",
+                    ELanguage.Spanish   => "efour_pro",
+                    ELanguage.Portugal  => "efour_pro",
+                    ELanguage.Japaneese => "japanese_menu",
+                    ELanguage.Korean    => "korean_menu",
                     _                   => throw new SwitchExpressionException(_Language)
                 },
-                ETextType.Currency => "segoe-ui",
+                ETextType.Currency => "segoe_ui",
                 _                  => throw new SwitchExpressionException(_TextType)
             };
             return PrefabSetManager.GetObject<TMP_FontAsset>(PrefabSetName, prefabName);

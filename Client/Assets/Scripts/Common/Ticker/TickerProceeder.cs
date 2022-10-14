@@ -98,7 +98,6 @@ namespace Common.Ticker
                 m_Delta += UnityEngine.Time.deltaTime;
                 return;
             }
-
             Time = UnityEngine.Time.time - m_Delta;
             for (int i = 0; i < m_UpdateInfoDict.Count; i++)
                 m_UpdateInfoDict[i]?.UpdateTick();
@@ -108,10 +107,9 @@ namespace Common.Ticker
         {
             if (Pause)
             {
-                m_FixedDelta += UnityEngine.Time.fixedTime;
+                m_FixedDelta += UnityEngine.Time.fixedDeltaTime;
                 return;
             }
-
             FixedTime = UnityEngine.Time.fixedTime - m_FixedDelta;
             for (int i = 0; i < m_FixedUpdateInfoDict.Count; i++)
                 m_FixedUpdateInfoDict[i]?.FixedUpdateTick();

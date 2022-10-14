@@ -60,7 +60,7 @@ namespace RMAZOR.Models.InputSchedulers
 
         public override void Init()
         {
-            MoveCommand += OnMoveCommand;
+            MoveCommand   += OnMoveCommand;
             RotateCommand += OnRotateCommand;
             GameTicker.Register(this);
             base.Init();
@@ -152,13 +152,20 @@ namespace RMAZOR.Models.InputSchedulers
         
         private void OnRotateCommand(EInputCommand _Command, object[] _Args)
         {
-            EMazeRotateDirection dir;
+            EMazeRotateDirection dir = default;
             switch (_Command)
             {
+                case EInputCommand.MoveUp:   
+                case EInputCommand.MoveDown: 
+                case EInputCommand.MoveLeft: 
+                case EInputCommand.MoveRight:
+                    break;
                 case EInputCommand.RotateClockwise:       
-                    dir = EMazeRotateDirection.Clockwise;        break;
+                    dir = EMazeRotateDirection.Clockwise;     
+                    break;
                 case EInputCommand.RotateCounterClockwise:
-                    dir = EMazeRotateDirection.CounterClockwise; break;
+                    dir = EMazeRotateDirection.CounterClockwise;
+                    break;
                 default: throw new SwitchCaseNotImplementedException(_Command);
             }
             MazeRotation.StartRotation(dir);
@@ -172,10 +179,10 @@ namespace RMAZOR.Models.InputSchedulers
                 return;
             for (int i = 0; i < MaxCommandsCount; i++)
             {
-                m_MoveCommands[i] = null;
+                m_MoveCommands[i]   = null;
                 m_RotateCommands[i] = null;
             }
-            m_MoveCommandsCount = 0;
+            m_MoveCommandsCount   = 0;
             m_RotateCommandsCount = 0;
         }
     }

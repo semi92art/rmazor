@@ -53,12 +53,15 @@ namespace RMAZOR.UI.Panels
         private Button                      m_ButtonSkip;
         private Button                      m_ButtonContinue;
         private TextMeshProUGUI             m_TitleText;
+        private TextMeshProUGUI             m_RewardText;
         private TextMeshProUGUI             m_MoneyCountText;
         private TextMeshProUGUI             m_MultiplyButtonText;
         private TextMeshProUGUI             m_GetMoneyButtonText;
         private TextMeshProUGUI             m_ContinueButtonText;
         private Animator                    m_AnimLoadingAds;
+        private Animator                    m_AnimMoneyIcon;
         private AnimationTriggerer          m_Triggerer;
+        private AnimationTriggerer          m_TriggererMoneyIcon;
         private Sprite                      m_SpriteMoney;
         private Sprite                      m_SpriteMoneyMultiplied;
         private long                        m_MultiplyCoefficient;
@@ -149,9 +152,7 @@ namespace RMAZOR.UI.Panels
             m_ButtonMultiplyMoney.gameObject.SetActive(true);
             m_ButtonSkip.gameObject.SetActive(true);
             m_ButtonContinue.gameObject.SetActive(false);
-            m_MoneyCountText.text = Managers.LocalizationManager.GetTranslation("reward")
-                                        .ToUpper(CultureInfo.CurrentUICulture)
-                                    + ": " + MoneyCounter.CurrentLevelGroupMoney;
+            m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
             m_ButtonContinue.gameObject.SetActive(false);
@@ -197,10 +198,12 @@ namespace RMAZOR.UI.Panels
             m_GetMoneyButtonText      = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
             m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
             m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
+            m_AnimMoneyIcon           = go.GetCompItem<Animator>("money_icon");
             m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
             m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
             m_Background              = go.GetCompItem<Image>("background");
             m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
+            m_TriggererMoneyIcon      = go.GetCompItem<AnimationTriggerer>("money_icon");
         }
         
         private void LocalizeTextObjectsOnLoad()
@@ -214,9 +217,8 @@ namespace RMAZOR.UI.Panels
                 m_TitleText, ETextType.MenuUI, "stage_finished",
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture)));
             locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MoneyCountText, ETextType.MenuUI, "reward",
-                _S => _S.ToUpper(CultureInfo.CurrentUICulture) 
-                      + ": " + MoneyCounter.CurrentLevelGroupMoney));
+                m_RewardText, ETextType.MenuUI, "reward",
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture) + ":"));
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_MultiplyButtonText, ETextType.MenuUI, "multiply",
                 _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
@@ -240,9 +242,34 @@ namespace RMAZOR.UI.Panels
             m_ButtonSkip.onClick.AddListener(              OnSkipButtonPressed);
             m_ButtonContinue.onClick.AddListener(          OnContinueButtonPressed);
             m_Triggerer.Trigger1                        += OnStartAppearingAnimationFinished;
+            m_TriggererMoneyIcon.Trigger1               += OnMoneyItemAnimTrigger1;
+            m_TriggererMoneyIcon.Trigger2               += OnMoneyItemAnimTrigger2;
             m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
         }
+
+        private void OnMoneyItemAnimTrigger1()
+        {
+            long prevMoneyCount = MoneyCounter.CurrentLevelGroupMoney;
+            Cor.Run(Cor.Lerp(
+                Ticker, 
+                0.7f, 
+                MoneyCounter.CurrentLevelGroupMoney,
+                MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient,
+                _P =>
+                {
+                    long newMoneyCount = (long) _P;
+                    if (newMoneyCount == prevMoneyCount)
+                        return;
+                    m_MoneyCountText.text = newMoneyCount.ToString();
+                    prevMoneyCount = (long) _P;
+                }));
+        }
         
+        private void OnMoneyItemAnimTrigger2()
+        {
+            m_MoneyIcon.sprite = m_SpriteMoneyMultiplied;
+        }
+
         private void IndicateAdsLoading(bool _Indicate)
         {
             if (AppearingState != EAppearingState.Appearing
@@ -276,10 +303,7 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             m_WheelPanelView.HighlightCurrentCoefficient();
-            long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
-            string rewardWord = Managers.LocalizationManager.GetTranslation("reward").ToUpper();
-            m_MoneyCountText.text = rewardWord + ": " + reward;
-            m_MoneyIcon.sprite = m_SpriteMoneyMultiplied;
+            m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
             Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
             {
                 Multiply();

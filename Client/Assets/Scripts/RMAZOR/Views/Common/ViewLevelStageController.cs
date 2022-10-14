@@ -538,7 +538,7 @@ namespace RMAZOR.Views.Common
 
         private void UnlockAchievementLevelFinishedByIndex(long _LevelIndex)
         {
-            var achievementKey = AchievementKeys.GetLevelFinishedAchievementKey(_LevelIndex);
+            var achievementKey = AchievementKeys.GetLevelFinishedAchievementKey(_LevelIndex + 1);
             if (!achievementKey.HasValue)
                 return;
             Managers.ScoreManager.UnlockAchievement(achievementKey.Value);
