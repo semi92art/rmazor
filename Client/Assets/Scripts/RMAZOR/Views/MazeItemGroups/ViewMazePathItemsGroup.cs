@@ -131,7 +131,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         #region nonpublic methods
         
-        private void InitPoolsOnStart()
+        protected void InitPoolsOnStart()
         {
             PathsPool = new SpawnPool<IViewMazeItemPath>();
             var pathItems = Enumerable

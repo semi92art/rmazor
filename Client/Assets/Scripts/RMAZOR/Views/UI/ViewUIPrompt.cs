@@ -115,20 +115,31 @@ namespace RMAZOR.Views.UI
         {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.ReadyToStart when _Args.PreviousStage != ELevelStage.Paused && !m_InTutorial:
-                    ShowPromptSwipeToStart(); 
+                case ELevelStage.ReadyToStart
+                    when _Args.PreviousStage != ELevelStage.Paused && !m_InTutorial:
+                {
+                    ShowPromptSwipeToStart();
+                }
                     break;
-                case ELevelStage.StartedOrContinued when _Args.PreviousStage != ELevelStage.Paused:
-                    HidePrompt();             
+                case ELevelStage.StartedOrContinued 
+                    when _Args.PreviousStage != ELevelStage.Paused:
+                {
+                    HidePrompt();
+                }        
                     break;
-                case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
-                    if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) && MoneyCounter.CurrentLevelGroupMoney > 0)
-                        break;
+                case ELevelStage.Finished 
+                    when _Args.PreviousStage != ELevelStage.Paused
+                    && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) && MoneyCounter.CurrentLevelGroupMoney > 0:
+                {
                     ShopPromptTapToNext();
+                }
                     break;
-                case ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused 
-                                                         || _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel:
-                    HidePrompt();             
+                case ELevelStage.ReadyToUnloadLevel 
+                    when _Args.PreviousStage != ELevelStage.Paused 
+                         || _Args.PrePreviousStage == ELevelStage.ReadyToUnloadLevel:
+                {
+                    HidePrompt();
+                }    
                     break;
                 case ELevelStage.Loaded:
                 case ELevelStage.ReadyToStart:
@@ -245,17 +256,13 @@ namespace RMAZOR.Views.UI
                 loopTime * 2f,
                 _OnProgress: _P =>
                 {
-                    var firstColor = new Color(1f, 0.01f, 0f);
+                    var firstColor = Color.black;
                     var secondColor = ColorProvider.GetColor(ColorIds.UI);
                     m_CurrentPromptInfo.PromptText.color = Color.Lerp(firstColor, secondColor, _P);
                 },
                 _OnFinish:() => m_RunShowPromptCoroutine = true,
                 _BreakPredicate: () => m_CurrentPromptInfo == null || m_CurrentPromptInfo.NeedToHide,
-                _ProgressFormula: _P =>
-                {
-                    float p = _P < 0.5f ? 2f * _P : 2f * (1f - _P);
-                    return Mathf.Pow(p, 1.5f);
-                });
+                _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P));
         }
 
         #endregion

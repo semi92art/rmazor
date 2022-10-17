@@ -1,23 +1,18 @@
-﻿using System.Linq;
-using Common;
-using Common.Entities;
+﻿using Common;
 using Common.Helpers;
 using Common.Providers;
 using Common.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
-using RMAZOR.Models.MazeInfos;
-using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 {
-    public interface IViewMazeItemPath : 
+    public interface IViewMazeItemPath :
         IViewMazeItem,
         ICharacterMoveStarted, 
         ICharacterMoveContinued
@@ -30,7 +25,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
     {
         #region inject
         
-        protected IViewMazeMoneyItem MoneyItem { get; }
+        protected IViewMazeMoneyItem         MoneyItem { get; }
+        protected IViewMazeItemsPathInformer Informer  { get; }
 
         protected ViewMazeItemPathBase(
             ViewSettings                _ViewSettings,
@@ -42,7 +38,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             IManagersGetter             _Managers,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewMazeMoneyItem          _MoneyItem)
+            IViewMazeMoneyItem          _MoneyItem,
+            IViewMazeItemsPathInformer  _Informer)
             : base(
                 _ViewSettings,
                 _Model,
@@ -55,6 +52,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 _CommandsProceeder)
         {
             MoneyItem = _MoneyItem;
+            Informer  = _Informer;
         }
 
         #endregion
@@ -86,58 +84,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         protected void RaiseMoneyItemCollected()
         {
             MoneyItemCollected?.Invoke();
-        }
-        
-        protected Vector2 GetCornerAngles(bool _Right, bool _Up, bool _Inner)
-        {
-            if (_Right)
-            {
-                if (_Up)
-                    return _Inner ? new Vector2(0, 90) : new Vector2(180, 270);
-                return _Inner ? new Vector2(270, 360) : new Vector2(90, 180);
-            }
-            if (_Up)
-                return _Inner ? new Vector2(90, 180) : new Vector2(270, 360);
-            return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
-        }
-        
-        protected IMazeItemProceedInfo GetItemInfoByPositionAndType(V2Int _Position, EMazeItemType _Type)
-        {
-            return Model.GetAllProceedInfos()?
-                .FirstOrDefault(_Item => _Item.CurrentPosition == _Position
-                                         && _Item.Type == _Type); 
-        }
-        
-        protected bool TurretExist(V2Int _Position)
-        {
-            var info = GetItemInfoByPositionAndType(_Position, EMazeItemType.Turret);
-            return info != null;
-        }
-        
-        protected bool SpringboardExist(V2Int _Position)
-        {
-            var info = GetItemInfoByPositionAndType(_Position, EMazeItemType.Springboard);
-            return info != null;
-        }
-        
-        protected V2Int GetSpringboardDirection(V2Int _Position)
-        {
-            var info = GetItemInfoByPositionAndType(_Position, EMazeItemType.Springboard);
-            if (info != null) 
-                return info.Direction;
-            Dbg.LogError("Info cannot be null");
-            return default;
-        }
-        
-        protected bool PathExist(V2Int _Position)
-        {
-            return Model.PathItemsProceeder.PathProceeds.Keys.Contains(_Position);
-        }
-        
-        protected bool IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType _Type)
-        {
-            return Model.GetAllProceedInfos().Any(_I =>
-                _I.Type == _Type && _I.StartPosition == Props.Position);
         }
 
         #endregion

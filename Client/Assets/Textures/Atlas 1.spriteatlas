@@ -82,12 +82,14 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 345b73f2332d74049804a1dfbe958093, type: 3}
   - {fileID: 21300000, guid: 2340e003a4a6745a8929491f3b365cea, type: 3}
   - {fileID: 21300000, guid: 1f8bea132df1d364ebe0dcafbf9b47ec, type: 3}
+  - {fileID: 21300000, guid: 68d9683374310ea4b81293e2d85fec28, type: 3}
   - {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
   - {fileID: 21300000, guid: 03a52e934f88f4a699b498a51573c186, type: 3}
   - {fileID: 21300000, guid: 104912f320f7049fd8b3341edfd9093e, type: 3}
   - {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
   - {fileID: 21300000, guid: 7501cc34b94db9c48a876927ac5fc6f5, type: 3}
   - {fileID: 21300000, guid: cb37917483ee24fea8fab306393441e5, type: 3}
+  - {fileID: 21300000, guid: a8de53744fc12304ab6ad5fd132b3092, type: 3}
   - {fileID: 21300000, guid: ca50a09402afe4058a4d3267095049d2, type: 3}
   - {fileID: 21300000, guid: 2feaafe4e67104e6fbd6232e8f31f297, type: 3}
   - {fileID: 21300000, guid: 8233dff429464498185129b2457a136a, type: 3}
@@ -208,12 +210,14 @@ SpriteAtlas:
   - Star_4_4_bw
   - Icon_ShopIcon_Gold1
   - icon_circle
+  - Icon_Heart_2.Png
   - Icon_Reward_Pass_gold 1
   - Label_TitleRibbon_Yellow
   - Icon_LanguageFlag_Large_Tha
   - Icon_ShopIcon_Gold3
   - VFX_Circle
   - Btn_MainButton_Green
+  - Icon_Heart
   - Icon_LanguageFlag_Large_Ukr
   - Popup_Frame01_Purple
   - fx_special_particle_white

@@ -6,6 +6,8 @@ namespace Common.Extensions
 {
     public static class ShapesExtensions
     {
+        #region shape renderer
+
         public static T SetBlendMode<T>(this T _Shape, ShapesBlendMode _BlendMode) where T : ShapeRenderer
         {
             _Shape.BlendMode = _BlendMode;
@@ -108,6 +110,10 @@ namespace Common.Extensions
             return _Shape;
         }
 
+        #endregion
+
+        #region disc
+
         public static Disc SetType(this Disc _Disc, DiscType _DiscType)
         {
             _Disc.Type = _DiscType;
@@ -162,6 +168,10 @@ namespace Common.Extensions
             return _Disc;
         }
 
+        #endregion
+
+        #region rectangle
+
         public static Rectangle SetType(this Rectangle _Rectangle, Rectangle.RectangleType _RectangleType)
         {
             _Rectangle.Type = _RectangleType;
@@ -209,6 +219,10 @@ namespace Common.Extensions
             return _R;
         }
 
+        #endregion
+
+        #region line
+
         public static Line SetThickness(this Line _Line, float _Thickness)
         {
             _Line.Thickness = _Thickness;
@@ -238,6 +252,10 @@ namespace Common.Extensions
             return _Line;
         }
 
+        #endregion
+
+        #region triangle
+        
         public static Triangle SetRoundness(this Triangle _Triangle, float _Roundness)
         {
             _Triangle.Roundness = _Roundness;
@@ -255,5 +273,39 @@ namespace Common.Extensions
             _Triangle.Thickness = _Thickness;
             return _Triangle;
         }
+        
+        #endregion
+
+
+        #region regular polygon
+
+        public static RegularPolygon SetSides(this RegularPolygon _RegularPolygon, int _Sides)
+        {
+            _RegularPolygon.Sides = _Sides;
+            return _RegularPolygon;
+        }
+        
+        public static RegularPolygon SetRadius(this RegularPolygon _RegularPolygon, float _Radius)
+        {
+            _RegularPolygon.Radius = _Radius;
+            return _RegularPolygon;
+        }
+        
+        public static RegularPolygon SetRoundness(this RegularPolygon _RegularPolygon, float _Roundness)
+        {
+            _RegularPolygon.Roundness = _Roundness;
+            return _RegularPolygon;
+        }
+
+        public static RegularPolygon SetAngle(this RegularPolygon _RegularPolygon, float _Angle)
+        {
+            _RegularPolygon.Angle = _Angle;
+            return _RegularPolygon;
+        }
+
+        #endregion
+        
+        
+
     }
 }

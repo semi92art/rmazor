@@ -75,12 +75,12 @@ namespace RMAZOR.Views.Common
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
+            if (_Args.Args.Contains("set_back_editor"))
+                return;
             var info = Model.Data.Info;
             var groups = GeometryInitializer.GetGroups(info);
             GroupsCollected?.Invoke(groups);
             Drawer.Draw(groups, _Args.LevelIndex);
-            if (_Args.Args.Contains("set_back_editor"))
-                return;
             Drawer.Appear(true);
         }
         

@@ -77,8 +77,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     props.IsMoneyItem = true;
                 }
                 var pathItemInPool = _PathPool.FirstInactive;
-                pathItemInPool.UpdateState(props);
                 _PathPool.Activate(pathItemInPool);
+                pathItemInPool.UpdateState(props);
             }
         }
 

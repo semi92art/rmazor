@@ -93,7 +93,7 @@ namespace RMAZOR.Views.MazeItems
         
         public virtual GameObject Object { get; protected set; }
         
-        public virtual EAppearingState AppearingState { get; set; }
+        public virtual EAppearingState AppearingState { get; protected set; }
         public virtual EProceedingStage ProceedingStage { get; set; }
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
@@ -118,18 +118,22 @@ namespace RMAZOR.Views.MazeItems
                     throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
-        
+
+        public override void Init()
+        {
+            if (Initialized)
+                return;
+            GameTicker.Register(this);
+            ColorProvider.ColorChanged += OnColorChanged;
+            Object = new GameObject(ObjectName);
+            InitShape();
+            base.Init();
+        }
+
         public virtual void UpdateState(ViewMazeItemProps _Props)
         {
             Props = _Props;
-            if (!Initialized)
-            {
-                GameTicker.Register(this);
-                ColorProvider.ColorChanged += OnColorChanged;
-                Object = new GameObject(ObjectName);
-                InitShape();
-                Init();
-            }
+            Init();
             Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             UpdateShape();
@@ -183,9 +187,10 @@ namespace RMAZOR.Views.MazeItems
 
         protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
+            var col = ColorProvider.GetColor(ColorIds.MazeItem1);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {Renderers, () => ColorProvider.GetColor(ColorIds.MazeItem1)}
+                {Renderers, () => col}
             };
         }
 

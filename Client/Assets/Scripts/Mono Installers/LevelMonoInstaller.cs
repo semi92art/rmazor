@@ -137,13 +137,17 @@ namespace Mono_Installers
 
         private void BindMazeItemBlocksAndGroups()
         {
+            Container.Bind<IViewMazeItemPathExtraBorders1>().To<ViewMazeItemPathExtraBorders1>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBorders2>().To<ViewMazeItemPathExtraBorders2>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBorders3>().To<ViewMazeItemPathExtraBorders3>().AsSingle();
+            Container.Bind<IViewMazeItemsPathInformer>().To<ViewMazeItemsPathInformer>().AsTransient();
             switch (CommonData.GameId)
             {
                 case GameIds.RMAZOR:
-                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathFilledWithAdditionalBorders>().AsSingle();
+                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathRmazor>().AsSingle();
                     break;
                 case GameIds.ZMAZOR:
-                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathWithAdditionalBorders>().AsSingle();
+                    Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathRmazor>().AsSingle();
                     break;
             }
             Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
@@ -161,7 +165,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemSpear>()             .To<ViewMazeItemSpear>()                .AsSingle();
             Container.Bind<IViewMazeItemDiode>()             .To<ViewMazeItemDiode>()                .AsSingle();
             
-            Container.Bind<IViewMazePathItemsGroup>()        .To<ViewMazePathItemsFilledWithAdditionalBordersGroup>().AsSingle();
+            Container.Bind<IViewMazePathItemsGroup>()        .To<ViewMazePathItemsGroupRmazor>().AsSingle();
             Container.Bind<IViewMazeMovingItemsGroup>()      .To<ViewMazeMovingItemsGroup>()         .AsSingle();
             Container.Bind<IViewMazeShredingerBlocksGroup>() .To<ViewMazeShredingerBlocksGroup>()    .AsSingle();
             Container.Bind<IViewMazeTurretsGroup>()          .To<ViewMazeTurretsGroup>()             .AsSingle();

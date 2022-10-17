@@ -34,7 +34,7 @@ MonoBehaviour:
   betweenLevelTransitionTime: 1
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
-  additionalBackTexturesInUse: 1
+  additionalBackTexturesInUse: 1,3,5
   filledPathAlpha: 1
   additionalBackgroundAlpha: 0.5
   skipLevelSeconds: 10

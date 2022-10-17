@@ -27,60 +27,87 @@ namespace RMAZOR.Models
             out V2Int?                          _BlockPositionWhoStopped)
         {
             _BlockPositionWhoStopped = null;
-            bool isNode = false;
-            for (int i = 0; i < _PathItems.Count; i++)
-            {
-                if (_PathItems[i] != _NextPosition)
-                    continue;
-                isNode = true;
-                break;
-            }
-            if (!isNode)
-            {
-                for (int i = 0; i < _ProceedInfos.Count; i++)
-                {
-                    var info = _ProceedInfos[i];
-                    if (info.CurrentPosition != _NextPosition)
-                        continue;
-                    if (info.Type != EMazeItemType.Portal)
-                        continue;
-                    return true;
-                }
-                return false;
-            }
-            IMazeItemProceedInfo shredinger = null;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.Type != EMazeItemType.ShredingerBlock)
-                    continue;
-                if (info.CurrentPosition != _NextPosition)
-                    continue;
-                shredinger = info;
-                break;
-            }
+            if (!IsPathNodeOnPosition(_NextPosition, _PathItems))
+                return IsPortalOnPosition(_NextPosition, _ProceedInfos);
+            IMazeItemProceedInfo shredinger = ShredingerOnPosition(_NextPosition, _ProceedInfos);
             if (shredinger != null)
             {
                 _BlockPositionWhoStopped = _NextPosition;
                 return shredinger.ProceedingStage == ModelCommonData.StageIdle;
             }
-            IMazeItemProceedInfo diode = null;
-            for (int i = 0; i < _ProceedInfos.Count; i++)
-            {
-                var info = _ProceedInfos[i];
-                if (info.Type != EMazeItemType.Diode)
-                    continue;
-                if (info.CurrentPosition != _NextPosition)
-                    continue;
-                diode = info;
-                break;
-            }
+            IMazeItemProceedInfo diode = DiodeOnPosition(_NextPosition, _ProceedInfos);
             if (diode != null)
             {
                 _BlockPositionWhoStopped = _NextPosition;
                 bool nextPosIsInvalid = diode.Direction == -_NextPosition + _CurrentPosition;
                 return !nextPosIsInvalid;
             }
+            if (IsOtherMazeItemOnPosition(_NextPosition, _ProceedInfos))
+                return false;
+            if (IsBusyMazeItemOnPosition(_NextPosition, _ProceedInfos))
+                return false;
+            if (IsSpringboardOnPosition(_CurrentPosition, _From, _ProceedInfos))
+                return false;
+            bool isPrevPortal = IsPortalOnPosition(_CurrentPosition, _ProceedInfos);
+            bool isStartFromPortal = IsStartFromPortal(_From, _ProceedInfos);
+            return !isPrevPortal || isStartFromPortal;
+        }
+
+        private static bool IsPathNodeOnPosition(
+            V2Int                _Position,
+            IReadOnlyList<V2Int> _PathItems)
+        {
+            bool isNode = false;
+            for (int i = 0; i < _PathItems.Count; i++)
+            {
+                if (_PathItems[i] != _Position)
+                    continue;
+                isNode = true;
+                break;
+            }
+            return isNode;
+        }
+
+        private static IMazeItemProceedInfo ShredingerOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            IMazeItemProceedInfo shredinger = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.ShredingerBlock)
+                    continue;
+                if (info.CurrentPosition != _Position)
+                    continue;
+                shredinger = info;
+                break;
+            }
+            return shredinger;
+        }
+        
+        private static IMazeItemProceedInfo DiodeOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            IMazeItemProceedInfo diode = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.Diode)
+                    continue;
+                if (info.CurrentPosition != _Position)
+                    continue;
+                diode = info;
+                break;
+            }
+            return diode;
+        }
+
+        private static bool IsOtherMazeItemOnPosition(
+            V2Int                               _NextPosition,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
             bool isMazeItem = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
             {
@@ -94,8 +121,13 @@ namespace RMAZOR.Models
                 isMazeItem = true;
                 break;
             }
-            if (isMazeItem)
-                return false;
+            return isMazeItem;
+        }
+        
+        private static bool IsBusyMazeItemOnPosition(
+            V2Int                               _NextPosition,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
             bool isBuzyMazeItem = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
             {
@@ -115,35 +147,52 @@ namespace RMAZOR.Models
                 isBuzyMazeItem = true;
                 break;
             }
-            if (isBuzyMazeItem)
+            return isBuzyMazeItem;
+        }
+
+        private static bool IsSpringboardOnPosition(
+            V2Int                               _Position,
+            V2Int                               _From,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            if (_Position == _From)
                 return false;
-            bool isPrevSpringboard = false;
-            if (_CurrentPosition != _From)
-            {
-                for (int i = 0; i < _ProceedInfos.Count; i++)
-                {
-                    var info = _ProceedInfos[i];
-                    if (info.CurrentPosition != _CurrentPosition)
-                        continue;
-                    if (info.Type != EMazeItemType.Springboard)
-                        continue;
-                    isPrevSpringboard = true;
-                    break;
-                }
-            }
-            if (isPrevSpringboard)
-                return false;
-            bool isPrevPortal = false;
+            bool isSpringboard = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
             {
                 var info = _ProceedInfos[i];
-                if (info.CurrentPosition != _CurrentPosition)
+                if (info.CurrentPosition != _Position)
+                    continue;
+                if (info.Type != EMazeItemType.Springboard)
+                    continue;
+                isSpringboard = true;
+                break;
+            }
+            return isSpringboard;
+        }
+
+        private static bool IsPortalOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            bool isPortal = false;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.CurrentPosition != _Position)
                     continue;
                 if (info.Type != EMazeItemType.Portal)
                     continue;
-                isPrevPortal = true;
+                isPortal = true;
                 break;
             }
+            return isPortal;
+        }
+
+        private static bool IsStartFromPortal(
+            V2Int                               _From,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
             bool isStartFromPortal = false;
             for (int i = 0; i < _ProceedInfos.Count; i++)
             {
@@ -155,7 +204,7 @@ namespace RMAZOR.Models
                 isStartFromPortal = true;
                 break;
             }
-            return !isPrevPortal || isStartFromPortal;
+            return isStartFromPortal;
         }
     }
 }

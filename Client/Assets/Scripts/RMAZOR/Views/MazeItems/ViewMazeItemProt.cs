@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -19,7 +20,7 @@ using UnityEngine;
 namespace RMAZOR.Views.MazeItems
 {
     [ExecuteInEditMode, Serializable, SelectionBase]
-    public partial class ViewMazeItemProt : MonoBehaviour, IViewMazeItem
+    public partial class ViewMazeItemProt : MonoBehInitBase, IViewMazeItem
     {
         #region serialized fields
 

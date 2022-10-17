@@ -1,13 +1,12 @@
 ﻿using Common;
 using Common.Ticker;
 using Lean.Common;
-using RMAZOR.Managers;
 using RMAZOR.Models;
 using UnityEngine;
 
 namespace RMAZOR.Views.InputConfigurators
 {
-    public class ViewCommandsProceederInEditor : ViewInputCommandsProceeder, IUpdateTick
+    public class ViewCommandsProceederInEditor : ViewInputCommandsProceeder
     {
         #region nonpublic members
 
@@ -65,13 +64,13 @@ namespace RMAZOR.Views.InputConfigurators
 
         private static void ProceedMovement(ref EInputCommand? _CommandKey)
         {
-            if (LeanInput.GetDown(KeyCode.A))
+            if (LeanInput.GetDown(KeyCode.A) || LeanInput.GetDown(KeyCode.LeftArrow))
                 _CommandKey = EInputCommand.MoveLeft;
-            else if (LeanInput.GetDown(KeyCode.D))
+            else if (LeanInput.GetDown(KeyCode.D) || LeanInput.GetDown(KeyCode.RightArrow))
                 _CommandKey = EInputCommand.MoveRight;
-            else if (LeanInput.GetDown(KeyCode.W))
+            else if (LeanInput.GetDown(KeyCode.W) || LeanInput.GetDown(KeyCode.UpArrow))
                 _CommandKey = EInputCommand.MoveUp;
-            else if (LeanInput.GetDown(KeyCode.S))
+            else if (LeanInput.GetDown(KeyCode.S) || LeanInput.GetDown(KeyCode.DownArrow))
                 _CommandKey = EInputCommand.MoveDown;
         }
 

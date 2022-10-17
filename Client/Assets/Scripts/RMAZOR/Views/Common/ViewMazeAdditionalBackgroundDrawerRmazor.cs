@@ -36,7 +36,7 @@ namespace RMAZOR.Views.Common
         
         private const int   TextureRenderersCount  = 3;
         private const float BorderRelativeIndent   = 0.5f;
-        private const float BorderScaleCoefficient = 2f;
+        private const float BorderScaleCoefficient = 1.3f;
         private const float CornerScaleCoefficient = 4f;
 
         private const int   CornersDashSize = 4;
@@ -124,11 +124,11 @@ namespace RMAZOR.Views.Common
                 .SetA(ViewSettings.additionalBackgroundAlpha);
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {m_Borders.GetAllActiveItems(), () => mainCol},
+                {m_Borders.GetAllActiveItems(),  () => mainCol},
                 {m_Borders2.GetAllActiveItems(), () => mainCol},
-                {m_Corners.GetAllActiveItems(), () => mainCol},
+                {m_Corners.GetAllActiveItems(),  () => mainCol},
                 {m_Corners2.GetAllActiveItems(), () => mainCol.SetA(Corners2Alpha)},
-                {new[] {m_TextureRendererBack}, () => back1Col},
+                {new[] {m_TextureRendererBack},  () => back1Col},
                 {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
             Transitioner.DoAppearTransition(_Appear, dict,
