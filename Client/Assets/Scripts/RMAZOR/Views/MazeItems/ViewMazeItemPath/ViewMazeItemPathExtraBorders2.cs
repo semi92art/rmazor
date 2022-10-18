@@ -5,7 +5,6 @@ using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
-using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
@@ -83,7 +82,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             CoordinateConverter,
             ContainersGetter,
             ColorProvider,
-            Informer);
+            Informer.Clone() as IViewMazeItemsPathInformer);
 
         public override void EnableInitializedShapes(bool _Enable)
         {
@@ -100,10 +99,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             {
                 if (!_Inited) 
                     return;
-                foreach (var rect in _Rectangles
-                    .Where(_Rect => _Rect.Color.a > MathUtils.Epsilon))
+                foreach (var rect in _Rectangles)
                 {
-                    rect.Color = col;
+                    if (rect.enabled)
+                        rect.Color = col;
                 }
             }
             SetRectsColor(LeftExtraBordersInited,   m_LeftRectangles);
@@ -118,8 +117,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             {
                 if (!_Inited) 
                     return;
-                foreach (var rect in _Rectangles
-                    .Where(_Rect => _Rect.Color.a > MathUtils.Epsilon))
+                foreach (var rect in _Rectangles)
                 {
                     rect.enabled = false;
                 }
@@ -175,8 +173,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             {
                 if (!_Inited) 
                     return;
-                foreach (var rect in _Rectangles
-                    .Where(_Rect => _Rect.Color.a > MathUtils.Epsilon))
+                foreach (var rect in _Rectangles)
                 {
                     float alphaChannel = Informer.IsBorderNearTrapReact(_Direction)
                                          || Informer.IsBorderNearTrapIncreasing(_Direction)
@@ -221,9 +218,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             rects[0].transform.SetPosXY(positions[0]);
             rects[1].transform.SetPosXY(positions[1]);
             rects[2].transform.SetPosXY(positions[2]);
-            foreach (var rect in rects)
-                rect.enabled = false;
-            
             switch (_Side)
             {
                 case EMazeMoveDirection.Left:  m_LeftRectangles   = rects; LeftExtraBordersInited   = true; break;

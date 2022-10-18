@@ -84,7 +84,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             CoordinateConverter,
             ContainersGetter,
             ColorProvider,
-            Informer);
+            Informer.Clone() as IViewMazeItemsPathInformer);
 
         public override void EnableInitializedShapes(bool _Enable)
         {
@@ -97,10 +97,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override void HighlightBordersAndCorners()
         {
             var col = Informer.GetHighlightColor();
-            if (LeftExtraBordersInited   && m_LeftBorder  .Color.a > MathUtils.Epsilon) m_LeftBorder  .Color = col;
-            if (RightExtraBordersInited  && m_RightBorder .Color.a > MathUtils.Epsilon) m_RightBorder .Color = col;
-            if (BottomExtraBordersInited && m_BottomBorder.Color.a > MathUtils.Epsilon) m_BottomBorder.Color = col;
-            if (TopExtraBordersInited    && m_TopBorder   .Color.a > MathUtils.Epsilon) m_TopBorder   .Color = col;
+            if (LeftExtraBordersInited   && m_LeftBorder  .enabled) m_LeftBorder  .Color = col;
+            if (RightExtraBordersInited  && m_RightBorder .enabled) m_RightBorder .Color = col;
+            if (BottomExtraBordersInited && m_BottomBorder.enabled) m_BottomBorder.Color = col;
+            if (TopExtraBordersInited    && m_TopBorder   .enabled) m_TopBorder   .Color = col;
         }
 
         public override void DrawBorders()
@@ -248,7 +248,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             (border.Start, border.End) = GetAdditionalBorderPoints(_Side, false, false);
             border.transform.position = ContainersGetter.GetContainer(
                 ContainerNames.MazeItems).transform.position;
-            border.enabled = false;
             switch (_Side)
             {
                 case EMazeMoveDirection.Left:  m_LeftBorder   = border; LeftExtraBordersInited   = true; break;

@@ -13,7 +13,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 {
-    public interface IViewMazeItemsPathInformer
+    public interface IViewMazeItemsPathInformer : ICloneable
     {
         Func<ViewMazeItemProps> GetProps { set; }
         bool                    IsBorderNearTrapReact(EMazeMoveDirection      _Side);
@@ -62,12 +62,23 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         
         public Func<ViewMazeItemProps> GetProps { private get; set; }
         
+        public object Clone()
+        {
+            var @object = new ViewMazeItemsPathInformer(
+                Model,
+                ViewSettings,
+                ColorProvider,
+                ViewGameTicker);
+            @object.GetProps = null;
+            return @object;
+        }
+
         public bool IsBorderNearTrapReact(EMazeMoveDirection _Side)
         {
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
-                _Item.CurrentPosition == GetProps().Position + dir
-                && _Item.Type == EMazeItemType.TrapReact 
+                _Item.Type == EMazeItemType.TrapReact 
+                && _Item.StartPosition == GetProps().Position + dir
                 && _Item.Direction == -dir);
         }
 
@@ -168,8 +179,13 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         
         public bool MustInitBorder(EMazeMoveDirection _Side)
         {
-            var pos = GetProps().Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
-            return !TurretExist(pos) && !PathExist(pos) && !IsBorderNearTrapIncreasing(_Side) &&
+            var pathPos = GetProps().Position;
+            var pos2 = GetProps().Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
+            bool b1 = TurretExist(pos2);
+            bool b2 = PathExist(pos2);
+            bool b3 = IsBorderNearTrapIncreasing(_Side);
+            bool b4 = IsBorderNearTrapReact(_Side);
+            return !TurretExist(pos2) && !PathExist(pos2) && !IsBorderNearTrapIncreasing(_Side) &&
                    !IsBorderNearTrapReact(_Side);
         }
         

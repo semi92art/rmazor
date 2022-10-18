@@ -129,8 +129,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Managers,
             ColorProvider,
             CommandsProceeder,
-            MoneyItem.Clone() as IViewMazeMoneyItem,
-            Informer,
+            MoneyItem    .Clone() as IViewMazeMoneyItem,
+            Informer     .Clone() as IViewMazeItemsPathInformer,
             ExtraBorders1.Clone() as IViewMazeItemPathExtraBorders1, 
             ExtraBorders2.Clone() as IViewMazeItemPathExtraBorders2,
             ExtraBorders3.Clone() as IViewMazeItemPathExtraBorders3);
