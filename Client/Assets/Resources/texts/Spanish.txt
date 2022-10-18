@@ -79,3 +79,4 @@ tut_title_spear = Nuevo bloque: lanza
 tut_title_diode = Nuevo bloque: diodo
 get = obtener
 revive? = ¿reanimar?
+empty_key = 

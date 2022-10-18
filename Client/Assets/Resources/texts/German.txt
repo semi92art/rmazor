@@ -79,3 +79,4 @@ tut_title_spear = neuer Block: Speer
 tut_title_diode = neuer Block: Diode
 get = erhalten
 revive? = beleben?
+empty_key = 

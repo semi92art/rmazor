@@ -197,6 +197,7 @@ namespace RMAZOR.UI.Panels
             m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
             m_GetMoneyButtonText      = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
             m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
+            m_RewardText              = go.GetCompItem<TextMeshProUGUI>("reward_text");
             m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
             m_AnimMoneyIcon           = go.GetCompItem<Animator>("money_icon");
             m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
@@ -221,6 +222,9 @@ namespace RMAZOR.UI.Panels
                 _S => _S.ToUpper(CultureInfo.CurrentUICulture) + ":"));
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_MultiplyButtonText, ETextType.MenuUI, "multiply",
+                _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_MoneyCountText, ETextType.MenuUI, "empty_key",
                 _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
             string getMoneyButtonTextLocKey = ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant switch
             {

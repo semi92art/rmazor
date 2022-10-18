@@ -79,3 +79,4 @@ tut_title_spear = Новый блок: копье
 tut_title_diode = Новый блок: диод
 get = Получить
 revive? = Оживить?
+empty_key = 

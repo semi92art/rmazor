@@ -79,3 +79,4 @@ tut_title_spear = 新しいブロック：槍
 tut_title_diode = 新しいブロック：ダイオード
 get = 得る
 revive? = 復活しますか？
+empty_key = 
