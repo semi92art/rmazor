@@ -20,9 +20,9 @@ namespace Common.Utils
         public static PrefabSetScriptableObject GetPrefabSet(string _PrefabSetName)
         {
             PrefabSetScriptableObject set = null;
-            // FIXME скрываем ошибку "GetCount is not allowed to be called during serialization..."
-            // https://docs.unity3d.com/Manual/script-Serialization-Errors.html
-            Dbg.LogZone(ELogLevel.Nothing, () =>
+            // скрываем ошибку "GetCount is not allowed to be called during serialization..."
+            // https://docs.unity3d.com/560/Documentation/Manual/script-Serialization-Errors.html
+            Dbg.LogZone(ELogLevel.Warning, () =>
             {
                 set = Resources.Load<PrefabSetScriptableObject>($"{PrefabSetsLocalPath}/{_PrefabSetName}");
             });

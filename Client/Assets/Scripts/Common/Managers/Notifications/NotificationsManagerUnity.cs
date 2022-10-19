@@ -313,7 +313,14 @@ namespace Common.Managers.Notifications
             {
                 Platform.OnBackground();
                 QueueFutureDatesNotifications();
-                SaveFutureDatesNotifications();
+                try
+                {
+                    SaveFutureDatesNotifications();
+                }
+                catch (Exception ex)
+                {
+                    Dbg.Log(ex);
+                }
             }
         }
 

@@ -86,16 +86,7 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             var item = Common.GetItem<IViewMazeItemTurret>(_Args.Info);
             item?.Shoot(_Args);
-            // FIXME ебаный костыль. Требуется более разумный вызов хаптиков и звуков заодно.
-            if (!m_IsHapticPause)
-            {
-                Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
-                m_IsHapticPause = true;
-                Cor.Run(Cor.Delay(
-                    0.5f,
-                    GameTicker,
-                    () => m_IsHapticPause = false));
-            }
+            Managers.HapticsManager.PlayPreset(EHapticsPresetType.Selection);
         }
 
         #endregion

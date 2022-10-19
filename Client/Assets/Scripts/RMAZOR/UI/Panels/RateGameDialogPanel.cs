@@ -109,10 +109,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             m_StarsAnimator.SetTrigger(AnimKeys.Anim);
-            Cor.Run(Cor.WaitNextFrame(() =>
-            {
-                CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
-            }));
+            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogStartAppearing();
         }
 

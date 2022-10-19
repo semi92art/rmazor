@@ -96,7 +96,7 @@ namespace Common.Utils
         {
 #if UNITY_EDITOR
             EditorUtility.DisplayDialog(_Title, _Text, "OK");
-// #elif UNITY_ANDROID // TODO нахуя я это закоментил? я не помню
+#elif UNITY_ANDROID
             var message = new SA.Android.App.AN_AlertDialog(SA.Android.App.AN_DialogTheme.Material)
             {
                 Title = _Title,
@@ -104,7 +104,7 @@ namespace Common.Utils
             };
             message.SetPositiveButton("Ok", () => { });
             message.Show();
-// #elif UNITY_IPHONE || UNITY_IOS
+#elif UNITY_IPHONE || UNITY_IOS
             var alert = new SA.iOS.UIKit.ISN_UIAlertController(
                 _Title, _Text, SA.iOS.UIKit.ISN_UIAlertControllerStyle.Alert);
             var action = new SA.iOS.UIKit.ISN_UIAlertAction(

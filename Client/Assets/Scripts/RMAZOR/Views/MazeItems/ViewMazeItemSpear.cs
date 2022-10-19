@@ -511,7 +511,6 @@ namespace RMAZOR.Views.MazeItems
         
         private void StopProjectile()
         {
-            // FIXME тут может быть много лишнего
             m_ProjectileRb.velocity = Vector2.zero;
             m_ProjectileRb.SetGoActive(false);
             m_ProjectileRb.transform.SetParent(m_ProjectileContainerOnFly);

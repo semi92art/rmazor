@@ -26,6 +26,8 @@ namespace Common.Utils
         {
             if (_Coroutine == null)
                 return;
+            if (_coroutineRunnerMonoBeh.isDestroyed)
+                return;
             var facade = FacadeCoroutine(_Coroutine);
             _coroutineRunnerMonoBeh.StartCoroutine(facade);
         }
@@ -33,6 +35,8 @@ namespace Common.Utils
         public static void Stop(IEnumerator _Coroutine)
         {
             if (_Coroutine == null)
+                return;
+            if (_coroutineRunnerMonoBeh.isDestroyed)
                 return;
             RunningCoroutines.Remove(_Coroutine);
             _coroutineRunnerMonoBeh.StopCoroutine(_Coroutine);

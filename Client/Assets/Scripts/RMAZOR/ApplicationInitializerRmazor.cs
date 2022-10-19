@@ -380,7 +380,7 @@ namespace RMAZOR
                 SystemLanguage.German     => ELanguage.German,
                 SystemLanguage.Spanish    => ELanguage.Spanish,
                 SystemLanguage.Portuguese => ELanguage.Portugal,
-                SystemLanguage.Japanese   => ELanguage.Japaneese,
+                SystemLanguage.Japanese   => ELanguage.Japanese,
                 SystemLanguage.Korean     => ELanguage.Korean,
                 _                         => ELanguage.English
             };

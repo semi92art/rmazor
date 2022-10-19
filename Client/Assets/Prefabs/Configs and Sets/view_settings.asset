@@ -47,3 +47,4 @@ MonoBehaviour:
   levelsInGroup: 3,3,3
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
   finishLevelGroupPanelBackgroundVariant: 1
+  extraBordersIndices: 1,2,3

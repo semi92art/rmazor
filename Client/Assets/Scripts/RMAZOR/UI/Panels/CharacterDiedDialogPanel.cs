@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -199,12 +201,9 @@ namespace RMAZOR.UI.Panels
                     m_MoneyInBankText.text = m_MoneyCount.ToString();
                     SetBankIsLoaded();
                 }));
-            Cor.Run(Cor.WaitNextFrame(() =>
-            {
-                CommandsProceeder.LockCommands(
-                    new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
-                    nameof(ICharacterDiedDialogPanel));
-            }));
+            CommandsProceeder.LockCommands(
+                GetCommandsToLock(),
+                nameof(ICharacterDiedDialogPanel));
             base.OnDialogStartAppearing();
         }
 
@@ -212,7 +211,7 @@ namespace RMAZOR.UI.Panels
         {
             m_PanelShowing = false;
             CommandsProceeder.UnlockCommands(
-                new [] { EInputCommand.ShopMenu, EInputCommand.SettingsMenu},
+                GetCommandsToLock(),
                 nameof(ICharacterDiedDialogPanel));
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, "all");
             base.OnDialogDisappeared();
@@ -315,6 +314,16 @@ namespace RMAZOR.UI.Panels
                 EInputCommand.ReadyToStartLevel,
                 null, 
                 true);
+        }
+        
+        private static IEnumerable<EInputCommand> GetCommandsToLock()
+        {
+            return new[]
+                {
+                    EInputCommand.ShopMenu,
+                    EInputCommand.SettingsMenu
+                }
+                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
         
         #endregion

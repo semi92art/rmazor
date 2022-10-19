@@ -79,10 +79,6 @@ namespace Common.UI.DialogViewers
         {
             if (_Panel == null)
                 return;
-            // if (CurrentPanel != null 
-            //     && CurrentPanel.GetType() == _Panel.GetType()
-            //     && CurrentPanel.AppearingState == EAppearingState.Appeared)
-            //     return;
             CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
             base.Show(_Panel, _Speed, _HidePrevious);
             m_Alphas = CurrentPanel.PanelRectTransform

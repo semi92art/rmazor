@@ -331,19 +331,21 @@ namespace RMAZOR.Views
             if (RemotePropertiesRmazor.Notifications == null)
                 return;
             var notMan = Managers.NotificationsManager;
-            var notifications = RemotePropertiesRmazor.Notifications;
+            var notifications = RemotePropertiesRmazor.Notifications 
+                                ?? DefaultNotificationsGetter.GetNotifications();
             notMan.OperatingMode = Application.platform == RuntimePlatform.Android
                 ? ENotificationsOperatingMode.QueueClearAndReschedule
                 : ENotificationsOperatingMode.NoQueue;
             if (notMan.OperatingMode.HasFlag(ENotificationsOperatingMode.RescheduleAfterClearing))
                 notMan.LastNotificationsCountToReschedule = notifications.Count;
             notMan.ClearAllNotifications();
+            var currentLanguage = Managers.LocalizationManager.GetCurrentLanguage();
             foreach (var notification in notifications)
             {
                 notMan.SendNotification(
-                    notification.Message, 
-                    string.Empty, 
-                    notification.TimeSpan,
+                    notification.Title[currentLanguage], 
+                    notification.Body[currentLanguage], 
+                    notification.Span,
                     _Reschedule: Application.platform == RuntimePlatform.Android,
                     _SmallIcon: "small_notification_icon",
                     _LargeIcon: "large_notification_icon");
@@ -352,7 +354,6 @@ namespace RMAZOR.Views
 
         private static void ReloadGame()
         {
-            //TODO
             Application.Quit();
         }
         

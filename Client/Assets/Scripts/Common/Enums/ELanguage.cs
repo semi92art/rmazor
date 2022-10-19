@@ -7,7 +7,7 @@
         German,
         Spanish,
         Portugal,
-        Japaneese,
+        Japanese,
         Korean,
     }
 }

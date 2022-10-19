@@ -182,10 +182,6 @@ namespace RMAZOR.Views.UI
         
         private void CommandRotate(bool _Clockwise)
         {
-            // TODO
-            // if (BigDialogViewer.IsShowing || BigDialogViewer.IsInTransition)
-            //     return;
-
             var stage = Model.LevelStaging.LevelStage;
             if (stage != ELevelStage.ReadyToStart && stage != ELevelStage.StartedOrContinued)
                 return;

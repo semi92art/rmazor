@@ -42,7 +42,7 @@ namespace Common.Managers
                     ELanguage.German    => "montserrat_ace_regular",
                     ELanguage.Spanish   => "montserrat_ace_regular",
                     ELanguage.Portugal  => "montserrat_ace_regular",
-                    ELanguage.Japaneese => "japanese_game",
+                    ELanguage.Japanese  => "japanese_game",
                     ELanguage.Korean    => "korean_game",
                     _                   => throw new SwitchExpressionException(_Language)
                 },
@@ -53,7 +53,7 @@ namespace Common.Managers
                     ELanguage.German    => "efour_pro",
                     ELanguage.Spanish   => "efour_pro",
                     ELanguage.Portugal  => "efour_pro",
-                    ELanguage.Japaneese => "japanese_menu",
+                    ELanguage.Japanese  => "japanese_menu",
                     ELanguage.Korean    => "korean_menu",
                     _                   => throw new SwitchExpressionException(_Language)
                 },

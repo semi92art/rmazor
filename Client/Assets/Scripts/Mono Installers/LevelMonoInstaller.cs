@@ -140,6 +140,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemPathExtraBorders1>().To<ViewMazeItemPathExtraBorders1>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders2>().To<ViewMazeItemPathExtraBorders2>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders3>().To<ViewMazeItemPathExtraBorders3>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBordersSet>().To<ViewMazeItemPathExtraBordersSet>().AsSingle();
             Container.Bind<IViewMazeItemsPathInformer>().To<ViewMazeItemsPathInformer>().AsTransient();
             switch (CommonData.GameId)
             {

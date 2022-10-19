@@ -7,6 +7,7 @@ namespace Common.Helpers
 {
     public class CoroutinesRunnerMonoBeh : MonoBehaviour
     {
+        [HideInInspector] public          bool              isDestroyed;
         [HideInInspector] public volatile bool              mustRun;
         public readonly                   List<UnityAction> Actions = new List<UnityAction>();
 
@@ -26,6 +27,11 @@ namespace Common.Helpers
 
             Actions.Clear();
             mustRun = false;
+        }
+
+        private void OnDestroy()
+        {
+            isDestroyed = true;
         }
     }
 }

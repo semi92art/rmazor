@@ -11,9 +11,6 @@ using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.Notifications;
-using Common.Network;
-using Common.Network.Packets;
-using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
@@ -30,7 +27,6 @@ namespace Editor
     public class EditorHelperWindow : EditorWindow
     {
         private int                m_DailyBonusIndex;
-        // private int                m_TestUsersCount = 3;
         private string             m_DebugServerUrl;
         private string             m_TestUrlCheck;
         private int                m_TabPage;
@@ -236,24 +232,14 @@ namespace Editor
                 string json = JsonConvert.SerializeObject(set);
                 CommonUtils.CopyToClipboard(json);
             });
+
             EditorUtilsEx.GuiButtonAction("Default notifications set", () =>
             {
-                var set = new List<NotificationInfo>
-                {
-                    new NotificationInfo
-                    {
-                        Message = "",
-                        TimeSpan = new TimeSpan(1, 0, 0, 0),
-                    },
-                    new NotificationInfo
-                    {
-                        Message = "",
-                        TimeSpan = new TimeSpan(3, 0, 0, 0),
-                    }
-                };
+                var set = DefaultNotificationsGetter.GetNotifications();
                 string json = JsonConvert.SerializeObject(set);
                 CommonUtils.CopyToClipboard(json);
             });
+            
             EditorUtilsEx.GuiButtonAction("Default color grading props set", () =>
             {
                 var colorGradingProps = new ColorGradingProps
@@ -353,58 +339,5 @@ namespace Editor
                 {"Account id", GameClientUtils.AccountId.ToString()},
             };
         }
-
-        // private static void CreateTestUsers(int _Count)
-        // {
-        //     CommonData.Testing = true;
-        //     var gc = new GameClient(_globalGameSettings, new CommonTicker());
-        //     const int gameId = 1;
-        //     gc.Initialize += () =>
-        //     {
-        //         for (int i = 0; i < _Count; i++)
-        //         {
-        //             var packet = new RegisterUserPacket(
-        //                 new RegisterUserPacketRequestArgs
-        //                 {
-        //                     Name = $"{CommonUtils.GetUniqueId()}",
-        //                     PasswordHash = "test",
-        //                     GameId = gameId
-        //                 });
-        //             int ii = i;
-        //             packet.OnFail(() =>
-        //                 {
-        //                     Dbg.LogError($"Creating test user #{ii + 1} of {_Count} failed");
-        //                     Dbg.LogError(packet.Response);
-        //                 });
-        //
-        //             gc.Send(packet);
-        //         }
-        //     };
-        //     gc.Init();
-        // }
-        //
-        // private static void DeleteTestUsers()
-        // {
-        //     CommonData.Testing = true;
-        //     var gc = new GameClient(_globalGameSettings, new CommonTicker());
-        //     gc.Initialize += () =>
-        //     {
-        //         IPacket packet = new DeleteTestUsersPacket();
-        //         packet.OnSuccess(() =>
-        //             {
-        //                 Dbg.Log("All test users deleted");
-        //             })
-        //             .OnFail(() => Dbg.Log($"Failed to delete test users: {packet.ErrorMessage}"));
-        //         gc.Send(packet);
-        //     };
-        //     gc.Init();
-        // }
-        
-        // private void SetDefaultApiUrl()
-        // {
-        //     m_DebugServerUrl = @"http://77.37.152.15:7000";
-        //     UpdateTestUrl(true);
-        // }
-        
     }
 }

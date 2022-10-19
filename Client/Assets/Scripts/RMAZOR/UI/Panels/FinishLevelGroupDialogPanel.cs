@@ -156,10 +156,7 @@ namespace RMAZOR.UI.Panels
             m_ButtonSkip.interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
             m_ButtonContinue.gameObject.SetActive(false);
-            Cor.Run(Cor.WaitNextFrame(() =>
-            {
-                CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
-            }));
+            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
             m_WheelPanelView.ResetWheel();
             base.OnDialogStartAppearing();

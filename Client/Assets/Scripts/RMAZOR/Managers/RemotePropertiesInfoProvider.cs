@@ -88,7 +88,7 @@ namespace RMAZOR.Managers
 
                 new RemoteConfigPropertyInfo(filter, typeof(bool), "animate_path_fill",
                     _Value => Execute(
-                        _Value, _V => ViewSettings.animatePathFill = Convert.ToBoolean(_V))),
+                        _Value, _V => ViewSettings.animatePathFill = ToBool(_V))),
                 new RemoteConfigPropertyInfo(filter, typeof(float), "skip_button_seconds",
                     _Value => Execute(
                         _Value, _V => ViewSettings.skipLevelSeconds = ToFloat(_V))),
@@ -118,18 +118,21 @@ namespace RMAZOR.Managers
                         _Value, _V =>
                         {
                             ViewSettings.LevelsInGroup =
-                                JsonConvert.DeserializeObject<int[]>(Convert.ToString(_V));
+                                JsonConvert.DeserializeObject<int[]>(ToString(_V));
                         }),
                     true),
                 new RemoteConfigPropertyInfo(filter, typeof(bool), "show_full_tutorial",
                     _Value => Execute(
-                        _Value, _V => ViewSettings.showFullTutorial = Convert.ToBoolean(_V))),
+                        _Value, _V => ViewSettings.showFullTutorial = ToBool(_V))),
                 new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_get_money_button_text_variant",
                     _Value => Execute(
-                        _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = Convert.ToInt32(_V))),
+                        _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
                 new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_background_variant",
                     _Value => Execute(
-                        _Value, _V => ViewSettings.finishLevelGroupPanelBackgroundVariant = Convert.ToInt32(_V))),
+                        _Value, _V => ViewSettings.finishLevelGroupPanelBackgroundVariant = ToInt(_V))),
+                new RemoteConfigPropertyInfo(filter, typeof(string), "extra_borders_indices",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.extraBordersIndices = ToString(_V))),
                 
                 new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => Execute(
@@ -154,10 +157,10 @@ namespace RMAZOR.Managers
                     _Value => Execute(
                         _Value, _V => RemoteProperties.AdsProviders =
                         JsonConvert.DeserializeObject<IList<AdProviderInfo>>(_V.ToString()))),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "inapp_notifications_list",
+                new RemoteConfigPropertyInfo(filter, typeof(string), "inapp_notifications_list_v2",
                     _Value => Execute(
                         _Value, _V => RemoteProperties.Notifications =
-                        JsonConvert.DeserializeObject<IList<NotificationInfo>>(_V.ToString()))),
+                        JsonConvert.DeserializeObject<IList<NotificationInfoEx>>(_V.ToString()))),
                 new RemoteConfigPropertyInfo(filter, typeof(string), "additional_color_props_set",
                     _Value => Execute(
                         _Value, _V =>
@@ -226,7 +229,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("first_level_to_rate_game"),
                 CommonUtils.StringToHash("first_level_to_rate_game_this_session"),
                 CommonUtils.StringToHash("hammer_shot_pause"),
-                CommonUtils.StringToHash("inapp_notifications_list"),
+                CommonUtils.StringToHash("inapp_notifications_list_v2"),
                 CommonUtils.StringToHash("interstitial_ads_ratio"),
                 CommonUtils.StringToHash("levels_in_group"),
                 CommonUtils.StringToHash("line_thickness"),
@@ -250,6 +253,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("money_items_fill_rate"),
                 CommonUtils.StringToHash("fin_lev_g_pan_get_money_button_text_variant"),
                 CommonUtils.StringToHash("fin_lev_g_pan_background_variant"),
+                CommonUtils.StringToHash("extra_borders_indices"),
             }
                 .Select(_Id => (ushort) _Id)
                 .ToArray();
@@ -276,6 +280,16 @@ namespace RMAZOR.Managers
         private static int ToInt(object _Value)
         {
             return Convert.ToInt32(_Value);
+        }
+
+        private static string ToString(object _Value)
+        {
+            return Convert.ToString(_Value);
+        }
+
+        private static bool ToBool(object _Value)
+        {
+            return Convert.ToBoolean(_Value);
         }
         
         #endregion

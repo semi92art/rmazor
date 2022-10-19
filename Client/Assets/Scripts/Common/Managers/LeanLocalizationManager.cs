@@ -104,7 +104,7 @@ namespace Common.Managers
                 {ELanguage.Spanish,   new[] {"sp",  "sp-SP"}},
                 {ELanguage.Portugal,  new[] {"por", "por-POR"}},
                 {ELanguage.Russian,   new[] {"ru",  "ru-RUS"}},
-                {ELanguage.Japaneese, new[] {"ja",  "ja-JAP"}},
+                {ELanguage.Japanese,  new[] {"ja",  "ja-JAP"}},
                 {ELanguage.Korean,    new[] {"ko",  "ko-KOR"}},
             };
             foreach (var (key, value) in culturesDict)

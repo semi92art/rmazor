@@ -14,24 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 21300000, guid: 77a9d892ce0a9494388c3e8e2c94b25e, type: 3}
-      name: english
+    - name: english
+      item: {fileID: 21300000, guid: 77a9d892ce0a9494388c3e8e2c94b25e, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 188d1ec6074c9435ca11e3a30be714e9, type: 3}
-      name: portugal
+    - name: portugal
+      item: {fileID: 21300000, guid: 188d1ec6074c9435ca11e3a30be714e9, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 78352d6d5759645c79c90840e34c7b79, type: 3}
-      name: spanish
+    - name: spanish
+      item: {fileID: 21300000, guid: 78352d6d5759645c79c90840e34c7b79, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 7af9652001132497ba7088f0b27ebe03, type: 3}
-      name: russian
+    - name: russian
+      item: {fileID: 21300000, guid: 7af9652001132497ba7088f0b27ebe03, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: bd74de257681043279e4b5473944dc3e, type: 3}
-      name: german
+    - name: german
+      item: {fileID: 21300000, guid: bd74de257681043279e4b5473944dc3e, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: b262888b51e2b451789cfb125ac89a56, type: 3}
-      name: japaneese
+    - name: japanese
+      item: {fileID: 21300000, guid: b262888b51e2b451789cfb125ac89a56, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 4e75ac6e2ecb7459bb371db0894b53ff, type: 3}
-      name: korean
+    - name: korean
+      item: {fileID: 21300000, guid: 4e75ac6e2ecb7459bb371db0894b53ff, type: 3}
       bundle: 0

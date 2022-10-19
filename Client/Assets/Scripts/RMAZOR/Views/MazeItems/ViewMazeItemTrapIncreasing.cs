@@ -48,7 +48,7 @@ namespace RMAZOR.Views.MazeItems
         private          bool                 m_ReadyToKill;
         private          AnimationTriggerer   m_Triggerer;
         private          List<Vector2>        m_DeathZone;
-        private          bool                 m_DoPlaySwordSpinningSound = true;
+        private          bool                 m_IsRotatingSoundPlaying;
         private          int                  m_LevelsLoadCount;
         private readonly List<Line>           m_BladeContainers = new List<Line>();
         private readonly List<SpriteRenderer> m_Blades          = new List<SpriteRenderer>();
@@ -147,6 +147,18 @@ namespace RMAZOR.Views.MazeItems
         #endregion
 
         #region nonpublic methods
+        
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIds.MazeItem1)
+                return;
+            m_Center.Color = _Color;
+            m_Center2.Color = _Color;
+            foreach (var item in m_Blades)
+                item.color = _Color;
+            foreach (var item in m_BladeContainers)
+                item.Color = _Color.SetA(0.5f);
+        }
 
         protected override void InitShape()
         {
@@ -157,32 +169,11 @@ namespace RMAZOR.Views.MazeItems
             m_Center = prefab.GetCompItem<Disc>("center");
             m_Center2 = prefab.GetCompItem<Disc>("center_2");
             m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
-            m_Triggerer.Trigger1 += () => m_ReadyToKill = true;
-            m_Triggerer.Trigger2 += () => m_ReadyToKill = false;
-            m_Triggerer.Trigger4 += () =>
-            {
-                if (m_DoPlaySwordSpinningSound)
-                {
-                    Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingRotate);
-                    // FIXME костыль, выключающий звук врашающейся ловушки, если он вдруг не остановится по команде CloseTrap
-                    int levelsLoadCountCheck = m_LevelsLoadCount;
-                    Cor.Run(Cor.Delay(
-                    5f, 
-                    GameTicker,
-                    () =>
-                    {
-                        var stage = Model.LevelStaging.LevelStage;
-                        if (levelsLoadCountCheck != m_LevelsLoadCount
-                            || stage == ELevelStage.Finished
-                            || stage == ELevelStage.ReadyToUnloadLevel
-                            || stage == ELevelStage.Unloaded)
-                        {
-                            Managers.AudioManager.StopClip(AudioClipArgsTrapIncreasingRotate);
-                        }
-                    }));
-                    m_DoPlaySwordSpinningSound = false;
-                }
-            };
+            m_Triggerer.Trigger1 += OnTrapOpeningStart;
+            m_Triggerer.Trigger2 += OnTrapOpeningFinish;
+            m_Triggerer.Trigger3 += OnTrapClosingStart;
+            m_Triggerer.Trigger4 += OnTrapClosingFinish;
+            m_Triggerer.Trigger5 += OnTrapRotatingStart;
             for (int i = 1; i <= 4; i++)
             {
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
@@ -221,19 +212,7 @@ namespace RMAZOR.Views.MazeItems
             }.Select(_P => (Vector2)_P)
                 .ToList();
         }
-
-        protected override void OnColorChanged(int _ColorId, Color _Color)
-        {
-            if (_ColorId != ColorIds.MazeItem1)
-                return;
-            m_Center.Color = _Color;
-            m_Center2.Color = _Color;
-            foreach (var item in m_Blades)
-                item.color = _Color;
-            foreach (var item in m_BladeContainers)
-                item.Color = _Color.SetA(0.5f);
-        }
-
+        
         private void OpenTrap()
         {
             if (AppearingState != EAppearingState.Appeared)
@@ -250,15 +229,43 @@ namespace RMAZOR.Views.MazeItems
 
         private void CloseTrap()
         {
+            Managers.AudioManager.StopClip(AudioClipArgsTrapIncreasingRotate);
+            m_IsRotatingSoundPlaying = false;
             if (AppearingState != EAppearingState.Appeared)
                 return;
             if (m_TrapOpened.HasValue && !m_TrapOpened.Value)
                 return;
             m_TrapOpened = false;
             m_Animator.SetTrigger(AnimKeyClose);
-            m_DoPlaySwordSpinningSound = true;
-            Managers.AudioManager.StopClip(AudioClipArgsTrapIncreasingRotate);
             Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingClose);
+        }
+
+        private void OnTrapOpeningStart()
+        {
+            m_ReadyToKill = true;
+        }
+        
+        private void OnTrapOpeningFinish()
+        {
+            
+        }
+
+        private void OnTrapClosingStart()
+        {
+            
+        }
+
+        private void OnTrapClosingFinish()
+        {
+            m_ReadyToKill = false;
+        }
+
+        private void OnTrapRotatingStart()
+        {
+            if (m_IsRotatingSoundPlaying) 
+                return;
+            Managers.AudioManager.PlayClip(AudioClipArgsTrapIncreasingRotate);
+            m_IsRotatingSoundPlaying = true;
         }
 
         protected override void OnAppearStart(bool _Appear)

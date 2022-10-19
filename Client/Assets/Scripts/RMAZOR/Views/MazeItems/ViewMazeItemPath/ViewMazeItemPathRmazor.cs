@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Common;
 using Common.Extensions;
 using Common.Helpers;
@@ -31,6 +30,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         ViewMazeItemPath, 
         IViewMazeItemPathRmazor
     {
+        private IViewMazeItemPathExtraBordersSet ExtraBordersSet { get; }
+
         #region nonpublic members
 
         private Rectangle m_PathBackground;
@@ -46,25 +47,19 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         #region inject
 
-        private IViewMazeItemPathExtraBorders1 ExtraBorders1 { get; }
-        private IViewMazeItemPathExtraBorders2 ExtraBorders2 { get; }
-        private IViewMazeItemPathExtraBorders3 ExtraBorders3 { get; }
-        
         private ViewMazeItemPathRmazor(
-            ViewSettings                   _ViewSettings,
-            IModelGame                     _Model,
-            ICoordinateConverter           _CoordinateConverter,
-            IContainersGetter              _ContainersGetter,
-            IViewGameTicker                _GameTicker,
-            IRendererAppearTransitioner    _Transitioner,
-            IManagersGetter                _Managers,
-            IColorProvider                 _ColorProvider,
-            IViewInputCommandsProceeder    _CommandsProceeder,
-            IViewMazeMoneyItem             _MoneyItem,
-            IViewMazeItemsPathInformer     _Informer,
-            IViewMazeItemPathExtraBorders1 _ExtraBorders1,
-            IViewMazeItemPathExtraBorders2 _ExtraBorders2, 
-            IViewMazeItemPathExtraBorders3 _ExtraBorders3)
+            ViewSettings                     _ViewSettings,
+            IModelGame                       _Model,
+            ICoordinateConverter             _CoordinateConverter,
+            IContainersGetter                _ContainersGetter,
+            IViewGameTicker                  _GameTicker,
+            IRendererAppearTransitioner      _Transitioner,
+            IManagersGetter                  _Managers,
+            IColorProvider                   _ColorProvider,
+            IViewInputCommandsProceeder      _CommandsProceeder,
+            IViewMazeMoneyItem               _MoneyItem,
+            IViewMazeItemsPathInformer       _Informer,
+            IViewMazeItemPathExtraBordersSet _ExtraBordersSet)
             : base(
                 _ViewSettings,
                 _Model,
@@ -78,9 +73,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 _MoneyItem,
                 _Informer)
         {
-            ExtraBorders1 = _ExtraBorders1;
-            ExtraBorders2 = _ExtraBorders2;
-            ExtraBorders3 = _ExtraBorders3;
+            ExtraBordersSet = _ExtraBordersSet;
         }
 
         #endregion
@@ -111,9 +104,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         public override void Init()
         {
-            // FIXME при раскоменчивании возникает ошибка
-            // if (Initialized)
-            //     return;
+            if (Initialized)
+                return;
             Informer.GetProps = () => Props;
             InitExtraBorders();
             base.Init();
@@ -129,11 +121,9 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Managers,
             ColorProvider,
             CommandsProceeder,
-            MoneyItem    .Clone() as IViewMazeMoneyItem,
-            Informer     .Clone() as IViewMazeItemsPathInformer,
-            ExtraBorders1.Clone() as IViewMazeItemPathExtraBorders1, 
-            ExtraBorders2.Clone() as IViewMazeItemPathExtraBorders2,
-            ExtraBorders3.Clone() as IViewMazeItemPathExtraBorders3);
+            MoneyItem      .Clone() as IViewMazeMoneyItem,
+            Informer       .Clone() as IViewMazeItemsPathInformer,
+            ExtraBordersSet.Clone() as IViewMazeItemPathExtraBordersSet);
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -193,11 +183,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         private void InitExtraBorders()
         {
-            var extraBordersArray = new IViewMazeItemPathExtraBorders[]
-            {
-                ExtraBorders1, ExtraBorders2, ExtraBorders3
-            };
-            foreach (var extraBorders in extraBordersArray)
+            ExtraBordersSet.Init();
+            foreach (var extraBorders in ExtraBordersSet.GetSet())
             {
                 extraBorders.GetParent      = () => Object;
                 extraBorders.GetProps       = () => Props;
@@ -447,24 +434,17 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         private void ActivateCurrentExtraBorders(bool _Activate)
         {
-            ExtraBorders1.Activated = false;
-            ExtraBorders2.Activated = false;
-            ExtraBorders3.Activated = false;
+            foreach (var extraBorders in ExtraBordersSet.GetSet())
+                extraBorders.Activated = false;
             GetCurrentExtraBorders().Activated = _Activate;
         }
 
         private IViewMazeItemPathExtraBorders GetCurrentExtraBorders()
         {
             int levelGroupIndex = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
-            int extraBordersIndex = (levelGroupIndex - 1) % 3;
-            IViewMazeItemPathExtraBorders extraBorders = extraBordersIndex switch
-            {
-                0 => ExtraBorders1,
-                1 => ExtraBorders2,
-                2 => ExtraBorders3,
-                _ => throw new SwitchExpressionException(extraBordersIndex)
-            };
-            return extraBorders;
+            var extraBordersSet = ExtraBordersSet.GetSet();
+            int extraBordersIndex = (levelGroupIndex - 1) % extraBordersSet.Count;
+            return extraBordersSet[extraBordersIndex];
         }
 
         #endregion
