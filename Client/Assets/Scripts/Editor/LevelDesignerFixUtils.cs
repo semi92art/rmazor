@@ -11,7 +11,7 @@ using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Editor
 {
-    public partial class LevelDesignerEditor
+    public partial class LevelDesignerEditorWindow
     {
         [FixUtil]
         private void FindEmptyLevels()

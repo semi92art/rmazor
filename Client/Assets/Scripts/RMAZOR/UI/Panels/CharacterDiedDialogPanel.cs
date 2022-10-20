@@ -231,7 +231,12 @@ namespace RMAZOR.UI.Panels
         private void OnWatchAdsButtonClick()
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
-            Managers.AdsManager.ShowRewardedAd(_OnReward: () => m_AdsWatched = true, _Skippable: false);
+            Managers.AdsManager.ShowRewardedAd(
+                _OnReward:      () => m_AdsWatched = true, 
+                _OnBeforeShown: () => TickerUtils.PauseTickers(true, Ticker),
+                _OnShown:       () => TickerUtils.PauseTickers(false, Ticker),
+                _OnClosed:      () => TickerUtils.PauseTickers(false, Ticker),
+                _Skippable:     false);
         }
 
         private void OnPayMoneyButtonClick()
@@ -325,7 +330,7 @@ namespace RMAZOR.UI.Panels
                 }
                 .Concat(RmazorUtils.MoveAndRotateCommands);
         }
-        
+
         #endregion
     }
 }

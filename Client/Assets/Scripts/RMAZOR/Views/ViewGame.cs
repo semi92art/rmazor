@@ -4,6 +4,7 @@ using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Enums;
+using Common.Exceptions;
 using Common.Helpers;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Notifications;
@@ -50,7 +51,7 @@ namespace RMAZOR.Views
     {
         #region nonpublic members
 
-        private bool     m_ShowAdOnLongTimeWithoutCommandsEnabled;
+        // private bool     m_ShowAdOnLongTimeWithoutCommandsEnabled;
         private float    m_SecondsInLevelWithoutInputActions;
         private float    m_LastPauseTime;
         private object[] m_ProceedersCached;
@@ -166,23 +167,6 @@ namespace RMAZOR.Views
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.ReadyToStart:
-                case ELevelStage.StartedOrContinued:
-                    m_ShowAdOnLongTimeWithoutCommandsEnabled = true;
-                    break;
-                case ELevelStage.Loaded:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    m_ShowAdOnLongTimeWithoutCommandsEnabled = false;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
             LevelStageController.OnLevelStageChanged(_Args);
         }
         
@@ -232,19 +216,37 @@ namespace RMAZOR.Views
 
         private void ShowAdIfNoActionsForLongTime()
         {
-            var levelStage = Model.LevelStaging.LevelStage;
-            if (levelStage != ELevelStage.ReadyToStart
-                && levelStage != ELevelStage.StartedOrContinued)
+            bool IsCorrectLevelStage()
+            {
+                var levelStage = Model.LevelStaging.LevelStage;
+                switch (levelStage)
+                {
+                    case ELevelStage.ReadyToStart:
+                        case ELevelStage.StartedOrContinued:
+                        case ELevelStage.Paused:
+                        return true;
+                    case ELevelStage.Finished when !RmazorUtils.IsLastLevelInGroup(Model.LevelStaging.LevelIndex):
+                        return true;
+                    case ELevelStage.Finished:
+                    case ELevelStage.Loaded:
+                    case ELevelStage.ReadyToUnloadLevel:
+                    case ELevelStage.Unloaded:
+                    case ELevelStage.CharacterKilled:
+                        return false;
+                    default: throw new SwitchCaseNotImplementedException(levelStage);
+                }
+            }
+            bool PassedEnoughTime()
+            {
+                return CommandsProceeder.SecondsWithoutCommand > 30f
+                       && Managers.AdsManager.RewardedAdReady;
+            }
+            if (!IsCorrectLevelStage() 
+                || !PassedEnoughTime()
+                || Managers.AdsManager.RewardedAdReady)
             {
                 return;
             }
-            if (CommandsProceeder.SecondsWithoutCommand < 60f
-                || !m_ShowAdOnLongTimeWithoutCommandsEnabled
-                || !Managers.AdsManager.RewardedAdReady)
-            {
-                return;
-            }
-            m_ShowAdOnLongTimeWithoutCommandsEnabled = false;
             Managers.AdsManager.ShowRewardedAd();
         }
 

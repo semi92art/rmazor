@@ -47,11 +47,13 @@ namespace Common.Managers.Advertising.AdBlocks
         public override void ShowAd(
             UnityAction _OnShown, 
             UnityAction _OnClicked, 
-            UnityAction _OnReward)
+            UnityAction _OnReward,
+            UnityAction _OnClosed)
         {
-            OnShown = _OnShown;
+            OnShown   = _OnShown;
             OnClicked = _OnClicked;
-            OnReward = _OnReward;
+            OnReward  = _OnReward;
+            OnClosed  = _OnClosed;
             if (!Ready) 
                 return;
             const string placement = "default";
@@ -85,7 +87,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public void OnRewardedVideoClosed(bool _Finished) 
         {
-            Dbg.Log("Appodeal: Video closed"); 
+            OnAdClosed(); 
         }
 
         public void OnRewardedVideoFinished(double _Amount, string _Name)

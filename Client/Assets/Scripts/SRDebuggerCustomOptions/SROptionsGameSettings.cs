@@ -320,6 +320,7 @@ namespace SRDebuggerCustomOptions
                 string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowRewardedAd(
                     _OnShown: () => Dbg.Log("Rewarded ad was shown."),
+                    _OnClosed: () => Dbg.Log("Rewarded ad was closed."),
                     _AdsNetwork: adsNetworkName,
                     _Forced: true);
             }
@@ -336,6 +337,7 @@ namespace SRDebuggerCustomOptions
                 string adsNetworkName = GetAdsNetworkProviderName(_adsNetworkIdx);
                 _managers.AdsManager.ShowInterstitialAd(
                     _OnShown: () => Dbg.Log("Interstitial ad was shown."),
+                    _OnClosed: () => Dbg.Log("Interstitial ad was closed."),
                     _AdsNetwork: adsNetworkName,
                     _Forced: true);
             }

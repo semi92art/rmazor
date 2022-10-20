@@ -222,8 +222,12 @@ namespace RMAZOR.Views.UI
                 m_TutorialPanelLoaded = true;
             }
             TutorialDialogPanel.PrepareVideo();
-            dv.Show(TutorialDialogPanel, 3f);
-            SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
+            Cor.Run(Cor.WaitWhile(() => !TutorialDialogPanel.IsVideoReady,
+                () =>
+                {
+                    dv.Show(TutorialDialogPanel, 3f);
+                    SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
+                }));
         }
 
         private IEnumerator MovementTutorialFirstStepCoroutine()

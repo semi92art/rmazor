@@ -46,10 +46,11 @@ namespace Common.Managers.Advertising.AdBlocks
             base.Init(_AppId, _UnitId);
         }
         
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed)
         {
             OnShown = _OnShown;
             OnClicked = _OnClicked;
+            OnClosed = _OnClosed;
             m_InterstitialAd.Show();
         }
 
@@ -81,7 +82,8 @@ namespace Common.Managers.Advertising.AdBlocks
         
         private void OnInterstitialAdClosed(object _Sender, EventArgs _E)
         {
-            OnAdShown();
+            OnAdClosed();
+            
         }
         
         private void OnAdDidRecordImpression(object _Sender, EventArgs _E)
@@ -91,6 +93,7 @@ namespace Common.Managers.Advertising.AdBlocks
         
         private void OnInterstitialAdPaidEvent(object _Sender, AdValueEventArgs _E)
         {
+            OnAdShown();
             OnAdClicked();
             var sb = new StringBuilder();
             sb.AppendLine("Precision: " + _E.AdValue.Precision);

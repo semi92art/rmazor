@@ -19,7 +19,7 @@ namespace Common.Managers
         void  InitClip(AudioClipArgs     _Args);
         void  PlayClip(AudioClipArgs     _Args);
         void  PauseClip(AudioClipArgs    _Args);
-        void  UnPauseClip(AudioClipArgs  _Args);
+        void  UnpauseClip(AudioClipArgs  _Args);
         void  StopClip(AudioClipArgs     _Args);
         void  EnableAudio(bool           _Enable, EAudioClipType _Type);
         void  MuteAudio(EAudioClipType   _Type);
@@ -107,7 +107,7 @@ namespace Common.Managers
                 info.OnPause = true;
         }
         
-        public void UnPauseClip(AudioClipArgs _Args)
+        public void UnpauseClip(AudioClipArgs _Args)
         {
             var info = FindClipInfo(_Args);
             if (info != null)

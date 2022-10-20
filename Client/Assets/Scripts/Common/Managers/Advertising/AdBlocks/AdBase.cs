@@ -27,12 +27,14 @@ namespace Common.Managers.Advertising.AdBlocks
         protected abstract string AdType   { get; }
 
         protected UnityAction OnShown;
+        protected UnityAction OnClosed;
         protected UnityAction OnClicked;
         protected string      UnitId;
         private   float       m_LoadAdDelayTimer;
 
         private volatile bool m_DoLoadAdWithDelay;
         private volatile bool m_DoInvokeOnShown;
+        private volatile bool m_DoInvokeOnClosed;
         private volatile bool m_DoInvokeOnClicked;
         
         #endregion
@@ -75,6 +77,13 @@ namespace Common.Managers.Advertising.AdBlocks
                 OnClicked = null;
                 m_DoInvokeOnClicked = false;
             }
+            if (m_DoInvokeOnClosed)
+            {
+                Dbg.Log("Ad close action");
+                OnClosed?.Invoke();
+                OnClosed = null;
+                m_DoInvokeOnClosed = false;
+            }
             if (m_DoInvokeOnShown)
             {
                 Dbg.Log("Ad shown action");
@@ -114,6 +123,12 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             Dbg.Log($"{AdSource}: {AdType} shown");
             m_DoInvokeOnShown = true;
+        }
+        
+        protected virtual void OnAdClosed()
+        {
+            Dbg.Log($"{AdSource}: {AdType} closed");
+            m_DoInvokeOnClosed = true;
         }
         
         protected virtual void OnAdFailedToShow()

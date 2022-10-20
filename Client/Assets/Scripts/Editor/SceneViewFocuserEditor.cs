@@ -26,7 +26,7 @@ namespace RMAZOR.Editor
             {
                 Dbg.Log("Focus");
                 SceneView.lastActiveSceneView.in2DMode = true; 
-                LevelDesignerEditor.Instance.FocusCamera(LevelDesigner.Instance.size);
+                LevelDesignerEditorWindow.Instance.FocusCamera(LevelDesigner.Instance.size);
             }
         }
     }

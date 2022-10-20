@@ -33,9 +33,9 @@ namespace RMAZOR.UI.Panels
             string _DescriptionLocalizationKey,
             string _VideoClipAssetKey)
         {
-            TitleLocalizationKey = _TitleLocalizationKey;
+            TitleLocalizationKey       = _TitleLocalizationKey;
             DescriptionLocalizationKey = _DescriptionLocalizationKey;
-            VideoClipAssetKey = _VideoClipAssetKey;
+            VideoClipAssetKey          = _VideoClipAssetKey;
         }
     }
     
@@ -89,7 +89,7 @@ namespace RMAZOR.UI.Panels
         public override EUiCategory       Category         => EUiCategory.Tutorial;
         public override Animator          Animator         => m_Animator;
 
-        public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPrepared;
+        public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
 
         public void SetPanelInfo(TutorialDialogPanelInfo _Info)
         {
@@ -103,6 +103,7 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.clip = Managers.PrefabSetManager.GetObject<VideoClip>(
                 "tutorial_clips", m_Info.VideoClipAssetKey);
             m_VideoPlayer.enabled = true;
+            m_VideoPlayer.Play();
         }
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
@@ -126,7 +127,6 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
-            m_VideoPlayer.Play();
             var locInfoTitle = new LocalizableTextObjectInfo(
                 m_Title, ETextType.MenuUI, m_Info.TitleLocalizationKey,
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture));

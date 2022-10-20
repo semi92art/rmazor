@@ -27,6 +27,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnShown       = null,
             UnityAction _OnClicked     = null,
             UnityAction _OnReward      = null,
+            UnityAction _OnClosed      = null,
             string      _AdsNetwork    = null,
             bool        _Forced        = false,
             bool        _Skippable     = true);
@@ -35,6 +36,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnBeforeShown = null,
             UnityAction _OnShown       = null,
             UnityAction _OnClicked     = null,
+            UnityAction _OnClosed      = null,
             string      _AdsNetwork    = null,
             bool        _Forced        = false);
     }
@@ -93,6 +95,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnShown,
             UnityAction _OnClicked,
             UnityAction _OnReward,
+            UnityAction _OnClosed,
             string      _AdsNetwork = null,
             bool        _Forced     = false,
             bool        _Skippable  = true)
@@ -131,6 +134,7 @@ namespace Common.Managers.Advertising
                 _OnShown,
                 _OnClicked, 
                 _OnReward,
+                _OnClosed,
                 AdvertisingType.Rewarded,
                 _Forced);
         }
@@ -139,6 +143,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnBeforeShown,
             UnityAction _OnShown,
             UnityAction _OnClicked,
+            UnityAction _OnClosed,
             string      _AdsNetwork = null,
             bool        _Forced     = false)
         {
@@ -175,6 +180,7 @@ namespace Common.Managers.Advertising
                 _OnShown,
                 _OnClicked, 
                 null,
+                _OnClosed,
                 AdvertisingType.Interstitial,
                 _Forced);
         }
@@ -209,6 +215,7 @@ namespace Common.Managers.Advertising
             UnityAction                       _OnShown,
             UnityAction                       _OnClicked,
             UnityAction                       _OnReward,
+            UnityAction                       _OnClosed,
             AdvertisingType                   _Type,
             bool                              _Forced)
         {
@@ -261,14 +268,19 @@ namespace Common.Managers.Advertising
                 _OnReward?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdReward, eventData);
             }
+            void OnClosed()
+            {
+                _OnClosed?.Invoke();
+                AnalyticsManager.SendAnalytic(AnalyticIds.AdClosed, eventData);
+            }
             Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
-                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, ShowAds, _Forced);
+                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, OnClosed, ShowAds, _Forced);
                     break;
                 case AdvertisingType.Rewarded:
-                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, OnReward, ShowAds, _Forced);
+                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, OnReward, OnClosed, ShowAds, _Forced);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

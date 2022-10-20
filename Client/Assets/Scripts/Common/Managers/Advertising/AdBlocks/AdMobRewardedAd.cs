@@ -47,11 +47,16 @@ namespace Common.Managers.Advertising.AdBlocks
             base.Init(_AppId, _UnitId);
         }
         
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward)
+        public override void ShowAd(
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnReward,
+            UnityAction _OnClosed)
         {
-            OnShown = _OnShown;
+            OnShown   = _OnShown;
             OnClicked = _OnClicked;
-            OnReward = _OnReward;
+            OnReward  = _OnReward;
+            OnClosed  = _OnClosed;
             m_RewardedAd.Show();
         }
 
@@ -88,7 +93,7 @@ namespace Common.Managers.Advertising.AdBlocks
         
         private void OnRewardedAdClosed(object _Sender, EventArgs _E)
         {
-            OnAdShown();
+            OnAdClosed();
         }
         
         private void OnRewardedAdDidRecordImpression(object _Sender, EventArgs _E)
@@ -98,6 +103,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
         {
+            OnAdShown();
             OnAdRewardGot();
             Dbg.Log("AdMob: Rewarded user earned" 
                     + ": amount: " + _E.Amount

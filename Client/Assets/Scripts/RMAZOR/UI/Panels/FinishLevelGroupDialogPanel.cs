@@ -43,6 +43,11 @@ namespace RMAZOR.UI.Panels
     public class FinishLevelGroupDialogPanel : DialogPanelBase, IFinishLevelGroupDialogPanel
     {
         #region nonpublic members
+        
+        private static AudioClipArgs AudioClipArgsMainTheme =>
+            new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
+        private static AudioClipArgs AudioClipArgsPayoutReward =>
+            new AudioClipArgs("payout_reward", EAudioClipType.UiSound);
 
         private Animator                    m_PanelAnimator;
         private MultiplyMoneyWheelPanelView m_WheelPanelView;
@@ -150,15 +155,15 @@ namespace RMAZOR.UI.Panels
                 .GetTranslation("multiply")
                 .ToUpper(CultureInfo.CurrentUICulture);
             m_ButtonMultiplyMoney.gameObject.SetActive(true);
-            m_ButtonSkip.gameObject.SetActive(true);
-            m_ButtonContinue.gameObject.SetActive(false);
-            m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
-            m_ButtonSkip.interactable = false;
+            m_ButtonSkip         .gameObject.SetActive(true);
+            m_ButtonContinue     .gameObject.SetActive(false);
+            m_ButtonSkip         .interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
-            m_ButtonContinue.gameObject.SetActive(false);
+            m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
             m_WheelPanelView.ResetWheel();
+            Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             base.OnDialogStartAppearing();
         }
 
@@ -174,6 +179,7 @@ namespace RMAZOR.UI.Panels
         {
             Prompt.ShowPrompt(EPromptType.TapToNext);
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
+            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             base.OnDialogDisappeared();
         }
 
@@ -243,27 +249,39 @@ namespace RMAZOR.UI.Panels
             m_ButtonSkip.onClick.AddListener(              OnSkipButtonPressed);
             m_ButtonContinue.onClick.AddListener(          OnContinueButtonPressed);
             m_Triggerer.Trigger1                        += OnStartAppearingAnimationFinished;
-            m_TriggererMoneyIcon.Trigger1               += OnMoneyItemAnimTrigger1;
+            m_TriggererMoneyIcon.Trigger1               += () => Cor.Run(OnMoneyIconStartDisappearingCoroutine());
             m_TriggererMoneyIcon.Trigger2               += OnMoneyItemAnimTrigger2;
             m_WheelPanelView.MultiplyCoefficientChanged += OnMultiplyCoefficientChanged;
         }
 
-        private void OnMoneyItemAnimTrigger1()
+        private IEnumerator OnMoneyIconStartDisappearingCoroutine()
         {
+            bool isPlaying = false;
+            yield return Cor.WaitWhile(() => Ticker.Pause);
             long prevMoneyCount = MoneyCounter.CurrentLevelGroupMoney;
-            Cor.Run(Cor.Lerp(
+            // Managers.AudioManager.PlayClip(AudioClipArgsPayoutReward);
+            yield return Cor.Lerp(
                 Ticker, 
                 0.7f, 
                 MoneyCounter.CurrentLevelGroupMoney,
                 MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient,
                 _P =>
                 {
+                    if (!isPlaying)
+                    {
+                        Managers.AudioManager.PlayClip(AudioClipArgsPayoutReward);
+                        isPlaying = true;
+                    }
                     long newMoneyCount = (long) _P;
                     if (newMoneyCount == prevMoneyCount)
                         return;
                     m_MoneyCountText.text = newMoneyCount.ToString();
                     prevMoneyCount = (long) _P;
-                }));
+                },
+                () =>
+                {
+                    Managers.AudioManager.StopClip(AudioClipArgsPayoutReward);
+                });
         }
         
         private void OnMoneyItemAnimTrigger2()
@@ -306,12 +324,16 @@ namespace RMAZOR.UI.Panels
             m_WheelPanelView.HighlightCurrentCoefficient();
             m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
             Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
-            {
-                Multiply();
-                m_ButtonMultiplyMoney.gameObject.SetActive(false);
-                m_ButtonSkip.gameObject.SetActive(false);
-                m_ButtonContinue.gameObject.SetActive(true);
-            }, _Skippable: false);
+                {
+                    Multiply();
+                    m_ButtonMultiplyMoney.gameObject.SetActive(false);
+                    m_ButtonSkip.gameObject.SetActive(false);
+                    m_ButtonContinue.gameObject.SetActive(true);
+                },
+                _OnBeforeShown: () => TickerUtils.PauseTickers(true, Ticker),
+                _OnShown:       () => TickerUtils.PauseTickers(false, Ticker),
+                _OnClosed:      () => TickerUtils.PauseTickers(false, Ticker),
+                _Skippable: false);
         }
 
         private void OnSkipButtonPressed()

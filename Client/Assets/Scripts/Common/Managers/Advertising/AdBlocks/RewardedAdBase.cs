@@ -6,7 +6,7 @@ namespace Common.Managers.Advertising.AdBlocks
 {
     public interface IRewardedAdBase : IAdBase
     {
-        void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward);
+        void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward, UnityAction _OnClosed);
     }
     
     public abstract class RewardedAdBase : AdBase, IRewardedAdBase
@@ -20,7 +20,11 @@ namespace Common.Managers.Advertising.AdBlocks
             ICommonTicker      _CommonTicker) 
             : base(_GlobalGameSettings, _CommonTicker) { }
 
-        public abstract void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward);
+        public abstract void ShowAd(
+            UnityAction _OnShown, 
+            UnityAction _OnClicked, 
+            UnityAction _OnReward,
+            UnityAction _OnClosed);
 
         public override void UpdateTick()
         {

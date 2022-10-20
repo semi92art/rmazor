@@ -90,7 +90,7 @@ namespace Editor
                     Math.Max(mazeInfo1.Size.Y, mazeItemsToAdd.Max(_I => _I.Position.Y) + 1));
             }
             Dbg.Log("New maze size: " + mazeInfo1.Size);
-            LevelDesignerEditor.Instance.LoadLevel(mazeInfo1);
+            LevelDesignerEditorWindow.Instance.LoadLevel(mazeInfo1);
         }
 
         private static List<MazeItem> CreateMazeItemsToAdd(MazeInfo _Info, V2Int _Position, bool _Row, bool _RightOrUp)

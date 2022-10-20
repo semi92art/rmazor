@@ -53,7 +53,7 @@ namespace RMAZOR.Views.Common
                 if (showRewardedOnUnload)
                 {
                     AdsManager.ShowRewardedAd(
-                        AdsManager.RewardedAdReady ?_OnBeforeAdShown : null, 
+                        AdsManager.RewardedAdReady ? _OnBeforeAdShown : null, 
                         _OnAfterAdShown);
                 }
                 else

@@ -58,7 +58,8 @@ namespace Common.Managers.Advertising.AdsProviders
         protected override void ShowRewardedAdCore(
             UnityAction _OnShown,
             UnityAction _OnClicked,
-            UnityAction _OnReward)
+            UnityAction _OnReward,
+            UnityAction _OnClosed)
         {
             if (!RewardedAdReady) 
                 return;
@@ -68,10 +69,13 @@ namespace Common.Managers.Advertising.AdsProviders
                 MuteAudio(false);
                 _OnShown?.Invoke();
             }
-            m_RewardedAd.ShowAd(OnShown, _OnClicked, _OnReward);
+            m_RewardedAd.ShowAd(OnShown, _OnClicked, _OnReward, _OnClosed);
         }
         
-        protected override void ShowInterstitialAdCore(UnityAction _OnShown, UnityAction _OnClicked)
+        protected override void ShowInterstitialAdCore(
+            UnityAction _OnShown,
+            UnityAction _OnClicked, 
+            UnityAction _OnClosed)
         {
             if (!InterstitialAdReady) 
                 return;
@@ -81,7 +85,7 @@ namespace Common.Managers.Advertising.AdsProviders
                 MuteAudio(false);
                 _OnShown?.Invoke();
             }
-            m_InterstitialAd.ShowAd(OnShown, _OnClicked);
+            m_InterstitialAd.ShowAd(OnShown, _OnClicked, _OnClosed);
         }
 
         #endregion

@@ -44,10 +44,11 @@ namespace Common.Managers.Advertising.AdBlocks
             Appodeal.Cache(AppoAdType);
         }
 
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed)
         {
-            OnShown = _OnShown;
+            OnShown   = _OnShown;
             OnClicked = _OnClicked;
+            OnClosed  = _OnClosed;
             if (!Ready) 
                 return;
             const string placement = "default";
@@ -76,7 +77,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public void OnInterstitialClosed() 
         { 
-            Dbg.Log("Appodeal: Interstitial closed"); 
+            OnAdClosed();
         } 
 
         public void OnInterstitialClicked() 

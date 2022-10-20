@@ -61,6 +61,7 @@ namespace RMAZOR.Views.Common
         private ViewSettings                        ViewSettings                { get; }
         private IViewGameTicker                     ViewGameTicker              { get; }
         private IModelGameTicker                    ModelGameTicker             { get; }
+        private IUITicker                           UiTicker                    { get; }
         private IModelGame                          Model                       { get; }
         private IManagersGetter                     Managers                    { get; }
         private IViewCharacter                      Character                   { get; }
@@ -85,6 +86,7 @@ namespace RMAZOR.Views.Common
             ViewSettings                        _ViewSettings,
             IViewGameTicker                     _ViewGameTicker,
             IModelGameTicker                    _ModelGameTicker,
+            IUITicker                           _UiTicker,
             IModelGame                          _Model,
             IManagersGetter                     _Managers,
             IViewCharacter                      _Character,
@@ -108,6 +110,7 @@ namespace RMAZOR.Views.Common
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
             ModelGameTicker             = _ModelGameTicker;
+            UiTicker                    = _UiTicker;
             Model                       = _Model;
             Managers                    = _Managers;
             Character                   = _Character;
@@ -163,7 +166,7 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            PauseGameTickers(_Args.LevelStage == ELevelStage.Paused);
+            TickerUtils.PauseTickers(_Args.LevelStage == ELevelStage.Paused, ViewGameTicker, ModelGameTicker);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
@@ -318,13 +321,13 @@ namespace RMAZOR.Views.Common
         {
             void OnBeforeAdShown()
             {
-                PauseGameTickers(true);
+                TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker, UiTicker);
             }
             void UnloadLevel()
             {
                 CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
                 FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
-                PauseGameTickers(false);
+                TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker, UiTicker);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);
                 AdditionalBackgroundDrawer.Appear(false);
@@ -442,12 +445,6 @@ namespace RMAZOR.Views.Common
                 return;
             var dv = DialogViewersController.GetViewer(FinishLevelGroupDialogPanel.DialogViewerType);
             dv.Show(FinishLevelGroupDialogPanel);
-        }
-        
-        private void PauseGameTickers(bool _Pause)
-        {
-            ViewGameTicker.Pause = _Pause;
-            ModelGameTicker.Pause = _Pause;
         }
 
         private void ProceedSounds(LevelStageArgs _Args)
