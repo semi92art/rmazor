@@ -193,9 +193,11 @@ namespace Common.Managers.Advertising
         {
             bool testMode = GameGameSettings.testAds || GameGameSettings.apkForAppodeal;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
+            var adsProviders = RemoteProperties.AdsProviders?
+                .Where(_P => _P.Platform == Application.platform).ToList();
             foreach (var adsProvider in AdsProvidersSet.GetProviders())
             {
-                var info = RemoteProperties.AdsProviders?.FirstOrDefault(_P =>
+                var info = adsProviders?.FirstOrDefault(_P =>
                     _P.Source.EqualsIgnoreCase(adsProvider.Source)) ?? new AdProviderInfo
                 {
                     Source = adsProvider.Source,

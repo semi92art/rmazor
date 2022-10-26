@@ -49,8 +49,12 @@ namespace RMAZOR.UI.Panels
         private static AudioClipArgs AudioClipArgsPayoutReward =>
             new AudioClipArgs("payout_reward", EAudioClipType.UiSound);
 
-        private Animator                    m_PanelAnimator;
         private MultiplyMoneyWheelPanelView m_WheelPanelView;
+        private Animator                    m_PanelAnimator;
+        private Animator                    m_AnimLoadingAds;
+        private Animator                    m_AnimMoneyIcon;
+        private AnimationTriggerer          m_Triggerer;
+        private AnimationTriggerer          m_TriggererMoneyIcon;
         private Image                       m_MoneyIcon;
         private Image                       m_IconWatchAds;
         private Image                       m_Background;
@@ -63,14 +67,12 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI             m_MultiplyButtonText;
         private TextMeshProUGUI             m_GetMoneyButtonText;
         private TextMeshProUGUI             m_ContinueButtonText;
-        private Animator                    m_AnimLoadingAds;
-        private Animator                    m_AnimMoneyIcon;
-        private AnimationTriggerer          m_Triggerer;
-        private AnimationTriggerer          m_TriggererMoneyIcon;
+        private TextMeshProUGUI             m_WatchVideoToTheEndText;
         private Sprite                      m_SpriteMoney;
         private Sprite                      m_SpriteMoneyMultiplied;
         private long                        m_MultiplyCoefficient;
         private string                      m_MultiplyWord;
+        private bool                        m_RewardGot;
 
         #endregion
 
@@ -143,6 +145,8 @@ namespace RMAZOR.UI.Panels
                 1 => $"{backgroundSpriteNameRaw}_1",
                 2 => $"{backgroundSpriteNameRaw}_2",
                 3 => $"{backgroundSpriteNameRaw}_3",
+                4 => $"{backgroundSpriteNameRaw}_4",
+                5 => $"{backgroundSpriteNameRaw}_5",
                 _ => $"{backgroundSpriteNameRaw}_1",
             };
             m_Background.sprite = psm.GetObject<Sprite>("views", backgroundSpriteName);
@@ -159,6 +163,8 @@ namespace RMAZOR.UI.Panels
             m_ButtonContinue     .gameObject.SetActive(false);
             m_ButtonSkip         .interactable = false;
             m_ButtonMultiplyMoney.interactable = false;
+            m_WatchVideoToTheEndText.enabled = false;
+            m_RewardGot = false;
             m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
@@ -190,24 +196,25 @@ namespace RMAZOR.UI.Panels
         private void GetPrefabContentObjects(GameObject _GameObject)
         {
             var go = _GameObject;
-            m_WheelPanelView          = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
-            m_PanelAnimator           = go.GetCompItem<Animator>("panel_animator");
-            m_ButtonMultiplyMoney     = go.GetCompItem<Button>("multiply_money_button");
-            m_ButtonSkip              = go.GetCompItem<Button>("skip_button");
-            m_ButtonContinue          = go.GetCompItem<Button>("continue_button");
-            m_TitleText               = go.GetCompItem<TextMeshProUGUI>("title_text");
-            m_MoneyCountText          = go.GetCompItem<TextMeshProUGUI>("money_count_text");
-            m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
-            m_GetMoneyButtonText      = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
-            m_ContinueButtonText      = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
-            m_RewardText              = go.GetCompItem<TextMeshProUGUI>("reward_text");
-            m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
-            m_AnimMoneyIcon           = go.GetCompItem<Animator>("money_icon");
-            m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
-            m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
-            m_Background              = go.GetCompItem<Image>("background");
-            m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_TriggererMoneyIcon      = go.GetCompItem<AnimationTriggerer>("money_icon");
+            m_WheelPanelView         = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
+            m_PanelAnimator          = go.GetCompItem<Animator>("panel_animator");
+            m_ButtonMultiplyMoney    = go.GetCompItem<Button>("multiply_money_button");
+            m_ButtonSkip             = go.GetCompItem<Button>("skip_button");
+            m_ButtonContinue         = go.GetCompItem<Button>("continue_button");
+            m_TitleText              = go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_MoneyCountText         = go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_MultiplyButtonText     = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
+            m_GetMoneyButtonText     = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
+            m_ContinueButtonText     = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
+            m_RewardText             = go.GetCompItem<TextMeshProUGUI>("reward_text");
+            m_WatchVideoToTheEndText = go.GetCompItem<TextMeshProUGUI>("watch_video_to_the_end_text");
+            m_AnimLoadingAds         = go.GetCompItem<Animator>("loading_ads_anim");
+            m_AnimMoneyIcon          = go.GetCompItem<Animator>("money_icon");
+            m_MoneyIcon              = go.GetCompItem<Image>("money_icon");
+            m_IconWatchAds           = go.GetCompItem<Image>("watch_ads_icon");
+            m_Background             = go.GetCompItem<Image>("background");
+            m_Triggerer              = go.GetCompItem<AnimationTriggerer>("triggerer");
+            m_TriggererMoneyIcon     = go.GetCompItem<AnimationTriggerer>("money_icon");
         }
         
         private void LocalizeTextObjectsOnLoad()
@@ -229,6 +236,8 @@ namespace RMAZOR.UI.Panels
             locMan.AddTextObject(new LocalizableTextObjectInfo(
                 m_MoneyCountText, ETextType.MenuUI, "empty_key",
                 _S => _S.ToUpper(CultureInfo.CurrentUICulture)));
+            locMan.AddTextObject(new LocalizableTextObjectInfo(
+                m_WatchVideoToTheEndText, ETextType.MenuUI, "watch_video_to_the_end"));
             string getMoneyButtonTextLocKey = ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant switch
             {
                 1 => "get",
@@ -259,7 +268,6 @@ namespace RMAZOR.UI.Panels
             bool isPlaying = false;
             yield return Cor.WaitWhile(() => Ticker.Pause);
             long prevMoneyCount = MoneyCounter.CurrentLevelGroupMoney;
-            // Managers.AudioManager.PlayClip(AudioClipArgsPayoutReward);
             yield return Cor.Lerp(
                 Ticker, 
                 0.7f, 
@@ -322,17 +330,24 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             m_WheelPanelView.HighlightCurrentCoefficient();
-            m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
-            Managers.AdsManager.ShowRewardedAd(_OnReward: () =>
+
+            Managers.AdsManager.ShowRewardedAd(
+                () => TickerUtils.PauseTickers(true, Ticker),
+                _OnReward: () =>
                 {
                     Multiply();
-                    m_ButtonMultiplyMoney.gameObject.SetActive(false);
-                    m_ButtonSkip.gameObject.SetActive(false);
-                    m_ButtonContinue.gameObject.SetActive(true);
+                    m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
+                    m_RewardGot = true;
                 },
-                _OnBeforeShown: () => TickerUtils.PauseTickers(true, Ticker),
-                _OnShown:       () => TickerUtils.PauseTickers(false, Ticker),
-                _OnClosed:      () => TickerUtils.PauseTickers(false, Ticker),
+                _OnClosed: () =>
+                {
+                    if (!m_RewardGot)
+                        m_WatchVideoToTheEndText.enabled = true;
+                    m_ButtonMultiplyMoney.gameObject.SetActive(false);
+                    m_ButtonSkip         .gameObject.SetActive(false);
+                    m_ButtonContinue     .gameObject.SetActive(true);
+                    TickerUtils.PauseTickers(false, Ticker);
+                },
                 _Skippable: false);
         }
 

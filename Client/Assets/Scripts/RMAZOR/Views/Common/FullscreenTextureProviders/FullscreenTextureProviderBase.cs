@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using Common;
 using Common.CameraProviders;
+using Common.Constants;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -10,10 +12,12 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
-    public interface IFullscreenTextureProvider : IInit
+    public interface IFullscreenTextureProvider : IInit, System.ICloneable
     {
+        float       Quality  { get; }
         MeshRenderer Renderer { get; }
-        void         Activate(bool _Active);
+        void         SetMaterial(Material _Material);
+        void         Activate(bool        _Active);
         
         void         Show(
             float    _Time,
@@ -24,17 +28,16 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
     }
 
     public abstract class FullscreenTextureProviderBase :
-        FullscreenTransitionTextureProviderBase, IFullscreenTextureProvider
+        FullscreenTextureProviderBaseBase,
+        IFullscreenTextureProvider
     {
         #region nonpublic members
 
-        private static readonly int
-            Color1Id = Shader.PropertyToID("_Color1"),
-            Color2Id = Shader.PropertyToID("_Color2");
-        protected static readonly int DirectionId       = Shader.PropertyToID("_Direction");
+        protected static readonly int DirectionId = Shader.PropertyToID("_Direction");
 
         private IEnumerator m_LastCoroutine;
-
+        
+        
         #endregion
 
         #region inject
@@ -60,7 +63,22 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         #region api
 
-        public override void Activate(bool _Active)
+        public abstract float        Quality  { get; }
+        public          MeshRenderer Renderer { get; private set; }
+        
+        public override void Init()
+        {
+            ColorProvider.ColorChanged += OnColorChanged;
+            InitTexture();
+            base.Init();
+        }
+        
+        public void SetMaterial(Material _Material)
+        {
+            Material = _Material;
+        }
+
+        public void Activate(bool _Active)
         {
             Renderer.enabled = _Active;
         }
@@ -72,16 +90,18 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             Cor.Run(m_LastCoroutine);
         }
 
-        public override void SetTransitionValue(float _Value, bool _Appear)
+        public void SetTransitionValue(float _Value, bool _Appear)
         {
             throw new System.NotSupportedException();
         }
+
+        public virtual object Clone() => new object();
 
         #endregion
 
         #region nonpublic methods
         
-        protected override void OnColorChanged(int _ColorId, Color _Color)
+        private void OnColorChanged(int _ColorId, Color _Color)
         {
             switch (_ColorId)
             {
@@ -90,10 +110,16 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             }
         }
 
-        protected override void InitTexture()
+        private void InitTexture()
         {
-            base.InitTexture();
-            Renderer.gameObject.layer = LayerMask.NameToLayer("μ Mu");
+            var parent = ContainersGetter.GetContainer(ContainerNames.Background);
+            var go = PrefabSetManager.InitPrefab(
+                parent, "background", "background_texture");
+            go.name = "Background Texture: " + Material.name;
+            Renderer = go.GetCompItem<MeshRenderer>("renderer");
+            Renderer.material = Material;
+            Renderer.sortingOrder = SortingOrder;
+            ScaleTextureToViewport(Renderer);
         }
 
         private IEnumerator ShowTexture(

@@ -16,9 +16,10 @@ namespace Common.Managers.Advertising.AdBlocks
         #region nonpublic members
 
         protected override string AdSource => AdvertisingNetworks.Admob;
-        protected override string AdType   => AdTypeInterstitial;
+        protected override string AdType   => AdTypeRewarded;
         
         private RewardedAd m_RewardedAd;
+        
         
         #endregion
 
@@ -40,13 +41,14 @@ namespace Common.Managers.Advertising.AdBlocks
             m_RewardedAd = new RewardedAd(_UnitId);
             m_RewardedAd.OnAdLoaded              += OnRewardedAdLoaded;
             m_RewardedAd.OnAdFailedToLoad        += OnRewardedAdFailedToLoad;
+            m_RewardedAd.OnAdFailedToShow        += OnRewardedAdFailedToShow;
             m_RewardedAd.OnPaidEvent             += OnRewardedAdPaidEvent;
             m_RewardedAd.OnAdClosed              += OnRewardedAdClosed;
             m_RewardedAd.OnUserEarnedReward      += OnRewardedAdUserEarnedReward;
             m_RewardedAd.OnAdDidRecordImpression += OnRewardedAdDidRecordImpression;
             base.Init(_AppId, _UnitId);
         }
-        
+
         public override void ShowAd(
             UnityAction _OnShown,
             UnityAction _OnClicked,
@@ -86,6 +88,17 @@ namespace Common.Managers.Advertising.AdBlocks
             Dbg.LogWarning(sb);
         }
         
+        private void OnRewardedAdFailedToShow(object _Sender, AdErrorEventArgs _E)
+        {
+            OnAdFailedToShow();
+            var sb = new StringBuilder();
+            sb.AppendLine("Code: " + _E.AdError.GetCode());
+            sb.AppendLine("Message: " + _E.AdError.GetMessage());
+            sb.AppendLine("Domain: " + _E.AdError.GetDomain());
+            sb.AppendLine("Unit Id: " + UnitId);
+            Dbg.LogWarning(sb);
+        }
+        
         private void OnRewardedAdPaidEvent(object _Sender, AdValueEventArgs _E)
         {
             OnAdClicked();
@@ -98,16 +111,12 @@ namespace Common.Managers.Advertising.AdBlocks
         
         private void OnRewardedAdDidRecordImpression(object _Sender, EventArgs _E)
         {
-            Dbg.Log("AdMob: Rewarded record impression");
+            OnAdShown();
         }
 
         private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
         {
-            OnAdShown();
             OnAdRewardGot();
-            Dbg.Log("AdMob: Rewarded user earned" 
-                    + ": amount: " + _E.Amount
-                    + ", type: " + _E.Type);
         }
 
         #endregion

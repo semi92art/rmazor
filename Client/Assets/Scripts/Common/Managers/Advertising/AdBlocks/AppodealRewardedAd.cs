@@ -93,7 +93,6 @@ namespace Common.Managers.Advertising.AdBlocks
         public void OnRewardedVideoFinished(double _Amount, string _Name)
         {
             OnAdRewardGot();
-            Dbg.Log("Appodeal: Reward: " + _Amount + " " + _Name); 
         }
 
         public void OnRewardedVideoExpired() 

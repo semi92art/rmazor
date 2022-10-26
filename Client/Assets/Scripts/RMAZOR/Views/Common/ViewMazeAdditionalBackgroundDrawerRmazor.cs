@@ -30,37 +30,37 @@ namespace RMAZOR.Views.Common
     {
         #region constants
 
-        private const int   BordersPoolCount       = 500;
-        private const int   CornersPoolCount       = 500;
-        private const int   MasksPoolCount         = 200;
-        
-        private const int   TextureRenderersCount  = 3;
-        private const float BorderRelativeIndent   = 0.5f;
-        private const float BorderScaleCoefficient = 1.3f;
-        private const float CornerScaleCoefficient = 4f;
-
-        private const int   CornersDashSize = 4;
-        private const float Corners2Alpha    = 0.5f;
+        private const int   BordersPoolCount      = 500;
+        private const int   CornersPoolCount      = 500;
+        private const int   MasksPoolCount        = 200;
+        private const int   TextureRenderersCount = 3;
+        private const float BorderRelativeIndent  = 0.5f;
+        private const int   CornersDashSize       = 4;
+        private const float Corners2Alpha         = 0.5f;
 
         #endregion
         
         #region nonpublic members
-
+        
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
 
         private Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
 
         private readonly RendererSpawnPool<SpriteRenderer> m_TextureRenderers = 
             new RendererSpawnPool<SpriteRenderer>();
+
+        private readonly BehavioursSpawnPool<Line> m_Borders  = new BehavioursSpawnPool<Line>();
+        private readonly BehavioursSpawnPool<Line> m_Borders2 = new BehavioursSpawnPool<Line>();
+        private readonly BehavioursSpawnPool<Disc> m_Corners  = new BehavioursSpawnPool<Disc>();
+        private readonly BehavioursSpawnPool<Disc> m_Corners2 = new BehavioursSpawnPool<Disc>();
         
-        private readonly BehavioursSpawnPool<Line>      m_Borders              = new BehavioursSpawnPool<Line>();
-        private readonly BehavioursSpawnPool<Line>      m_Borders2             = new BehavioursSpawnPool<Line>();
-        private readonly BehavioursSpawnPool<Disc>      m_Corners              = new BehavioursSpawnPool<Disc>();
-        private readonly BehavioursSpawnPool<Disc>      m_Corners2             = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
 
         private readonly List<Sprite>   m_TextureSprites = new List<Sprite>();
         private          SpriteRenderer m_TextureRendererBack;
+        
+        private float BorderScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 1.5f : 1.3f;
+        private float CornerScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 4f : 1.3f;
 
         #endregion
 
@@ -123,12 +123,20 @@ namespace RMAZOR.Views.Common
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {m_Borders.GetAllActiveItems(),  () => mainCol},
-                {m_Borders2.GetAllActiveItems(), () => mainCol},
                 {m_Corners.GetAllActiveItems(),  () => mainCol},
-                {m_Corners2.GetAllActiveItems(), () => mainCol.SetA(Corners2Alpha)},
                 {new[] {m_TextureRendererBack},  () => back1Col},
                 {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
+            if (ViewSettings.additionalBackgroundType == 1)
+            {
+                dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol);
+            }
+            else if (ViewSettings.additionalBackgroundType == 2)
+            {
+                dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol.SetA(Corners2Alpha));
+                dict.Add(m_Corners2.GetAllActiveItems(),  () => mainCol);
+                dict.Add(m_Borders2.GetAllActiveItems(), () => mainCol);
+            }
             Transitioner.DoAppearTransition(_Appear, dict,
                 ViewSettings.betweenLevelTransitionTime,
                 () => AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared);
@@ -148,12 +156,15 @@ namespace RMAZOR.Views.Common
             var activeBorders = m_Borders.GetAllActiveItems();
             foreach (var border in activeBorders)
                 border.Color = _Color.SetA(border.Color.a);
-            var activeBorders2 = m_Borders2.GetAllActiveItems();
-            foreach (var border in activeBorders2)
-                border.Color = _Color.SetA(border.Color.a);
+
             var activeCorners = m_Corners.GetAllActiveItems();
             foreach (var corner in activeCorners)
                 corner.Color = _Color.SetA(corner.Color.a);
+            if (ViewSettings.additionalBackgroundType != 2)
+                return;
+            var activeBorders2 = m_Borders2.GetAllActiveItems();
+            foreach (var border in activeBorders2)
+                border.Color = _Color.SetA(border.Color.a);
             var activeCorners2 = m_Corners2.GetAllActiveItems();
             foreach (var corner in activeCorners2)
                 corner.Color = _Color.SetA(corner.Color.a);
@@ -175,6 +186,8 @@ namespace RMAZOR.Views.Common
                     .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder)
                     .SetEndCaps(LineEndCap.Round);
                 m_Borders.Add(border);
+                if (ViewSettings.additionalBackgroundType != 2)
+                    continue;
                 var go2 = new GameObject("Additional Background Border Dashed");
                 go2.SetParent(Container);
                 var border2 = go2.AddComponent<Line>()
@@ -187,9 +200,11 @@ namespace RMAZOR.Views.Common
                     .SetDashShapeModifier(1f)
                     .SetSortingOrder(SortingOrders.AdditionalBackgroundBorder);
                 m_Borders2.Add(border2);
+
             }
             m_Borders.DeactivateAll(true);
-            m_Borders2.DeactivateAll(true);
+            if (ViewSettings.additionalBackgroundType == 2)
+                m_Borders2.DeactivateAll(true);
         }
 
         private void InitCornersPool()
@@ -201,6 +216,15 @@ namespace RMAZOR.Views.Common
                 var corner = go.AddComponent<Disc>();
                 corner.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
                     .SetType(DiscType.Arc)
+                    .SetArcEndCaps(ArcEndCap.Round);
+                m_Corners.Add(corner);
+                if (ViewSettings.additionalBackgroundType != 2)
+                    continue;
+                var go2 = new GameObject("Additional Background Corner Background");
+                go2.SetParent(Container);
+                var corner2 = go2.AddComponent<Disc>();
+                corner2.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
+                    .SetType(DiscType.Arc)
                     .SetArcEndCaps(ArcEndCap.Round)
                     .SetDashed(true)
                     .SetDashType(DashType.Angled)
@@ -208,17 +232,11 @@ namespace RMAZOR.Views.Common
                     .SetDashSize(CornersDashSize)
                     .SetDashSnap(DashSnapping.Tiling)
                     .SetDashShapeModifier(1f);
-                m_Corners.Add(corner);
-                var go2 = new GameObject("Additional Background Corner Background");
-                go2.SetParent(Container);
-                var corner2 = go2.AddComponent<Disc>();
-                corner2.SetSortingOrder(SortingOrders.AdditionalBackgroundCorner)
-                    .SetType(DiscType.Arc)
-                    .SetArcEndCaps(ArcEndCap.Round);
                 m_Corners2.Add(corner2);
             }
             m_Corners.DeactivateAll(true);
-            m_Corners2.DeactivateAll(true);
+            if (ViewSettings.additionalBackgroundType == 2)
+                m_Corners2.DeactivateAll(true);
         }
 
         private void InitTextures()
@@ -283,8 +301,10 @@ namespace RMAZOR.Views.Common
             m_TextureRenderers    .DeactivateAll();
             m_TextureRendererMasks.DeactivateAll();
             m_Borders             .DeactivateAll();
-            m_Borders2            .DeactivateAll();
             m_Corners             .DeactivateAll();
+            if (ViewSettings.additionalBackgroundType != 2)
+                return;
+            m_Borders2            .DeactivateAll();
             m_Corners2            .DeactivateAll();
         }
 
@@ -375,6 +395,8 @@ namespace RMAZOR.Views.Common
                 .gameObject.name = _Side + " " + "border";
             (border.Start, border.End) = GetBorderPoints(border, _Position, _Side, _StartLimit, _EndLimit, false);
             m_Borders.Activate(border);
+            if (ViewSettings.additionalBackgroundType != 2)
+                return;
             var border2 = m_Borders2.FirstInactive;
             border2.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
                 .transform.SetPosXY(borderPos)
@@ -401,7 +423,8 @@ namespace RMAZOR.Views.Common
                 .transform.SetPosXY(position)
                 .PlusLocalPosXY(GetCornerCenter(_Position, _Right, _Up));
             m_Corners.Activate(corner);
-            
+            if (ViewSettings.additionalBackgroundType != 2)
+                return;
             var corner2 = m_Corners2.FirstInactive;
             corner2.SetRadius(radius)
                 .SetThickness(ViewSettings.LineThickness * CornerScaleCoefficient * CoordinateConverter.Scale)

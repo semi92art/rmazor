@@ -52,68 +52,93 @@ namespace RMAZOR.Managers
         public List<RemoteConfigPropertyInfo> GetInfos()
         {
             var filter = GetFilter();
-            var infos = new List<RemoteConfigPropertyInfo>
+            return GetModelSettingsInfos(filter)
+                .Concat(GetViewSettingsInfos(filter))
+                .Concat(GetGlobalSettingsInfos(filter))
+                .Concat(GetRemotePropertiesInfos(filter))
+                .Concat(new[]
+                {
+                    new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids",
+                        _Value => Execute(
+                            _Value, _V => { }),
+                        true),
+                }).ToList();
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private IEnumerable<RemoteConfigPropertyInfo> GetModelSettingsInfos(GameDataFieldFilter _Filter)
+        {
+            return new List<RemoteConfigPropertyInfo>
             {
-                new RemoteConfigPropertyInfo(filter, typeof(float), "character_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "character_speed",
                     _Value => Execute(
                         _Value, _V =>
                         {
                             Dbg.Log("Character speed: " + ToFloat(_V));
                             ModelSettings.characterSpeed = ToFloat(_V);
                         })),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "mazeitems_gravityblock_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "mazeitems_gravityblock_speed",
                     _Value => Execute(
                         _Value, _V => ModelSettings.gravityBlockSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "hammer_shot_pause",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "hammer_shot_pause",
                     _Value => Execute(
                         _Value, _V => ModelSettings.hammerShotPause = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "shredinger_block_time",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "shredinger_block_time",
                     _Value => Execute(
                         _Value, _V => ModelSettings.shredingerBlockProceedTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "trap_increasing_idle_time",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "trap_increasing_idle_time",
                     _Value => Execute(
                         _Value, _V => ModelSettings.trapIncreasingIdleTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "trap_increasing_increased_time",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "trap_increasing_increased_time",
                     _Value => Execute(
                         _Value, _V => ModelSettings.trapIncreasingIncreasedTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "moving_trap_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "moving_trap_speed",
                     _Value => Execute(
                         _Value, _V => ModelSettings.movingItemsSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "moving_trap_pause",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "moving_trap_pause",
                     _Value => Execute(
                         _Value, _V => ModelSettings.movingItemsPause = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "mazeitems_movingtrap_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "mazeitems_movingtrap_speed",
                     _Value => Execute(
                         _Value, _V => ModelSettings.movingItemsSpeed = ToFloat(_V))),
+            };
+        }
 
-                new RemoteConfigPropertyInfo(filter, typeof(bool), "animate_path_fill",
+        private IEnumerable<RemoteConfigPropertyInfo> GetViewSettingsInfos(GameDataFieldFilter _Filter)
+        {
+            return new List<RemoteConfigPropertyInfo>
+            {
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), "animate_path_fill",
                     _Value => Execute(
                         _Value, _V => ViewSettings.animatePathFill = ToBool(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "skip_button_seconds",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "skip_button_seconds",
                     _Value => Execute(
                         _Value, _V => ViewSettings.skipLevelSeconds = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "line_thickness",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "line_thickness",
                     _Value => Execute(
                         _Value, _V => ViewSettings.lineThickness = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "corner_radius",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "corner_radius",
                     _Value => Execute(
                         _Value, _V => ViewSettings.cornerRadius = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "maze_rotation_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "maze_rotation_speed",
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeRotationSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "spear_projectile_speed",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "spear_projectile_speed",
                     _Value => Execute(
                         _Value, _V => ViewSettings.spearProjectileSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(int), "first_level_to_rate_game",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "first_level_to_rate_game",
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGame = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(int), "first_level_to_rate_game_this_session",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "first_level_to_rate_game_this_session",
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGameThisSession = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "maze_item_transition_time",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "maze_item_transition_time",
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "levels_in_group",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "levels_in_group",
                     _Value => Execute(
                         _Value, _V =>
                         {
@@ -121,47 +146,72 @@ namespace RMAZOR.Managers
                                 JsonConvert.DeserializeObject<int[]>(ToString(_V));
                         }),
                     true),
-                new RemoteConfigPropertyInfo(filter, typeof(bool), "show_full_tutorial",
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), "show_full_tutorial",
                     _Value => Execute(
                         _Value, _V => ViewSettings.showFullTutorial = ToBool(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_get_money_button_text_variant",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "fin_lev_g_pan_get_money_button_text_variant",
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(int), "fin_lev_g_pan_background_variant",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "fin_lev_g_pan_background_variant",
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelBackgroundVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "extra_borders_indices",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "char_died_g_pan_background_variant",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.characterDiedPanelBackgroundVariant = ToInt(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "extra_borders_indices",
                     _Value => Execute(
                         _Value, _V => ViewSettings.extraBordersIndices = ToString(_V))),
-                
-                new RemoteConfigPropertyInfo(filter, typeof(int), "ads_first_level_to_show_ads",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "background_textures_v2",
+                    _Value => Execute(
+                        _Value, _V =>
+                        {
+                            ViewSettings.BackgroundTextures = 
+                                JsonConvert.DeserializeObject<List<string>>(ToString(_V));
+                        })),
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "additional_background_type",
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.additionalBackgroundType = ToInt(_V))),
+            };
+        }
+
+        private IEnumerable<RemoteConfigPropertyInfo> GetGlobalSettingsInfos(GameDataFieldFilter _Filter)
+        {
+            return new List<RemoteConfigPropertyInfo>
+            {
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "ads_first_level_to_show_ads",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.firstLevelToShowAds = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(int), "ads_show_ad_every_level",
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), "ads_show_ad_every_level",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.showAdsEveryLevel = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(long), "money_item_coast",
+                new RemoteConfigPropertyInfo(_Filter, typeof(long), "money_item_coast",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.moneyItemCoast = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(long), "pay_to_continue_money_count",
+                new RemoteConfigPropertyInfo(_Filter, typeof(long), "pay_to_continue_money_count",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.payToContinueMoneyCount = ToInt(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "interstitial_ads_ratio",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "interstitial_ads_ratio",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.interstitialAdsRatio = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(filter, typeof(float), "money_items_fill_rate",
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), "money_items_fill_rate",
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.moneyItemsRate = ToFloat(_V))),
+            };
+        }
 
-                new RemoteConfigPropertyInfo(filter, typeof(string), "ads_providers_infos",
+        private IEnumerable<RemoteConfigPropertyInfo> GetRemotePropertiesInfos(GameDataFieldFilter _Filter)
+        {
+            return new List<RemoteConfigPropertyInfo>
+            {
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "ads_providers_infos",
                     _Value => Execute(
                         _Value, _V => RemoteProperties.AdsProviders =
                         JsonConvert.DeserializeObject<IList<AdProviderInfo>>(_V.ToString()))),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "inapp_notifications_list_v2",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "inapp_notifications_list_v2",
                     _Value => Execute(
                         _Value, _V => RemoteProperties.Notifications =
                         JsonConvert.DeserializeObject<IList<NotificationInfoEx>>(_V.ToString()))),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "additional_color_props_set",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "additional_color_props_set",
                     _Value => Execute(
                         _Value, _V =>
                     {
@@ -170,7 +220,7 @@ namespace RMAZOR.Managers
                                 Convert.ToString(_Value), new ColorJsonConverter());
                     }),
                     true),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "background_texture_triangles2_props_set",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "background_texture_triangles2_props_set",
                     _Value => Execute(
                         _Value, _V =>
                     {
@@ -178,7 +228,7 @@ namespace RMAZOR.Managers
                             JsonConvert.DeserializeObject<IList<Triangles2TextureProps>>(Convert.ToString(_V));
                     }),
                     true),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "main_color_props_set",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "main_color_props_set",
                     _Value => Execute(
                         _Value, _V =>
                     {
@@ -187,14 +237,14 @@ namespace RMAZOR.Managers
                             Convert.ToString(_V), converter);
                     }),
                     true),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "color_grading_props_1",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "color_grading_props_1",
                     _Value => Execute(
                         _Value, _V =>
                     {
                         RemoteProperties.ColorGradingProps =
                             JsonConvert.DeserializeObject<ColorGradingProps>(Convert.ToString(_V));
                     }), true),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids_for_admob",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "test_device_ids_for_admob",
                     _Value => Execute(
                         _Value, _V =>
                     {
@@ -202,17 +252,8 @@ namespace RMAZOR.Managers
                             JsonConvert.DeserializeObject<List<string>>(Convert.ToString(_V));
                     }),
                     true),
-                new RemoteConfigPropertyInfo(filter, typeof(string), "test_device_ids",
-                    _Value => Execute(
-                        _Value, _V =>{ }),
-                    true),
             };
-            return infos;
         }
-
-        #endregion
-
-        #region nonpublic methods
 
         private GameDataFieldFilter GetFilter()
         {
@@ -253,7 +294,11 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("money_items_fill_rate"),
                 CommonUtils.StringToHash("fin_lev_g_pan_get_money_button_text_variant"),
                 CommonUtils.StringToHash("fin_lev_g_pan_background_variant"),
+                CommonUtils.StringToHash("char_died_g_pan_background_variant"),
                 CommonUtils.StringToHash("extra_borders_indices"),
+                CommonUtils.StringToHash("background_textures"),
+                CommonUtils.StringToHash("background_textures_v2"),
+                CommonUtils.StringToHash("additional_background_type"),
             }
                 .Select(_Id => (ushort) _Id)
                 .ToArray();

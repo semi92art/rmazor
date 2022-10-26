@@ -58,8 +58,7 @@ Shader "RMAZOR/Background/Rave Squares"
             {
                 float2 p = floor(x);
                 float2 f = frac(x);
-                float minDistance = 1.;
-
+                float min_distance = 1.;
                 for (int j = -1; j <= 1; j ++)
                 {
                     for (int i = -1; i <= 1; i ++)
@@ -67,10 +66,10 @@ Shader "RMAZOR/Background/Rave Squares"
                         float2 b = float2(i, j);
                         float2 rand = .5 + .5 * sin(T * 3. + 12. * rand2(p + b));
                         float2 r = float2(b) - f + rand;
-                        minDistance = min(minDistance, length(r));
+                        min_distance = min(min_distance, length(r));
                     }
                 }
-                return minDistance;
+                return min_distance;
             }
 
             fixed4 frag(v2f f_i) : SV_Target
@@ -79,27 +78,12 @@ Shader "RMAZOR/Background/Rave Squares"
                 uv0.x *= screen_ratio();
                 float2 uv = uv0;
                 rotate(uv, _Angle * PI / 180 + T * 0.2);
-                
                 float val = pow(voronoi(uv * 8.) * 1.1, 8.) * 2.;
-                
                 float2 uv1;
-                if (uv.x > 0)
-                {
-                    uv1.x = uv.x;
-                }
-                else
-                {
-                    uv1.x = 1.1+uv.x;
-                }
-
-                if (uv.y > 0)
-                {
-                    uv1.y = uv.y;
-                }
-                else
-                {
-                    uv1.y = 1.1+uv.y;
-                }
+                if (uv.x > 0) uv1.x = uv.x;
+                else          uv1.x = 1.1+uv.x;
+                if (uv.y > 0) uv1.y = uv.y;
+                else          uv1.y = 1.1+uv.y;
                 float2 grid = smoothstep(fmod(uv1, .05), float2(LINE_THICKNESS,LINE_THICKNESS),0.03);
                 float d = dist(0.5,f_i.uv * _Gc2)*_Gc1*2.5;
                 fixed4 main_col = lerp(_Color1, _Color2, d);

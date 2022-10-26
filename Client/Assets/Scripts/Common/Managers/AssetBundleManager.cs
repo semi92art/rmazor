@@ -60,7 +60,7 @@ namespace Common.Managers
         
         #region nonpublic members
 
-        private readonly string[] m_BundleNames = {CommonBundleName, "sounds", "game_1_levels"};
+        private readonly string[] m_BundleNames = {CommonBundleName, "sounds", "game_1_levels", "background"};
 
         private readonly Dictionary<string, List<BundleAssetObjectInfo>> m_BundleAssetObjectInfos =
             new Dictionary<string, List<BundleAssetObjectInfo>>();

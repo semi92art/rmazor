@@ -80,3 +80,4 @@ tut_title_diode = 새로운 블록 : 다이오드
 get = 가져 오기
 revive? = 부활 하시겠습니까?
 empty_key = 
+watch_video_to_the_end = 보상을 곱할 수있는 비디오를 끝내십시오!

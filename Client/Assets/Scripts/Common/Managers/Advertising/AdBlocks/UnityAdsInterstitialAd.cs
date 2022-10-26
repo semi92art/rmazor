@@ -43,10 +43,11 @@ namespace Common.Managers.Advertising.AdBlocks
             Advertisement.Load(UnitId, this);
         }
 
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked)
+        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed)
         {
             OnShown   = _OnShown;
             OnClicked = _OnClicked;
+            OnClosed  = _OnClosed;
             Advertisement.Show(UnitId, this);
         }
         

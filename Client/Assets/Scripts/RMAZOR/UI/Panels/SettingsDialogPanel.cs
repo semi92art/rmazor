@@ -214,7 +214,7 @@ namespace RMAZOR.UI.Panels
                         _Setting.Put(val);
                         Managers.LocalizationManager.SetLanguage(
                             Managers.LocalizationManager.GetCurrentLanguage());
-                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LanguageButtonPressed);
+                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLanguageChangedAnalyticId(_Language));
                     }
                     itemLangSelector.languageIcon.sprite = GetLanguageIcon(_Language);
                     SetLangSetting();

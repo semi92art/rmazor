@@ -25,14 +25,11 @@ namespace Editor
 
         private void OnGUI()
         {
-            EditorUtilsEx.HorizontalZone(() =>
-            {
-                EditorUtilsEx.GuiButtonAction(SetPreviousBackgroundTexture);
-                EditorUtilsEx.GuiButtonAction(SetNextBackgroundTexture);
-            });
+            EditorUtilsEx.GuiButtonAction(UpdateCurrentBackgroundTexture);
+            EditorUtilsEx.GuiButtonAction(SetNextBackgroundTexture);
         }
 
-        private void SetPreviousBackgroundTexture()
+        private void UpdateCurrentBackgroundTexture()
         {
             if (!ValidAction())
                 return;
@@ -50,13 +47,16 @@ namespace Editor
             m_GameController.View.AdditionalBackground.OnLevelStageChanged(args);
         }
 
-        private LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Previous)
+        private LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Current)
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "configs", "view_settings");
             int group = RmazorUtils.GetGroupIndex(m_LevelIndex);
-            int levels = (_Previous ? -1 : 1) * RmazorUtils.GetLevelsInGroup(_Previous ? group - 1 : group);
-            m_LevelIndex = MathUtils.ClampInverse(m_LevelIndex + levels, 0, settings.levelsCountMain - 1);
+            int levels = (_Current ? 0 : 1) * RmazorUtils.GetLevelsInGroup(group);
+            m_LevelIndex = MathUtils.ClampInverse(
+                m_LevelIndex + levels, 
+                0, 
+                settings.levelsCountMain - 1);
             var fakeArgs = new LevelStageArgs(
                 m_LevelIndex, 
                 ELevelStage.Loaded, 

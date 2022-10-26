@@ -80,3 +80,4 @@ tut_title_diode = new block: diode
 get = get
 revive? = revive?
 empty_key = 
+watch_video_to_the_end = Watch video to the end to multiply the reward!

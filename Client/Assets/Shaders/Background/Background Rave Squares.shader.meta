@@ -1,3 +1,10 @@
-﻿fileFormatVersion: 2
+fileFormatVersion: 2
 guid: d7ec3fb02e084a2c86e4c26daecf128b
-timeCreated: 1661497444
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: background
+  assetBundleVariant: 

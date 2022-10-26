@@ -35,7 +35,7 @@ MonoBehaviour:
     - name: background_solid
       item: {fileID: 2100000, guid: 7e18e8abb64a68647bfe7251cff7fde9, type: 2}
       bundle: 0
-    - name: background_parallax_gradient_circles
+    - name: background_parallax_circles
       item: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
       bundle: 0
     - name: background_neon_stream
@@ -67,6 +67,12 @@ MonoBehaviour:
       bundle: 0
     - name: background_blue_purple_plaid
       item: {fileID: 2100000, guid: c2eb13fb1918114488d645ef24c3a4f6, type: 2}
+      bundle: 0
+    - name: background_reversal
+      item: {fileID: 2100000, guid: e52dc97f89d750d4399d68c08de280c7, type: 2}
+      bundle: 0
+    - name: background_white_fire
+      item: {fileID: 2100000, guid: 14c165343526f6643b809fd419593d6c, type: 2}
       bundle: 0
     - name: background_triangles_2
       item: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}

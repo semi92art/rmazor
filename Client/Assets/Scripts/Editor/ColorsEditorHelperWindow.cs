@@ -67,8 +67,9 @@ namespace Editor
             EditorUtilsEx.GuiButtonAction(CopyAdditionalColorsToClipboard);
             EditorUtilsEx.HorizontalZone(() =>
             {
+                EditorUtilsEx.GuiButtonAction("Update color set",   SetCurrentAdditionalColorSet);
                 EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousAdditionalColorSet);
-                EditorUtilsEx.GuiButtonAction("Next color set", SetNextAdditionalColorSet);
+                EditorUtilsEx.GuiButtonAction("Next color set",     SetNextAdditionalColorSet);
             });
             DisplayColors();
             EditorUtilsEx.HorizontalLine(Color.gray);
@@ -143,16 +144,22 @@ namespace Editor
                 item.color = newColor;
             }
         }
-
-        private void SetNextAdditionalColorSet()
-        {
-            SetNextOrPreviousAdditionalColorSet(false);
-            SetAdditionalColorSetColors();
-        }
         
         private void SetPreviousAdditionalColorSet()
         {
-            SetNextOrPreviousAdditionalColorSet(true);
+            SetNextOrPreviousOrCurrentAdditionalColorSet(false);
+            SetAdditionalColorSetColors();
+        }
+
+        private void SetNextAdditionalColorSet()
+        {
+            SetNextOrPreviousOrCurrentAdditionalColorSet(true);
+            SetAdditionalColorSetColors();
+        }
+        
+        private void SetCurrentAdditionalColorSet()
+        {
+            SetNextOrPreviousOrCurrentAdditionalColorSet(null);
             SetAdditionalColorSetColors();
         }
 
@@ -182,9 +189,11 @@ namespace Editor
             CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
         }
 
-        private void SetNextOrPreviousAdditionalColorSet(bool _Previous)
+        private void SetNextOrPreviousOrCurrentAdditionalColorSet(bool? _Next)
         {
-            int addict = _Previous ? -1 : 1;
+            int addict = 0;
+            if (_Next.HasValue)
+                addict = _Next.Value ? 1 : -1;
             void AddAddict()
             {
                 m_CurrSetIdx = MathUtils.ClampInverse(

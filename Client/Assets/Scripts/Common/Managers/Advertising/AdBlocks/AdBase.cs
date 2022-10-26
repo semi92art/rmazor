@@ -70,30 +70,51 @@ namespace Common.Managers.Advertising.AdBlocks
         
         public virtual void UpdateTick()
         {
-            if (m_DoInvokeOnClicked)
-            {
-                Dbg.Log("Ad click action");
-                OnClicked?.Invoke();
-                OnClicked = null;
-                m_DoInvokeOnClicked = false;
-            }
-            if (m_DoInvokeOnClosed)
-            {
-                Dbg.Log("Ad close action");
-                OnClosed?.Invoke();
-                OnClosed = null;
-                m_DoInvokeOnClosed = false;
-            }
-            if (m_DoInvokeOnShown)
-            {
-                Dbg.Log("Ad shown action");
-                if (OnShown == null)
-                    Dbg.LogWarning("OnShown action is null");
-                OnShown?.Invoke();
-                OnShown = null;
-                LoadAd();
-                m_DoInvokeOnShown = false;
-            }
+            ProceedShownAction();
+            ProceedClickedAction();
+            ProceedClosedAction();
+            ProceedLoadAdOnDelay();
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        protected void ProceedShownAction()
+        {
+            if (!m_DoInvokeOnShown) 
+                return;
+            Dbg.Log("Ad shown action");
+            if (OnShown == null)
+                Dbg.LogWarning("OnShown action is null");
+            OnShown?.Invoke();
+            OnShown = null;
+            LoadAd();
+            m_DoInvokeOnShown = false;
+        }
+        
+        protected void ProceedClickedAction()
+        {
+            if (!m_DoInvokeOnClicked)
+                return;
+            Dbg.Log("Ad click action");
+            OnClicked?.Invoke();
+            OnClicked = null;
+            m_DoInvokeOnClicked = false;
+        }
+
+        protected void ProceedClosedAction()
+        {
+            if (!m_DoInvokeOnClosed) 
+                return;
+            Dbg.Log("Ad close action");
+            OnClosed?.Invoke();
+            OnClosed = null;
+            m_DoInvokeOnClosed = false;
+        }
+
+        protected void ProceedLoadAdOnDelay()
+        {
             if (!m_DoLoadAdWithDelay)
                 return;
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
@@ -103,41 +124,37 @@ namespace Common.Managers.Advertising.AdBlocks
             m_LoadAdDelayTimer = 0f;
             m_DoLoadAdWithDelay = false;
         }
-
-        #endregion
-
-        #region nonpublic methods
-
-        protected virtual void OnAdLoaded()
+        
+        protected void OnAdLoaded()
         {
             Dbg.Log($"{AdSource}: {AdType} loaded");
         }
         
-        protected virtual void OnAdFailedToLoad()
+        protected void OnAdFailedToLoad()
         {
             Dbg.LogWarning($"{AdSource}: {AdType} load failed");
             m_DoLoadAdWithDelay = true;
         }
         
-        protected virtual void OnAdShown()
+        protected void OnAdShown()
         {
             Dbg.Log($"{AdSource}: {AdType} shown");
             m_DoInvokeOnShown = true;
         }
         
-        protected virtual void OnAdClosed()
+        protected void OnAdClosed()
         {
             Dbg.Log($"{AdSource}: {AdType} closed");
             m_DoInvokeOnClosed = true;
         }
         
-        protected virtual void OnAdFailedToShow()
+        protected void OnAdFailedToShow()
         {
             Dbg.LogWarning($"{AdSource}: {AdType} show failed");
             m_DoLoadAdWithDelay = true;
         }
         
-        protected virtual void OnAdClicked()
+        protected void OnAdClicked()
         {
             Dbg.Log($"{AdSource}: {AdType} clicked");
             m_DoInvokeOnClicked = true;

@@ -214,19 +214,43 @@ namespace Editor
                     {
                         Enabled = true,
                         ShowRate = 100f,
-                        Source = AdvertisingNetworks.Admob
+                        Source = AdvertisingNetworks.Admob,
+                        Platform = RuntimePlatform.Android
                     },
                     new AdProviderInfo
                     {
                         Enabled = true,
                         ShowRate = 100f,
-                        Source = AdvertisingNetworks.UnityAds
+                        Source = AdvertisingNetworks.UnityAds,
+                        Platform = RuntimePlatform.Android
                     },
                     new AdProviderInfo
                     {
                         Enabled = true,
                         ShowRate = 100f,
-                        Source = AdvertisingNetworks.Appodeal
+                        Source = AdvertisingNetworks.Appodeal,
+                        Platform = RuntimePlatform.Android
+                    },
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.Admob,
+                        Platform = RuntimePlatform.IPhonePlayer
+                    },
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.UnityAds,
+                        Platform = RuntimePlatform.IPhonePlayer
+                    },
+                    new AdProviderInfo
+                    {
+                        Enabled = true,
+                        ShowRate = 100f,
+                        Source = AdvertisingNetworks.Appodeal,
+                        Platform = RuntimePlatform.IPhonePlayer
                     }
                 };
                 string json = JsonConvert.SerializeObject(set);

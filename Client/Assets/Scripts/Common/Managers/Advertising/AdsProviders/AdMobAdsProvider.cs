@@ -33,8 +33,8 @@ namespace Common.Managers.Advertising.AdsProviders
             get
             {
                 string testId = CommonUtils.Platform == RuntimePlatform.Android
-                    ? "ca-app-pub-3940256099942544/8691691433"  // https://developers.google.com/admob/android/test-ads
-                    : "ca-app-pub-3940256099942544/5135589807"; // https://developers.google.com/admob/ios/test-ads
+                    ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
+                    : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
                 return TestMode ? testId : base.RewardedUnitId;
             }
         }

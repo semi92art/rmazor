@@ -43,11 +43,16 @@ namespace Common.Managers.Advertising.AdBlocks
             Advertisement.Load(UnitId, this);
         }
 
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnReward)
+        public override void ShowAd(
+            UnityAction _OnShown, 
+            UnityAction _OnClicked, 
+            UnityAction _OnReward,
+            UnityAction _OnClosed)
         {
             OnShown   = _OnShown;
             OnClicked = _OnClicked;
             OnReward  = _OnReward;
+            OnClosed  = _OnClosed;
             Advertisement.Show(UnitId, this);
         }
 
@@ -57,7 +62,10 @@ namespace Common.Managers.Advertising.AdBlocks
             OnAdLoaded();
         }
 
-        public virtual void OnUnityAdsFailedToLoad(string _PlacementId, UnityAdsLoadError _Error, string _Message)
+        public virtual void OnUnityAdsFailedToLoad(
+            string            _PlacementId,
+            UnityAdsLoadError _Error,
+            string            _Message)
         {
             m_IsReady = false;
             OnAdFailedToLoad();
@@ -67,7 +75,10 @@ namespace Common.Managers.Advertising.AdBlocks
             Dbg.LogWarning(sb);
         }
 
-        public virtual void OnUnityAdsShowFailure(string _PlacementId, UnityAdsShowError _Error, string _Message)
+        public virtual void OnUnityAdsShowFailure(
+            string            _PlacementId,
+            UnityAdsShowError _Error,
+            string            _Message)
         {
             m_IsReady = false;
             OnAdFailedToShow();

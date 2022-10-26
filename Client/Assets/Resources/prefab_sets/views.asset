@@ -88,8 +88,29 @@ MonoBehaviour:
       item: {fileID: 21300000, guid: f1d97a15b4cb41d4b9ab654443cc9377, type: 3}
       bundle: 0
     - name: finish_level_group_panel_background_2
-      item: {fileID: 21300000, guid: eb3db5b0868bc4f348e3d3a1dfbf32a8, type: 3}
+      item: {fileID: 21300000, guid: 1e5976e981a2e8b45918d6f2004e1cec, type: 3}
       bundle: 0
     - name: finish_level_group_panel_background_3
+      item: {fileID: 21300000, guid: eb3db5b0868bc4f348e3d3a1dfbf32a8, type: 3}
+      bundle: 0
+    - name: finish_level_group_panel_background_4
+      item: {fileID: 21300000, guid: 2feaafe4e67104e6fbd6232e8f31f297, type: 3}
+      bundle: 0
+    - name: finish_level_group_panel_background_5
+      item: {fileID: 21300000, guid: 95b47228ba5478f44832e46b93611e4c, type: 3}
+      bundle: 0
+    - name: character_died_panel_background_1
+      item: {fileID: 21300000, guid: f1d97a15b4cb41d4b9ab654443cc9377, type: 3}
+      bundle: 0
+    - name: character_died_panel_background_2
+      item: {fileID: 21300000, guid: 1e5976e981a2e8b45918d6f2004e1cec, type: 3}
+      bundle: 0
+    - name: character_died_panel_background_3
+      item: {fileID: 21300000, guid: eb3db5b0868bc4f348e3d3a1dfbf32a8, type: 3}
+      bundle: 0
+    - name: character_died_panel_background_4
+      item: {fileID: 21300000, guid: 2feaafe4e67104e6fbd6232e8f31f297, type: 3}
+      bundle: 0
+    - name: character_died_panel_background_5
       item: {fileID: 21300000, guid: 95b47228ba5478f44832e46b93611e4c, type: 3}
       bundle: 0

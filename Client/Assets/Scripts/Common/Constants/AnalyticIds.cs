@@ -1,4 +1,6 @@
 ﻿
+using Common.Enums;
+
 namespace Common.Constants
 {
     public static class AnalyticIds
@@ -10,7 +12,6 @@ namespace Common.Constants
         public const string RateGameButton1Pressed             = "rate_game_button_1_pressed";
         public const string RateGameButton2Pressed             = "rate_game_button_2_pressed";
         public const string LeaderboardsButtonPressed          = "leaderboards_button_2_pressed";
-        public const string LanguageButtonPressed              = "language_button_2_pressed";
         public const string EnableMusicButtonPressed           = "enable_music_button_pressed";
         public const string DisableMusicButtonPressed          = "disable_music_button_pressed";
         public const string EnableSoundButtonPressed           = "enable_sound_button_pressed";
@@ -40,6 +41,11 @@ namespace Common.Constants
         public static string GetLevelFinishedAnalyticId(long _LevelIndex)
         {
             return $"level_{_LevelIndex}_finished";
+        }
+
+        public static string GetLanguageChangedAnalyticId(ELanguage _Language)
+        {
+            return $"lang_changed_to_{_Language}";
         }
 
         #endregion

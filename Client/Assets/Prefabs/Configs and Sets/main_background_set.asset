@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a49dea33e54f63aa0c395cfc5623c3, type: 3}
+  m_Name: main_background_set
+  m_EditorClassIdentifier: 
+  set:
+    array:
+    - name: blue_purple_plaid
+      material: {fileID: 2100000, guid: c2eb13fb1918114488d645ef24c3a4f6, type: 2}
+    - name: dancing_dots
+      material: {fileID: 2100000, guid: 53a46579227e15a4f8209c0e7ce3354a, type: 2}
+    - name: fall_in_deep
+      material: {fileID: 2100000, guid: f02eab6aa654e774cbd4447e6d13042d, type: 2}
+    - name: fibrous_rings
+      material: {fileID: 2100000, guid: 4e426c282e06d904490e3e0e9741db2d, type: 2}
+    - name: gradient
+      material: {fileID: 2100000, guid: f32e305859754d140ae018f604250de8, type: 2}
+    - name: logichroma
+      material: {fileID: 2100000, guid: 594e0e6249cb6b04f8ba9b0f7e8bbbe8, type: 2}
+    - name: oily
+      material: {fileID: 2100000, guid: e105269646c64824ab83ebb2414e480b, type: 2}
+    - name: parallax_circles
+      material: {fileID: 2100000, guid: 8df20dfe3c9094c4e9e31170a1885f48, type: 2}
+    - name: rave_squares
+      material: {fileID: 2100000, guid: 05cf4a6d83b9bc44fa3160d2ef95d65f, type: 2}
+    - name: reversal
+      material: {fileID: 2100000, guid: e52dc97f89d750d4399d68c08de280c7, type: 2}
+    - name: solid
+      material: {fileID: 2100000, guid: 7e18e8abb64a68647bfe7251cff7fde9, type: 2}
+    - name: swirl_for_planet
+      material: {fileID: 2100000, guid: bc5e567cb9679624a82a092a02096251, type: 2}
+    - name: triangles_2
+      material: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
+    - name: white_fire
+      material: {fileID: 2100000, guid: 14c165343526f6643b809fd419593d6c, type: 2}
+    - name: sunflow
+      material: {fileID: 2100000, guid: 298feb1b7bf8fd042a15b20eef53e599, type: 2}
+    - name: skyline
+      material: {fileID: 2100000, guid: ce914e07ba7b0b047aecc9b866315656, type: 2}
+    - name: toon_rain
+      material: {fileID: 2100000, guid: 948cf88637633b144963ae19ea14d8fe, type: 2}
+    - name: fire_storm
+      material: {fileID: 2100000, guid: 0862c45c74fc0f043bbbf4d862ac2a30, type: 2}

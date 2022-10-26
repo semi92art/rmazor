@@ -80,3 +80,4 @@ tut_title_diode = Новый блок: диод
 get = Получить
 revive? = Оживить?
 empty_key = 
+watch_video_to_the_end = Досмотрите видео до конца, чтобы умножить награду!

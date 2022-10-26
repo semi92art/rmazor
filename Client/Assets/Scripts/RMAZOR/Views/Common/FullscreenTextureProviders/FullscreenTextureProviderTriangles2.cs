@@ -22,7 +22,6 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-        protected override string MaterialAssetName => "background_triangles_2";
 
         private static readonly int
             SizeId        = Shader.PropertyToID("_Size"),
@@ -59,6 +58,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         #region api
 
+        public override float Quality => 1f;
+        
         public void SetProperties(Triangles2TextureProps _Item)
         {
             Material.SetFloat(SizeId, _Item.size);
@@ -77,5 +78,6 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         }
 
         #endregion
+
     }
 }

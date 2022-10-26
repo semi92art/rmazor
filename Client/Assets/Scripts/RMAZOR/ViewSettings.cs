@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -43,7 +44,10 @@ namespace RMAZOR
         public string levelsInGroup;
         public int    finishLevelGroupPanelGetMoneyButtonTextVariant;
         public int    finishLevelGroupPanelBackgroundVariant;
+        public int    characterDiedPanelBackgroundVariant;
         public string extraBordersIndices;
+        public string backgroundTextures;
+        public int    additionalBackgroundType;
         
 
         public float LineThickness
@@ -84,6 +88,12 @@ namespace RMAZOR
                 levelsInGroup = string.Join(",", value.Select(_V => _V.ToString()));
                 RmazorUtils.LevelsInGroupArray = value;
             }
+        }
+
+        public List<string> BackgroundTextures
+        {
+            get => backgroundTextures.Split(',').ToList();
+            set => backgroundTextures = string.Join(",", value);
         }
     }
 }

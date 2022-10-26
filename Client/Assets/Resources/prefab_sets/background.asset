@@ -90,3 +90,6 @@ MonoBehaviour:
       item: {fileID: 1001005016998723723, guid: 7193c6cffff50214c86b2a0746015c90,
         type: 3}
       bundle: 0
+    - name: main_background_set
+      item: {fileID: 11400000, guid: 9e81f3f802e050448acbf5efda7f951a, type: 2}
+      bundle: 1

@@ -40,10 +40,14 @@ namespace RMAZOR.UI.Panels
         #region nonpublic members
 
         private Animator           m_PanelAnimator;
+        private Animator           m_AnimLoadingAds;
         private AnimationTriggerer m_Triggerer;
+        private Image              m_Background;
         private Image              m_MoneyInBankIcon;
         private Image              m_MoneyIconInPayButton;
         private Image              m_IconWatchAds;
+        private Image              m_Countdown;
+        private Image              m_CountdownBackground;
         private TextMeshProUGUI    m_TextYouHaveMoney;
         private TextMeshProUGUI    m_MoneyInBankText;
         private TextMeshProUGUI    m_TextContinue;
@@ -51,9 +55,6 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI    m_TextRevive;
         private Button             m_ButtonWatchAds;
         private Button             m_ButtonPayMoney;
-        private Animator           m_AnimLoadingAds;
-        private Image              m_Countdown;
-        private Image              m_CountdownBackground;
         private bool               m_AdsWatched;
         private bool               m_MoneyPayed;
         private long               m_MoneyCount;
@@ -65,13 +66,15 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private GlobalGameSettings          GlobalGameSettings      { get; }
-        private IModelGame                  Model                   { get; }
-        private IViewInputCommandsProceeder CommandsProceeder       { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader    { get; }
+        private GlobalGameSettings          GlobalGameSettings   { get; }
+        private ViewSettings                ViewSettings         { get; }
+        private IModelGame                  Model                { get; }
+        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
 
         protected CharacterDiedDialogPanel(
             GlobalGameSettings          _GlobalGameSettings,
+            ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
@@ -86,6 +89,7 @@ namespace RMAZOR.UI.Panels
                 _ColorProvider)
         {
             GlobalGameSettings      = _GlobalGameSettings;
+            ViewSettings            = _ViewSettings;
             Model                   = _Model;
             CommandsProceeder       = _CommandsProceeder;
             BetweenLevelAdLoader    = _BetweenLevelAdLoader;
@@ -109,40 +113,29 @@ namespace RMAZOR.UI.Panels
                 CommonPrefabSetNames.DialogPanels, "character_died_panel");
             PanelRectTransform = go.RTransform();
             PanelRectTransform.SetGoActive(false);
-            m_PanelAnimator           = go.GetCompItem<Animator>(          "animator");
-            m_Triggerer               = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_ButtonWatchAds          = go.GetCompItem<Button>(            "watch_ads_button");
-            m_ButtonPayMoney          = go.GetCompItem<Button>(            "pay_money_button");
-            m_TextYouHaveMoney        = go.GetCompItem<TextMeshProUGUI>(   "you_have_text");
-            m_MoneyInBankText         = go.GetCompItem<TextMeshProUGUI>(   "money_count_text");
-            m_TextPayMoneyCount       = go.GetCompItem<TextMeshProUGUI>(   "pay_money_count_text");
-            m_TextContinue            = go.GetCompItem<TextMeshProUGUI>(   "continue_text");
-            m_TextRevive              = go.GetCompItem<TextMeshProUGUI>(   "revive_text");
-            m_AnimLoadingAds          = go.GetCompItem<Animator>(          "loading_ads_anim");
-            m_MoneyInBankIcon         = go.GetCompItem<Image>(             "money_icon_1");
-            m_MoneyIconInPayButton    = go.GetCompItem<Image>(             "money_icon_2");
-            m_IconWatchAds            = go.GetCompItem<Image>(             "watch_ads_icon");
-            m_Countdown       = go.GetCompItem<Image>(             "round_filled_border");
-            m_CountdownBackground   = go.GetCompItem<Image>(             "round_filled_border_back");
-            m_Triggerer.Trigger1      = () => Cor.Run(StartCountdown());
-            m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have",
-                    _T => _T.ToUpper()));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue",
-                    _T => _T.ToUpper()));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextRevive, ETextType.MenuUI, "revive?",
-                    _T => _T.ToUpper()));
+            GetPrefabContentObjects(go);
+            LocalizeTextObjectsOnLoad();
+            m_Triggerer.Trigger1 = () => Cor.Run(StartCountdown());
+            m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
+            m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
             m_MoneyInBankIcon.sprite = moneyIconSprite;
             m_MoneyIconInPayButton.sprite = moneyIconSprite;
-            m_ButtonWatchAds.onClick.AddListener(OnWatchAdsButtonClick);
-            m_ButtonPayMoney.onClick.AddListener(OnPayMoneyButtonClick);
             m_Countdown.color = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CountdownBackground.color = Color.black;
+            const string backgroundSpriteNameRaw = "character_died_panel_background";
+            string backgroundSpriteName = ViewSettings.characterDiedPanelBackgroundVariant switch
+            {
+                1 => $"{backgroundSpriteNameRaw}_1",
+                2 => $"{backgroundSpriteNameRaw}_2",
+                3 => $"{backgroundSpriteNameRaw}_3",
+                4 => $"{backgroundSpriteNameRaw}_4",
+                5 => $"{backgroundSpriteNameRaw}_5",
+                _ => $"{backgroundSpriteNameRaw}_1",
+            };
+            m_Background.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
+                "views", backgroundSpriteName);
         }
 
         public void ReturnFromShopPanel()
@@ -234,7 +227,6 @@ namespace RMAZOR.UI.Panels
             Managers.AdsManager.ShowRewardedAd(
                 _OnReward:      () => m_AdsWatched = true, 
                 _OnBeforeShown: () => TickerUtils.PauseTickers(true, Ticker),
-                _OnShown:       () => TickerUtils.PauseTickers(false, Ticker),
                 _OnClosed:      () => TickerUtils.PauseTickers(false, Ticker),
                 _Skippable:     false);
         }
@@ -259,6 +251,42 @@ namespace RMAZOR.UI.Panels
                 Managers.ScoreManager.SaveGameProgress(savedGame, false);
                 m_MoneyPayed = true;
             }
+        }
+        
+        private void GetPrefabContentObjects(GameObject _GameObject)
+        {
+            var go = _GameObject;
+            m_PanelAnimator        = go.GetCompItem<Animator>("animator");
+            m_Triggerer            = go.GetCompItem<AnimationTriggerer>("triggerer");
+            m_ButtonWatchAds       = go.GetCompItem<Button>("watch_ads_button");
+            m_ButtonPayMoney       = go.GetCompItem<Button>("pay_money_button");
+            m_TextYouHaveMoney     = go.GetCompItem<TextMeshProUGUI>("you_have_text");
+            m_MoneyInBankText      = go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_TextPayMoneyCount    = go.GetCompItem<TextMeshProUGUI>("pay_money_count_text");
+            m_TextContinue         = go.GetCompItem<TextMeshProUGUI>("continue_text");
+            m_TextRevive           = go.GetCompItem<TextMeshProUGUI>("revive_text");
+            m_AnimLoadingAds       = go.GetCompItem<Animator>("loading_ads_anim");
+            m_Background           = go.GetCompItem<Image>("background");
+            m_MoneyInBankIcon      = go.GetCompItem<Image>("money_icon_1");
+            m_MoneyIconInPayButton = go.GetCompItem<Image>("money_icon_2");
+            m_IconWatchAds         = go.GetCompItem<Image>("watch_ads_icon");
+            m_Countdown            = go.GetCompItem<Image>("round_filled_border");
+            m_CountdownBackground  = go.GetCompItem<Image>("round_filled_border_back");
+        }
+        
+        private void LocalizeTextObjectsOnLoad()
+        {
+            var locMan = Managers.LocalizationManager;
+            m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
+            locMan.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have",
+                    _T => _T.ToUpper()));
+            locMan.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue",
+                    _T => _T.ToUpper()));
+            locMan.AddTextObject(
+                new LocalizableTextObjectInfo(m_TextRevive, ETextType.MenuUI, "revive?",
+                    _T => _T.ToUpper()));
         }
         
         private void IndicateAdsLoading(bool _Indicate)

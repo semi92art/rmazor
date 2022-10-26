@@ -132,11 +132,11 @@ namespace Editor
         private static void CreateBundleNamesSetList()
         {
             var bundleNamesSet = ResLoader.GetPrefabSet(AssetBundleManager.CommonBundleName);
+            var assetInfos = new List<BundleAssetPathInfo>();
             var allPrefabSets = Resources
                 .LoadAll<PrefabSetScriptableObject>(ResLoader.PrefabSetsLocalPath)
                 .Where(_Set => !_Set.name.Contains(AssetBundleManager.CommonBundleName))
                 .ToList();
-            var assetInfos = new List<BundleAssetPathInfo>();
             foreach (var prefabSet in allPrefabSets)
             {
                 assetInfos

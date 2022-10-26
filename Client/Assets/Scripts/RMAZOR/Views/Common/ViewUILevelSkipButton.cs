@@ -136,7 +136,10 @@ namespace RMAZOR.Views.Common
                     break;
                 case ELevelStage.Finished:
                     if (LevelSkipped)
-                        CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null, true);
+                        CommandsProceeder.RaiseCommand(
+                            EInputCommand.ReadyToUnloadLevel,
+                            null, 
+                            true);
                     Cor.Stop(m_ShowButtonCoroutine);
                     ActivateButton(false);
                     break;
@@ -170,16 +173,17 @@ namespace RMAZOR.Views.Common
         
         private void OnSkipLevelButtonPressed()
         {
-            AdsManager.ShowRewardedAd(_OnReward: () =>
-            {
-                ActivateButton(false);
-                LevelSkipped = true;
-                BetweenLevelAdLoader.ShowAd = false;
-                CommandsProceeder.RaiseCommand(
-                    EInputCommand.FinishLevel, 
-                    new object[] {"skip"}, 
-                    true);
-            });
+            AdsManager.ShowRewardedAd(
+                _OnReward: () =>
+                {
+                    LevelSkipped = true;
+                    BetweenLevelAdLoader.ShowAd = false;
+                    CommandsProceeder.RaiseCommand(
+                        EInputCommand.FinishLevel,
+                        new object[] {"skip"},
+                        true);
+                },
+                _OnClosed: () => ActivateButton(false));
         }
         
         private void InitButton()

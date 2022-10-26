@@ -11,7 +11,7 @@ namespace RMAZOR.Views.Common
         void TryShowAd(
             long _LevelIndex,
             UnityAction _OnBeforeAdShown,
-            UnityAction _OnAfterAdShown,
+            UnityAction _OnAdClosed,
             UnityAction _OnAdWasNotShown);
     }
     
@@ -39,7 +39,7 @@ namespace RMAZOR.Views.Common
         public void TryShowAd(
             long        _LevelIndex,
             UnityAction _OnBeforeAdShown,
-            UnityAction _OnAfterAdShown,
+            UnityAction _OnAdClosed,
             UnityAction _OnAdWasNotShown)
         {
             bool doTryToShowAd = 
@@ -53,14 +53,14 @@ namespace RMAZOR.Views.Common
                 if (showRewardedOnUnload)
                 {
                     AdsManager.ShowRewardedAd(
-                        AdsManager.RewardedAdReady ? _OnBeforeAdShown : null, 
-                        _OnAfterAdShown);
+                        AdsManager.RewardedAdReady ? _OnBeforeAdShown : null,
+                        _OnClosed: _OnAdClosed);
                 }
                 else
                 {
                     AdsManager.ShowInterstitialAd(
                         AdsManager.InterstitialAdReady ? _OnBeforeAdShown : null,
-                        _OnAfterAdShown);
+                        _OnClosed: _OnAdClosed);
 
                 }
                 if (showRewardedOnUnload && !AdsManager.RewardedAdReady

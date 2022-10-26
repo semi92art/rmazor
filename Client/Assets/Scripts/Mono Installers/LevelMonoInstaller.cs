@@ -140,6 +140,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemPathExtraBorders1>().To<ViewMazeItemPathExtraBorders1>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders2>().To<ViewMazeItemPathExtraBorders2>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders3>().To<ViewMazeItemPathExtraBorders3>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBordersEmpty>().To<ViewMazeItemPathExtraBordersEmpty>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBordersSet>().To<ViewMazeItemPathExtraBordersSet>().AsSingle();
             Container.Bind<IViewMazeItemsPathInformer>().To<ViewMazeItemsPathInformer>().AsTransient();
             switch (CommonData.GameId)
@@ -211,7 +212,6 @@ namespace Mono_Installers
             }
             else
             {
-                
                 Container.Bind<IViewUI>()                .To<ViewUI>()                        .AsSingle();
                 Container.Bind<IViewUIRateGamePanelController>().To<ViewUIRateGamePanelController>().AsSingle();
                 Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControls>()            .AsSingle();
@@ -262,63 +262,26 @@ namespace Mono_Installers
 
         private void BindTextureProviders()
         {
-            Container.Bind<IViewMazeGameLogoTextureProvider>()   
-                .To<ViewMazeGameLogoTextureProviderCirclesToSquares>()
-                .AsSingle();
-            Container.Bind<IViewMazeBackgroundTextureController>()
-                .To<ViewMazeBackgroundTextureController>()
+            Container.Bind<IFullscreenTextureProviderCustom>()
+                .To<FullscreenTextureProviderCustom>()
                 .AsSingle();
             Container.Bind<IFullscreenTextureProviderTriangles2>()
                 .To<FullscreenTextureProviderTriangles2>()
                 .AsSingle();
-            Container.Bind<IFullscreenTextureProviderParallaxGradientCircles>()
-                .To<FullscreenTextureProviderParallaxGradientCircles>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderNeonStream>()
-                .To<FullscreenTextureProviderNeonStream>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderConnectedDots>()
-                .To<FullscreenTextureProviderConnectedDots>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderDancingDots>()
-                .To<FullscreenTextureProviderDancingDots>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderSwirlForPlanet>()
-                .To<FullscreenTextureProviderSwirlForPlanet>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderWormHole>()
-                .To<FullscreenTextureProviderWormHole>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderFunnyRain>()
-                .To<FullscreenTextureProviderFunnyRain>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderRaveSquares>()
-                .To<FullscreenTextureProviderRaveSquares>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderFibrousRing>()
-                .To<FullscreenTextureProviderFibrousRing>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderFallInDeep>()
-                .To<FullscreenTextureProviderFallInDeep>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderBluePurplePlaid>()
-                .To<FullscreenTextureProviderBluePurplePlaid>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderLogichroma>()
-                .To<FullscreenTextureProviderLogichroma>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderGradient>()
-                .To<FullscreenTextureProviderGradient>()
-                .AsSingle();
-            Container.Bind<IFullscreenTextureProviderSolid>()
-                .To<FullscreenTextureProviderSolid>()
-                .AsSingle();
-            
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()
                 .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProvider>()
                 .To<FullscreenTransitionTextureProviderPlayground>()
+                .AsSingle();
+            Container.Bind<IBackgroundTextureProviderSet>()
+                .To<BackgroundTextureProviderSetImpl>()
+                .AsSingle();
+            Container.Bind<IViewMazeGameLogoTextureProvider>()   
+                .To<ViewMazeGameLogoTextureProviderCirclesToSquares>()
+                .AsSingle();
+            Container.Bind<IViewMazeBackgroundTextureController>()
+                .To<ViewMazeBackgroundTextureController>()
                 .AsSingle();
         }
 

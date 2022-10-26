@@ -1054,6 +1054,8 @@ MonoBehaviour:
       name: revive_text
     - item: {fileID: 3971441796366243174}
       name: round_filled_border_back
+    - item: {fileID: 4671032371408879724}
+      name: background
 --- !u!95 &5063241499148990229
 Animator:
   serializedVersion: 4

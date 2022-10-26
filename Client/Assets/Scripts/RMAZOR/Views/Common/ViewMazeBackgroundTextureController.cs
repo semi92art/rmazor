@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Debugging;
-using Common.Entities;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -21,22 +17,18 @@ namespace RMAZOR.Views.Common
 {
     public class ViewMazeBackgroundTextureController : ViewMazeBackgroundTextureControllerBase
     {
-        #region constants
-
-        private const float QualityLevel = 0.5f;
-        
-        #endregion
-        
         #region nonpublic members
 
         private static readonly int  MainTexId = Shader.PropertyToID("_MainTex");
 
+        private readonly Dictionary<float, RenderTexture> m_RenderTexturesDict
+            = new Dictionary<float, RenderTexture>();
+            
         private IList<Triangles2TextureProps> m_Triangles2TextureSetItems;
         private List<ITextureProps>           m_TextureSetItems;
-        private Camera                        m_RenderCamera;
-        private RenderTexture                 m_RenderTexture;
         private MeshRenderer                  m_MainRenderer;
         private Material                      m_MainRendererMaterial;
+        private Camera                        m_RenderCamera;
 
         private bool m_IsFirstLoad = true;
         private bool m_IsLowPerformance;
@@ -45,49 +37,25 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ICameraProvider                           CameraProvider                 { get; }
-        private IContainersGetter                         ContainersGetter               { get; }
-        private IFullscreenTextureProviderRaveSquares     TextureProviderRaveSquares     { get; }
-        private IFullscreenTextureProviderSwirlForPlanet  TextureProviderSwirlForPlanet  { get; }
-        private IFullscreenTextureProviderTriangles2      TextureProviderTriangles2      { get; }
-        private IFullscreenTextureProviderFallInDeep      TextureProviderFallInDeep      { get; }
-        private IFullscreenTextureProviderBluePurplePlaid TextureProviderBluePurplePlaid { get; }
-        private IFullscreenTextureProviderLogichroma      TextureProviderLogichroma      { get; }
-        private IFullscreenTextureProviderGradient        TextureProviderGradient        { get; }
-        private IFullscreenTextureProviderSolid           TextureProviderSolid           { get; }
-        private IFpsCounter                               FpsCounter                     { get; }
-
+        private ICameraProvider               CameraProvider     { get; }
+        private IContainersGetter             ContainersGetter   { get; }
+        private IBackgroundTextureProviderSet TextureProviderSet { get; }
+        
         private ViewMazeBackgroundTextureController(
-            ICameraProvider                           _CameraProvider,
-            IContainersGetter                         _ContainersGetter,
-            IRemotePropertiesRmazor                   _RemoteProperties,
-            IColorProvider                            _ColorProvider,
-            IPrefabSetManager                         _PrefabSetManager,
-            IFullscreenTextureProviderRaveSquares     _TextureProviderRaveSquares,
-            IFullscreenTextureProviderSwirlForPlanet  _TextureProviderSwirlForPlanet,
-            IFullscreenTextureProviderTriangles2      _TextureProviderTriangles2,
-            IFullscreenTextureProviderFallInDeep      _TextureProviderFallInDeep,
-            IFullscreenTextureProviderBluePurplePlaid _TextureProviderBluePurplePlaid,
-            IFullscreenTextureProviderLogichroma      _TextureProviderLogichroma,
-            IFullscreenTextureProviderGradient        _TextureProviderGradient,
-            IFullscreenTextureProviderSolid           _TextureProviderSolid,
-            IFpsCounter                               _FpsCounter)
+            ICameraProvider                  _CameraProvider,
+            IContainersGetter                _ContainersGetter,
+            IRemotePropertiesRmazor          _RemoteProperties,
+            IColorProvider                   _ColorProvider,
+            IPrefabSetManager                _PrefabSetManager,
+            IBackgroundTextureProviderSet    _TextureProviderSet)
             : base(
                 _RemoteProperties,
                 _ColorProvider, 
                 _PrefabSetManager)
         {
-            CameraProvider                 = _CameraProvider;
-            ContainersGetter               = _ContainersGetter;
-            TextureProviderRaveSquares     = _TextureProviderRaveSquares;
-            TextureProviderSwirlForPlanet  = _TextureProviderSwirlForPlanet;
-            TextureProviderTriangles2      = _TextureProviderTriangles2;
-            TextureProviderFallInDeep      = _TextureProviderFallInDeep;
-            TextureProviderBluePurplePlaid = _TextureProviderBluePurplePlaid;
-            TextureProviderLogichroma      = _TextureProviderLogichroma;
-            TextureProviderGradient        = _TextureProviderGradient;
-            TextureProviderSolid           = _TextureProviderSolid;
-            FpsCounter                     = _FpsCounter;
+            CameraProvider        = _CameraProvider;
+            ContainersGetter      = _ContainersGetter;
+            TextureProviderSet    = _TextureProviderSet;
         }
 
         #endregion
@@ -99,10 +67,9 @@ namespace RMAZOR.Views.Common
             CommonDataRmazor.BackgroundTextureController = this;
             InitTextureProviders();
             SetTextureProvidersPosition();
-            InitRenderTexture();
+            InitRenderTextures();
             InitRenderCamera();
             InitMainBackgroundRenderer();
-            // CheckPerformance(); // пока не уверен что это нужно
             base.Init();
         }
 
@@ -116,8 +83,6 @@ namespace RMAZOR.Views.Common
         public void SetAdditionalInfo(AdditionalColorPropsAdditionalInfo _AdditionalInfo)
         {
             AdditionalInfo = _AdditionalInfo;
-            TextureProviderSwirlForPlanet.SetAdditionalParams(
-                new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
         }
 
         #endregion
@@ -126,14 +91,18 @@ namespace RMAZOR.Views.Common
 
         private void InitTextureProviders()
         {
-            foreach (var texProvider in GetProviders())
-                texProvider.Init();
+            TextureProviderSet.Init();
+            foreach (var provider in TextureProviderSet.GetSet())
+            {
+                provider.Renderer.gameObject.layer = LayerMask.NameToLayer("μ Mu");
+                provider.Activate(false);
+            }
         }
 
         private void SetTextureProvidersPosition()
         {
-            foreach (var texProvider in GetProviders())
-                texProvider.Renderer.transform.SetLocalPosXY(Vector2.right * 300f);
+            foreach (var texProvider in TextureProviderSet.GetSet())
+                texProvider.Renderer.transform.SetLocalPosXY(Vector2.left * 300f);
         }
 
         private void InitMainBackgroundRenderer()
@@ -141,10 +110,10 @@ namespace RMAZOR.Views.Common
             var parent = ContainersGetter.GetContainer(ContainerNames.Background);
             var go = PrefabSetManager.InitPrefab(
                 parent, "background", "background_texture");
+            go.name = "Main Background Renderer";
             m_MainRenderer = go.GetCompItem<MeshRenderer>("renderer");
             m_MainRendererMaterial = PrefabSetManager.InitObject<Material>(
                 "materials", "main_back_main_material");
-            m_MainRendererMaterial.SetTexture(MainTexId, m_RenderTexture);
             m_MainRenderer.sharedMaterial = m_MainRendererMaterial;
             ScaleTextureToViewport(m_MainRenderer);
             m_MainRenderer.sortingOrder = SortingOrders.BackgroundTexture;
@@ -159,12 +128,18 @@ namespace RMAZOR.Views.Common
             tr.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;
         }
 
-        private void InitRenderTexture()
+        private void InitRenderTextures()
         {
             var scrSize = GraphicUtils.ScreenSize;
-            m_RenderTexture = new RenderTexture(
-                (int)(scrSize.x * QualityLevel), 
-                (int)(scrSize.y * QualityLevel), 0);
+            foreach (float quality in TextureProviderSet.GetSet()
+                .Select(_P => _P.Quality)
+                .Distinct())
+            {
+                var renderTexture = new RenderTexture(
+                    (int) (scrSize.x * quality),
+                    (int) (scrSize.y * quality), 0);
+                m_RenderTexturesDict.Add(quality, renderTexture);
+            }
         }
 
         private void InitRenderCamera()
@@ -174,10 +149,9 @@ namespace RMAZOR.Views.Common
             camGo.SetParent(container);
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;
-            cam.transform.SetLocalPosXY(Vector2.right * 300f).SetLocalPosZ(-1f);
+            cam.transform.SetLocalPosXY(Vector2.left * 300f).SetLocalPosZ(-1f);
             cam.depth = 2f;
             cam.orthographicSize = CameraProvider.Camera.orthographicSize;
-            cam.targetTexture = m_RenderTexture;
             cam.cullingMask = LayerMask.GetMask("μ Mu");
             m_RenderCamera = cam;
         }
@@ -236,82 +210,27 @@ namespace RMAZOR.Views.Common
 
         private void ActivateConcreteBackgroundTexture(long _LevelIndex, out IFullscreenTextureProvider _Provider)
         {
-            foreach (var texProvider in GetProviders())
+            var set = TextureProviderSet.GetSet();
+            foreach (var texProvider in set)
                 texProvider.Activate(false);
-            if (m_IsLowPerformance)
-            {
-                TextureProviderBluePurplePlaid.Activate(true);
-                    _Provider = TextureProviderBluePurplePlaid;
-                    return;
-            }
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int c = group % 6;
-            switch (c)
+            int idx = (group - 1) % set.Count;
+            _Provider =  set[idx];
+            switch (_Provider)
             {
-                case 1: _Provider = TextureProviderRaveSquares;     break;
-                case 2: _Provider = TextureProviderSwirlForPlanet;
-                    if (AdditionalInfo != null)
-                    {
-                        TextureProviderSwirlForPlanet.SetAdditionalParams(
-                            new TextureProviderSwirlForPlanetAdditionalParams(AdditionalInfo.swirlForPlanetColorCoefficient1));
-                    }
+                case IFullscreenTextureProviderTriangles2 triangles2:
+                    int idx2 = group % m_TextureSetItems.Count;
+                    var setItem = m_TextureSetItems[idx2];
+                    triangles2.Activate(true);
+                    triangles2.SetProperties((Triangles2TextureProps)setItem);
                     break;
-                case 3: _Provider = TextureProviderLogichroma;      break;
-                case 4: _Provider = TextureProviderFallInDeep;      break;
-                case 5: _Provider = TextureProviderBluePurplePlaid; break;
-                case 0:
-                    int idx = group % m_TextureSetItems.Count;
-                    var setItem = m_TextureSetItems[idx];
-                    TextureProviderTriangles2.Activate(true);
-                    TextureProviderTriangles2.SetProperties((Triangles2TextureProps)setItem);
-                    _Provider = TextureProviderTriangles2;
-                    break;
-                default: throw new SwitchCaseNotImplementedException(c);
             }
             _Provider.Activate(true);
+            var renderTexture = m_RenderTexturesDict[_Provider.Quality];
+            m_RenderCamera.targetTexture = renderTexture;
+            m_MainRendererMaterial.SetTexture(MainTexId, renderTexture);
         }
-
-        private void CheckPerformance()
-        {
-            bool isLowPerformanceCached = SaveUtils.GetValue(SaveKeysCommon.LowPerformanceDevice);
-            if (isLowPerformanceCached)
-            {
-                m_IsLowPerformance = true;
-                ActivateAndShowBackgroundTexture(0);
-                return;
-            }
-            var entity = FpsCounter.IsLowPerformance;
-            Cor.Run(Cor.WaitWhile(
-                () => !FpsCounter.Initialized 
-                      || entity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (entity.Result != EEntityResult.Success)
-                    {
-                        Dbg.LogWarning("Failed to check performance");
-                        return;
-                    }
-                    m_IsLowPerformance = entity.Value;
-                    if (m_IsLowPerformance)
-                        ActivateAndShowBackgroundTexture(0);
-                }));
-        }
-
-        private IEnumerable<IFullscreenTextureProvider> GetProviders()
-        {
-            return new List<IFullscreenTextureProvider>
-            {
-                TextureProviderSwirlForPlanet ,
-                TextureProviderRaveSquares    ,
-                TextureProviderTriangles2     ,
-                TextureProviderFallInDeep     ,
-                TextureProviderBluePurplePlaid,
-                TextureProviderLogichroma     ,
-                TextureProviderGradient       ,
-                TextureProviderSolid          ,
-            };
-        }
-
+        
         #endregion
     }
 }
