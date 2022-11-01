@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
@@ -179,7 +180,7 @@ namespace RMAZOR.Views.MazeItems
             int sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             var collisionDetector = go.GetCompItem<CollisionDetector2D>("collision_detector");
             collisionDetector.OnTriggerEnter += CheckForCharacterDeath;
-            collisionDetector.gameObject.layer = LayerMask.NameToLayer("ζ Dzeta");
+            collisionDetector.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Dzeta);
             m_MainShapes = go.GetCompItem<Transform>("main_shapes")
                 .GetComponentsInChildren<ShapeRenderer>()
                 .Select(_Shape => _Shape.SetSortingOrder(sortingOrder))

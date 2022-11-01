@@ -21,7 +21,7 @@ namespace RMAZOR.Views.Characters
 
         private bool                m_Initialized;
         private bool                m_Activated;
-        private EMazeMoveDirection? m_MoveDirection;
+        private EDirection? m_MoveDirection;
         private Vector2?            m_FromPos;
         private Vector2?            m_DeathPos;
 
@@ -202,7 +202,7 @@ namespace RMAZOR.Views.Characters
             }
         }
         
-        private void ThrowParticlesOnMoveFinished(EMazeMoveDirection _MoveDirection)
+        private void ThrowParticlesOnMoveFinished(EDirection _MoveDirection)
         {
             const float directSpeedCoefficient = 2f;
             const float orthogonalSpeedCoeficient = 4f;
@@ -228,10 +228,10 @@ namespace RMAZOR.Views.Characters
                 var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff;
                 float orthDirCoeff2 = _MoveDirection switch
                 {
-                    EMazeMoveDirection.Left  => -1f,
-                    EMazeMoveDirection.Down  => -1f,
-                    EMazeMoveDirection.Right => 1f,
-                    EMazeMoveDirection.Up    => 1f,
+                    EDirection.Left  => -1f,
+                    EDirection.Down  => -1f,
+                    EDirection.Right => 1f,
+                    EDirection.Up    => 1f,
                     _ => throw new SwitchExpressionException(_MoveDirection)
                 };
                 orthDir *= orthDirCoeff2;

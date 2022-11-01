@@ -204,14 +204,20 @@ namespace Mono_Installers
                 Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
             }
             
-            Container.Bind<IFpsCounter>().To<FpsCounter>().AsSingle();
-            // Container.Bind<IFpsCounter>().To<FpsCounterFake>().AsSingle();
+            Container.Bind<IFpsCounter>()
+                .To<FpsCounter>()
+                // .To<FpsCounterFake>()
+                .AsSingle();
             
-            Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleView).AsSingle();
-            // Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleViewFake).AsSingle();
+            Container.Bind<IDebugConsoleView>()
+                .FromComponentInNewPrefab(debugConsoleView)
+                // .FromComponentInNewPrefab(debugConsoleViewFake)
+                .AsSingle();
             
-            Container.Bind<IAssetBundleManager>()       .To<AssetBundleManager>()           .AsSingle();
-            // Container.Bind<IAssetBundleManager>()       .To<AssetBundleManagerFake>()        .AsSingle();
+            Container.Bind<IAssetBundleManager>()
+                .To<AssetBundleManager>()
+                // .To<AssetBundleManagerFake>()
+                .AsSingle();
             
 #if UNITY_ANDROID
             Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();

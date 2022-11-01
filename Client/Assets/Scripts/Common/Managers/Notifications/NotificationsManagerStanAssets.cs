@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using UnityEngine;
 #if UNITY_ANDROID
 using SA.Android.App;
@@ -10,7 +11,7 @@ namespace Common.Managers.Notifications
     {
         #region constants
 
-        private const string ChannelId = "rmazor";
+        private const string ChannelId = "rmazor1";
         
         #endregion
         
@@ -94,14 +95,25 @@ namespace Common.Managers.Notifications
 #endif
         }
 
-        private void CreateChannelIfNotExist()
+        private static void CreateChannelIfNotExist()
         {
 #if UNITY_ANDROID
             var channel = AN_NotificationManager.GetNotificationChannel(ChannelId);
-            if (channel != null) 
+            if (channel != null)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"Notification channel with id {ChannelId} exists:");
+                sb.AppendLine("Id: " + channel.Id);
+                sb.AppendLine("Name: " + channel.Name);
+                sb.AppendLine("Description: " + channel.Description);
+                sb.AppendLine("Importance: " + channel.Importance);
+                sb.AppendLine("Sound: " + channel.Sound);
+                sb.AppendLine("Can show bridge: " + channel.CanShowBadge);
+                Dbg.LogWarning(sb.ToString());
                 return;
-            const string name = "rmazor";
-            const string description = "rmazor";
+            }
+            const string name = "rmazor_name";
+            const string description = "rmazor_descr";
             var importance = AN_NotificationManager.Importance.DEFAULT;
             channel = new AN_NotificationChannel(ChannelId, name, importance);
             channel.Description = description;

@@ -187,6 +187,7 @@ namespace Editor
             m_ColorProvider.SetColor(ColorIds.GameUiAlternative, props.GetColor(props.uiBackgroundFillType));
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
             CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
+            CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
         }
 
         private void SetNextOrPreviousOrCurrentAdditionalColorSet(bool? _Next)

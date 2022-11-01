@@ -23,9 +23,9 @@ namespace RMAZOR
         {
             float ratio = GraphicUtils.AspectRatio;
             float leftScreenOffset, rightScreenOffset;
-            if (ratio > 0.7f)       (leftScreenOffset, rightScreenOffset) = (5f, 5f);
-            else if (ratio > 0.54f) (leftScreenOffset, rightScreenOffset) = (3f, 3f);
-            else                    (leftScreenOffset, rightScreenOffset) = (1f, 1f);
+            if (ratio > 0.7f)       (leftScreenOffset, rightScreenOffset) = (1f, 1f);
+            else if (ratio > 0.54f) (leftScreenOffset, rightScreenOffset) = (1f, 1f);
+            else                    (leftScreenOffset, rightScreenOffset) = (0f, 0f);
             return new Tuple<float, float>(leftScreenOffset, rightScreenOffset);
         }
         
@@ -73,40 +73,40 @@ namespace RMAZOR
                 .Any(_Info => GravityItemTypes.ContainsAlt(_Info.Type));
         }
         
-        public static V2Int GetDirectionVector(EMazeMoveDirection _Direction, EMazeOrientation _Orientation)
+        public static V2Int GetDirectionVector(EDirection _Direction, EMazeOrientation _Orientation)
         {
             return _Orientation switch
             {
                 EMazeOrientation.North => _Direction switch
                 {
-                    EMazeMoveDirection.Up    => V2Int.Up,
-                    EMazeMoveDirection.Right => V2Int.Right,
-                    EMazeMoveDirection.Down  => V2Int.Down,
-                    EMazeMoveDirection.Left  => V2Int.Left,
+                    EDirection.Up    => V2Int.Up,
+                    EDirection.Right => V2Int.Right,
+                    EDirection.Down  => V2Int.Down,
+                    EDirection.Left  => V2Int.Left,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
                 EMazeOrientation.East => _Direction switch
                 {
-                    EMazeMoveDirection.Up    => V2Int.Left,
-                    EMazeMoveDirection.Right => V2Int.Up,
-                    EMazeMoveDirection.Down  => V2Int.Right,
-                    EMazeMoveDirection.Left  => V2Int.Down,
+                    EDirection.Up    => V2Int.Left,
+                    EDirection.Right => V2Int.Up,
+                    EDirection.Down  => V2Int.Right,
+                    EDirection.Left  => V2Int.Down,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
                 EMazeOrientation.South => _Direction switch
                 {
-                    EMazeMoveDirection.Up    => V2Int.Down,
-                    EMazeMoveDirection.Right => V2Int.Left,
-                    EMazeMoveDirection.Down  => V2Int.Up,
-                    EMazeMoveDirection.Left  => V2Int.Right,
+                    EDirection.Up    => V2Int.Down,
+                    EDirection.Right => V2Int.Left,
+                    EDirection.Down  => V2Int.Up,
+                    EDirection.Left  => V2Int.Right,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
                 EMazeOrientation.West => _Direction switch
                 {
-                    EMazeMoveDirection.Up    => V2Int.Right,
-                    EMazeMoveDirection.Right => V2Int.Down,
-                    EMazeMoveDirection.Down  => V2Int.Left,
-                    EMazeMoveDirection.Left  => V2Int.Up,
+                    EDirection.Up    => V2Int.Right,
+                    EDirection.Right => V2Int.Down,
+                    EDirection.Down  => V2Int.Left,
+                    EDirection.Left  => V2Int.Up,
                     _                        => throw new SwitchCaseNotImplementedException(_Direction)
                 },
                 _ => throw new SwitchCaseNotImplementedException(_Orientation)
@@ -115,61 +115,61 @@ namespace RMAZOR
         
         public static V2Int GetDirectionVector(V2Int _DirectionVector, EMazeOrientation _Orientation)
         {
-            EMazeMoveDirection direction = default;
+            EDirection direction = default;
             if (_DirectionVector == V2Int.Left)
-                direction = EMazeMoveDirection.Left;
+                direction = EDirection.Left;
             else if (_DirectionVector == V2Int.Right)
-                direction = EMazeMoveDirection.Right;
+                direction = EDirection.Right;
             else if (_DirectionVector == V2Int.Down)
-                direction = EMazeMoveDirection.Down;
+                direction = EDirection.Down;
             else if (_DirectionVector == V2Int.Up)
-                direction = EMazeMoveDirection.Up;
+                direction = EDirection.Up;
             return GetDirectionVector(direction, _Orientation);
         }
 
-        public static EMazeMoveDirection GetMoveDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
+        public static EDirection GetMoveDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
         {
             switch (_Orientation)
             {
                 case EMazeOrientation.North:
                     if (_DirectionVector == V2Int.Up)
-                        return EMazeMoveDirection.Up;
+                        return EDirection.Up;
                     else if (_DirectionVector == V2Int.Right)
-                        return EMazeMoveDirection.Right;
+                        return EDirection.Right;
                     else if (_DirectionVector == V2Int.Down)
-                        return EMazeMoveDirection.Down;
+                        return EDirection.Down;
                     else if (_DirectionVector == V2Int.Left)
-                        return EMazeMoveDirection.Left;
+                        return EDirection.Left;
                     break;
                 case EMazeOrientation.East:
                     if (_DirectionVector == V2Int.Left)
-                        return EMazeMoveDirection.Up;
+                        return EDirection.Up;
                     else if (_DirectionVector == V2Int.Up)
-                        return EMazeMoveDirection.Right;
+                        return EDirection.Right;
                     else if (_DirectionVector == V2Int.Right)
-                        return EMazeMoveDirection.Down;
+                        return EDirection.Down;
                     else if (_DirectionVector == V2Int.Down)
-                        return EMazeMoveDirection.Left;
+                        return EDirection.Left;
                     break;
                 case EMazeOrientation.South:
                     if (_DirectionVector == V2Int.Down)
-                        return EMazeMoveDirection.Up;
+                        return EDirection.Up;
                     else if (_DirectionVector == V2Int.Left)
-                        return EMazeMoveDirection.Right;
+                        return EDirection.Right;
                     else if (_DirectionVector == V2Int.Up)
-                        return EMazeMoveDirection.Down;
+                        return EDirection.Down;
                     else if (_DirectionVector == V2Int.Right)
-                        return EMazeMoveDirection.Left;
+                        return EDirection.Left;
                     break;
                 case EMazeOrientation.West:
                     if (_DirectionVector == V2Int.Right)
-                        return EMazeMoveDirection.Up;
+                        return EDirection.Up;
                     else if (_DirectionVector == V2Int.Down)
-                        return EMazeMoveDirection.Right;
+                        return EDirection.Right;
                     else if (_DirectionVector == V2Int.Left)
-                        return EMazeMoveDirection.Down;
+                        return EDirection.Down;
                     else if (_DirectionVector == V2Int.Up)
-                        return EMazeMoveDirection.Left;
+                        return EDirection.Left;
                     break;
                 default: throw new SwitchCaseNotImplementedException(_Orientation);
             }

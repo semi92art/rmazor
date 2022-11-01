@@ -5,7 +5,7 @@ using RMAZOR.Models.MazeInfos;
 namespace RMAZOR.Models
 {
     public enum EMazeOrientation { North, East, South, West }
-    public enum EMazeMoveDirection { Up, Right, Down, Left }
+    public enum EDirection { Up, Right, Down, Left }
     
     public interface IModelData
     {

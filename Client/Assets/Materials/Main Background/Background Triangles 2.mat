@@ -12,8 +12,8 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _ALPHABLEND_ON
+  - _MIRROR_ON
   - _SMOOTH_ON
-  - _TRUNCCOLOR2_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -61,30 +61,30 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _A: 0.13
+    - _A: -1.069
     - _AnimationRange: 0.4
     - _AnimationSpeed: 5
-    - _B: 0.148
+    - _B: 0.069
     - _BumpScale: 1
-    - _C: 0.66
+    - _C: 8.4
     - _Cutoff: 0.469
-    - _D: 0.189
+    - _D: 1
     - _DetailNormalMapScale: 1
-    - _Direction: 0.665
+    - _Direction: 0
     - _DstBlend: 10
-    - _E: 0.275
-    - _F: 9
+    - _E: 0.631
+    - _F: 20
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
     - _Metallic: 0
-    - _Mirror: 0
+    - _Mirror: 1
     - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _ParallaxSize: 1
-    - _Ratio: 10.8
-    - _Size: 10
+    - _Ratio: 100
+    - _Size: 50
     - _Smooth: 1
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -92,7 +92,7 @@ Material:
     - _SrcBlend: 5
     - _Tiling: 1
     - _Trunc: 0
-    - _TruncColor2: 1
+    - _TruncColor2: 0
     - _UVSec: 0
     - _Value: 0.58
     - _WarpScale: 0
@@ -100,7 +100,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _Color: {r: 0.68594736, g: 0.71211845, b: 0.7906316, a: 0.7921569}
-    - _Color1: {r: 0.33333334, g: 0.7921569, b: 0.52838236, a: 1}
-    - _Color2: {r: 0.6037736, g: 0, b: 0.20405693, a: 1}
+    - _Color1: {r: 0.6698113, g: 0.5687542, b: 0.43284976, a: 1}
+    - _Color2: {r: 0.09411764, g: 0.23698807, b: 0.40392157, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

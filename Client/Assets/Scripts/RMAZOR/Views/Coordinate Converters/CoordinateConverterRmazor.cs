@@ -96,7 +96,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             while (Predicate1() && k < _Info.Size.X)
             {
                 foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Position.X == k))
-                    IsTrapReactOrOtherBlock(mazeItem, EMazeMoveDirection.Right, ref hasTrapsReact, ref hasOtherBlocks);
+                    IsTrapReactOrOtherBlock(mazeItem, EDirection.Right, ref hasTrapsReact, ref hasOtherBlocks);
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.X == k);
                 k++;
             }
@@ -107,7 +107,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             {
                 k--;
                 foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Position.X == k))
-                    IsTrapReactOrOtherBlock(mazeItem, EMazeMoveDirection.Left, ref hasTrapsReact, ref hasOtherBlocks);
+                    IsTrapReactOrOtherBlock(mazeItem, EDirection.Left, ref hasTrapsReact, ref hasOtherBlocks);
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.X == k);
             }
             m_CutRight = Predicate2() && !hasOtherBlocks && k >= 0;
@@ -116,7 +116,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             while (Predicate1() && k < _Info.Size.Y)
             {
                 foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Position.Y == k))
-                    IsTrapReactOrOtherBlock(mazeItem, EMazeMoveDirection.Up, ref hasTrapsReact, ref hasOtherBlocks);
+                    IsTrapReactOrOtherBlock(mazeItem, EDirection.Up, ref hasTrapsReact, ref hasOtherBlocks);
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.Y == k);
                 k++;
             }
@@ -127,7 +127,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             {
                 k--;
                 foreach (var mazeItem in _Info.MazeItems.Where(_Item => _Item.Position.Y == k))
-                    IsTrapReactOrOtherBlock(mazeItem, EMazeMoveDirection.Down, ref hasTrapsReact, ref hasOtherBlocks);
+                    IsTrapReactOrOtherBlock(mazeItem, EDirection.Down, ref hasTrapsReact, ref hasOtherBlocks);
                 hasPathItems |= _Info.PathItems.Any(_Item => _Item.Position.Y == k);
             }
             m_CutTop = Predicate2() && !hasOtherBlocks && k >= 0;
@@ -148,7 +148,7 @@ namespace RMAZOR.Views.Coordinate_Converters
 
         private static void IsTrapReactOrOtherBlock(
             MazeItem _Item,
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             ref bool? _IsTrapsReact,
             ref bool _IsOtherBlock)
         {

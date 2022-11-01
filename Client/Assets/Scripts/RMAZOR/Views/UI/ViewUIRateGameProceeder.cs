@@ -82,12 +82,11 @@ namespace RMAZOR.Views.UI
 
         private bool MustShowPanelOnLevelFinished(long _LevelIndex)
         {
-            if (m_RatePanelShownThisSession || RmazorUtils.IsLastLevelInGroup(_LevelIndex))
-                return false;
-            if (_LevelIndex == ViewSettings.firstLevelToRateGame)
-                return true;
-            return m_LevelsFinishedThisSession >= ViewSettings.firstLevelToRateGameThisSession
-                   && m_CanShowPanelThisSession;
+            return !m_RatePanelShownThisSession
+                   && !RmazorUtils.IsLastLevelInGroup(_LevelIndex)
+                   && m_CanShowPanelThisSession
+                   && _LevelIndex >= ViewSettings.firstLevelToRateGame
+                   && m_LevelsFinishedThisSession >= ViewSettings.firstLevelToRateGameThisSession;
         }
 
         #endregion

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.CameraProviders;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
@@ -225,7 +226,7 @@ namespace RMAZOR.Views.MazeItems
             m_LookAtHelper = go.GetCompItem<Transform>("look_at_helper");
             m_ProjectileTailSpawnPoint = go.GetCompItem<Transform>("projectile_tail_spawn_point");
             collisionDetector.OnTriggerEnter += CheckForCharacterDeath;
-            collisionDetector.gameObject.layer = LayerMask.NameToLayer("ζ Dzeta");
+            collisionDetector.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Dzeta);
             m_OuterDisc = go.GetCompItem<Disc>("outer_disc")
                 .SetSortingOrder(sortingOrder - 1)
                 .SetZTest(CompareFunction.LessEqual)

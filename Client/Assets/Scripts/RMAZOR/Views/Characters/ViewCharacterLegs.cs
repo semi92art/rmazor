@@ -151,7 +151,7 @@ namespace RMAZOR.Views.Characters
                     _Args.PreviousStage == ELevelStage.Paused 
                     && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                 {
-                    SetLegsTransform(EMazeMoveDirection.Down, true);
+                    SetLegsTransform(EDirection.Down, true);
                     ActivateShapes(true);
                 }
                     break;
@@ -231,10 +231,10 @@ namespace RMAZOR.Views.Characters
             var localScale = Vector2.one * CoordinateConverter.Scale * RelativeLocalScale;
             m_Leg1Body.transform.SetLocalScaleXY(localScale);
             m_Leg2Body.transform.SetLocalScaleXY(localScale);
-            SetLegsTransform(EMazeMoveDirection.Down);
+            SetLegsTransform(EDirection.Down);
         }
         
-        private void SetLegsTransform(EMazeMoveDirection _Direction, bool _ByLastOrientation = false)
+        private void SetLegsTransform(EDirection _Direction, bool _ByLastOrientation = false)
         {
             float scale = CoordinateConverter.Scale;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
@@ -249,10 +249,10 @@ namespace RMAZOR.Views.Characters
                         && _ByLastOrientation;
             float legsAngle = _Direction switch
             {
-                EMazeMoveDirection.Down  => !orth ? 0f   : 90f,
-                EMazeMoveDirection.Right => !orth ? 90f  : 0f,
-                EMazeMoveDirection.Up    => !orth ? 180f : 90f,
-                EMazeMoveDirection.Left  => !orth ? 270f : 0f,
+                EDirection.Down  => !orth ? 0f   : 90f,
+                EDirection.Right => !orth ? 90f  : 0f,
+                EDirection.Up    => !orth ? 180f : 90f,
+                EDirection.Left  => !orth ? 270f : 0f,
                 _                        => default
             };
             var rotation =  Quaternion.Euler(Vector3.forward * legsAngle);

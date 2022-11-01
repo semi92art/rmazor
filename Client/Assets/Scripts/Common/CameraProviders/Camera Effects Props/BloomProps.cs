@@ -16,7 +16,7 @@ namespace Common.CameraProviders.Camera_Effects_Props
 
     
     [Serializable]
-    public class BloomPropsAlt
+    public class BloomPropsArgs
     {
         public bool  enableBloom;
         public float diffusion;

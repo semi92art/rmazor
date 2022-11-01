@@ -14,51 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - name: additional_background_texture_1_low_ratio
-      item: {fileID: 21300000, guid: 5b320679fa5f9ed48a56a2716cde3555, type: 3}
-      bundle: 0
-    - name: additional_background_texture_1_middle_ratio
-      item: {fileID: 21300000, guid: d10572e9b782e8e489e571870b9fe5ed, type: 3}
-      bundle: 0
-    - name: additional_background_texture_1_high_ratio
-      item: {fileID: 21300000, guid: 36fcd6a4eac499846843b91dbeef515c, type: 3}
-      bundle: 0
-    - name: additional_background_texture_2_low_ratio
-      item: {fileID: 21300000, guid: 0a766ec5ecc336d409a5c85606d84f1b, type: 3}
-      bundle: 0
-    - name: additional_background_texture_2_middle_ratio
-      item: {fileID: 21300000, guid: 14523f0b6c37e2a4eabe70e1c6f1b2a3, type: 3}
-      bundle: 0
-    - name: additional_background_texture_2_high_ratio
-      item: {fileID: 21300000, guid: a68ae6862a263264d95dbd2d2fafbed5, type: 3}
-      bundle: 0
-    - name: additional_background_texture_3_low_ratio
-      item: {fileID: 21300000, guid: 452467eff6e9fa5448a964fd16cb52f8, type: 3}
-      bundle: 0
-    - name: additional_background_texture_3_middle_ratio
-      item: {fileID: 21300000, guid: accf1631da1f9d14880c3df908083c86, type: 3}
-      bundle: 0
-    - name: additional_background_texture_3_high_ratio
-      item: {fileID: 21300000, guid: 60f32dc13f8fac244b13aebc74b3b848, type: 3}
-      bundle: 0
-    - name: additional_background_texture_4_low_ratio
-      item: {fileID: 21300000, guid: 55579d6d633170045b20c546441be97a, type: 3}
-      bundle: 0
-    - name: additional_background_texture_4_middle_ratio
-      item: {fileID: 21300000, guid: aab3b7875e240fc43b3b7c7fe1c6a3d0, type: 3}
-      bundle: 0
-    - name: additional_background_texture_4_high_ratio
-      item: {fileID: 21300000, guid: c52259a25638feb459b4e39af4c234c1, type: 3}
-      bundle: 0
-    - name: additional_background_texture_5_low_ratio
-      item: {fileID: 21300000, guid: 9a220be38ed88274681c2e74dbdd5f0f, type: 3}
-      bundle: 0
-    - name: additional_background_texture_5_middle_ratio
-      item: {fileID: 21300000, guid: 767354c2c24247a48ac990a674887b79, type: 3}
-      bundle: 0
-    - name: additional_background_texture_5_high_ratio
-      item: {fileID: 21300000, guid: bc8ee6ef620a84f42ac063ad88ff543c, type: 3}
-      bundle: 0
     - name: additional_background
       item: {fileID: 7569679583809919746, guid: b74308dc2298d874a9cfc7377cb1b80f,
         type: 3}
@@ -92,4 +47,7 @@ MonoBehaviour:
       bundle: 0
     - name: main_background_set
       item: {fileID: 11400000, guid: 9e81f3f802e050448acbf5efda7f951a, type: 2}
+      bundle: 1
+    - name: additional_background_set
+      item: {fileID: 11400000, guid: c5e56f2d11243fb45b10fce1beed0a4b, type: 2}
       bundle: 1

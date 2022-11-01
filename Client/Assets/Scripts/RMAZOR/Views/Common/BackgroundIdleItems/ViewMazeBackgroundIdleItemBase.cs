@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
 using Common.SpawnPools;
@@ -31,7 +32,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             set
             {
                 m_Obj = value;
-                m_Obj.layer = LayerMask.NameToLayer("ω Omega"); 
+                m_Obj.layer = LayerMask.NameToLayer(LayerNamesCommon.Omega); 
             }
         }
         

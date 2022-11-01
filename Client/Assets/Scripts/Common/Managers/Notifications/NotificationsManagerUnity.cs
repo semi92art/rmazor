@@ -84,7 +84,14 @@ namespace Common.Managers.Notifications
             Setting.ValueSet += EnableNotifications;
             Ticker.Register(this);
             var channel = new GameNotificationChannel(
-                ChannelId, Application.productName + " main channel", "Generic notifications");
+                ChannelId, 
+                "Common notifications",
+                "Common notifications", 
+                GameNotificationChannel.NotificationStyle.Popup,
+                true, 
+                true, 
+                true,
+                true);
             InitNotifications(channel);
             // PushNotificationsProvider.Init();
             base.Init();

@@ -249,7 +249,7 @@ namespace RMAZOR.Views.MazeItems
             string maskName = "Turret Projectile Mask Collider " + maskHash;
             m_ProjectileMaskCollider = m_ProjectileMask.transform.AddComponentOnNewChild<BoxCollider2D>(
                 "Turret Projectile Mask Collider " + maskName, out _);
-            m_ProjectileMaskCollider.gameObject.layer = LayerMask.NameToLayer("χ Hi");
+            m_ProjectileMaskCollider.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Hi);
             m_ProjectileMaskCollider.isTrigger = true;
             SetProjectileMaskProperties(m_ProjectileMask);
             AdditionalBackground.GroupsCollected += SetStencilRefValues;

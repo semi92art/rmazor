@@ -7,13 +7,13 @@ namespace RMAZOR.Models
 {
     public abstract class CharacterMoveEventArgsBase : EventArgs
     {
-        public EMazeMoveDirection Direction { get; }
+        public EDirection Direction { get; }
         public V2Int              From      { get; }
         public V2Int              To        { get; }
         public float              Progress  { get; }
 
         protected CharacterMoveEventArgsBase(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             V2Int              _From,
             V2Int              _To,
             float              _Progress)
@@ -30,7 +30,7 @@ namespace RMAZOR.Models
         public bool StartFromPortal { get; }
 
         public CharacterMovingStartedEventArgs(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             V2Int              _From,
             V2Int              _To,
             bool               _StartFromPortal)
@@ -47,7 +47,7 @@ namespace RMAZOR.Models
         public Vector2 PreviousPrecisePosition      { get; }
 
         public CharacterMovingContinuedEventArgs(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             V2Int              _From,
             V2Int              _To,
             float              _Progress,
@@ -66,7 +66,7 @@ namespace RMAZOR.Models
         public IMazeItemProceedInfo BlockWhoStopped { get; }
 
         public CharacterMovingFinishedEventArgs(
-            EMazeMoveDirection   _Direction,
+            EDirection   _Direction,
             V2Int                _From,
             V2Int                _To,
             IMazeItemProceedInfo _BlockOnFinish,

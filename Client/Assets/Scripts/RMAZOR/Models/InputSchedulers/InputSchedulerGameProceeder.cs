@@ -135,13 +135,13 @@ namespace RMAZOR.Models.InputSchedulers
         
         private void OnMoveCommand(EInputCommand _Command, object[] _Args)
         {
-            EMazeMoveDirection dir = default;
+            EDirection dir = default;
             switch (_Command)
             {
-                case EInputCommand.MoveUp:    dir = EMazeMoveDirection.Up;    break;
-                case EInputCommand.MoveDown:  dir = EMazeMoveDirection.Down;  break;
-                case EInputCommand.MoveLeft:  dir = EMazeMoveDirection.Left;  break;
-                case EInputCommand.MoveRight: dir = EMazeMoveDirection.Right; break;
+                case EInputCommand.MoveUp:    dir = EDirection.Up;    break;
+                case EInputCommand.MoveDown:  dir = EDirection.Down;  break;
+                case EInputCommand.MoveLeft:  dir = EDirection.Left;  break;
+                case EInputCommand.MoveRight: dir = EDirection.Right; break;
                 case EInputCommand.RotateClockwise:
                 case EInputCommand.RotateCounterClockwise:
                     break;

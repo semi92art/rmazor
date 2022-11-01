@@ -38,6 +38,7 @@ Shader "RMAZOR/Background/Rave Squares"
 
             #include "UnityCG.cginc"
             #include "../Common.cginc"
+            #include "Toon.cginc"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale, _Angle;
@@ -87,7 +88,9 @@ Shader "RMAZOR/Background/Rave Squares"
                 float2 grid = smoothstep(fmod(uv1, .05), float2(LINE_THICKNESS,LINE_THICKNESS),0.03);
                 float d = dist(0.5,f_i.uv * _Gc2)*_Gc1*2.5;
                 fixed4 main_col = lerp(_Color1, _Color2, d);
-                return main_col + _Color2 * 0.9 * val * (grid.x + grid.y);
+                fixed4 frag_col = main_col + _Color2 * 0.9 * val * (grid.x + grid.y);
+                frag_col.rgb *= 0.3;
+                return frag_col;
             }
             ENDCG
         }

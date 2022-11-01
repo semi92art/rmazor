@@ -36,8 +36,6 @@ MonoBehaviour:
       material: {fileID: 2100000, guid: e52dc97f89d750d4399d68c08de280c7, type: 2}
     - name: solid
       material: {fileID: 2100000, guid: 7e18e8abb64a68647bfe7251cff7fde9, type: 2}
-    - name: swirl_for_planet
-      material: {fileID: 2100000, guid: bc5e567cb9679624a82a092a02096251, type: 2}
     - name: triangles_2
       material: {fileID: 2100000, guid: a5c570590e56b044e9563ead2d884b7f, type: 2}
     - name: white_fire

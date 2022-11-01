@@ -212,7 +212,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             m_MainRenderer.maskInteraction   = SpriteMaskInteraction.VisibleOutsideMask;
             m_MainRenderer.color             = ColorProvider.GetColor(ColorIds.MazeItem1);
             m_MainRenderer.maskInteraction   = SpriteMaskInteraction.None;
-            m_Coll.gameObject.layer          = LayerMask.NameToLayer("ψ Psi");
+            m_Coll.gameObject.layer          = LayerMask.NameToLayer(LayerNamesCommon.Psi);
             m_CollisionDetector2D.OnTriggerEnter += OnColliderTriggerEnter;
             if (!(m_Fake = _Fake))
                 return;

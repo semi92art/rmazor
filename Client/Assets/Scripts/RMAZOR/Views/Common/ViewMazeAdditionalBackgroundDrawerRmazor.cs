@@ -12,6 +12,7 @@ using Common.Managers;
 using Common.Providers;
 using Common.SpawnPools;
 using Common.Utils;
+using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
@@ -53,40 +54,44 @@ namespace RMAZOR.Views.Common
         private readonly BehavioursSpawnPool<Line> m_Borders2 = new BehavioursSpawnPool<Line>();
         private readonly BehavioursSpawnPool<Disc> m_Corners  = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Disc> m_Corners2 = new BehavioursSpawnPool<Disc>();
-        
-        private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
 
-        private readonly List<Sprite>   m_TextureSprites = new List<Sprite>();
-        private          SpriteRenderer m_TextureRendererBack;
+        private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
         
-        private float BorderScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 1.5f : 1.3f;
-        private float CornerScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 4f : 1.3f;
+        private SpriteRenderer              m_TextureRendererBack;
+        private AdditionalBackgroundInfoSet m_AdditionalBackgroundInfoSet;
+        private string                      m_AdditionalBackgroundAssetNameSuffix;
+        
+        private float BorderScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 1.5f : 0.5f;
+        private float CornerScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 4f : 0.5f;
 
         #endregion
 
         #region inject
 
-        private ViewSettings                ViewSettings        { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private IContainersGetter           ContainersGetter    { get; }
-        private ICoordinateConverter        CoordinateConverter { get; }
-        private IPrefabSetManager           PrefabSetManager    { get; }
-        private IRendererAppearTransitioner Transitioner        { get; }
+        private ViewSettings                         ViewSettings                { get; }
+        private IColorProvider                       ColorProvider               { get; }
+        private IContainersGetter                    ContainersGetter            { get; }
+        private ICoordinateConverter                 CoordinateConverter         { get; }
+        private IPrefabSetManager                    PrefabSetManager            { get; }
+        private IRendererAppearTransitioner          Transitioner                { get; }
+        private IViewMazeBackgroundTextureController BackgroundTextureController { get; }
 
         private ViewMazeAdditionalBackgroundDrawerRmazor(
-            ViewSettings                _ViewSettings,
-            IColorProvider              _ColorProvider,
-            IContainersGetter           _ContainersGetter,
-            ICoordinateConverter        _CoordinateConverter,
-            IPrefabSetManager           _PrefabSetManager,
-            IRendererAppearTransitioner _Transitioner)
+            ViewSettings                         _ViewSettings,
+            IColorProvider                       _ColorProvider,
+            IContainersGetter                    _ContainersGetter,
+            ICoordinateConverter                 _CoordinateConverter,
+            IPrefabSetManager                    _PrefabSetManager,
+            IRendererAppearTransitioner          _Transitioner,
+            IViewMazeBackgroundTextureController _BackgroundTextureController)
         {
-            ViewSettings        = _ViewSettings;
-            ColorProvider       = _ColorProvider;
-            ContainersGetter    = _ContainersGetter;
-            CoordinateConverter = _CoordinateConverter;
-            PrefabSetManager    = _PrefabSetManager;
-            Transitioner        = _Transitioner;
+            ViewSettings                = _ViewSettings;
+            ColorProvider               = _ColorProvider;
+            ContainersGetter            = _ContainersGetter;
+            CoordinateConverter         = _CoordinateConverter;
+            PrefabSetManager            = _PrefabSetManager;
+            Transitioner                = _Transitioner;
+            BackgroundTextureController = _BackgroundTextureController;
         }
 
         #endregion
@@ -97,6 +102,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            CommonDataRmazor.AdditionalBackgroundDrawer = this;
             ColorProvider.ColorChanged += OnColorChanged;
             InitPools();
             InitTextures();
@@ -111,7 +117,7 @@ namespace RMAZOR.Views.Common
             foreach (var group in _Groups)
                 DrawCornersForGroup(group);
             foreach (var group in _Groups)
-                DrawTextureForGroup(group, _LevelIndex);
+                DrawTextureForGroup(group);
         }
 
         public void Appear(bool _Appear)
@@ -140,6 +146,17 @@ namespace RMAZOR.Views.Common
             Transitioner.DoAppearTransition(_Appear, dict,
                 ViewSettings.betweenLevelTransitionTime,
                 () => AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared);
+        }
+
+        public void SetAdditionalBackgroundSprite(string _Name)
+        {
+            m_TextureRenderers    .DeactivateAll();
+            string additBackTextureName = _Name + "_" + m_AdditionalBackgroundAssetNameSuffix;
+            var renderer = m_TextureRenderers.FirstInactive;
+            m_TextureRenderers.Activate(renderer);
+            renderer.sprite = m_AdditionalBackgroundInfoSet
+                .FirstOrDefault(_Item => _Item.name == additBackTextureName)
+                ?.sprite;
         }
         
         #endregion
@@ -263,21 +280,14 @@ namespace RMAZOR.Views.Common
                 m_TextureRenderers.Add(renderer);
             }
             float ratio = GraphicUtils.AspectRatio;
-            string prefabNameSuffix;
-            if (ratio > 0.7f)       prefabNameSuffix = "high_ratio";
-            else if (ratio > 0.54f) prefabNameSuffix = "middle_ratio";
-            else                    prefabNameSuffix = "low_ratio";
-            var idxs = ViewSettings.additionalBackTexturesInUse
-                .Split(',')
-                .Select(int.Parse)
-                .ToArray();
-            foreach (int idx in idxs)
-            {
-                var textureSprite = PrefabSetManager.GetObject<Sprite>(
-                    "background", 
-                    $"additional_background_texture_{idx}_{prefabNameSuffix}");
-                m_TextureSprites.Add(textureSprite);
-            }
+            if (ratio > 0.7f)       m_AdditionalBackgroundAssetNameSuffix = "high_ratio";
+            else if (ratio > 0.54f) m_AdditionalBackgroundAssetNameSuffix = "middle_ratio";
+            else                    m_AdditionalBackgroundAssetNameSuffix = "low_ratio";
+            m_AdditionalBackgroundInfoSet = PrefabSetManager
+                .GetObject<AdditionalBackgroundInfoSetScriptableObject>(
+                    "background",
+                    "additional_background_set",
+                    EPrefabSource.Bundle).set;
             for (int i = 1; i <= MasksPoolCount; i++)
             {
                 var mask = Container.gameObject.AddComponentOnNewChild<Rectangle>(
@@ -331,16 +341,16 @@ namespace RMAZOR.Views.Common
             V2Int first, last;
             (first, last) = (leftBorderPoints.First(), leftBorderPoints.Last());
             foreach (var point in leftBorderPoints)
-                DrawBorder(point, EMazeMoveDirection.Left, point == first, point == last);
+                DrawBorder(point, EDirection.Left, point == first, point == last);
             (first, last) = (rightBorderPoints.First(), rightBorderPoints.Last());
             foreach (var point in rightBorderPoints)
-                DrawBorder(point, EMazeMoveDirection.Right, point == last, point == first);
+                DrawBorder(point, EDirection.Right, point == last, point == first);
             (first, last) = (bottomBorderPoints.First(), bottomBorderPoints.Last());
             foreach (var point in bottomBorderPoints)
-                DrawBorder(point, EMazeMoveDirection.Down, point == last, point == first);
+                DrawBorder(point, EDirection.Down, point == last, point == first);
             (first, last) = (topBorderPoints.First(), topBorderPoints.Last());
             foreach (var point in topBorderPoints)
-                DrawBorder(point, EMazeMoveDirection.Up, point == first, point == last);
+                DrawBorder(point, EDirection.Up, point == first, point == last);
         }
 
         private void DrawCornersForGroup(PointsGroupArgs _Group)
@@ -355,7 +365,7 @@ namespace RMAZOR.Views.Common
             DrawCorner(new V2Int(maxX, minY), true, false, true);
         }
 
-        private void DrawTextureForGroup(PointsGroupArgs _Group, long _LevelIndex)
+        private void DrawTextureForGroup(PointsGroupArgs _Group)
         {
             int minX = _Group.Points.Min(_P => _P.X);
             int minY = _Group.Points.Min(_P => _P.Y);
@@ -364,11 +374,14 @@ namespace RMAZOR.Views.Common
             float scale = CoordinateConverter.Scale;
             float width = scale * (maxX - minX + 2f * (0.5f + BorderRelativeIndent));
             float height = scale * (maxY - minY + 2f * (0.5f + BorderRelativeIndent));
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int textureTypeIdx = group % m_TextureSprites.Count;
+            var backColorArgs = BackgroundTextureController.GetBackgroundColorArgs();
+            string additBackTextureName = backColorArgs.AdditionalInfo.additionalBackgroundName;
+            additBackTextureName += "_" + m_AdditionalBackgroundAssetNameSuffix;
             var renderer = m_TextureRenderers.FirstInactive;
             m_TextureRenderers.Activate(renderer);
-            renderer.sprite = m_TextureSprites[textureTypeIdx];
+            renderer.sprite = m_AdditionalBackgroundInfoSet
+                .FirstOrDefault(_Item => _Item.name == additBackTextureName)
+                ?.sprite;
             renderer.transform.localScale = Vector3.one;
             var centerRaw = new Vector2(minX + (maxX - minX) * 0.5f, minY + (maxY - minY) * 0.5f);
             var center = CoordinateConverter.ToLocalMazeItemPosition(centerRaw);
@@ -386,7 +399,7 @@ namespace RMAZOR.Views.Common
             m_TextureRendererMasks.Activate(mask);
         }
 
-        private void DrawBorder(V2Int _Position, EMazeMoveDirection _Side, bool _StartLimit, bool _EndLimit)
+        private void DrawBorder(V2Int _Position, EDirection _Side, bool _StartLimit, bool _EndLimit)
         {
             var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
             var border = m_Borders.FirstInactive;
@@ -438,7 +451,7 @@ namespace RMAZOR.Views.Common
         private Tuple<Vector2, Vector2> GetBorderPoints(
             Line _Border,
             V2Int _Point,
-            EMazeMoveDirection _Side, 
+            EDirection _Side, 
             bool _StartLimit, 
             bool _EndLimit,
             bool _Second)
@@ -451,19 +464,19 @@ namespace RMAZOR.Views.Common
             const float bIndent = BorderRelativeIndent;
             switch (_Side)
             {
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     start = pos + left * bIndent + (left + down) * 0.5f + (_StartLimit ? up * cr + down * bIndent : zero);
                     end = pos + left * bIndent + (left + up) * 0.5f + (_EndLimit ? down * cr + up * bIndent : zero);
                     break;
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     start = pos + up * bIndent + (up + left) * 0.5f + (_StartLimit ? right * cr + left * bIndent : zero);
                     end = pos + up * bIndent + (up + right) * 0.5f + (_EndLimit ? left * cr + right * bIndent : zero);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     start = pos + right * bIndent + (right + down) * 0.5f + (_EndLimit ? up * cr + down * bIndent : zero);
                     end = pos + right * bIndent + (right + up) * 0.5f + (_StartLimit ? down * cr + up * bIndent : zero);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     start = pos + down * bIndent + (down + left) * 0.5f + (_EndLimit ? right * cr + left * bIndent : zero);
                     end = pos + down * bIndent + (down + right) * 0.5f + (_StartLimit ? left * cr + right * bIndent : zero);
                     break;
@@ -480,19 +493,19 @@ namespace RMAZOR.Views.Common
             Vector3 endGlobal = tr.TransformPoint(new Vector3(end.x, end.y, 0f));
             switch (_Side)
             {
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     startGlobal += Vector3.right * thickness;
                     endGlobal += Vector3.right * thickness;
                     break;
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     startGlobal += Vector3.down * thickness;
                     endGlobal += Vector3.down * thickness;
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     startGlobal += Vector3.left * thickness;
                     endGlobal += Vector3.left * thickness;
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     startGlobal += Vector3.up * thickness;
                     endGlobal += Vector3.up * thickness;
                     break;

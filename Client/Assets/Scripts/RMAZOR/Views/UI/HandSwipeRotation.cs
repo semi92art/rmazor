@@ -38,11 +38,11 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic members
         
-        protected override Dictionary<EMazeMoveDirection, float> HandAngles => 
-            new Dictionary<EMazeMoveDirection, float>
+        protected override Dictionary<EDirection, float> HandAngles => 
+            new Dictionary<EDirection, float>
             {
-                {EMazeMoveDirection.Left, -45f},
-                {EMazeMoveDirection.Right, 45f}
+                {EDirection.Left, -45f},
+                {EDirection.Right, 45f}
             };
 
         #endregion
@@ -66,13 +66,13 @@ namespace RMAZOR.Views.UI
         
         public void ShowRotateClockwisePrompt()
         {
-            Direction = EMazeMoveDirection.Left;
+            Direction = EDirection.Left;
             ReadyToAnimate = true;
         }
 
         public void ShowRotateCounterClockwisePrompt()
         {
-            Direction = EMazeMoveDirection.Right;
+            Direction = EDirection.Right;
             ReadyToAnimate = true;
         }
         
@@ -105,13 +105,13 @@ namespace RMAZOR.Views.UI
             trace2.startColor = trace2.endColor = newCol;
         }
 
-        protected override IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction)
+        protected override IEnumerator AnimateTraceCoroutine(EDirection _Direction)
         {
 #pragma warning disable 8509
             var a1 = _Direction switch
             {
-                EMazeMoveDirection.Left  => @params.a1MoveLeftPositions,
-                EMazeMoveDirection.Right => @params.a1MoveRightPositions,
+                EDirection.Left  => @params.a1MoveLeftPositions,
+                EDirection.Right => @params.a1MoveRightPositions,
             };
 #pragma warning restore 8509
             trace1.enabled = false;
@@ -120,8 +120,8 @@ namespace RMAZOR.Views.UI
 #pragma warning disable 8509
             var a2 = _Direction switch
             {
-                EMazeMoveDirection.Left  => @params.a2MoveLeftPositions,
-                EMazeMoveDirection.Right => @params.a2MoveRightPositions,
+                EDirection.Left  => @params.a2MoveLeftPositions,
+                EDirection.Right => @params.a2MoveRightPositions,
             };
 #pragma warning restore 8509
             trace2.enabled = false;
@@ -169,7 +169,7 @@ namespace RMAZOR.Views.UI
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
         }
 
-        protected override IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction)
+        protected override IEnumerator AnimateHandPositionCoroutine(EDirection _Direction)
         {
             yield return AnimateHandPositionCoroutine(_Direction, @params);
         }

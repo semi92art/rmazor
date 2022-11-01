@@ -12,16 +12,42 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
+    public class CurrentLevelBackgroundTexturesArgs
+    {
+        public Color          CurrentColor1  { get; }
+        public Color          CurrentColor2  { get; }
+        public Color          PreviousColor1 { get; }
+        public Color          PreviousColor2 { get; }
+        public Color          NextColor1     { get; }
+        public Color          NextColor2     { get; }
+        public BloomPropsArgs BloomPropsArgs { get; }
+        
+        public AdditionalColorPropsAdditionalInfo AdditionalInfo { get; }
+
+        public CurrentLevelBackgroundTexturesArgs(
+            Color                              _CurrentColor1,
+            Color                              _CurrentColor2,
+            Color                              _PreviousColor1,
+            Color                              _PreviousColor2,
+            Color                              _NextColor1,
+            Color                              _NextColor2,
+            BloomPropsArgs                     _BloomPropsArgs,
+            AdditionalColorPropsAdditionalInfo _AdditionalInfo)
+        {
+            CurrentColor1  = _CurrentColor1;
+            CurrentColor2  = _CurrentColor2;
+            PreviousColor1 = _PreviousColor1;
+            PreviousColor2 = _PreviousColor2;
+            NextColor1     = _NextColor1;
+            NextColor2     = _NextColor2;
+            BloomPropsArgs = _BloomPropsArgs;
+            AdditionalInfo = _AdditionalInfo;
+        }
+    }
+    
     public interface IViewMazeBackgroundTextureController : IInit, IOnLevelStageChanged
     {
-        public void GetBackgroundColors(
-            out Color _Current1, 
-            out Color _Current2, 
-            out Color _Previous1,
-            out Color _Previous2,
-            out Color _Next1,
-            out Color _Next2,
-            out BloomPropsAlt _BloomProps);
+        public CurrentLevelBackgroundTexturesArgs GetBackgroundColorArgs();
     }
 
     public abstract class ViewMazeBackgroundTextureControllerBase 
@@ -29,7 +55,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
         
-        private IList<AdditionalColorsProps> m_BackAndFrontColorsSetItemsLight;
+        private IList<AdditionalColorsProps> m_AdditionalBackgorundColorsSetItems;
 
         protected Color
             BackCol1Current,
@@ -39,7 +65,8 @@ namespace RMAZOR.Views.Common
             BackCol1Next,
             BackCol2Next;
 
-        private BloomPropsAlt                        m_BloomPropsAlt;
+        private BloomPropsArgs m_BloomPropsArgs;
+
         protected AdditionalColorPropsAdditionalInfo AdditionalInfo;
 
         #endregion
@@ -79,22 +106,17 @@ namespace RMAZOR.Views.Common
             SetColorsOnNewLevel(_Args.LevelIndex);
         }
 
-        public void GetBackgroundColors(
-            out Color         _Current1,
-            out Color         _Current2,
-            out Color         _Previous1,
-            out Color         _Previous2,
-            out Color         _Next1,
-            out Color         _Next2,
-            out BloomPropsAlt _BloomProps)
+        public CurrentLevelBackgroundTexturesArgs GetBackgroundColorArgs()
         {
-            _Current1   = BackCol1Current;
-            _Current2   = BackCol2Current;
-            _Previous1  = BackCol1Prev;
-            _Previous2  = BackCol2Prev;
-            _Next1      = BackCol1Next;
-            _Next2      = BackCol2Next;
-            _BloomProps = m_BloomPropsAlt;
+            return new CurrentLevelBackgroundTexturesArgs(
+                BackCol1Current,
+                BackCol2Current,
+                BackCol1Prev,
+                BackCol2Prev,
+                BackCol1Next,
+                BackCol2Next,
+                m_BloomPropsArgs,
+                AdditionalInfo);
         }
 
         #endregion
@@ -103,21 +125,21 @@ namespace RMAZOR.Views.Common
         
         protected virtual void LoadSets()
         {
-            m_BackAndFrontColorsSetItemsLight = RemoteProperties.BackAndFrontColorsSet
+            m_AdditionalBackgorundColorsSetItems = RemoteProperties.BackAndFrontColorsSet
                 .Where(_Item => _Item.inUse)
                 .ToList();
-            if (!m_BackAndFrontColorsSetItemsLight.NullOrEmpty())
+            if (!m_AdditionalBackgorundColorsSetItems.NullOrEmpty())
                 return;
-            var backgroundColorsSetLight = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>
+            var additionalBackgroundColorsSet = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>
                 ("configs", "additional_colors_set");
-            m_BackAndFrontColorsSetItemsLight = backgroundColorsSetLight.set
+            m_AdditionalBackgorundColorsSetItems = additionalBackgroundColorsSet.set
                 .Where(_Item => _Item.inUse)
                     .ToList();
         }
 
         private Color GetBackgroundColor(int _ColorId, long _LevelIndex)
         {
-            var colorsSet = m_BackAndFrontColorsSetItemsLight;
+            var colorsSet = m_AdditionalBackgorundColorsSetItems;
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = (group - 1) % colorsSet.Count;
             if (setItemIdx < 0)
@@ -139,10 +161,10 @@ namespace RMAZOR.Views.Common
 
         private void SetColorsOnNewLevel(long _LevelIndex)
         {
-            var colorsSet = m_BackAndFrontColorsSetItemsLight;
+            var colorsSet = m_AdditionalBackgorundColorsSetItems;
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
             int setItemIdx = (group - 1) % colorsSet.Count;
-            m_BloomPropsAlt = colorsSet[setItemIdx].bloom;
+            m_BloomPropsArgs = colorsSet[setItemIdx].bloom;
             AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
             ColorProvider.SetColor(ColorIds.PathItem,        GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
             ColorProvider.SetColor(ColorIds.PathFill,        GetBackgroundColor(ColorIds.PathFill, _LevelIndex));

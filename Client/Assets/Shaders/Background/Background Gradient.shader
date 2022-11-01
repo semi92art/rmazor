@@ -31,7 +31,7 @@
             #include "../Common.cginc"
 
             fixed4 _Color1, _Color2;
-            fixed _Gc1, _Gc2, _Mc1;
+            fixed _Gc1, _Gc2;
 
             v2f vert(appdata v)
             {
@@ -41,8 +41,7 @@
             fixed4 frag(v2f vf) : SV_Target
             {
                 float d = dist(0.5,vf.uv * _Gc2)*_Gc1*1.5;
-				fixed4 frag_col = lerp(_Color1, _Color2, d);
-                return frag_col;
+				return lerp(_Color1, _Color2, d);
             }
             ENDCG
         }

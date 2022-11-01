@@ -51,7 +51,7 @@ namespace RMAZOR.Views.Characters
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
 
         private EMazeOrientation   m_LastMazeOrientation;
-        private EMazeMoveDirection m_PrevHorDir = EMazeMoveDirection.Right;
+        private EDirection m_PrevHorDir = EDirection.Right;
         private GameObject         m_Head;
         private GameObject         m_Border;
         private Animator           m_Animator;
@@ -136,13 +136,13 @@ namespace RMAZOR.Views.Characters
             {
                 case ELevelStage.Loaded:
                     m_LastMazeOrientation = EMazeOrientation.North;
-                    SetOrientation(EMazeMoveDirection.Right, false);
+                    SetOrientation(EDirection.Right, false);
                     break;
                 case ELevelStage.ReadyToStart when 
                     _Args.PreviousStage == ELevelStage.Paused 
                     && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                 {
-                    SetOrientation(EMazeMoveDirection.Right, false, EMazeOrientation.North);
+                    SetOrientation(EDirection.Right, false, EMazeOrientation.North);
                     ActivateShapes(true);
                 }
                     break;
@@ -234,7 +234,7 @@ namespace RMAZOR.Views.Characters
             m_Eye1Shape         = go.GetCompItem<Rectangle>("eye_1").SetSortingOrder(SortingOrders.Character + 1);
             m_Eye2Shape         = go.GetCompItem<Rectangle>("eye_2").SetSortingOrder(SortingOrders.Character + 1);
             m_BorderShape       = go.GetCompItem<Rectangle>("border").SetSortingOrder(SortingOrders.Character - 1);
-            m_HeadCollider.gameObject.layer = LayerMask.NameToLayer("γ Gamma");
+            m_HeadCollider.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Gamma);
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
         }
         
@@ -243,12 +243,12 @@ namespace RMAZOR.Views.Characters
             var localScale = Vector2.one * CoordinateConverter.Scale * RelativeLocalScale;
             m_Head.transform.SetLocalScaleXY(localScale);
             m_Border.transform.SetLocalScaleXY(localScale);
-            SetOrientation(EMazeMoveDirection.Right, false);
+            SetOrientation(EDirection.Right, false);
             m_Animator.SetTrigger(AnimKeyStartJumping);
         }
         
         private void SetOrientation(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             bool               _OnFinish,
             EMazeOrientation?   _Orientation = null)
         {
@@ -261,29 +261,29 @@ namespace RMAZOR.Views.Characters
             }
             bool verticalInverse = _Direction switch
             {
-                EMazeMoveDirection.Left  => false,
-                EMazeMoveDirection.Right => false,
-                EMazeMoveDirection.Down  => m_PrevHorDir == EMazeMoveDirection.Right,
-                EMazeMoveDirection.Up    => m_PrevHorDir == EMazeMoveDirection.Left,
+                EDirection.Left  => false,
+                EDirection.Right => false,
+                EDirection.Down  => m_PrevHorDir == EDirection.Right,
+                EDirection.Up    => m_PrevHorDir == EDirection.Left,
                 _                        => throw new SwitchExpressionException(_Direction)
             };
             LookAtByOrientationFinal(verticalInverse);
-            if (!_OnFinish &&(_Direction == EMazeMoveDirection.Right || _Direction == EMazeMoveDirection.Left))
+            if (!_OnFinish &&(_Direction == EDirection.Right || _Direction == EDirection.Left))
                 m_PrevHorDir = _Direction;
         }
         
         private void LookAtByOrientationOnMoveStart(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             bool               _VerticalInverse,
             EMazeOrientation?   _Orientation = null)
         {
             float angle, horScale;
             (angle, horScale) = _Direction switch
             {
-                EMazeMoveDirection.Left  => (0f, -1f),
-                EMazeMoveDirection.Right => (0f, 1f),
-                EMazeMoveDirection.Down  => (90f, -1f),
-                EMazeMoveDirection.Up    => (90f, 1f),
+                EDirection.Left  => (0f, -1f),
+                EDirection.Right => (0f, 1f),
+                EDirection.Down  => (90f, -1f),
+                EDirection.Up    => (90f, 1f),
                 _                        => throw new SwitchCaseNotImplementedException(_Direction)
             };
             m_HorizontalScaleInverse = horScale < 0f;
@@ -300,16 +300,16 @@ namespace RMAZOR.Views.Characters
         }
         
         private void LookAtByOrientationOnMoveFinish(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             EMazeOrientation? _Orientation = null)
         {
             float angle, vertScale;
             (angle, vertScale) = _Direction switch
             {
-                EMazeMoveDirection.Left  => (90f, -1f),
-                EMazeMoveDirection.Right => (90f, 1f),
-                EMazeMoveDirection.Down  => (0f, 1f),
-                EMazeMoveDirection.Up    => (0f, -1f),
+                EDirection.Left  => (90f, -1f),
+                EDirection.Right => (90f, 1f),
+                EDirection.Down  => (0f, 1f),
+                EDirection.Up    => (0f, -1f),
                 _                        => throw new SwitchCaseNotImplementedException(_Direction)
             };
             var localRot = Quaternion.Euler(

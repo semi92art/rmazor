@@ -24,7 +24,7 @@ namespace RMAZOR.Models
         event CharacterMovingStartedHandler   CharacterMoveStarted;
         event CharacterMovingContinuedHandler CharacterMoveContinued;
         event CharacterMovingFinishedHandler  CharacterMoveFinished;
-        void                                  Move(EMazeMoveDirection _Direction);
+        void                                  Move(EDirection _Direction);
         void                                  OnPortal(PortalEventArgs _Args);
         void                                  OnSpringboard(SpringboardEventArgs _Args);
     }
@@ -99,7 +99,7 @@ namespace RMAZOR.Models
             MoveCore(_Args.Direction, false);
         }
         
-        public void Move(EMazeMoveDirection _Direction)
+        public void Move(EDirection _Direction)
         {
             MoveCore(_Direction, false);
         }
@@ -108,7 +108,7 @@ namespace RMAZOR.Models
         
         #region nonpublic methods
 
-        private void MoveCore(EMazeMoveDirection _Direction, bool _FromPortal)
+        private void MoveCore(EDirection _Direction, bool _FromPortal)
         {           
             if (!Data.ProceedingControls)
                 return;
@@ -128,7 +128,7 @@ namespace RMAZOR.Models
         
         private V2Int GetNewPosition(
             V2Int              _From,
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             out V2Int?         _BlockPositionWhoStopped)
         {
             var nextPos = Position;
@@ -148,7 +148,7 @@ namespace RMAZOR.Models
         }
 
         private IEnumerator MoveCoreCoroutine(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             V2Int              _From,
             V2Int              _To,
             V2Int?             _BlockPositionWhoStopped)

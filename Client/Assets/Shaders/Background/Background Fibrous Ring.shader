@@ -38,6 +38,7 @@ Shader "RMAZOR/Background/Fibrous Ring"
 
             #include "UnityCG.cginc"
             #include "../Common.cginc"
+            #include "Toon.cginc"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale, _Angle;
@@ -100,7 +101,8 @@ Shader "RMAZOR/Background/Fibrous Ring"
                     float d = SS(l, zn) * SS(zn, l);
                     c += d;
                 }
-                return lerp(_Color1, _Color2, c*1.5);
+                c *= 1.5;
+                return toon_color(_Color1, _Color2, c, 0.2);
             }
             ENDCG
         }

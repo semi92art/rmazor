@@ -29,7 +29,9 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear);
     }
 
-    public abstract class ViewMazeItemPathExtraBordersBase : InitBase, IViewMazeItemPathExtraBorders
+    public abstract class ViewMazeItemPathExtraBordersBase 
+        : InitBase,
+          IViewMazeItemPathExtraBorders
     {
         #region nonpublic members
         

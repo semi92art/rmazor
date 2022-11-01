@@ -129,8 +129,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             DisablePolygons(TopExtraBordersInited,    m_TopExtraBorders);
             LeftExtraBordersInited = RightExtraBordersInited = BottomExtraBordersInited = TopExtraBordersInited = false;
             var sides = Enum
-                .GetValues(typeof(EMazeMoveDirection))
-                .Cast<EMazeMoveDirection>();
+                .GetValues(typeof(EDirection))
+                .Cast<EDirection>();
             foreach (var side in sides)
             {
                 if (Informer.MustInitBorder(side) && Activated)
@@ -141,17 +141,17 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var col = GetBorderColor();
-            Color GetBorderColorWithAlpha(EMazeMoveDirection _Side)
+            Color GetBorderColorWithAlpha(EDirection _Side)
             {
                 float alphaChannel = Informer.IsBorderNearTrapReact(_Side)
                                      || Informer.IsBorderNearTrapIncreasing(_Side)
                     ? 0f : 1f;
                 return col.SetA(alphaChannel);
             }
-            var colorLeft   = GetBorderColorWithAlpha(EMazeMoveDirection.Left);
-            var colorRight  = GetBorderColorWithAlpha(EMazeMoveDirection.Right);
-            var colorBottom = GetBorderColorWithAlpha(EMazeMoveDirection.Down);
-            var colorTop    = GetBorderColorWithAlpha(EMazeMoveDirection.Up);
+            var colorLeft   = GetBorderColorWithAlpha(EDirection.Left);
+            var colorRight  = GetBorderColorWithAlpha(EDirection.Right);
+            var colorBottom = GetBorderColorWithAlpha(EDirection.Down);
+            var colorTop    = GetBorderColorWithAlpha(EDirection.Up);
             var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
             if (LeftExtraBordersInited)   sets.Add(m_LeftExtraBorders,   () => colorLeft);
             if (RightExtraBordersInited)  sets.Add(m_RightExtraBorders,  () => colorRight);
@@ -169,32 +169,33 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             var borderCol = GetBorderColor();
             void SetPolygonsColor(
                 bool                       _Inited,
-                EMazeMoveDirection         _Direction,
+                EDirection         _Direction,
                 IEnumerable<ShapeRenderer> _Rectangles)
             {
                 if (!_Inited) 
                     return;
                 foreach (var rect in _Rectangles)
                 {
-                    rect.Color = borderCol.SetA(Informer.IsBorderNearTrapReact(_Direction) 
-                                                || Informer.IsBorderNearTrapIncreasing(_Direction) ? 0f : 1f);
+                    rect.Color = borderCol.SetA(
+                        Informer.IsBorderNearTrapReact(_Direction) 
+                        || Informer.IsBorderNearTrapIncreasing(_Direction) ? 0f : 1f);
                 }
             }
-            SetPolygonsColor(LeftExtraBordersInited,   EMazeMoveDirection.Left,  m_LeftExtraBorders);
-            SetPolygonsColor(RightExtraBordersInited,  EMazeMoveDirection.Right, m_RightExtraBorders);
-            SetPolygonsColor(BottomExtraBordersInited, EMazeMoveDirection.Down,  m_BottomExtraBorders);
-            SetPolygonsColor(TopExtraBordersInited,    EMazeMoveDirection.Up,    m_TopExtraBorders);
+            SetPolygonsColor(LeftExtraBordersInited,   EDirection.Left,  m_LeftExtraBorders);
+            SetPolygonsColor(RightExtraBordersInited,  EDirection.Right, m_RightExtraBorders);
+            SetPolygonsColor(BottomExtraBordersInited, EDirection.Down,  m_BottomExtraBorders);
+            SetPolygonsColor(TopExtraBordersInited,    EDirection.Up,    m_TopExtraBorders);
         }
 
-        private void DrawExtraBorder(EMazeMoveDirection _Side)
+        private void DrawExtraBorder(EDirection _Side)
         {
             List<RegularPolygon> polygons = _Side switch
             {
-                EMazeMoveDirection.Left  => m_LeftExtraBorders,
-                EMazeMoveDirection.Right => m_RightExtraBorders,
-                EMazeMoveDirection.Down  => m_BottomExtraBorders,
-                EMazeMoveDirection.Up    => m_TopExtraBorders,
-                _                        => throw new SwitchCaseNotImplementedException(_Side)
+                EDirection.Left  => m_LeftExtraBorders,
+                EDirection.Right => m_RightExtraBorders,
+                EDirection.Down  => m_BottomExtraBorders,
+                EDirection.Up    => m_TopExtraBorders,
+                _                => throw new SwitchCaseNotImplementedException(_Side)
             };
             if (!polygons.Any())
             {
@@ -206,11 +207,11 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             float scale = CoordinateConverter.Scale;
             float polygonAngle = _Side switch
             {
-                EMazeMoveDirection.Right => Mathf.Deg2Rad * 0f,
-                EMazeMoveDirection.Up    => Mathf.Deg2Rad * 90f,
-                EMazeMoveDirection.Left  => Mathf.Deg2Rad * 180f,
-                EMazeMoveDirection.Down  => Mathf.Deg2Rad * 270f,
-                _                        => throw new SwitchExpressionException(_Side)
+                EDirection.Right => Mathf.Deg2Rad * (0 - 30f),
+                EDirection.Up    => Mathf.Deg2Rad * (90f - 30f),
+                EDirection.Left  => Mathf.Deg2Rad * (180f - 30f),
+                EDirection.Down  => Mathf.Deg2Rad * (270f - 30f),
+                _                => throw new SwitchExpressionException(_Side)
             };
             foreach (var polygon in polygons)
             {
@@ -229,15 +230,15 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             polygons[2].transform.SetPosXY(positions[2]);
             switch (_Side)
             {
-                case EMazeMoveDirection.Left:  m_LeftExtraBorders   = polygons; LeftExtraBordersInited   = true; break;
-                case EMazeMoveDirection.Right: m_RightExtraBorders  = polygons; RightExtraBordersInited  = true; break;
-                case EMazeMoveDirection.Down:  m_BottomExtraBorders = polygons; BottomExtraBordersInited = true; break;
-                case EMazeMoveDirection.Up:    m_TopExtraBorders    = polygons; TopExtraBordersInited    = true; break;
+                case EDirection.Left:  m_LeftExtraBorders   = polygons; LeftExtraBordersInited   = true; break;
+                case EDirection.Right: m_RightExtraBorders  = polygons; RightExtraBordersInited  = true; break;
+                case EDirection.Down:  m_BottomExtraBorders = polygons; BottomExtraBordersInited = true; break;
+                case EDirection.Up:    m_TopExtraBorders    = polygons; TopExtraBordersInited    = true; break;
                 default:                       throw new SwitchCaseNotImplementedException(_Side);
             }
         }
 
-        private List<Vector2> GetPolygonPositions(EMazeMoveDirection _Side)
+        private List<Vector2> GetPolygonPositions(EDirection _Side)
         {
             Vector2 pos = GetProps().Position;
             Vector2 left, right, down, up;
@@ -248,22 +249,22 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             const float indent = 0.1f;
             switch (_Side)
             {
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     pos1 = pos + (up * c1)    + (up    * indent);
                     pos2 = pos + (up * c1     + left   * c2) + (up    * indent);
                     pos3 = pos + (up * c1     + right  * c2) + (up    * indent);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     pos1 = pos + (right * c1) + (right * indent);
                     pos2 = pos + (right * c1  + down   * c2) + (right * indent);
                     pos3 = pos + (right * c1  + up     * c2) + (right * indent);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     pos1 = pos + (down * c1) + (down  * indent);
                     pos2 = pos + (down * c1  + left   * c2)  + (down  * indent);
                     pos3 = pos + (down * c1  + right  * c2)  + (down  * indent);
                     break;
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     pos1 = pos + (left * c1) + (left  * indent);
                     pos2 = pos + (left * c1  + down   * c2)  + (left  * indent);
                     pos3 = pos + (left * c1  + up     * c2)  + (left  * indent);

@@ -17,6 +17,7 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Notifications;
 using Common.Providers;
 using Common.Utils;
 using RMAZOR;
@@ -25,6 +26,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
+using SA.Android.App;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
@@ -49,7 +51,7 @@ namespace SRDebuggerCustomOptions
         private static bool _debugConsoleVisible;
 
         private static long _levelIndex = 1;
-        
+
         private static IColorProvider                      _ColorProvider;
         private static AdditionalColorsSetScriptableObject _AdditionalColorsPropsSetScrObj;
         private static AdditionalColorsPropsSet            _AdditionalColorsPropsSet;
@@ -75,15 +77,15 @@ namespace SRDebuggerCustomOptions
 
         private static void SRLauncherOnInitialized()
         {
-            _modelSettings     = SRLauncher.ModelSettings;
-            _viewSettings      = SRLauncher.ViewSettings;
-            _levelStaging      = SRLauncher.LevelStaging;
-            _managers          = SRLauncher.Managers;
+            _modelSettings = SRLauncher.ModelSettings;
+            _viewSettings = SRLauncher.ViewSettings;
+            _levelStaging = SRLauncher.LevelStaging;
+            _managers = SRLauncher.Managers;
             _commandsProceeder = SRLauncher.CommandsProceeder;
-            _cameraProvider    = SRLauncher.CameraProvider;
+            _cameraProvider = SRLauncher.CameraProvider;
             SRDebug.Instance.PanelVisibilityChanged += OnPanelVisibilityChanged;
         }
-        
+
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
             var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
@@ -128,8 +130,7 @@ namespace SRDebuggerCustomOptions
             set => _viewSettings.mazeRotationSpeed = value;
         }
 
-        [Category(CategoryCommon)]
-        public int Money { get; set; }
+        [Category(CategoryCommon)] public int Money { get; set; }
 
         [Category(CategoryCommon)]
         public bool Set_Money
@@ -153,8 +154,7 @@ namespace SRDebuggerCustomOptions
 
         #region levels
 
-        [Category(CategoryLevels)]
-        public int Level_Index { get; set; }
+        [Category(CategoryLevels)] public int Level_Index { get; set; }
 
         [Category(CategoryLevels)]
         public bool Load_By_Index
@@ -165,8 +165,8 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 _commandsProceeder.RaiseCommand(
-                    EInputCommand.LoadLevelByIndex, 
-                    new object[] { Level_Index - 1 },
+                    EInputCommand.LoadLevelByIndex,
+                    new object[] {Level_Index - 1},
                     true);
             }
         }
@@ -193,12 +193,12 @@ namespace SRDebuggerCustomOptions
                     return;
                 long levelIndex = _levelStaging.LevelIndex;
                 _commandsProceeder.RaiseCommand(
-                    EInputCommand.LoadLevelByIndex, 
-                    new object[] { levelIndex - 1 },
+                    EInputCommand.LoadLevelByIndex,
+                    new object[] {levelIndex - 1},
                     true);
             }
         }
-    
+
         [Category(CategoryLevels)]
         public bool Load_Current_Level
         {
@@ -246,20 +246,17 @@ namespace SRDebuggerCustomOptions
                 _commandsProceeder.RaiseCommand(EInputCommand.FinishLevel, null, true);
             }
         }
-        
+
         #endregion
 
         #region haptics
 
-        [Category(CategoryHaptics)]
-        public float Amplitude { get; set; }
-    
-        [Category(CategoryHaptics)]
-        public float Frequency { get; set; }
-    
-        [Category(CategoryHaptics)]
-        public float Duration { get; set; }
-    
+        [Category(CategoryHaptics)] public float Amplitude { get; set; }
+
+        [Category(CategoryHaptics)] public float Frequency { get; set; }
+
+        [Category(CategoryHaptics)] public float Duration { get; set; }
+
         [Category(CategoryHaptics)]
         public bool Play_Constant
         {
@@ -271,7 +268,7 @@ namespace SRDebuggerCustomOptions
                 _managers.HapticsManager.Play(Amplitude, Frequency, Duration);
             }
         }
-        
+
         [Category(CategoryHaptics)]
         public bool Play_Emphasis
         {
@@ -283,7 +280,7 @@ namespace SRDebuggerCustomOptions
                 _managers.HapticsManager.Play(Amplitude, Frequency);
             }
         }
-        
+
         [Category(CategoryHaptics)]
         public bool Play_Random_Preset
         {
@@ -293,11 +290,11 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 var preset = (EHapticsPresetType) Mathf.FloorToInt(Random.value * 8.99f);
-                Dbg.Log("Haptics preset: " +  Enum.GetName(typeof(EHapticsPresetType), preset));
+                Dbg.Log("Haptics preset: " + Enum.GetName(typeof(EHapticsPresetType), preset));
                 _managers.HapticsManager.PlayPreset(preset);
             }
         }
-        
+
         #endregion
 
         #region ads
@@ -342,7 +339,7 @@ namespace SRDebuggerCustomOptions
                     _Forced: true);
             }
         }
-        
+
 #if APPODEAL_3
         [Category(CategoryAds)]
         public bool Show_Appodeal_Test_Screen
@@ -356,7 +353,7 @@ namespace SRDebuggerCustomOptions
             }
         }
 #endif
-        
+
 #if ADMOB_API
         [Category(CategoryAds)]
         public bool Show_Admob_Test_Screen
@@ -373,6 +370,7 @@ namespace SRDebuggerCustomOptions
                         Dbg.Log("Ad inspector error is null");
                         return;
                     }
+
                     var sb = new StringBuilder();
                     sb.AppendLine("Code: " + _AdInspectorError.GetCode());
                     sb.AppendLine("Cause: " + _AdInspectorError.GetCause());
@@ -395,7 +393,7 @@ namespace SRDebuggerCustomOptions
                 _ => null
             };
         }
-        
+
         #endregion
 
         #region common
@@ -446,7 +444,7 @@ namespace SRDebuggerCustomOptions
                 Dbg.Log(sb.ToString());
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Show_Locked_Groups_With_Movement
         {
@@ -479,7 +477,7 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 var entity = _managers.ScoreManager.GetScoreFromLeaderboard(
-                    DataFieldIds.Level, 
+                    DataFieldIds.Level,
                     false);
                 Cor.Run(Cor.WaitWhile(() => entity.Result == EEntityResult.Pending,
                     () =>
@@ -489,13 +487,14 @@ namespace SRDebuggerCustomOptions
                             Dbg.LogError(nameof(Get_Score_Test) + ": " + entity.Result);
                             return;
                         }
+
                         var firstScore = entity.GetFirstScore();
                         if (firstScore.HasValue)
-                            Dbg.Log("First score: " +  firstScore.Value);
+                            Dbg.Log("First score: " + firstScore.Value);
                     }));
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Sava_Game_Test
         {
@@ -513,7 +512,7 @@ namespace SRDebuggerCustomOptions
                 _managers.ScoreManager.SaveGameProgress(savedData, false);
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Show_Advertising_Id
         {
@@ -527,7 +526,7 @@ namespace SRDebuggerCustomOptions
                     () => Dbg.Log(idfaEntity.Value)));
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool Delete_Saved_Game
         {
@@ -548,6 +547,7 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
+
                 static void DisplaySavedGameMoney(bool _FromCache)
                 {
                     string str = _FromCache ? "server" : "cache";
@@ -563,9 +563,11 @@ namespace SRDebuggerCustomOptions
                                 Dbg.LogWarning($"Failed to load saved game from {str}, entity value: {entity.Value}");
                                 return;
                             }
+
                             Dbg.Log($"{str}: Money: {savedGame.Money}, Level: {savedGame.Level}");
                         }));
                 }
+
                 DisplaySavedGameMoney(false);
                 DisplaySavedGameMoney(true);
             }
@@ -592,11 +594,11 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                if(System.IO.File.Exists(SaveUtils.SavesPath))
+                if (System.IO.File.Exists(SaveUtils.SavesPath))
                     System.IO.File.Delete(SaveUtils.SavesPath);
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool GC_Collect
         {
@@ -608,8 +610,8 @@ namespace SRDebuggerCustomOptions
                 GC.Collect();
             }
         }
-        
-                
+
+
         [Category(CategoryCommon)]
         public bool Running_Coroutines_Count
         {
@@ -662,7 +664,7 @@ namespace SRDebuggerCustomOptions
                 _cameraProvider.EnableEffect(ECameraEffect.ColorGrading, !enabled);
             }
         }
-        
+
         [Category(CategoryCommon)]
         public bool EnableBloom
         {
@@ -684,14 +686,14 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                if (_debugConsoleVisible) 
+                if (_debugConsoleVisible)
                     _managers.DebugManager.HideDebugConsole();
                 else
                     _managers.DebugManager.ShowDebugConsole();
                 _debugConsoleVisible = !_debugConsoleVisible;
             }
         }
-        
+
         #endregion
 
         #region audio
@@ -707,7 +709,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.MuteAudio(EAudioClipType.Music);
             }
         }
-        
+
         [Category(CategoryAudio)]
         public bool UnmuteMusic
         {
@@ -719,7 +721,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
             }
         }
-        
+
         [Category(CategoryAudio)]
         public bool MuteGameSounds
         {
@@ -731,7 +733,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.MuteAudio(EAudioClipType.GameSound);
             }
         }
-        
+
         [Category(CategoryAudio)]
         public bool UnmuteGameSounds
         {
@@ -743,7 +745,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.UnmuteAudio(EAudioClipType.GameSound);
             }
         }
-        
+
         [Category(CategoryAudio)]
         public bool MuteUiSounds
         {
@@ -755,7 +757,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.MuteAudio(EAudioClipType.UiSound);
             }
         }
-        
+
         [Category(CategoryAudio)]
         public bool UnmuteUiSounds
         {
@@ -767,7 +769,7 @@ namespace SRDebuggerCustomOptions
                 _managers.AudioManager.UnmuteAudio(EAudioClipType.UiSound);
             }
         }
-        
+
         #endregion
 
         #region background
@@ -781,26 +783,28 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 var gameController = Object.FindObjectOfType<GameControllerMVC>();
+
                 static LevelStageArgs GetNextLevelStageArgsForBackgroundTexture()
                 {
                     var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                    "configs", "view_settings");
+                        "configs", "view_settings");
                     int group = RmazorUtils.GetGroupIndex(_levelIndex);
                     int levels = RmazorUtils.GetLevelsInGroup(group);
                     _levelIndex = MathUtils.ClampInverse(
-                        _levelIndex + levels, 
-                        0, 
+                        _levelIndex + levels,
+                        0,
                         settings.levelsCountMain - 1);
                     var fakeArgs = new LevelStageArgs(
-                        _levelIndex, 
-                        ELevelStage.Loaded, 
-                        ELevelStage.Unloaded, 
+                        _levelIndex,
+                        ELevelStage.Loaded,
+                        ELevelStage.Unloaded,
                         ELevelStage.ReadyToUnloadLevel)
                     {
-                        Args = new [] {"set_back_editor"}
+                        Args = new[] {"set_back_editor"}
                     };
                     return fakeArgs;
                 }
+
                 var args = GetNextLevelStageArgsForBackgroundTexture();
                 gameController.View.Background.OnLevelStageChanged(args);
                 gameController.View.AdditionalBackground.OnLevelStageChanged(args);
@@ -815,6 +819,7 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
+
                 static void LoadColorsProvider(bool _Forced)
                 {
                     if ((_ColorProvider == null || _Forced)
@@ -824,31 +829,37 @@ namespace SRDebuggerCustomOptions
                         _ColorProvider = Object.FindObjectOfType<ColorProvider>();
                     }
                 }
+
                 static void SetNextOrPreviousAdditionalColorSet(bool _Previous)
                 {
                     int addict = _Previous ? -1 : 1;
+
                     void AddAddict()
                     {
                         _CurrSetIdx = MathUtils.ClampInverse(
                             _CurrSetIdx + addict, 0, _AdditionalColorsPropsSet.Count - 1);
                     }
+
                     AddAddict();
                     while (!_AdditionalColorsPropsSet[_CurrSetIdx].inUse)
                         AddAddict();
                 }
+
                 static void LoadSets()
                 {
                     if (_AdditionalColorsPropsSet != null
                         && _AdditionalColorsPropsSetScrObj != null)
                     {
                         return;
-                        
+
                     }
+
                     var manager = new PrefabSetManager(new AssetBundleManagerFake());
                     _AdditionalColorsPropsSetScrObj = manager.GetObject<AdditionalColorsSetScriptableObject>(
                         "configs", "additional_colors_set");
                     _AdditionalColorsPropsSet = _AdditionalColorsPropsSetScrObj.set;
                 }
+
                 static void SetAdditionalColorSetColors()
                 {
                     if (!Application.isPlaying)
@@ -856,11 +867,13 @@ namespace SRDebuggerCustomOptions
                         Dbg.LogWarning("This option is available only in play mode");
                         return;
                     }
+
                     if (_ColorProvider == null)
                     {
                         Dbg.LogError("Color provider is null");
                         return;
                     }
+
                     var props = _AdditionalColorsPropsSet[_CurrSetIdx];
                     _ColorProvider.SetColor(ColorIds.Main, props.main);
                     _ColorProvider.SetColor(ColorIds.Background1, props.bacground1);
@@ -873,7 +886,7 @@ namespace SRDebuggerCustomOptions
                     CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
                     CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
                 }
-                
+
                 LoadColorsProvider(false);
                 LoadSets();
                 SetNextOrPreviousAdditionalColorSet(false);
@@ -885,9 +898,8 @@ namespace SRDebuggerCustomOptions
 
         #region fps
 
-        [Category(CategoryFps)]
-        public float FpsRecordDuration { get; set; }
-        
+        [Category(CategoryFps)] public float FpsRecordDuration { get; set; }
+
         [Category(CategoryFps)]
         public bool RecordFps
         {
@@ -899,7 +911,7 @@ namespace SRDebuggerCustomOptions
                 _managers.DebugManager.FpsCounter.Record(FpsRecordDuration);
             }
         }
-        
+
         [Category(CategoryFps)]
         public bool ShowFpsRecord
         {
@@ -932,12 +944,80 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
+// #if UNITY_ANDROID
+//                 var man = new NotificationsManagerStanAssets(_managers.PrefabSetManager);
+//                 man.Init();
+//                 man.SendNotification(
+//                     "Come back! We are waiting for you!",
+//                     "Body",
+//                     TimeSpan.FromSeconds(10d),
+//                     _SmallIcon: "small_notification_icon",
+//                     _LargeIcon: "large_notification_icon");
+// #else
                 _managers.NotificationsManager.SendNotification(
                     "Come back! We are waiting for you!",
                     "Body",
                     TimeSpan.FromSeconds(10d),
                     _SmallIcon: "small_notification_icon",
                     _LargeIcon: "large_notification_icon");
+                
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromHours(1d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
+                
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromHours(3d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
+                
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromHours(6d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
+                
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromHours(12d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
+                _managers.NotificationsManager.SendNotification(
+                    "Come back! We are waiting for you!",
+                    "Body",
+                    TimeSpan.FromHours(24d),
+                    _SmallIcon: "small_notification_icon",
+                    _LargeIcon: "large_notification_icon");
+// #endif
+
+            }
+        }
+
+        [Category(CategoryNotifications)]
+        public bool Show_Notification_Channels
+        {
+            get => false;
+            set
+            {
+                void PrintChannelInfo(AN_NotificationChannel channel)
+                {
+                    Debug.Log("channel.Id: " + channel.Id);
+                    Debug.Log("channel.Name: " + channel.Name);
+                    Debug.Log("channel.Description: " + channel.Description);
+                    Debug.Log("channel.Importance: " + channel.Importance);
+                }
+
+                var channels = AN_NotificationManager.GetNotificationChannels();
+                foreach (var stsChannel in channels)
+                {
+                    PrintChannelInfo(stsChannel);
+                }
             }
         }
 

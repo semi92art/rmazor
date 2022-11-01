@@ -27,18 +27,15 @@ namespace RMAZOR.Views.Common
         
         #region inject
         
-        private ViewSettings                         ViewSettings              { get; }
         private IFullscreenTextureProviderCustom     TextureProviderCustom     { get; }
         private IFullscreenTextureProviderTriangles2 TextureProviderTriangles2 { get; }
         private IPrefabSetManager                    PrefabSetManager          { get; }
 
         public BackgroundTextureProviderSetImpl(
-            ViewSettings                         _ViewSettings,
             IFullscreenTextureProviderCustom     _TextureProviderCustom,
             IFullscreenTextureProviderTriangles2 _TextureProviderTriangles2,
             IPrefabSetManager                    _PrefabSetManager)
         {
-            ViewSettings              = _ViewSettings;
             TextureProviderCustom     = _TextureProviderCustom;
             TextureProviderTriangles2 = _TextureProviderTriangles2;
             PrefabSetManager          = _PrefabSetManager;
@@ -59,7 +56,6 @@ namespace RMAZOR.Views.Common
         public IFullscreenTextureProvider GetProvider(string _Name)
         {
             string name = m_TextureProvidersDict.ContainsKey(_Name) ? _Name : "solid";
-            Dbg.Log(name);
             return m_TextureProvidersDict[name];
         }
 
@@ -76,15 +72,9 @@ namespace RMAZOR.Views.Common
         {
             var setRawScrObj = PrefabSetManager.GetObject<MainBackgroundMaterialInfoSetScriptableObject>(
                 "background", "main_background_set", EPrefabSource.Bundle);
-            var providersToInitNames = ViewSettings.backgroundTextures
-                .Split(',')
-                .ToList();
-            foreach (string name in providersToInitNames)
+            foreach (var setItem in setRawScrObj.set)
             {
-                var setItem = setRawScrObj.set.FirstOrDefault(
-                    _SetItem =>
-                        _SetItem.name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-                if (setItem == null)
+                if (m_TextureProvidersDict.ContainsKey(setItem.name))
                     continue;
                 IFullscreenTextureProvider provider;
                 if (setItem.name == "triangles_2")

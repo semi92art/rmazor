@@ -9,10 +9,10 @@ namespace RMAZOR.Models.ItemProceeders
 {
     public class SpringboardEventArgs : EventArgs
     {
-        public EMazeMoveDirection Direction { get; }
+        public EDirection Direction { get; }
         public IMazeItemProceedInfo Info { get; }
 
-        public SpringboardEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info)
+        public SpringboardEventArgs(EDirection _Direction, IMazeItemProceedInfo _Info)
         {
             Direction = _Direction;
             Info = _Info;
@@ -60,7 +60,7 @@ namespace RMAZOR.Models.ItemProceeders
 
         private void ProceedSpringboardIfOnPosition(
             IMazeItemProceedInfo _Info,
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             bool _Forced)
         {
             if (_Info == null || _Info.Type != EMazeItemType.Springboard)

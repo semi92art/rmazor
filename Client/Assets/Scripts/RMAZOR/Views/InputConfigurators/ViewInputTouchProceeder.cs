@@ -39,7 +39,7 @@ namespace RMAZOR.Views.InputConfigurators
         private          LeanFingerTap         m_LeanFingerTap;
         private readonly List<Vector2>         m_TouchPositionsQueue  = new List<Vector2>();
         private readonly List<Vector2>         m_TouchPositionsQueue2 = new List<Vector2>();
-        private          EMazeMoveDirection?   m_PrevMoveDirection;
+        private          EDirection?   m_PrevMoveDirection;
         private          float                 m_TouchForMoveTimer;
         private          EMazeRotateDirection? m_PrevRotateDirection;
         private          bool                  m_EnableRotation = true;
@@ -281,11 +281,11 @@ namespace RMAZOR.Views.InputConfigurators
                 UnlockCommandsOnRotationFinished));
         }
         
-        private static EMazeMoveDirection? GetMoveDirection(Vector2 _Delta)
+        private static EDirection? GetMoveDirection(Vector2 _Delta)
         {
             _Delta *= LeanTouch.ScalingFactor;
             const float angThresholdRadians = 30f * Mathf.Deg2Rad;
-            EMazeMoveDirection? res = null;
+            EDirection? res = null;
             float absDx = Mathf.Abs(_Delta.x);
             float absDy = Mathf.Abs(_Delta.y);
             float absReadDx = absDx / Screen.dpi * 2.54f;
@@ -294,13 +294,13 @@ namespace RMAZOR.Views.InputConfigurators
                 && absDy / absDx < Mathf.Tan(angThresholdRadians)
                 && absReadDx > SwipeThresholdCentimeters)
             {
-                res = _Delta.x < 0 ? EMazeMoveDirection.Left : EMazeMoveDirection.Right;
+                res = _Delta.x < 0 ? EDirection.Left : EDirection.Right;
             }
             else if (absDx < absDy
                      && absDx / absDy < Mathf.Tan(angThresholdRadians)
                      && absReadDy > SwipeThresholdCentimeters)
             {
-                res = _Delta.y < 0 ? EMazeMoveDirection.Down : EMazeMoveDirection.Up;
+                res = _Delta.y < 0 ? EDirection.Down : EDirection.Up;
             }
             return res;
         }
@@ -327,14 +327,14 @@ namespace RMAZOR.Views.InputConfigurators
             return ContainersGetter.GetContainer(ContainerNames.TouchInput);
         }
 
-        private void Move(EMazeMoveDirection _Direction)
+        private void Move(EDirection _Direction)
         {
             var command = _Direction switch
             {
-                EMazeMoveDirection.Left  => EInputCommand.MoveLeft,
-                EMazeMoveDirection.Right => EInputCommand.MoveRight,
-                EMazeMoveDirection.Down  => EInputCommand.MoveDown,
-                EMazeMoveDirection.Up    => EInputCommand.MoveUp,
+                EDirection.Left  => EInputCommand.MoveLeft,
+                EDirection.Right => EInputCommand.MoveRight,
+                EDirection.Down  => EInputCommand.MoveDown,
+                EDirection.Up    => EInputCommand.MoveUp,
                 _                        => throw new SwitchCaseNotImplementedException(_Direction)
             };
             CommandsProceeder.RaiseCommand(command, null);

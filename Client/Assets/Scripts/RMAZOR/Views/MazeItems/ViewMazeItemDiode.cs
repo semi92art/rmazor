@@ -171,19 +171,19 @@ namespace RMAZOR.Views.MazeItems
             var diodeDir = RmazorUtils.GetMoveDirection(_Direction, EMazeOrientation.North);
             switch (diodeDir)
             {
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     start = up * sc1 + left * sc2  + (_Intermittent ? down * intermAddict : zero);
                     end   = up * sc1 + right * sc2 + (_Intermittent ? down * intermAddict : zero);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     start = right * sc1 + down * sc2 + (_Intermittent ? left * intermAddict : zero);
                     end   = right * sc1 + up * sc2 + (_Intermittent ? left * intermAddict : zero);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     start = down * sc1 + left * sc2 + (_Intermittent ? up * intermAddict : zero);
                     end   = down * sc1 + right * sc2 + (_Intermittent ? up * intermAddict : zero);
                     break;
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     start = left * sc1 + down * sc2 + (_Intermittent ? right * intermAddict : zero);
                     end   = left * sc1 + up * sc2 + (_Intermittent ? right * intermAddict : zero);
                     break;

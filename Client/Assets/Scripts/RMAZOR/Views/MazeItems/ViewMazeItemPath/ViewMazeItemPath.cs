@@ -333,8 +333,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             m_IsLeftBorderInverseOffset = m_IsRightBorderInverseOffset =
                 m_IsBottomBorderInverseOffset = m_IsTopBorderInverseOffset = false;
             var sides = Enum
-                .GetValues(typeof(EMazeMoveDirection))
-                .Cast<EMazeMoveDirection>();
+                .GetValues(typeof(EDirection))
+                .Cast<EDirection>();
             foreach (var side in sides)
             {
                 if (MustInitBorder(side))
@@ -342,7 +342,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             }
         }
         
-        protected bool MustInitBorder(EMazeMoveDirection _Side)
+        protected bool MustInitBorder(EDirection _Side)
         {
             var pos = Props.Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return !Informer.TurretExist(pos) && !Informer.PathExist(pos);
@@ -489,19 +489,19 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             _Border.DashSize = 4f * Vector3.Distance(_Border.Start, _Border.End) / CoordinateConverter.Scale;
         }
 
-        private void DrawBorder(EMazeMoveDirection _Side)
+        private void DrawBorder(EDirection _Side)
         {
             Line border = _Side switch
             {
-                EMazeMoveDirection.Up    => m_TopBorder,
-                EMazeMoveDirection.Right => m_RightBorder,
-                EMazeMoveDirection.Down  => m_BottomBorder,
-                EMazeMoveDirection.Left  => m_LeftBorder,
+                EDirection.Up    => m_TopBorder,
+                EDirection.Right => m_RightBorder,
+                EDirection.Down  => m_BottomBorder,
+                EDirection.Left  => m_LeftBorder,
                 _                        => throw new SwitchCaseNotImplementedException(_Side)
             };
             if (border.IsNull())
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
-            border.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
+            border.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 1.5f)
                 .SetEndCaps(LineEndCap.None)
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetDashed(false)
@@ -514,10 +514,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             border.enabled = false;
             switch (_Side)
             {
-                case EMazeMoveDirection.Up:    m_TopBorder    = border; m_TopBorderInited    = true; break;
-                case EMazeMoveDirection.Right: m_RightBorder  = border; m_RightBorderInited  = true; break;
-                case EMazeMoveDirection.Down:  m_BottomBorder = border; m_BottomBorderInited = true; break;
-                case EMazeMoveDirection.Left:  m_LeftBorder   = border; m_LeftBorderInited   = true; break;
+                case EDirection.Up:    m_TopBorder    = border; m_TopBorderInited    = true; break;
+                case EDirection.Right: m_RightBorder  = border; m_RightBorderInited  = true; break;
+                case EDirection.Down:  m_BottomBorder = border; m_BottomBorderInited = true; break;
+                case EDirection.Left:  m_LeftBorder   = border; m_LeftBorderInited   = true; break;
                 default:                       throw new SwitchCaseNotImplementedException(_Side);
             }
         }
@@ -558,7 +558,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(isConerNearTurret || isCornerNearTrapIncreasing ? ArcEndCap.Round : ArcEndCap.None)
                 .SetRadius(ViewSettings.CornerRadius * CoordinateConverter.Scale)
-                .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
+                .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 1.5f)
                 .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
                 .SetSortingOrder(SortingOrders.PathJoint)
@@ -597,10 +597,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             bool _Up,
             bool _Inner)
         {
-            const EMazeMoveDirection left  = EMazeMoveDirection.Left;
-            const EMazeMoveDirection right = EMazeMoveDirection.Right;
-            const EMazeMoveDirection down  = EMazeMoveDirection.Down;
-            const EMazeMoveDirection up    = EMazeMoveDirection.Up;
+            const EDirection left  = EDirection.Left;
+            const EDirection right = EDirection.Right;
+            const EDirection down  = EDirection.Down;
+            const EDirection up    = EDirection.Up;
             if (!_Inner)
                 return;
             if (!_Right && !_Up)
@@ -634,7 +634,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         }
 
         private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(
-            EMazeMoveDirection _Side,
+            EDirection _Side,
             bool               _StartLimit,
             bool               _EndLimit)
         {
@@ -671,7 +671,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             return CoordinateConverter.ToLocalMazeItemPosition(center);
         }
 
-        protected bool IsBorderNearTrapReact(EMazeMoveDirection _Side)
+        protected bool IsBorderNearTrapReact(EDirection _Side)
         {
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
@@ -680,7 +680,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 && _Item.Direction == -dir);
         }
         
-        protected bool IsBorderNearTrapIncreasing(EMazeMoveDirection _Side)
+        protected bool IsBorderNearTrapIncreasing(EDirection _Side)
         {
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>

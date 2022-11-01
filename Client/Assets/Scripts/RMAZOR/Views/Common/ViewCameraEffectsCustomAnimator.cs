@@ -63,9 +63,9 @@ namespace RMAZOR.Views.Common
             AnimateColorGradingPropsOnBetweenLevel(_Appear);
         }
         
-        public void SetBloom(BloomPropsAlt _BloomPropsAlt)
+        public void SetBloom(BloomPropsArgs _BloomPropsArgs)
         {
-            var props = _BloomPropsAlt.ToBloomProps(out bool enableBloom);
+            var props = _BloomPropsArgs.ToBloomProps(out bool enableBloom);
             CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
             if (!enableBloom)
                 return;
@@ -109,15 +109,8 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            BackgroundTextureController.GetBackgroundColors(
-                out _,
-                out _,
-                out _, 
-                out _, 
-                out _, 
-                out _ ,
-                out BloomPropsAlt bloomPropsAlt);
-            var props = bloomPropsAlt.ToBloomProps(out bool enableBloom);
+            var backgroundColorArgs = BackgroundTextureController.GetBackgroundColorArgs();
+            var props = backgroundColorArgs.BloomPropsArgs.ToBloomProps(out bool enableBloom);
             enableBloom &= Application.platform == RuntimePlatform.IPhonePlayer; // на андройде блум тормозит
             CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
             if (!enableBloom)

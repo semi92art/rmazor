@@ -4,6 +4,7 @@ using Common;
 using Common.Entities;
 using Common.Helpers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.BackgroundIdleItems;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
@@ -29,6 +30,12 @@ namespace RMAZOR.Views.Common
     {
         event UnityAction<List<PointsGroupArgs>> GroupsCollected;
     }
+
+    public class ViewMazeAdditionalBackgroundFake : InitBase, IViewMazeAdditionalBackground
+    {
+        public event UnityAction<List<PointsGroupArgs>> GroupsCollected;
+        public void OnLevelStageChanged(LevelStageArgs _Args) { }
+    }
     
     public class ViewMazeAdditionalBackground : InitBase, IViewMazeAdditionalBackground
     {
@@ -37,15 +44,18 @@ namespace RMAZOR.Views.Common
         private IModelGame                                       Model               { get; }
         private IViewMazeAdditionalBackgroundGeometryInitializer GeometryInitializer { get; }
         private IViewMazeAdditionalBackgroundDrawer              Drawer              { get; }
-        
+        private IViewMazeBackgroundIdleItems                     IdleItems           { get; }
+
         private ViewMazeAdditionalBackground(
             IModelGame                                       _Model,
             IViewMazeAdditionalBackgroundGeometryInitializer _GeometryInitializer,
-            IViewMazeAdditionalBackgroundDrawer              _Drawer)
+            IViewMazeAdditionalBackgroundDrawer              _Drawer,
+            IViewMazeBackgroundIdleItems                    _IdleItems)
         {
             Model               = _Model;
             GeometryInitializer = _GeometryInitializer;
             Drawer              = _Drawer;
+            IdleItems           = _IdleItems;
         }
 
         #endregion
@@ -56,6 +66,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
+            IdleItems.Init();
             GeometryInitializer.Init();
             Drawer.Init();
             base.Init();
@@ -77,6 +88,7 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.Args.Contains("set_back_editor"))
                 return;
+            IdleItems.SetSpawnPool(_Args.LevelIndex);
             var info = Model.Data.Info;
             var groups = GeometryInitializer.GetGroups(info);
             GroupsCollected?.Invoke(groups);

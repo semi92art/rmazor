@@ -50,13 +50,13 @@ namespace RMAZOR.Views.UI
         private   ICoordinateConverter m_CoordinateConverter;
         private   Vector4              m_Offsets;
         protected bool                 ReadyToAnimate;
-        protected EMazeMoveDirection?  Direction;
+        protected EDirection?  Direction;
         private   IEnumerator          m_LastTraceAnimCoroutine;
         private   IEnumerator          m_LastHandAnimCoroutine;
         private   IEnumerator          m_LastWaitCoroutine;
         protected bool                 TutorialFinished;
         
-        protected abstract Dictionary<EMazeMoveDirection, float> HandAngles { get; }
+        protected abstract Dictionary<EDirection, float> HandAngles { get; }
 
         #endregion
 
@@ -98,7 +98,7 @@ namespace RMAZOR.Views.UI
             hand.color = _Color;
         }
 
-        protected void AnimateHandAndTrace(EMazeMoveDirection _Direction, float _Time)
+        protected void AnimateHandAndTrace(EDirection _Direction, float _Time)
         {            
             ReadyToAnimate = false;
             Cor.Stop(m_LastTraceAnimCoroutine);
@@ -113,32 +113,32 @@ namespace RMAZOR.Views.UI
             
         }
         
-        protected abstract IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction);
-        protected abstract IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction);
+        protected abstract IEnumerator AnimateTraceCoroutine(EDirection _Direction);
+        protected abstract IEnumerator AnimateHandPositionCoroutine(EDirection _Direction);
 
 
-        private Dictionary<EMazeMoveDirection, Func<Vector2>> HandPositions
+        private Dictionary<EDirection, Func<Vector2>> HandPositions
         {
             get
             {
                 var mazeCenter = m_CoordinateConverter.GetMazeBounds().center;
                 var screeenBds = GetScreenBounds();
-                return new Dictionary<EMazeMoveDirection, Func<Vector2>>
+                return new Dictionary<EDirection, Func<Vector2>>
                 {
                     {
-                        EMazeMoveDirection.Left,
+                        EDirection.Left,
                         () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
                     },
                     {
-                        EMazeMoveDirection.Right,
+                        EDirection.Right,
                         () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
                     },
                     {
-                        EMazeMoveDirection.Down,
+                        EDirection.Down,
                         () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
                     },
                     {
-                        EMazeMoveDirection.Up,
+                        EDirection.Up,
                         () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
                     },
                 };
@@ -151,7 +151,7 @@ namespace RMAZOR.Views.UI
         }
         
         protected IEnumerator AnimateHandPositionCoroutine(
-            EMazeMoveDirection _Direction,
+            EDirection _Direction,
             HandSpriteTraceParamsBase _Params)
         {
             transform.SetPosXY(HandPositions[_Direction].Invoke());
@@ -159,19 +159,19 @@ namespace RMAZOR.Views.UI
             Vector2 posStart, posEnd;
             switch (_Direction)
             {
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     posStart = new Vector2(2f, 0f);
                     posEnd = new Vector2(-2f, 0f);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     posStart = new Vector2(-2f, 0f);
                     posEnd = new Vector2(2f, 0f);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     posStart = new Vector2(0f, 2f);
                     posEnd = new Vector2(0f, -2f);
                     break;
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     posStart = new Vector2(0f, -2f);
                     posEnd = new Vector2(0f, 2f);
                     break;

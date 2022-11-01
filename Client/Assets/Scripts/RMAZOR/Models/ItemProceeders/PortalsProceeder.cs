@@ -12,11 +12,11 @@ namespace RMAZOR.Models.ItemProceeders
 {
     public class PortalEventArgs : EventArgs
     {
-        public EMazeMoveDirection   Direction  { get; }
+        public EDirection   Direction  { get; }
         public IMazeItemProceedInfo Info       { get; }
         public bool                 IsPortFrom { get; }
 
-        public PortalEventArgs(EMazeMoveDirection _Direction, IMazeItemProceedInfo _Info, bool _IsPortFrom)
+        public PortalEventArgs(EDirection _Direction, IMazeItemProceedInfo _Info, bool _IsPortFrom)
         {
             Direction = _Direction;
             Info = _Info;

@@ -214,8 +214,8 @@ public class BuildTargetChangeListener : IActiveBuildTargetChanged
         if (!scriptDefSymbols.Contains("APPODEAL_3"))
             scriptDefSymbols.Add("APPODEAL_3");
         PlayerSettings.SetScriptingDefineSymbols(_Target, scriptDefSymbols.ToArray());
-        // _addAppodealRequest = Client.Add("https://github.com/appodeal/appodeal-unity-plugin-upm.git");
-        _addAppodealRequest = Client.Add("https://github.com/appodeal/appodeal-unity-plugin-upm.git#feature/release-3.0.1");
+        _addAppodealRequest = Client.Add("https://github.com/appodeal/appodeal-unity-plugin-upm.git");
+        // _addAppodealRequest = Client.Add("https://github.com/appodeal/appodeal-unity-plugin-upm.git#feature/release-3.0.1");
         EditorApplication.update += AddAppodealProgress;
     }
 

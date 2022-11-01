@@ -15,10 +15,12 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
     public interface IViewMazeBackgroundIdleItems : IInit, IOnLevelStageChanged
     {
-        void SetSpawnPool(int _Index);
+        void SetSpawnPool(long _LevelIndex);
     }
     
-    public class ViewMazeBackgroundIdleItems : ViewMazeBackgroundItemsBase, IViewMazeBackgroundIdleItems
+    public class ViewMazeBackgroundIdleItems
+        : ViewMazeBackgroundItemsBase,
+          IViewMazeBackgroundIdleItems
     {
         #region nonpublic members
 
@@ -67,16 +69,18 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         #region api
 
-        public void SetSpawnPool(int _Index)
+        public void SetSpawnPool(long _LevelIndex)
         {
             m_DiscsPool    .DeactivateAll();
             m_SquaresPool  .DeactivateAll();
             m_TrianglesPool.DeactivateAll();
-            m_CurrentPool = _Index switch
+            long poolIdx = _LevelIndex % 3;
+            m_CurrentPool = poolIdx switch
             {
                 0 => ToSpawnPool<IViewMazeBackgroundIdleItemSquare, IViewMazeBackgroundIdleItem>(m_SquaresPool),
                 1 => ToSpawnPool<IViewMazeBackgroundIdleItemTriangle, IViewMazeBackgroundIdleItem>(m_TrianglesPool),
-                _ => throw new SwitchCaseNotImplementedException(_Index)
+                2 => ToSpawnPool<IViewMazeBackgroundIdleItemDisc, IViewMazeBackgroundIdleItem>(m_DiscsPool),
+                _ => throw new SwitchCaseNotImplementedException(_LevelIndex)
             };
             m_CurrentPool.ActivateAll();
             foreach (var item in m_CurrentPool)
@@ -131,11 +135,11 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 squareItem  .Init(Container, physicsMaterial);
                 triangleItem.Init(Container, physicsMaterial);
                 
-                const float multiplier = 0.2f;
+                const float multiplier = 0.5f;
                 float coeff = 1f + RandomGen.NextFloat() * 1f;
-                discItem    .SetParams(multiplier * coeff, 0.1f);
-                squareItem  .SetParams(3f * multiplier * coeff, 0.1f);
-                triangleItem.SetParams(3f * multiplier * coeff, 0.1f);
+                discItem    .SetParams(multiplier * coeff, 0.2f);
+                squareItem  .SetParams(3f * multiplier * coeff, 0.2f);
+                triangleItem.SetParams(3f * multiplier * coeff, 0.2f);
                 
                 discItem    .SetColor(m_BackItemsColor);
                 squareItem  .SetColor(m_BackItemsColor);
@@ -187,7 +191,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
     public class ViewMazeBackgroundIdleItemsFake : InitBase, IViewMazeBackgroundIdleItems
     {
-        public void SetSpawnPool(int                   _Index) { }
+        public void SetSpawnPool(long                   _LevelIndex) { }
         public void OnLevelStageChanged(LevelStageArgs _Args) { }
     }
 }

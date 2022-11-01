@@ -17,10 +17,10 @@ namespace Editor
     {
         #region constants
 
+        private const string ProgressBarTitle = "Building Bundles";
         private const string BundlesLocalPath = "../../bundles";
         private const string UserName         = "semi92art";
         private const string Token            = "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";
-        private const string ProgressBarTitle = "Building Bundles";
         private const string RepositoryName   = "bundles";
         
         #endregion
@@ -34,14 +34,29 @@ namespace Editor
 
         #region api
 
-        [MenuItem("Tools/Bundles/Build")]
+        [MenuItem("Tools/Bundles/Build", false, 1)]
         public static void BuildBundles()
         {
             BuildBundles(false);
         }
 
-        [MenuItem("Tools/Bundles/Copy To Git Folder")]
-        public static void CopyToGitFolder()
+        [MenuItem("Tools/Bundles/Copy To Git Folder and Commit", false, 2)]
+        public static void CopyToGitFolderAndCommit()
+        {
+            CopyToGitFolder();
+            CommitToGit();
+        }
+        
+        [MenuItem("Tools/Bundles/Clear Cache", false, 13)]
+        public static void ClearBundlesCache()
+        {
+            bool clearCacheSuccess = Caching.ClearCache();
+            Dbg.Log(clearCacheSuccess ? "Successfully cleaned the cache" : "Cache is being used");
+        }
+
+        #endregion
+        
+        private static void CopyToGitFolder()
         {
             DirectoryInfo dInfo = new DirectoryInfo(Directory.GetCurrentDirectory());
             var fileNames = Directory.GetFiles(BundlesPath, "*.*", SearchOption.AllDirectories);
@@ -80,9 +95,7 @@ namespace Editor
             }
         }
         
-        
-        [MenuItem("Tools/Bundles/Push")]
-        public static void PushBundlesToGit()
+        private static void CommitToGit()
         {
             EditorUtility.ClearProgressBar();
             EditorUtility.DisplayProgressBar(ProgressBarTitle, "Staging in git...", 20f);
@@ -105,19 +118,10 @@ namespace Editor
             GitUtils.RunGitCommand($"stage {fileNamesText}", BundlesLocalPath);
             EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
             GitUtils.RunGitCommand("commit -m 'UnityBuild'", BundlesLocalPath);
-            EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
-            GitUtils.RunGitCommand(PushCommand, BundlesLocalPath);
+            // EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
+            // GitUtils.RunGitCommand(PushCommand, BundlesLocalPath);
             EditorUtility.ClearProgressBar();
         }
-
-        [MenuItem("Tools/Bundles/Clear Cache", false, 11)]
-        public static void ClearBundlesCache()
-        {
-            bool clearCacheSuccess = Caching.ClearCache();
-            Dbg.Log(clearCacheSuccess ? "Successfully cleaned the cache" : "Cache is being used");
-        }
-
-        #endregion
 
         #region nonpublic methods
         

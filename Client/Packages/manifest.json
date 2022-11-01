@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.appodeal.appodeal-unity-plugin-upm": "https://github.com/appodeal/appodeal-unity-plugin-upm.git#feature/release-3.0.1",
+    "com.appodeal.appodeal-unity-plugin-upm": "https://github.com/appodeal/appodeal-unity-plugin-upm.git",
     "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.analytics": "3.6.12",

@@ -111,8 +111,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             if (TopExtraBordersInited)     m_TopBorder   .enabled = false;
             LeftExtraBordersInited = RightExtraBordersInited = BottomExtraBordersInited = TopExtraBordersInited = false;
             var sides = Enum
-                .GetValues(typeof(EMazeMoveDirection))
-                .Cast<EMazeMoveDirection>();
+                .GetValues(typeof(EDirection))
+                .Cast<EDirection>();
             foreach (var side in sides)
             {
                 if (Informer.MustInitBorder(side) && Activated)
@@ -143,10 +143,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         public override void AdjustBordersOnCornerInitialization(bool _Right, bool _Up, bool _Inner)
         {
-            const EMazeMoveDirection left  = EMazeMoveDirection.Left;
-            const EMazeMoveDirection right = EMazeMoveDirection.Right;
-            const EMazeMoveDirection down  = EMazeMoveDirection.Down;
-            const EMazeMoveDirection up    = EMazeMoveDirection.Up;
+            const EDirection left  = EDirection.Left;
+            const EDirection right = EDirection.Right;
+            const EDirection down  = EDirection.Down;
+            const EDirection up    = EDirection.Up;
             if (!_Inner)
                 return;
             if (!_Right && !_Up)
@@ -182,17 +182,17 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var col = GetBorderColor();
-            Color GetBorderColorWithAlpha(EMazeMoveDirection _Side)
+            Color GetBorderColorWithAlpha(EDirection _Side)
             {
                 float alphaChannel = Informer.IsBorderNearTrapReact(_Side)
                                      || Informer.IsBorderNearTrapIncreasing(_Side)
                     ? 0f : 1f;
                 return col.SetA(alphaChannel);
             }
-            var colorLeft   = GetBorderColorWithAlpha(EMazeMoveDirection.Left);
-            var colorRight  = GetBorderColorWithAlpha(EMazeMoveDirection.Right);
-            var colorBottom = GetBorderColorWithAlpha(EMazeMoveDirection.Down);
-            var colorTop    = GetBorderColorWithAlpha(EMazeMoveDirection.Up);
+            var colorLeft   = GetBorderColorWithAlpha(EDirection.Left);
+            var colorRight  = GetBorderColorWithAlpha(EDirection.Right);
+            var colorBottom = GetBorderColorWithAlpha(EDirection.Down);
+            var colorTop    = GetBorderColorWithAlpha(EDirection.Up);
             var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
             if (LeftExtraBordersInited)   sets.Add(new [] {m_LeftBorder},   () => colorLeft);
             if (RightExtraBordersInited)  sets.Add(new [] {m_RightBorder},  () => colorRight);
@@ -208,7 +208,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             var borderCol = GetBorderColor();
-            void SetBorderColor(ShapeRenderer _Border, bool _Inited, EMazeMoveDirection _Side)
+            void SetBorderColor(ShapeRenderer _Border, bool _Inited, EDirection _Side)
             {
                 if (!_Inited)
                     return;
@@ -218,20 +218,20 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     ? 0f : 1f;
                 _Border.Color = borderCol.SetA(alphaChannel);
             }
-            SetBorderColor(m_LeftBorder,   LeftExtraBordersInited,   EMazeMoveDirection.Left);
-            SetBorderColor(m_RightBorder,  RightExtraBordersInited,  EMazeMoveDirection.Right);
-            SetBorderColor(m_BottomBorder, BottomExtraBordersInited, EMazeMoveDirection.Down);
-            SetBorderColor(m_TopBorder,    TopExtraBordersInited,    EMazeMoveDirection.Up);
+            SetBorderColor(m_LeftBorder,   LeftExtraBordersInited,   EDirection.Left);
+            SetBorderColor(m_RightBorder,  RightExtraBordersInited,  EDirection.Right);
+            SetBorderColor(m_BottomBorder, BottomExtraBordersInited, EDirection.Down);
+            SetBorderColor(m_TopBorder,    TopExtraBordersInited,    EDirection.Up);
         }
 
-        private void DrawExtraBorder(EMazeMoveDirection _Side)
+        private void DrawExtraBorder(EDirection _Side)
         {
             Line border = _Side switch
             {
-                EMazeMoveDirection.Up    => m_TopBorder,
-                EMazeMoveDirection.Right => m_RightBorder,
-                EMazeMoveDirection.Down  => m_BottomBorder,
-                EMazeMoveDirection.Left  => m_LeftBorder,
+                EDirection.Up    => m_TopBorder,
+                EDirection.Right => m_RightBorder,
+                EDirection.Down  => m_BottomBorder,
+                EDirection.Left  => m_LeftBorder,
                 _                        => throw new SwitchCaseNotImplementedException(_Side)
             };
             if (border.IsNull())
@@ -250,16 +250,16 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 ContainerNames.MazeItems).transform.position;
             switch (_Side)
             {
-                case EMazeMoveDirection.Left:  m_LeftBorder   = border; LeftExtraBordersInited   = true; break;
-                case EMazeMoveDirection.Right: m_RightBorder  = border; RightExtraBordersInited  = true; break;
-                case EMazeMoveDirection.Down:  m_BottomBorder = border; BottomExtraBordersInited = true; break;
-                case EMazeMoveDirection.Up:    m_TopBorder    = border; TopExtraBordersInited    = true; break;
+                case EDirection.Left:  m_LeftBorder   = border; LeftExtraBordersInited   = true; break;
+                case EDirection.Right: m_RightBorder  = border; RightExtraBordersInited  = true; break;
+                case EDirection.Down:  m_BottomBorder = border; BottomExtraBordersInited = true; break;
+                case EDirection.Up:    m_TopBorder    = border; TopExtraBordersInited    = true; break;
                 default:                       throw new SwitchCaseNotImplementedException(_Side);
             }
         }
         
         private Tuple<Vector2, Vector2> GetAdditionalBorderPoints(
-            EMazeMoveDirection _Side,
+            EDirection _Side,
             bool               _StartLimit,
             bool               _EndLimit)
         {
@@ -274,10 +274,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 1f);
             Vector2 addict = _Side switch
             {
-                EMazeMoveDirection.Left  => left  * sb,
-                EMazeMoveDirection.Right => right * sb,
-                EMazeMoveDirection.Down  => down  * sb,
-                EMazeMoveDirection.Up    => up    * sb,
+                EDirection.Left  => left  * sb,
+                EDirection.Right => right * sb,
+                EDirection.Down  => down  * sb,
+                EDirection.Up    => up    * sb,
                 _                        => default
             };
             start += addict;

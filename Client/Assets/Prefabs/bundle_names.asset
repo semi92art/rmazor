@@ -8,4 +8,5 @@ TextAsset:
   m_PrefabAsset: {fileID: 0}
   m_Name: bundle_names
   m_Script: '[{"BundleName":"background","AssetName":"main_background_set","AssetPath":"assets/prefabs/configs
-    and sets/main_background_set.asset"},{"BundleName":"game_1_levels","AssetName":"levels_1","AssetPath":"assets/prefabs/levels/game_1/levels_1.json"}]'
+    and sets/main_background_set.asset"},{"BundleName":"background","AssetName":"additional_background_set","AssetPath":"assets/prefabs/configs
+    and sets/additional_background_set.asset"},{"BundleName":"game_1_levels","AssetName":"levels_1","AssetPath":"assets/prefabs/levels/game_1/levels_1.json"}]'

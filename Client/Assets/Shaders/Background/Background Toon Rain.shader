@@ -37,6 +37,7 @@ Shader "RMAZOR/Background/Toon Rain"
 
             #include "UnityCG.cginc"
             #include "../Common.cginc"
+            #include "Toon.cginc"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale;
@@ -48,7 +49,6 @@ Shader "RMAZOR/Background/Toon Rain"
                 return vert_default(v);
             }
 
-
             // Perlin noise variant of "metafall" https://shadertoy.com/view/wllGzB
             #define hash(p) ( 2.* frac(sin(mul(p,float2x2(127.1,311.7,269.5,183.3)))*43758.5453123) -1.)
 
@@ -58,26 +58,16 @@ Shader "RMAZOR/Background/Toon Rain"
                 float2 R = _ScreenParams.xy,
                        U = frag_coord / R.y, V = 15. * U;
                 V.y += T;
-
                 float2 C, v = smoothstep(0., 1., frac(V)); // Perlin noise
                 #define Px(x,y) dot( hash( C = floor(V) + float2(x,y) ), V-C )
                 #define Py(y)   lerp( Px(0,y), Px(1,y), v.x)
                 float p = lerp(Py(0), Py(1), v.y);
                 p = .55 + .75 * p;
-
-                //p = sin(10.*p);
                 float lc = .3 + 0.8 * U.y - p;
-                // lc /= fwidth(p);
                 lc = clamp(lc, 0, 1);
                 lc += 0.1;
-                lc *= 1.5;
-                if (lc < 0.2)      lc = 0;
-                else if (lc < 0.4) lc = 0.4;
-                else if (lc < 0.6) lc = 0.6;
-                else if (lc < 0.8) lc = 0.8;
-                else lc = 1;
-                fixed3 col = lerp(_Color2, _Color1, lc);
-                return fixed4(col, 1);
+                lc *= 1.3;
+                return toon_color(_Color2, _Color1, lc, .2);
             }
             ENDCG
         }

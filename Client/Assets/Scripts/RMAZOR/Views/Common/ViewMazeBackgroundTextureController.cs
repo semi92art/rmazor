@@ -19,7 +19,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private static readonly int  MainTexId = Shader.PropertyToID("_MainTex");
+        private static readonly int MainTexId = Shader.PropertyToID("_MainTex");
 
         private readonly Dictionary<float, RenderTexture> m_RenderTexturesDict
             = new Dictionary<float, RenderTexture>();
@@ -94,7 +94,7 @@ namespace RMAZOR.Views.Common
             TextureProviderSet.Init();
             foreach (var provider in TextureProviderSet.GetSet())
             {
-                provider.Renderer.gameObject.layer = LayerMask.NameToLayer("μ Mu");
+                provider.Renderer.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Mu);
                 provider.Activate(false);
             }
         }
@@ -152,7 +152,7 @@ namespace RMAZOR.Views.Common
             cam.transform.SetLocalPosXY(Vector2.left * 300f).SetLocalPosZ(-1f);
             cam.depth = 2f;
             cam.orthographicSize = CameraProvider.Camera.orthographicSize;
-            cam.cullingMask = LayerMask.GetMask("μ Mu");
+            cam.cullingMask = LayerMask.GetMask(LayerNamesCommon.Mu);
             m_RenderCamera = cam;
         }
         
@@ -214,8 +214,7 @@ namespace RMAZOR.Views.Common
             foreach (var texProvider in set)
                 texProvider.Activate(false);
             int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            int idx = (group - 1) % set.Count;
-            _Provider =  set[idx];
+            _Provider = TextureProviderSet.GetProvider(AdditionalInfo.backgroundName);
             switch (_Provider)
             {
                 case IFullscreenTextureProviderTriangles2 triangles2:

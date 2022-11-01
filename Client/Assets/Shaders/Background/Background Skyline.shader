@@ -59,7 +59,8 @@ Shader "RMAZOR/Background/Skyline"
                     if (uv.y+.04*i < sin(c=floor(x= 2e2*uv.x/i + 9.*i + T * 100)))
                         lc += min(15.*((x-=c)-x*x),1.) *(i/20.-lc);
                 }
-                return lerp(_Color1, _Color2, lc);
+                fixed4 frag_col = lerp(_Color1, _Color2, lc);
+                return frag_col;
             }
             ENDCG
         }

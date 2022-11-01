@@ -83,7 +83,7 @@ Material:
     - _Scale: 5.23
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 5.25
+    - _Speed: 2.77
     - _SrcBlend: 5
     - _Tiling: 18
     - _TimeA: 0
@@ -93,7 +93,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - _Color: {r: 0.6509804, g: 0.5372549, b: 0.32156864, a: 0}
-    - _Color1: {r: 0.19651122, g: 0.6037736, b: 0.36377972, a: 1}
-    - _Color2: {r: 0.6037736, g: 0, b: 0.20405693, a: 1}
+    - _Color1: {r: 0.6698113, g: 0.5687542, b: 0.43284976, a: 1}
+    - _Color2: {r: 0.09411764, g: 0.23698807, b: 0.40392157, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

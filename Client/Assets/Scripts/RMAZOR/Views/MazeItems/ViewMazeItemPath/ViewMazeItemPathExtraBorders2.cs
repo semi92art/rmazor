@@ -128,8 +128,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             DisableRects(TopExtraBordersInited,    m_TopRectangles);
             LeftExtraBordersInited = RightExtraBordersInited = BottomExtraBordersInited = TopExtraBordersInited = false;
             var sides = Enum
-                .GetValues(typeof(EMazeMoveDirection))
-                .Cast<EMazeMoveDirection>();
+                .GetValues(typeof(EDirection))
+                .Cast<EDirection>();
             foreach (var side in sides)
             {
                 if (Informer.MustInitBorder(side) && Activated)
@@ -140,17 +140,17 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var col = GetBorderColor();
-            Color GetBorderColorWithAlpha(EMazeMoveDirection _Side)
+            Color GetBorderColorWithAlpha(EDirection _Side)
             {
                 float alphaChannel = Informer.IsBorderNearTrapReact(_Side)
                                      || Informer.IsBorderNearTrapIncreasing(_Side)
                     ? 0f : 1f;
                 return col.SetA(alphaChannel);
             }
-            var colorLeft   = GetBorderColorWithAlpha(EMazeMoveDirection.Left);
-            var colorRight  = GetBorderColorWithAlpha(EMazeMoveDirection.Right);
-            var colorBottom = GetBorderColorWithAlpha(EMazeMoveDirection.Down);
-            var colorTop    = GetBorderColorWithAlpha(EMazeMoveDirection.Up);
+            var colorLeft   = GetBorderColorWithAlpha(EDirection.Left);
+            var colorRight  = GetBorderColorWithAlpha(EDirection.Right);
+            var colorBottom = GetBorderColorWithAlpha(EDirection.Down);
+            var colorTop    = GetBorderColorWithAlpha(EDirection.Up);
             var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
             if (LeftExtraBordersInited)   sets.Add(m_LeftRectangles,   () => colorLeft);
             if (RightExtraBordersInited)  sets.Add(m_RightRectangles,  () => colorRight);
@@ -168,7 +168,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             var borderCol = GetBorderColor();
             void SetRectsColor(
                 bool                       _Inited,
-                EMazeMoveDirection         _Direction,
+                EDirection         _Direction,
                 IEnumerable<ShapeRenderer> _Rectangles)
             {
                 if (!_Inited) 
@@ -181,20 +181,20 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     rect.Color = borderCol.SetA(alphaChannel);
                 }
             }
-            SetRectsColor(LeftExtraBordersInited,   EMazeMoveDirection.Left,  m_LeftRectangles);
-            SetRectsColor(RightExtraBordersInited,  EMazeMoveDirection.Right, m_RightRectangles);
-            SetRectsColor(BottomExtraBordersInited, EMazeMoveDirection.Down,  m_BottomRectangles);
-            SetRectsColor(TopExtraBordersInited,    EMazeMoveDirection.Up,    m_TopRectangles);
+            SetRectsColor(LeftExtraBordersInited,   EDirection.Left,  m_LeftRectangles);
+            SetRectsColor(RightExtraBordersInited,  EDirection.Right, m_RightRectangles);
+            SetRectsColor(BottomExtraBordersInited, EDirection.Down,  m_BottomRectangles);
+            SetRectsColor(TopExtraBordersInited,    EDirection.Up,    m_TopRectangles);
         }
 
-        private void DrawExtraBorder(EMazeMoveDirection _Side)
+        private void DrawExtraBorder(EDirection _Side)
         {
             List<Rectangle> rects = _Side switch
             {
-                EMazeMoveDirection.Left  => m_LeftRectangles,
-                EMazeMoveDirection.Right => m_RightRectangles,
-                EMazeMoveDirection.Down  => m_BottomRectangles,
-                EMazeMoveDirection.Up    => m_TopRectangles,
+                EDirection.Left  => m_LeftRectangles,
+                EDirection.Right => m_RightRectangles,
+                EDirection.Down  => m_BottomRectangles,
+                EDirection.Up    => m_TopRectangles,
                 _                        => throw new SwitchCaseNotImplementedException(_Side)
             };
             if (!rects.Any())
@@ -220,15 +220,15 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             rects[2].transform.SetPosXY(positions[2]);
             switch (_Side)
             {
-                case EMazeMoveDirection.Left:  m_LeftRectangles   = rects; LeftExtraBordersInited   = true; break;
-                case EMazeMoveDirection.Right: m_RightRectangles  = rects; RightExtraBordersInited  = true; break;
-                case EMazeMoveDirection.Down:  m_BottomRectangles = rects; BottomExtraBordersInited = true; break;
-                case EMazeMoveDirection.Up:    m_TopRectangles    = rects; TopExtraBordersInited    = true; break;
+                case EDirection.Left:  m_LeftRectangles   = rects; LeftExtraBordersInited   = true; break;
+                case EDirection.Right: m_RightRectangles  = rects; RightExtraBordersInited  = true; break;
+                case EDirection.Down:  m_BottomRectangles = rects; BottomExtraBordersInited = true; break;
+                case EDirection.Up:    m_TopRectangles    = rects; TopExtraBordersInited    = true; break;
                 default:                       throw new SwitchCaseNotImplementedException(_Side);
             }
         }
         
-        private List<Vector2> GetRectsPositions(EMazeMoveDirection _Side)
+        private List<Vector2> GetRectsPositions(EDirection _Side)
         {
             Vector2 pos = GetProps().Position;
             Vector2 left, right, down, up;
@@ -239,22 +239,22 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             const float indent = 0.15f;
             switch (_Side)
             {
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     pos1 = pos + (up * c1)    + (up    * indent);
                     pos2 = pos + (up * c1     + left   * c2) + (up    * indent);
                     pos3 = pos + (up * c1     + right  * c2) + (up    * indent);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     pos1 = pos + (right * c1) + (right * indent);
                     pos2 = pos + (right * c1  + down   * c2) + (right * indent);
                     pos3 = pos + (right * c1  + up     * c2) + (right * indent);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     pos1 = pos + (down * c1) + (down  * indent);
                     pos2 = pos + (down * c1  + left   * c2)  + (down  * indent);
                     pos3 = pos + (down * c1  + right  * c2)  + (down  * indent);
                     break;
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     pos1 = pos + (left * c1) + (left  * indent);
                     pos2 = pos + (left * c1  + down   * c2)  + (left  * indent);
                     pos3 = pos + (left * c1  + up     * c2)  + (left  * indent);

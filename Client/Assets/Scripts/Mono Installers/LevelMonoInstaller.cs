@@ -140,7 +140,8 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemPathExtraBorders1>().To<ViewMazeItemPathExtraBorders1>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders2>().To<ViewMazeItemPathExtraBorders2>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBorders3>().To<ViewMazeItemPathExtraBorders3>().AsSingle();
-            Container.Bind<IViewMazeItemPathExtraBordersEmpty>().To<ViewMazeItemPathExtraBordersEmpty>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBorders4>().To<ViewMazeItemPathExtraBorders4>().AsSingle();
+            Container.Bind<IViewMazeItemPathExtraBorders5>().To<ViewMazeItemPathExtraBorders5>().AsSingle();
             Container.Bind<IViewMazeItemPathExtraBordersSet>().To<ViewMazeItemPathExtraBordersSet>().AsSingle();
             Container.Bind<IViewMazeItemsPathInformer>().To<ViewMazeItemsPathInformer>().AsTransient();
             switch (CommonData.GameId)
@@ -222,11 +223,15 @@ namespace Mono_Installers
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
                 
-                Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperButton>()      .AsSingle();
-                // Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()      .AsSingle();
+                Container.Bind<IViewUILevelSkipper>()
+                    .To<ViewUILevelSkipperButton>()
+                    // .To<ViewUILevelSkipperFake>()
+                    .AsSingle();
                 
-                Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsButtons>() .AsSingle();
-                // Container.Bind<IViewUIRotationControls>().To<ViewUIRotationControlsFake>() .AsSingle();
+                Container.Bind<IViewUIRotationControls>()
+                    .To<ViewUIRotationControlsButtons>()
+                    // .To<ViewUIRotationControlsFake>()
+                    .AsSingle();
             }
         }
 

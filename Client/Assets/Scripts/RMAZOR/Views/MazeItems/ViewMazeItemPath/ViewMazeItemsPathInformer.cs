@@ -16,8 +16,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
     public interface IViewMazeItemsPathInformer : ICloneable
     {
         Func<ViewMazeItemProps> GetProps { set; }
-        bool                    IsBorderNearTrapReact(EMazeMoveDirection      _Side);
-        bool                    IsBorderNearTrapIncreasing(EMazeMoveDirection _Side);
+        bool                    IsBorderNearTrapReact(EDirection      _Side);
+        bool                    IsBorderNearTrapIncreasing(EDirection _Side);
         bool                    TurretExist(V2Int                             _Position);
         bool                    SpringboardExist(V2Int                        _Position);
         V2Int                   GetSpringboardDirection(V2Int                 _Position);
@@ -25,11 +25,11 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         bool                    IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType _Type);
         IMazeItemProceedInfo    GetItemInfoByPositionAndType(V2Int _Position, EMazeItemType _Type);
         Vector2                 GetCornerAngles(bool _Right, bool _Up, bool _Inner);
-        bool                    MustInitBorder(EMazeMoveDirection _Side);
+        bool                    MustInitBorder(EDirection _Side);
         Color                   GetHighlightColor();
 
         Tuple<Vector2, Vector2> GetBorderPointsRaw(
-            EMazeMoveDirection _Side,
+            EDirection _Side,
             bool               _StartLimit,
             bool               _EndLimit,
             float              _Scale);
@@ -73,7 +73,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             return @object;
         }
 
-        public bool IsBorderNearTrapReact(EMazeMoveDirection _Side)
+        public bool IsBorderNearTrapReact(EDirection _Side)
         {
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
@@ -82,7 +82,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 && _Item.Direction == -dir);
         }
 
-        public bool IsBorderNearTrapIncreasing(EMazeMoveDirection _Side)
+        public bool IsBorderNearTrapIncreasing(EDirection _Side)
         {
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
             return Model.GetAllProceedInfos().Any(_Item =>
@@ -123,7 +123,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         }
 
         public Tuple<Vector2, Vector2> GetBorderPointsRaw(
-            EMazeMoveDirection _Side,
+            EDirection _Side,
             bool               _StartLimit,
             bool               _EndLimit,
             float              _Scale)
@@ -135,19 +135,19 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Vector2 start, end;
             switch (_Side)
             {
-                case EMazeMoveDirection.Up:
+                case EDirection.Up:
                     start = pos + (up + left    * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
                     end   = pos + (up + right   * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
                     break;
-                case EMazeMoveDirection.Right:
+                case EDirection.Right:
                     start = pos + (right + down * _Scale) * 0.5f + (_StartLimit ? up    * cr : zero);
                     end   = pos + (right + up   * _Scale) * 0.5f + (_EndLimit   ? down  * cr : zero);
                     break;
-                case EMazeMoveDirection.Down:
+                case EDirection.Down:
                     start = pos + (down + left  * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
                     end   = pos + (down + right * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
                     break;
-                case EMazeMoveDirection.Left:
+                case EDirection.Left:
                     start = pos + (left + down * _Scale)  * 0.5f + (_StartLimit ? up     * cr : zero);
                     end   = pos + (left + up   * _Scale)  * 0.5f + (_EndLimit   ? down   * cr : zero);
                     break;
@@ -177,7 +177,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             return _Inner ? new Vector2(180, 270) : new Vector2(0, 90);
         }
         
-        public bool MustInitBorder(EMazeMoveDirection _Side)
+        public bool MustInitBorder(EDirection _Side)
         {
             var pathPos = GetProps().Position;
             var pos2 = GetProps().Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);

@@ -38,13 +38,13 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic members
         
-        protected override Dictionary<EMazeMoveDirection, float> HandAngles => 
-            new Dictionary<EMazeMoveDirection, float>
+        protected override Dictionary<EDirection, float> HandAngles => 
+            new Dictionary<EDirection, float>
             {
-                {EMazeMoveDirection.Left, 0f},
-                {EMazeMoveDirection.Right, 0f},
-                {EMazeMoveDirection.Down, 90f},
-                {EMazeMoveDirection.Up, 90f},
+                {EDirection.Left, 0f},
+                {EDirection.Right, 0f},
+                {EDirection.Down, 90f},
+                {EDirection.Up, 90f},
             };
 
         #endregion
@@ -67,25 +67,25 @@ namespace RMAZOR.Views.UI
 
         public void ShowMoveLeftPrompt()
         {
-            Direction = EMazeMoveDirection.Left;
+            Direction = EDirection.Left;
             ReadyToAnimate = true;
         }
 
         public void ShowMoveRightPrompt()
         {
-            Direction = EMazeMoveDirection.Right;
+            Direction = EDirection.Right;
             ReadyToAnimate = true;
         }
 
         public void ShowMoveUpPrompt()
         {
-            Direction = EMazeMoveDirection.Up;
+            Direction = EDirection.Up;
             ReadyToAnimate = true;
         }
 
         public void ShowMoveDownPrompt()
         {
-            Direction = EMazeMoveDirection.Down;
+            Direction = EDirection.Down;
             ReadyToAnimate = true;
         }
 
@@ -115,14 +115,14 @@ namespace RMAZOR.Views.UI
             trace.startColor = trace.endColor = newCol;
         }
         
-        protected override IEnumerator AnimateTraceCoroutine(EMazeMoveDirection _Direction)
+        protected override IEnumerator AnimateTraceCoroutine(EDirection _Direction)
         {
             var a = _Direction switch
             {
-                EMazeMoveDirection.Left  => moveParams.aMoveLeftPositions,
-                EMazeMoveDirection.Right => moveParams.aMoveRightPositions,
-                EMazeMoveDirection.Down  => moveParams.aMoveDownPositions,
-                EMazeMoveDirection.Up    => moveParams.aMoveUpPositions,
+                EDirection.Left  => moveParams.aMoveLeftPositions,
+                EDirection.Right => moveParams.aMoveRightPositions,
+                EDirection.Down  => moveParams.aMoveDownPositions,
+                EDirection.Up    => moveParams.aMoveUpPositions,
                 _                        => throw new SwitchCaseNotImplementedException(_Direction)
             };
             trace.enabled = false;
@@ -165,7 +165,7 @@ namespace RMAZOR.Views.UI
                 _BreakPredicate: () => ReadyToAnimate || TutorialFinished);
         }
 
-        protected override IEnumerator AnimateHandPositionCoroutine(EMazeMoveDirection _Direction)
+        protected override IEnumerator AnimateHandPositionCoroutine(EDirection _Direction)
         {
             yield return AnimateHandPositionCoroutine(_Direction, moveParams);
         }

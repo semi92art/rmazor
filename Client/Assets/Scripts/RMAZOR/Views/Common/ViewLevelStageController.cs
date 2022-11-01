@@ -386,10 +386,6 @@ namespace RMAZOR.Views.Common
             if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
                 // TODO сделать отдельное сообщение на окончание всех уровней
-                // CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null, true);
-                // string panelText = Managers.LocalizationManager.GetTranslation("rate_game_text_all_levels_passed");
-                // RateGameDialogPanel.SetDialogTitle(panelText);
-                // RateGameDialogPanel.CanBeClosed = false;
             }
             else if (m_NextLevelMustBeFirstInGroup)
                 CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
@@ -510,6 +506,8 @@ namespace RMAZOR.Views.Common
                     {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
                 });
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex));
+            if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelStageFinished);
         }
 
         private static bool CheckIfLevelWasFinishedAtLeastOnce(long _LevelIndex)
