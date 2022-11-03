@@ -13,8 +13,10 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -150,6 +152,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
                     .SetType(DiscType.Arc)
+                    .SetSortingOrder(SortingOrders.GetBlockSortingOrder(EMazeItemType.Portal))
                     .SetArcEndCaps(ArcEndCap.Round)
                     .SetColor(GetMainColor())
                     .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f);
@@ -210,6 +213,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 var gItem = Object.AddComponentOnNewChild<Disc>("Gravity Item", out _, Vector2.zero)
                     .SetType(DiscType.Disc)
+                    .SetSortingOrder(SortingOrders.GetBlockSortingOrder(EMazeItemType.Portal))
                     .SetColor(GetMainColor())
                     .SetRadius(0.025f * CoordinateConverter.Scale);
                 m_GravityItems.Add(gItem);

@@ -50,59 +50,18 @@ Shader "RMAZOR/Background/Fibrous Ring"
                 return vert_default(v);
             }
 
-            #define SF (_Mc1 * 50)/min(_ScreenParams.x,_ScreenParams.y)
-            #define SS(l,s) smoothstep(SF,-SF,l-s)
-
-            #define MOD3 float3(.1031, .11369, .13787)
-
-            float3 hash33(float3 p3)
-            {
-                p3 = frac(p3 * MOD3);
-                p3 += dot(p3, p3.yxz + 19.19);
-                return -1.0 + 2.0 * frac(float3((p3.x + p3.y) * p3.z, (p3.x + p3.z) * p3.y, (p3.y + p3.z) * p3.x));
-            }
-
-            float snoise(float3 p)
-            {
-                const float K1 = 0.333333333;
-                const float K2 = 0.166666667;
-
-                float3 i = floor(p + (p.x + p.y + p.z) * K1);
-                float3 d0 = p - (i - (i.x + i.y + i.z) * K2);
-
-                float3 e = step(float3(0, 0, 0), d0 - d0.yzx);
-                float3 i1 = e * (1.0 - e.zxy);
-                float3 i2 = 1.0 - e.zxy * (1.0 - e);
-
-                float3 d1 = d0 - (i1 - 1.0 * K2);
-                float3 d2 = d0 - (i2 - 2.0 * K2);
-                float3 d3 = d0 - (1.0 - 3.0 * K2);
-
-                float4 h = max(0.6 - float4(dot(d0, d0), dot(d1, d1), dot(d2, d2), dot(d3, d3)), 0.0);
-                float4 n = h * h * h * h * float4(dot(d0, hash33(i)), dot(d1, hash33(i + i1)), dot(d2, hash33(i + i2)),
-                                                  dot(d3, hash33(i + 1.0)));
-
-                return dot(31.316 * float4(1, 1, 1, 1), n);
-            }
-
-
             fixed4 frag(v2f f_i) : SV_Target
             {
-                float2 fragCoord = f_i.uv * _ScreenParams.xy;
-                float2 uv = (fragCoord - _ScreenParams.xy * 0.5) / _ScreenParams.y;
-
-                float l = length(uv);
-
-                float c = 0.;
-
-                for (float i = 10.; i < 40.; i += 10.)
-                {
-                    float zn = .2 + i * .005 + snoise(float3(uv * i * .5, 10. + T * .25)) * i * .003;
-                    float d = SS(l, zn) * SS(zn, l);
-                    c += d;
-                }
-                c *= 1.5;
-                return toon_color(_Color1, _Color2, c, 0.2);
+                float2 r = _ScreenParams.xy;
+                float2 o = (f_i.uv-float2(.5,.47)) * r;
+                fixed4 c = fixed4(0,0,0,0);
+                o = float2(length(o) / r.y - .3, atan2(o.y,o.x));    
+                float4 s = c.yzwx = (.05*_Scale)*cos(1.6*float4(0,1,2,3) + T + o.y + sin(o.y) * sin(T)*2.),
+                f = min(o.x-s, c-o.x);
+                c = dot(40.*(s-c), clamp(f*r.y, 0., 1.)) * (s-.1) - f;
+                float cc = (c.r+c.g+c.b);
+                cc = clamp(cc,0,1);
+                return lerp(_Color2,_Color1,cc);
             }
             ENDCG
         }

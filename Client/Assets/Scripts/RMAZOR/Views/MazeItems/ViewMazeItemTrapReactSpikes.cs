@@ -15,6 +15,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;

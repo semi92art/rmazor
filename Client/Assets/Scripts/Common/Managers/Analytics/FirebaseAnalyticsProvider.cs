@@ -75,7 +75,10 @@ namespace Common.Managers.Analytics
                 };
                 return p;
             }).Where(_P => _P != null).ToArray();
-            FirebaseAnalytics.LogEvent(_AnalyticId, @params);
+            if (@params == null)
+                FirebaseAnalytics.LogEvent(_AnalyticId);
+            else
+                FirebaseAnalytics.LogEvent(_AnalyticId, @params);
         }
 
         protected override string GetRealAnalyticId(string _AnalyticId)

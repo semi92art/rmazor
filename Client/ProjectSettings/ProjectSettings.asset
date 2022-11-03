@@ -136,8 +136,14 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.9.7
+  bundleVersion: 1.9.11
   preloadedAssets:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -288,7 +294,7 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 62
+  AndroidBundleVersionCode: 66
   AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
@@ -400,7 +406,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: b7eef8136dab9db4da1be6232911673f, type: 3}
+      m_Icon: {fileID: 2800000, guid: c3233d3462ed61a44a3dee44d2cadf7d, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

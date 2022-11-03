@@ -16,6 +16,7 @@ using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
@@ -109,7 +110,10 @@ namespace Mono_Installers
             Container.Bind<IViewMazeForeground>()              .To<ViewMazeForeground>()              .AsSingle();
             Container.Bind<IViewInputTouchProceeder>()         .To<ViewInputTouchProceeder>()         .AsSingle();
 
-            Container.Bind<IViewMazeAdditionalBackground>()      .To<ViewMazeAdditionalBackground>()      .AsSingle();
+            Container.Bind<IViewMazeAdditionalBackground>()      
+                .To<ViewMazeAdditionalBackground>()   
+                // .To<ViewMazeAdditionalBackgroundFake>()   
+                .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItemsFake>()   .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
@@ -124,8 +128,14 @@ namespace Mono_Installers
             Container.Bind<IViewMazeAdditionalBackgroundGeometryInitializer>()
                 .To<ViewMazeAdditionalBackgroundGeometryInitializerSimple>()
                 .AsSingle();
-            Container.Bind<IViewMazeAdditionalBackgroundDrawer>()    
-                .To<ViewMazeAdditionalBackgroundDrawerRmazor>()  
+            Container.Bind<IViewMazeAdditionalBackgroundDrawer>()
+                .To<ViewMazeAdditionalBackgroundDrawerRmazor>()
+                .AsSingle();
+            Container.Bind<IViewMazeAdditionalBackgroundDrawerRmazorFull>()
+                .To<ViewMazeAdditionalBackgroundDrawerRmazorFull>()
+                .AsSingle();
+            Container.Bind<IViewMazeAdditionalBackgroundDrawerRmazorOnlyMask>()
+                .To<ViewMazeAdditionalBackgroundDrawerRmazorOnlyMask>()
                 .AsSingle();
             
             var inputControllerType = Application.isEditor ? 

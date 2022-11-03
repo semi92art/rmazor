@@ -85,7 +85,6 @@ Shader "RMAZOR/Background/Fall In Deep"
             {
                 float2 frag_coord = f_i.uv * _ScreenParams.xy;
                 float2 uv = (frag_coord - _ScreenParams.xy * .5) / (_ScreenParams.y * _Scale);
-                float2 uv1 = frag_coord.xy / _ScreenParams.xy;
                 float cc = 0.;
                 for (float i = 1.; i < 1.1; i += .05)
                 {
@@ -94,11 +93,8 @@ Shader "RMAZOR/Background/Fall In Deep"
                     s += T * .25 + i * 100.;
                     cc += frac(floor(s * 5.) / 5.) * .1;
                 }
-                float dist_center = pow(2.0 * length(uv1 - 0.5), 2.0);
-                float clearness = 0.9 * smoothstep(0.1, 0.7, dist_center);
                 float c = frac(cc) * 5;
                 fixed4 frag_col = lerp(_Color1, _Color2, c);
-                frag_col = lerp(_Color1, frag_col, clearness);
                 return frag_col;
             }
             ENDCG

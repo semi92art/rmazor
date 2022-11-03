@@ -18,35 +18,30 @@ using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
-using UnityEngine.Rendering;
 
-namespace RMAZOR.Views.Common
+namespace RMAZOR.Views.Common.Additional_Background
 {
-    public interface IViewMazeAdditionalBackgroundDrawer : IInit, IAppear
-    {
-        void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex);
-    }
+    public interface IViewMazeAdditionalBackgroundDrawerRmazorFull
+        : IViewMazeAdditionalBackgroundDrawer { }
     
-    public class ViewMazeAdditionalBackgroundDrawerRmazor : InitBase, IViewMazeAdditionalBackgroundDrawer
+    public class ViewMazeAdditionalBackgroundDrawerRmazorFull 
+        : ViewMazeAdditionalBackgroundDrawerRmazorBase,
+          IViewMazeAdditionalBackgroundDrawerRmazorFull
     {
         #region constants
 
         private const int   BordersPoolCount      = 500;
         private const int   CornersPoolCount      = 500;
-        private const int   MasksPoolCount        = 200;
-        private const int   TextureRenderersCount = 3;
-        private const float BorderRelativeIndent  = 0.5f;
         private const int   CornersDashSize       = 4;
         private const float Corners2Alpha         = 0.5f;
-
+        private const int   TextureRenderersCount = 3;
+        
         #endregion
         
         #region nonpublic members
         
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
-
-        private Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
-
+        
         private readonly RendererSpawnPool<SpriteRenderer> m_TextureRenderers = 
             new RendererSpawnPool<SpriteRenderer>();
 
@@ -55,40 +50,35 @@ namespace RMAZOR.Views.Common
         private readonly BehavioursSpawnPool<Disc> m_Corners  = new BehavioursSpawnPool<Disc>();
         private readonly BehavioursSpawnPool<Disc> m_Corners2 = new BehavioursSpawnPool<Disc>();
 
-        private readonly BehavioursSpawnPool<Rectangle> m_TextureRendererMasks = new BehavioursSpawnPool<Rectangle>();
-        
         private SpriteRenderer              m_TextureRendererBack;
         private AdditionalBackgroundInfoSet m_AdditionalBackgroundInfoSet;
         private string                      m_AdditionalBackgroundAssetNameSuffix;
         
         private float BorderScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 1.5f : 0.5f;
-        private float CornerScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 4f : 0.5f;
 
         #endregion
 
         #region inject
 
-        private ViewSettings                         ViewSettings                { get; }
         private IColorProvider                       ColorProvider               { get; }
-        private IContainersGetter                    ContainersGetter            { get; }
-        private ICoordinateConverter                 CoordinateConverter         { get; }
         private IPrefabSetManager                    PrefabSetManager            { get; }
         private IRendererAppearTransitioner          Transitioner                { get; }
         private IViewMazeBackgroundTextureController BackgroundTextureController { get; }
 
-        private ViewMazeAdditionalBackgroundDrawerRmazor(
+        private ViewMazeAdditionalBackgroundDrawerRmazorFull(
             ViewSettings                         _ViewSettings,
             IColorProvider                       _ColorProvider,
             IContainersGetter                    _ContainersGetter,
             ICoordinateConverter                 _CoordinateConverter,
             IPrefabSetManager                    _PrefabSetManager,
             IRendererAppearTransitioner          _Transitioner,
-            IViewMazeBackgroundTextureController _BackgroundTextureController)
+            IViewMazeBackgroundTextureController _BackgroundTextureController) 
+            : base (
+                _ViewSettings,
+                _CoordinateConverter,
+                _ContainersGetter)
         {
-            ViewSettings                = _ViewSettings;
             ColorProvider               = _ColorProvider;
-            ContainersGetter            = _ContainersGetter;
-            CoordinateConverter         = _CoordinateConverter;
             PrefabSetManager            = _PrefabSetManager;
             Transitioner                = _Transitioner;
             BackgroundTextureController = _BackgroundTextureController;
@@ -98,8 +88,6 @@ namespace RMAZOR.Views.Common
 
         #region api
         
-        public EAppearingState AppearingState { get; private set; }
-
         public override void Init()
         {
             CommonDataRmazor.AdditionalBackgroundDrawer = this;
@@ -109,7 +97,7 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
         
-        public void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
+        public override void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
         {
             DeactivateAll();
             foreach (var group in _Groups)
@@ -120,7 +108,7 @@ namespace RMAZOR.Views.Common
                 DrawTextureForGroup(group);
         }
 
-        public void Appear(bool _Appear)
+        public override void Appear(bool _Appear)
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             var mainCol = ColorProvider.GetColor(ColorIds.Main);
@@ -133,15 +121,16 @@ namespace RMAZOR.Views.Common
                 {new[] {m_TextureRendererBack},  () => back1Col},
                 {m_TextureRenderers.GetAllActiveItems(), () => mainCol}
             };
-            if (ViewSettings.additionalBackgroundType == 1)
+            switch (ViewSettings.additionalBackgroundType)
             {
-                dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol);
-            }
-            else if (ViewSettings.additionalBackgroundType == 2)
-            {
-                dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol.SetA(Corners2Alpha));
-                dict.Add(m_Corners2.GetAllActiveItems(),  () => mainCol);
-                dict.Add(m_Borders2.GetAllActiveItems(), () => mainCol);
+                case 1:
+                    dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol);
+                    break;
+                case 2:
+                    dict.Add(m_Corners.GetAllActiveItems(),  () => mainCol.SetA(Corners2Alpha));
+                    dict.Add(m_Corners2.GetAllActiveItems(),  () => mainCol);
+                    dict.Add(m_Borders2.GetAllActiveItems(), () => mainCol);
+                    break;
             }
             Transitioner.DoAppearTransition(_Appear, dict,
                 ViewSettings.betweenLevelTransitionTime,
@@ -158,7 +147,12 @@ namespace RMAZOR.Views.Common
                 .FirstOrDefault(_Item => _Item.name == additBackTextureName)
                 ?.sprite;
         }
-        
+
+        public override void Disable()
+        {
+            DeactivateAll();
+        }
+
         #endregion
 
         #region nonpublic members
@@ -288,28 +282,13 @@ namespace RMAZOR.Views.Common
                     "background",
                     "additional_background_set",
                     EPrefabSource.Bundle).set;
-            for (int i = 1; i <= MasksPoolCount; i++)
-            {
-                var mask = Container.gameObject.AddComponentOnNewChild<Rectangle>(
-                    "Additional Texture Mask", 
-                    out GameObject _);
-                mask.SetBlendMode(ShapesBlendMode.Subtractive)
-                    .SetRenderQueue(0)
-                    .SetSortingOrder(SortingOrders.AdditionalBackgroundTexture)
-                    .SetZTest(CompareFunction.Less)
-                    .SetStencilComp(CompareFunction.Greater)
-                    .SetStencilOpPass(StencilOp.Replace)
-                    .SetColor(new Color(0f, 0f, 0f, 1f / 255f))
-                    .SetType(Rectangle.RectangleType.RoundedSolid)
-                    .enabled = false;
-                m_TextureRendererMasks.Add(mask);
-            }
+            InitMasks();
         }
         
         private void DeactivateAll()
         {
+            TextureRendererMasks.DeactivateAll();
             m_TextureRenderers    .DeactivateAll();
-            m_TextureRendererMasks.DeactivateAll();
             m_Borders             .DeactivateAll();
             m_Corners             .DeactivateAll();
             if (ViewSettings.additionalBackgroundType != 2)
@@ -390,13 +369,7 @@ namespace RMAZOR.Views.Common
             renderer.size = new Vector2(width, height);
             m_TextureRendererBack.transform.SetLocalPosXY(center)
                 .SetLocalScaleXY(new Vector2(width, height));
-            var mask = m_TextureRendererMasks.FirstInactive;
-            mask.SetWidth(width)
-                .SetHeight(height)
-                .SetStencilRefId(Convert.ToByte(_Group.GroupIndex))
-                .SetCornerRadius(ViewSettings.CornerRadius * CornerScaleCoefficient * scale)
-                .transform.SetLocalPosXY(center);
-            m_TextureRendererMasks.Activate(mask);
+            DrawMaskForGroup(_Group);
         }
 
         private void DrawBorder(V2Int _Position, EDirection _Side, bool _StartLimit, bool _EndLimit)

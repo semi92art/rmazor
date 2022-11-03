@@ -7,7 +7,7 @@ using RMAZOR.Models;
 using RMAZOR.Views.Common.BackgroundIdleItems;
 using UnityEngine.Events;
 
-namespace RMAZOR.Views.Common
+namespace RMAZOR.Views.Common.Additional_Background
 {
     public class PointsGroupArgs
     {

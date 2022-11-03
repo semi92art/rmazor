@@ -5,7 +5,7 @@ using Common.Entities;
 using Common.Helpers;
 using RMAZOR.Models.MazeInfos;
 
-namespace RMAZOR.Views.Common
+namespace RMAZOR.Views.Common.Additional_Background
 {
     public interface IViewMazeAdditionalBackgroundGeometryInitializer : IInit
     {

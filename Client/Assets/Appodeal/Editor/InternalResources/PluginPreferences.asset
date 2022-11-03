@@ -13,6 +13,5 @@ MonoBehaviour:
   m_Name: PluginPreferences
   m_EditorClassIdentifier: 
   shouldIgnoreEdmInstallation: 1
-  isEdmImported: 0
-  areAdaptersImported: 1
+  areNetworkConfigsImported: 1
   isAndroidLibraryImported: 1

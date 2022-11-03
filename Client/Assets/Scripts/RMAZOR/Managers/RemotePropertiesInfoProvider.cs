@@ -158,7 +158,7 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), "char_died_g_pan_background_variant",
                     _Value => Execute(
                         _Value, _V => ViewSettings.characterDiedPanelBackgroundVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), "extra_borders_indices",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "extra_borders_indices_v2",
                     _Value => Execute(
                         _Value, _V => ViewSettings.extraBordersIndices = ToString(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), "background_textures_v2",
@@ -203,7 +203,7 @@ namespace RMAZOR.Managers
         {
             return new List<RemoteConfigPropertyInfo>
             {
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), "ads_providers_infos",
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), "ads_providers_infos_v2",
                     _Value => Execute(
                         _Value, _V => RemoteProperties.AdsProviders =
                         JsonConvert.DeserializeObject<IList<AdProviderInfo>>(_V.ToString()))),
@@ -261,7 +261,7 @@ namespace RMAZOR.Managers
             {
                 CommonUtils.StringToHash("additional_color_props_set"),
                 CommonUtils.StringToHash("ads_first_level_to_show_ads"),
-                CommonUtils.StringToHash("ads_providers_infos"),
+                CommonUtils.StringToHash("ads_providers_infos_v2"),
                 CommonUtils.StringToHash("ads_show_ad_every_level"),
                 CommonUtils.StringToHash("animate_path_fill"),
                 CommonUtils.StringToHash("background_texture_triangles2_props_set"),
@@ -295,7 +295,7 @@ namespace RMAZOR.Managers
                 CommonUtils.StringToHash("fin_lev_g_pan_get_money_button_text_variant"),
                 CommonUtils.StringToHash("fin_lev_g_pan_background_variant"),
                 CommonUtils.StringToHash("char_died_g_pan_background_variant"),
-                CommonUtils.StringToHash("extra_borders_indices"),
+                CommonUtils.StringToHash("extra_borders_indices_v2"),
                 CommonUtils.StringToHash("background_textures"),
                 CommonUtils.StringToHash("background_textures_v2"),
                 CommonUtils.StringToHash("additional_background_type"),

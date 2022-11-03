@@ -1,4 +1,5 @@
 ﻿using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.Additional_Background;
 
 namespace RMAZOR
 {
@@ -6,6 +7,6 @@ namespace RMAZOR
     {
         public static ViewCameraEffectsCustomAnimator          CameraEffectsCustomAnimator;
         public static ViewMazeBackgroundTextureController      BackgroundTextureController;
-        public static ViewMazeAdditionalBackgroundDrawerRmazor AdditionalBackgroundDrawer;
+        public static ViewMazeAdditionalBackgroundDrawerRmazorFull AdditionalBackgroundDrawer;
     }
 }

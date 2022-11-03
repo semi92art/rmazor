@@ -20,6 +20,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Characters;
+using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;

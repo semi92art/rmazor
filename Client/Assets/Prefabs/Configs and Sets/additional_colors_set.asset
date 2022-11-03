@@ -14,28 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
-      bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
-      bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
+    - main: {r: 0.1981132, g: 0, b: 0, a: 1}
+      bacground1: {r: 1, g: 0.6862745, b: 0, a: 1}
+      bacground2: {r: 0.5188679, g: 0.048643865, b: 0, a: 1}
       inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
+      pathItemFillType: 1
+      pathBackgroundFillType: 2
+      pathFillFillType: 1
       characterBorderFillType: 0
       uiBackgroundFillType: 0
       bloom:
         enableBloom: 0
-        diffusion: 0
-        color: {r: 0, g: 0, b: 0, a: 0}
-        amount: 0
-        threshold: 0
-        softness: 0
+        diffusion: 0.3
+        color: {r: 0.33333337, g: 0.4337912, b: 1, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
       additionalInfo:
         dark: 0
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: white_fire
+        backgroundName: fibrous_rings
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 1, g: 0, b: 0.17671013, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
@@ -59,6 +59,29 @@ MonoBehaviour:
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 7
         backgroundName: rave_squares
+        additionalBackgroundName: additional_background_texture_1
+    - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
+      bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
+      bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: white_fire
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
@@ -109,7 +132,7 @@ MonoBehaviour:
     - main: {r: 0, g: 0.2264151, b: 0.10216292, a: 1}
       bacground1: {r: 0.29156286, g: 0.6792453, b: 0.45723915, a: 1}
       bacground2: {r: 0.6037736, g: 0, b: 0.20405693, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -152,7 +175,7 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: skyline
         additionalBackgroundName: additional_background_texture_1
-    - main: {r: 1, g: 1, b: 1, a: 1}
+    - main: {r: 0.8113208, g: 0.8113208, b: 0.8113208, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 1}
       inUse: 1
@@ -178,7 +201,7 @@ MonoBehaviour:
     - main: {r: 1, g: 0.98936164, b: 0, a: 1}
       bacground1: {r: 0, g: 0.14618783, b: 0.6039216, a: 1}
       bacground2: {r: 0.6132076, g: 0.61001384, b: 0, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 2
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -197,27 +220,4 @@ MonoBehaviour:
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
         backgroundName: fibrous_rings
-        additionalBackgroundName: additional_background_texture_1
-    - main: {r: 0.1981132, g: 0, b: 0, a: 1}
-      bacground1: {r: 1, g: 0.6862745, b: 0, a: 1}
-      bacground2: {r: 0.3773585, g: 0.034591198, b: 0, a: 1}
-      inUse: 1
-      pathItemFillType: 1
-      pathBackgroundFillType: 2
-      pathFillFillType: 1
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 0
-        diffusion: 0.3
-        color: {r: 0.33333337, g: 0.4337912, b: 1, a: 1}
-        amount: 10
-        threshold: 1.4
-        softness: 0.9
-      additionalInfo:
-        dark: 0
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
