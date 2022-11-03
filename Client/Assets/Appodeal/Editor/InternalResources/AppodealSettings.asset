@@ -655,10 +655,10 @@ MonoBehaviour:
   - vcra2ehyfk.skadnetwork
   - 3qcr597p9d.skadnetwork
   - 74b6s63p6l.skadnetwork
-  facebookAndroidAppId: 
-  facebookIosAppId: 
-  facebookAndroidClientToken: 
+  facebookAndroidAppId: 793834711969655
+  facebookIosAppId: 793834711969655
+  facebookAndroidClientToken: 5bd96ce8ca0c6689609176d0dae6e50b
   firebaseAutoConfiguration: 0
-  facebookAutoConfiguration: 0
+  facebookAutoConfiguration: 1
   facebookAutoLogAppEvents: 0
   facebookAdvertiserIDCollection: 0
