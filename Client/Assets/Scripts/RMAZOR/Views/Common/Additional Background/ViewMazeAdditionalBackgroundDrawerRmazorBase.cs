@@ -69,11 +69,6 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         public virtual void Disable()
         {
-            foreach (var mask in TextureRendererMasks
-                .Where(_Mask => _Mask.IsNotNull()))
-            {
-                mask.Color = mask.Color.SetA(0f);
-            }
             TextureRendererMasks.DeactivateAll();
         }
 

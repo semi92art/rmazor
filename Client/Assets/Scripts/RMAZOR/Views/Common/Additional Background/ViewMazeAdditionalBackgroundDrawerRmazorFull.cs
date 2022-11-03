@@ -99,7 +99,8 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         public override void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
         {
-            DeactivateAll();
+            DeactivatePools();
+            m_TextureRendererBack.enabled = true;
             foreach (var group in _Groups)
                 DrawBordersForGroup(group);
             foreach (var group in _Groups)
@@ -150,7 +151,8 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         public override void Disable()
         {
-            DeactivateAll();
+            DeactivatePools();
+            m_TextureRendererBack.enabled = false;
         }
 
         #endregion
@@ -285,9 +287,9 @@ namespace RMAZOR.Views.Common.Additional_Background
             InitMasks();
         }
         
-        private void DeactivateAll()
+        private void DeactivatePools()
         {
-            TextureRendererMasks.DeactivateAll();
+            TextureRendererMasks  .DeactivateAll();
             m_TextureRenderers    .DeactivateAll();
             m_Borders             .DeactivateAll();
             m_Corners             .DeactivateAll();
