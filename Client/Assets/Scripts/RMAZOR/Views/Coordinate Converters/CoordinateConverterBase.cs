@@ -5,25 +5,27 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
+using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
 namespace RMAZOR.Views.Coordinate_Converters
 {
-    public interface ICoordinateConverterRmazorBase
+    public interface ICoordinateConverterBase
     {
         float                   Scale        { get; }
         Func<string, Transform> GetContainer { set; }
         bool                    IsValid();
         
-        void                    Init();
-        Bounds                  GetMazeBounds();
-        Vector2                 ToGlobalMazeItemPosition(Vector2 _Point);
-        Vector2                 ToLocalMazeItemPosition(Vector2  _Point);
-        Vector2                 ToLocalCharacterPosition(Vector2 _Point);
+        void    Init();
+        void    SetMazeInfo(MazeInfo _Info);
+        Bounds  GetMazeBounds();
+        Vector2 ToGlobalMazeItemPosition(Vector2 _Point);
+        Vector2 ToLocalMazeItemPosition(Vector2  _Point);
+        Vector2 ToLocalCharacterPosition(Vector2 _Point);
     }
     
     [Serializable]
-    public abstract class CoordinateConverterBase : ICoordinateConverterRmazorBase
+    public abstract class CoordinateConverterBase : ICoordinateConverterBase
     {
         #region serialized fields
 
@@ -93,8 +95,11 @@ namespace RMAZOR.Views.Coordinate_Converters
             if (IsDebug)
                 return;
             mazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
-            mazeItemFake.SetParent(GetContainer(ContainerNames.MazeItems));
+            var container = GetContainer(ContainerNames.MazeItems);
+            mazeItemFake.SetParent(container);
         }
+
+        public abstract void SetMazeInfo(MazeInfo _Info);
 
         public Bounds GetMazeBounds()
         {

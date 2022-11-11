@@ -57,18 +57,18 @@ namespace Editor
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUI.color = m_TargetsCopy.All(_Item => _Item.Props.IsNode) ? Color.white : Color.green;
-                EditorUtilsEx.GuiButtonAction("Block", SetAsBlock, m_TargetsCopy);
+                EditorUtilsEx.GuiButtonAction("Block", SetAsBlock, m_TargetsCopy, GUILayout.Height(30f));
                 GUI.color = m_TargetsCopy.All(_Item => _Item.Props.IsNode) ? Color.green : Color.white;
-                EditorUtilsEx.GuiButtonAction("Path", SetAsPathItem, m_TargetsCopy);
+                EditorUtilsEx.GuiButtonAction("Path", SetAsPathItem, m_TargetsCopy, GUILayout.Height(30f));
                 SetBlank(m_TargetsCopy);
                 if (m_TargetsCopy.Length != 1 || !m_TargetsCopy[0].Props.IsNode)
                     return;
                 GUI.color = m_TargetsCopy[0].Props.IsStartNode ? Color.green : Color.white;
-                EditorUtilsEx.GuiButtonAction("Start", SetAsPathItemStart, m_TargetsCopy[0]);
+                EditorUtilsEx.GuiButtonAction("Start", SetAsPathItemStart, m_TargetsCopy[0], GUILayout.Height(30f));
             });
             GUI.color = Color.white;
             var props = m_TargetsCopy[0].Props;
-            var popupRect = new Rect(0, 20, 200, 20);
+            var popupRect = new Rect(0, 30, 200, 20);
 
             if (!props.IsNode)
             {

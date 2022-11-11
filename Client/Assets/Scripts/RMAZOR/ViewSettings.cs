@@ -45,9 +45,11 @@ namespace RMAZOR
         public int    finishLevelGroupPanelGetMoneyButtonTextVariant;
         public int    finishLevelGroupPanelBackgroundVariant;
         public int    characterDiedPanelBackgroundVariant;
+        public int    playBonusLevelPanelBackgroundVariant;
         public string extraBordersIndices;
         public string backgroundTextures;
         public int    additionalBackgroundType;
+        public bool   showPathItems;
         
 
         public float LineThickness
@@ -86,7 +88,7 @@ namespace RMAZOR
             set
             {
                 levelsInGroup = string.Join(",", value.Select(_V => _V.ToString()));
-                RmazorUtils.LevelsInGroupArray = value;
+                CommonDataRmazor.LevelsInGroupArray = value;
             }
         }
 

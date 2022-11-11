@@ -14,29 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
-      name: settings_panel
+    - name: settings_panel
+      item: {fileID: 432638780763177933, guid: 9e00b2062e325984c8c051e07412d92a, type: 3}
       bundle: 0
-    - item: {fileID: 796760105388704616, guid: 25faf125068dd3b4c9e56aad4621bff3, type: 3}
-      name: settings_language_panel
+    - name: settings_language_panel
+      item: {fileID: 796760105388704616, guid: 25faf125068dd3b4c9e56aad4621bff3, type: 3}
       bundle: 0
-    - item: {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b,
+    - name: shop_money_panel
+      item: {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b,
         type: 3}
-      name: shop_money_panel
       bundle: 0
-    - item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
+    - name: character_died_panel
+      item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
         type: 3}
-      name: character_died_panel
       bundle: 0
-    - item: {fileID: 6550057099038912293, guid: 768607c6629996641b70807bff8bc23e,
+    - name: rate_game_panel
+      item: {fileID: 6550057099038912293, guid: 768607c6629996641b70807bff8bc23e,
         type: 3}
-      name: rate_game_panel
       bundle: 0
-    - item: {fileID: 8219298684319459333, guid: 68b1fe354cf0479498d1d94b5f781770,
+    - name: tutorial_panel
+      item: {fileID: 8219298684319459333, guid: 68b1fe354cf0479498d1d94b5f781770,
         type: 3}
-      name: tutorial_panel
       bundle: 0
-    - item: {fileID: 8219298684319459333, guid: d65166343a2be334badfff72bbe8c759,
+    - name: finish_level_group_panel
+      item: {fileID: 8219298684319459333, guid: d65166343a2be334badfff72bbe8c759,
         type: 3}
-      name: finish_level_group_panel
+      bundle: 0
+    - name: play_bonus_level_panel
+      item: {fileID: 8219298684319459333, guid: 00503adf490e32e4c9d7da31db708ec1,
+        type: 3}
       bundle: 0

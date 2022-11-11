@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
 using Common.Helpers;
 using Common.UI;
@@ -9,29 +10,22 @@ namespace RMAZOR.UI.Panels
 {
     public interface IDialogPanelsSet : IInit
     {
-        ISettingDialogPanel          SettingDialogPanel          { get; }
-        ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
-        IShopDialogPanel             ShopDialogPanel             { get; }
-        ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
-        IRateGameDialogPanel         RateGameDialogPanel         { get; }
-        ITutorialDialogPanel         TutorialDialogPanel         { get; }
-        IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel { get; }
-
-        IEnumerable<IDialogPanel> GetPanels();
+        T GetPanel<T>() where T : IDialogPanel;
     }
 
     public class DialogPanelsSet : InitBase, IDialogPanelsSet
     {
         #region inject
-        
+
         private IDialogViewersController     DialogViewersController     { get; }
-        public  ISettingDialogPanel          SettingDialogPanel          { get; }
-        public  ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
-        public  IShopDialogPanel             ShopDialogPanel             { get; }
-        public  ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
-        public  IRateGameDialogPanel         RateGameDialogPanel         { get; }
-        public  ITutorialDialogPanel         TutorialDialogPanel         { get; }
-        public  IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel { get; }
+        private ISettingDialogPanel          SettingDialogPanel          { get; }
+        private ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
+        private IShopDialogPanel             ShopDialogPanel             { get; }
+        private ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
+        private IRateGameDialogPanel         RateGameDialogPanel         { get; }
+        private ITutorialDialogPanel         TutorialDialogPanel         { get; }
+        private IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel { get; }
+        private IPlayBonusLevelDialogPanel   PlayBonusLevelDialogPanel   { get; }
 
 
         public DialogPanelsSet(
@@ -42,7 +36,8 @@ namespace RMAZOR.UI.Panels
             ICharacterDiedDialogPanel    _CharacterDiedDialogPanel,
             IRateGameDialogPanel         _RateGameDialogPanel,
             ITutorialDialogPanel         _TutorialDialogPanel,
-            IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel)
+            IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel,
+            IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -52,6 +47,7 @@ namespace RMAZOR.UI.Panels
             RateGameDialogPanel         = _RateGameDialogPanel;
             TutorialDialogPanel         = _TutorialDialogPanel;
             FinishLevelGroupDialogPanel = _FinishLevelGroupDialogPanel;
+            PlayBonusLevelDialogPanel   = _PlayBonusLevelDialogPanel;
         }
 
         #endregion
@@ -64,19 +60,22 @@ namespace RMAZOR.UI.Panels
             LoadDialogPanels();
             base.Init();
         }
-        
-        public IEnumerable<IDialogPanel> GetPanels()
+
+        public T GetPanel<T>() where T : IDialogPanel
         {
-            return new[]
+            var panels = new[]
             {
-                (IDialogPanel)SettingDialogPanel, 
+                (IDialogPanel) SettingDialogPanel,
                 SettingLanguageDialogPanel,
                 ShopDialogPanel,
                 CharacterDiedDialogPanel,
                 RateGameDialogPanel,
                 TutorialDialogPanel,
-                FinishLevelGroupDialogPanel
+                FinishLevelGroupDialogPanel,
+                PlayBonusLevelDialogPanel
             };
+            var result = panels.FirstOrDefault(_Panel => _Panel is T);
+            return (T)result;
         }
 
         #endregion
@@ -93,9 +92,9 @@ namespace RMAZOR.UI.Panels
                 ShopDialogPanel,
                 RateGameDialogPanel,
                 // TutorialDialogPanel,
-                FinishLevelGroupDialogPanel
+                FinishLevelGroupDialogPanel,
+                PlayBonusLevelDialogPanel
             };
-            
             foreach (var panel in panelsToLoad)
             {
                 var dv = DialogViewersController.GetViewer(
@@ -109,13 +108,6 @@ namespace RMAZOR.UI.Panels
 
     public class DialogPanelsSetFake : InitBase, IDialogPanelsSet
     {
-        public ISettingDialogPanel          SettingDialogPanel          => null;
-        public ISettingLanguageDialogPanel  SettingLanguageDialogPanel  => null;
-        public IShopDialogPanel             ShopDialogPanel             => null;
-        public ICharacterDiedDialogPanel    CharacterDiedDialogPanel    => null;
-        public IRateGameDialogPanel         RateGameDialogPanel         => null;
-        public ITutorialDialogPanel         TutorialDialogPanel         => null;
-        public IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel => null;
-        public IEnumerable<IDialogPanel>    GetPanels()                 => new List<IDialogPanel>();
+        public T GetPanel<T>() where T : IDialogPanel => default;
     }
 }

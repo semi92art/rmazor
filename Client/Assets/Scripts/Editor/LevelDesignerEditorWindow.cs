@@ -38,7 +38,7 @@ namespace RMAZOR.Editor
         private ViewSettings                       m_ViewSettings;
         private IPrefabSetManager                  m_PrefabSetManager;
         private IAssetBundleManager                m_AssetBundleManager;
-        private ICoordinateConverterRmazorInEditor m_CoordinateConverter;
+        private ICoordinateConverterInEditor       m_CoordinateConverter;
         private IContainersGetterRmazorInEditor    m_ContainersGetter;
         private IMazeItemsCreator                  m_MazeItemsCreator;
 

@@ -71,7 +71,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium2;
-        public override EUiCategory       Category         => EUiCategory.Shop;
         public          bool              Initialized      { get; private set; }
         public event UnityAction          Initialize;
         

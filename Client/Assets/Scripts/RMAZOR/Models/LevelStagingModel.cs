@@ -1,6 +1,4 @@
-﻿using System;
-using Common;
-using Common.Helpers;
+﻿using Common.Helpers;
 using Common.Ticker;
 using RMAZOR.Models.MazeInfos;
 
@@ -49,15 +47,15 @@ namespace RMAZOR.Models
         ELevelStage             PrevLevelStage     { get; }
         ELevelStage             PrevPrevLevelStage { get; }
         event LevelStageHandler LevelStageChanged;
-        void                    LoadLevel(MazeInfo _Info, long _LevelIndex);
+        void                    LoadLevel(MazeInfo _Info, long _LevelIndex, object[] _Args = null);
         void                    ReadyToStartLevel();
         void                    StartOrContinueLevel();
         void                    PauseLevel();
         void                    UnPauseLevel();
         void                    FinishLevel();
         void                    KillCharacter();
-        void                    ReadyToUnloadLevel();
-        void                    UnloadLevel();
+        void                    ReadyToUnloadLevel(object[] _Args = null);
+        void                    UnloadLevel(object[]        _Args = null);
     }
 
     public class ModelLevelStaging : InitBase, IModelLevelStaging, IUpdateTick
@@ -65,7 +63,7 @@ namespace RMAZOR.Models
         #region nonpublic members
 
         private bool m_DoUpdateLevelTime;
-
+        
         #endregion
     
         #region inject
@@ -103,10 +101,10 @@ namespace RMAZOR.Models
                 LevelTime += GameTicker.DeltaTime;
         }
     
-        public virtual void LoadLevel(MazeInfo _Info, long _LevelIndex)
+        public virtual void LoadLevel(MazeInfo _Info, long _LevelIndex, object[] _Args = null)
         {
             (Data.Info, LevelIndex) = (_Info, _LevelIndex);
-            InvokeLevelStageChanged(ELevelStage.Loaded);
+            InvokeLevelStageChanged(ELevelStage.Loaded, _Args);
         }
 
         public void ReadyToStartLevel()
@@ -136,25 +134,24 @@ namespace RMAZOR.Models
 
         public void KillCharacter()
         {
-            Dbg.Log(nameof(KillCharacter));
             InvokeLevelStageChanged(ELevelStage.CharacterKilled);
         }
 
-        public void ReadyToUnloadLevel()
+        public void ReadyToUnloadLevel(object[] _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.ReadyToUnloadLevel);
+            InvokeLevelStageChanged(ELevelStage.ReadyToUnloadLevel, _Args);
         }
 
-        public void UnloadLevel()
+        public void UnloadLevel(object[] _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.Unloaded);
+            InvokeLevelStageChanged(ELevelStage.Unloaded, _Args);
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void InvokeLevelStageChanged(ELevelStage _Stage)
+        private void InvokeLevelStageChanged(ELevelStage _Stage, object[] _Args = null)
         {
             PrevPrevLevelStage = PrevLevelStage;
             PrevLevelStage = LevelStage;
@@ -166,11 +163,12 @@ namespace RMAZOR.Models
             else if (_Stage == ELevelStage.Loaded)
                 DiesCount = 0;
             LevelStage = _Stage;
-            LevelStageChanged?.Invoke(new LevelStageArgs(
-                                          LevelIndex,
-                                          LevelStage,
-                                          PrevLevelStage,
-                                          PrevPrevLevelStage));
+            var args = new LevelStageArgs(
+                LevelIndex,
+                LevelStage,
+                PrevLevelStage,
+                PrevPrevLevelStage) {Args = _Args};
+            LevelStageChanged?.Invoke(args);
         }
     
         #endregion

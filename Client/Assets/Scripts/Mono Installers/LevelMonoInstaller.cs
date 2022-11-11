@@ -88,6 +88,8 @@ namespace Mono_Installers
 
         private void BindViewCommon()
         {
+            Container.Bind<ICoordinateConverterForSmallLevels>().To<CoordinateConverterForSmallLevels>().AsSingle();
+            Container.Bind<ICoordinateConverterForBigLevels>()  .To<CoordinateConverterForBigLevels>()  .AsSingle();
             switch (CommonData.GameId)
             {
                 case GameIds.RMAZOR:
@@ -163,7 +165,10 @@ namespace Mono_Installers
                     Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathRmazor>().AsSingle();
                     break;
             }
-            Container.Bind<IViewMazeMoneyItem>()             .To<ViewMazeMoneyItemDisc>()            .AsSingle();
+            Container.Bind<IViewMazeItemPathItem>()          .To<ViewMazeItemPathItem>()          .AsSingle();
+            Container.Bind<IViewMazeItemPathItemMoney>()     .To<ViewMazeItemPathItemMoneyDisc>() .AsSingle();
+            Container.Bind<IViewMazeItemPathItemIdle>()      .To<ViewMazeItemPathItemIdleDisc>()  .AsSingle();
+            
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
             Container.Bind<IViewMazeItemMovingTrap>()        .To<ViewMazeItemMovingTrap>()           .AsSingle();
             Container.Bind<IViewMazeItemShredingerBlock>()   .To<ViewMazeItemShredingerBlock>()      .AsSingle();
@@ -239,7 +244,7 @@ namespace Mono_Installers
                     .AsSingle();
                 
                 Container.Bind<IViewUIRotationControls>()
-                    .To<ViewUIRotationControlsButtons>()
+                    .To<ViewUIRotationControlsButtons2>()
                     // .To<ViewUIRotationControlsFake>()
                     .AsSingle();
             }
@@ -256,6 +261,7 @@ namespace Mono_Installers
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSetFake>()            .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanelFake>().AsSingle();
+                Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanelFake>()  .AsSingle();
             }
             else
             {
@@ -272,6 +278,7 @@ namespace Mono_Installers
                 Container.Bind<ISettingDialogPanel>()         .To<SettingsDialogPanel>()            .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanel>()    .AsSingle();
+                Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanel>()      .AsSingle();
             }
         }
 
@@ -282,6 +289,9 @@ namespace Mono_Installers
                 .AsSingle();
             Container.Bind<IFullscreenTextureProviderTriangles2>()
                 .To<FullscreenTextureProviderTriangles2>()
+                .AsSingle();
+            Container.Bind<IFullscreenTextureProviderEmpty>()
+                .To<FullscreenTextureProviderEmpty>()
                 .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()

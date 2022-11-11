@@ -33,7 +33,6 @@ Shader "RMAZOR/Background/Squares Fall"
 
             #include "UnityCG.cginc"
             #include "../Common.cginc"
-            #include "Toon.cginc"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale, _Angle;

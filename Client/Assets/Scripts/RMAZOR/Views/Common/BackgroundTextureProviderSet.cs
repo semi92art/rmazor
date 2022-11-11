@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Helpers;
@@ -29,15 +28,18 @@ namespace RMAZOR.Views.Common
         
         private IFullscreenTextureProviderCustom     TextureProviderCustom     { get; }
         private IFullscreenTextureProviderTriangles2 TextureProviderTriangles2 { get; }
+        private IFullscreenTextureProviderEmpty      TextureProviderEmpty      { get; }
         private IPrefabSetManager                    PrefabSetManager          { get; }
 
         public BackgroundTextureProviderSetImpl(
             IFullscreenTextureProviderCustom     _TextureProviderCustom,
             IFullscreenTextureProviderTriangles2 _TextureProviderTriangles2,
+            IFullscreenTextureProviderEmpty      _TextureProviderEmpty,
             IPrefabSetManager                    _PrefabSetManager)
         {
             TextureProviderCustom     = _TextureProviderCustom;
             TextureProviderTriangles2 = _TextureProviderTriangles2;
+            TextureProviderEmpty      = _TextureProviderEmpty;
             PrefabSetManager          = _PrefabSetManager;
         }
 
@@ -76,15 +78,12 @@ namespace RMAZOR.Views.Common
             {
                 if (m_TextureProvidersDict.ContainsKey(setItem.name))
                     continue;
-                IFullscreenTextureProvider provider;
-                if (setItem.name == "triangles_2")
+                IFullscreenTextureProvider provider = setItem.name switch
                 {
-                    provider = TextureProviderTriangles2;
-                }
-                else
-                {
-                    provider = (IFullscreenTextureProvider)TextureProviderCustom.Clone();
-                }
+                    "triangles_2" => TextureProviderTriangles2,
+                    "empty"       => TextureProviderEmpty,
+                    _             => (IFullscreenTextureProvider) TextureProviderCustom.Clone()
+                };
                 provider.SetMaterial(setItem.material);
                 provider.Init();
                 m_TextureProvidersDict.Add(setItem.name, provider);

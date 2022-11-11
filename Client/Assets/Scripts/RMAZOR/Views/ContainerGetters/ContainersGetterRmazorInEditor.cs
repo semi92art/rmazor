@@ -7,11 +7,11 @@ namespace RMAZOR.Views.ContainerGetters
     
     public class ContainersGetterRmazorInEditor : ContainersGetterRmazorBase, IContainersGetterRmazorInEditor
     {
-        private ICoordinateConverterRmazorInEditor CoordinateConverter { get; } 
+        private ICoordinateConverterInEditor CoordinateConverter { get; } 
         
         public ContainersGetterRmazorInEditor(
             IModelGame                             _Model,
-            ICoordinateConverterRmazorInEditor _CoordinateConverter)
+            ICoordinateConverterInEditor _CoordinateConverter)
             : base(_Model, _CoordinateConverter)
         {
             CoordinateConverter = _CoordinateConverter;

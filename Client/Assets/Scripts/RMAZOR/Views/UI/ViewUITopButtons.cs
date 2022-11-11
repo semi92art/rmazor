@@ -141,7 +141,7 @@ namespace RMAZOR.Views.UI
             if (DialogViewerFullscreen.CurrentPanel != null
                 && DialogViewerFullscreen.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
-            CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.ShopPanel, null);
         }
 
         private void CommandSettings()
@@ -149,7 +149,7 @@ namespace RMAZOR.Views.UI
             if (DialogViewerFullscreen.CurrentPanel != null
                 && DialogViewerFullscreen.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
                 return;
-            CommandsProceeder.RaiseCommand(EInputCommand.SettingsMenu, null);
+            CommandsProceeder.RaiseCommand(EInputCommand.SettingsPanel, null);
         }
 
         #endregion

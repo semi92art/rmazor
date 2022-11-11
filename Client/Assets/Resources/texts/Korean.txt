@@ -81,3 +81,4 @@ get = 가져 오기
 revive? = 부활 하시겠습니까?
 empty_key = 
 watch_video_to_the_end = 보상을 곱할 수있는 비디오를 끝내십시오!
+play_bonus_level_title = 보너스 레벨을 플레이 하시겠습니까?

@@ -15,17 +15,18 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
     public interface IViewMazeItemPath :
         IViewMazeItem,
         ICharacterMoveStarted, 
-        ICharacterMoveContinued
+        ICharacterMoveContinued,
+        ICharacterMoveFinished
     {
         event UnityAction MoneyItemCollected;
-        void              Collect(bool _Collect, bool _OnStart = false);
+        void              Collect(bool _Collect, bool _OnStart);
     }
     
     public abstract class ViewMazeItemPathBase : ViewMazeItemBase, IViewMazeItemPath
     {
         #region inject
         
-        protected IViewMazeMoneyItem         MoneyItem { get; }
+        protected IViewMazeItemPathItem      PathItem  { get; }
         protected IViewMazeItemsPathInformer Informer  { get; }
 
         protected ViewMazeItemPathBase(
@@ -38,7 +39,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             IManagersGetter             _Managers,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewMazeMoneyItem          _MoneyItem,
+            IViewMazeItemPathItem          _PathItem,
             IViewMazeItemsPathInformer  _Informer)
             : base(
                 _ViewSettings,
@@ -51,8 +52,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            MoneyItem = _MoneyItem;
-            Informer  = _Informer;
+            PathItem = _PathItem;
+            Informer = _Informer;
         }
 
         #endregion
@@ -71,9 +72,18 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             }
         }
 
-        public abstract void Collect(bool _Collect, bool _OnStart = false);
+        public override void Init()
+        {
+            if (Initialized)
+                return;
+            base.Init();
+        }
+
+        public abstract void Collect(bool _Collect, bool _OnStart);
+        
         public abstract void OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args);
         public abstract void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args);
+        public abstract void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs   _Args);
 
         #endregion
 
@@ -87,5 +97,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         }
 
         #endregion
+
     }
 }

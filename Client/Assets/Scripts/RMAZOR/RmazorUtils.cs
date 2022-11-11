@@ -17,7 +17,12 @@ namespace RMAZOR
     {
         #region api
 
-        public static int[] LevelsInGroupArray = {5, 5, 5};
+        public static bool IsBigMaze(V2Int _Size)
+        {
+            const int bigMazeSideThreshold = 30; 
+            return _Size.X > bigMazeSideThreshold
+                   || _Size.Y > bigMazeSideThreshold;
+        }
         
         public static Tuple<float, float> GetRightAndLeftScreenOffsets()
         {
@@ -247,17 +252,17 @@ namespace RMAZOR
             return distA < distB ? -1 : 1;
         }
 
-        public static int GetGroupIndex(long _LevelIndex)
+        public static int GetLevelsGroupIndex(long _LevelIndex)
         {
             long levelIndexTemp = 0;
             int groupIndexInList = 0;
             int groupIndex = 0;
             while (levelIndexTemp <= _LevelIndex)
             {
-                levelIndexTemp += LevelsInGroupArray[groupIndexInList];
+                levelIndexTemp += CommonDataRmazor.LevelsInGroupArray[groupIndexInList];
                 groupIndex++;
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupArray.Length)
+                if (groupIndexInList >= CommonDataRmazor.LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return groupIndex;
@@ -265,20 +270,20 @@ namespace RMAZOR
 
         public static int GetLevelsInGroup(int _GroupIndex)
         {
-            int groupIndexInList = (_GroupIndex - 1) % LevelsInGroupArray.Length;
-            return LevelsInGroupArray[groupIndexInList];
+            int groupIndexInList = (_GroupIndex - 1) % CommonDataRmazor.LevelsInGroupArray.Length;
+            return CommonDataRmazor.LevelsInGroupArray[groupIndexInList];
         }
 
         public static int GetIndexInGroup(long _LevelIndex)
         {
-            int groupIndex = GetGroupIndex(_LevelIndex);
+            int groupIndex = GetLevelsGroupIndex(_LevelIndex);
             int groupIndexInList = 0;
             long levelsCount = 0;
             for (int i = 0; i < groupIndex - 1; i++)
             {
-                levelsCount += LevelsInGroupArray[groupIndexInList];
+                levelsCount += CommonDataRmazor.LevelsInGroupArray[groupIndexInList];
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupArray.Length)
+                if (groupIndexInList >= CommonDataRmazor.LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return (int)(_LevelIndex - levelsCount);
@@ -290,9 +295,9 @@ namespace RMAZOR
             int index = 0;
             for (int i = 0; i < _GroupIndex - 1; i++)
             {
-                index += LevelsInGroupArray[groupIndexInList];
+                index += CommonDataRmazor.LevelsInGroupArray[groupIndexInList];
                 groupIndexInList++;
-                if (groupIndexInList >= LevelsInGroupArray.Length)
+                if (groupIndexInList >= CommonDataRmazor.LevelsInGroupArray.Length)
                     groupIndexInList = 0;
             }
             return index;
@@ -300,7 +305,7 @@ namespace RMAZOR
 
         public static bool IsLastLevelInGroup(long _LevelIndex)
         {
-            int groupIdx = GetGroupIndex(_LevelIndex);
+            int groupIdx = GetLevelsGroupIndex(_LevelIndex);
             int levelsInGroup = GetLevelsInGroup(groupIdx);
             int indexInGroup = GetIndexInGroup(_LevelIndex);
             return levelsInGroup == indexInGroup + 1;

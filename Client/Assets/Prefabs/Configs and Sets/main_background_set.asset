@@ -52,3 +52,5 @@ MonoBehaviour:
       material: {fileID: 2100000, guid: 6fc2c3b6f78acae44876c0196d4d45f1, type: 2}
     - name: squares_fall
       material: {fileID: 2100000, guid: 739e50d8f69e14046b15f2ad2a24e96b, type: 2}
+    - name: empty
+      material: {fileID: 2100000, guid: d8a92038452427a46af0f1c9384d88b7, type: 2}

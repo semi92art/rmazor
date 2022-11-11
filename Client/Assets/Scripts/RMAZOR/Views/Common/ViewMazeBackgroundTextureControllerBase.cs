@@ -101,7 +101,7 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            if (_Args.Args.Contains("set_back_editor"))
+            if (_Args.Args != null && _Args.Args.Contains("set_back_editor"))
                 return;
             SetColorsOnNewLevel(_Args.LevelIndex);
         }
@@ -140,7 +140,7 @@ namespace RMAZOR.Views.Common
         private Color GetBackgroundColor(int _ColorId, long _LevelIndex)
         {
             var colorsSet = m_AdditionalBackgorundColorsSetItems;
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
             int setItemIdx = (group - 1) % colorsSet.Count;
             if (setItemIdx < 0)
                 setItemIdx = 0;
@@ -162,7 +162,7 @@ namespace RMAZOR.Views.Common
         private void SetColorsOnNewLevel(long _LevelIndex)
         {
             var colorsSet = m_AdditionalBackgorundColorsSetItems;
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
             int setItemIdx = (group - 1) % colorsSet.Count;
             m_BloomPropsArgs = colorsSet[setItemIdx].bloom;
             AdditionalInfo = colorsSet[setItemIdx].additionalInfo;

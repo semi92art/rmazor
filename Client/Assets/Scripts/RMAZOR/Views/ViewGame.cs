@@ -153,14 +153,10 @@ namespace RMAZOR.Views
         {
             if (Initialized)
                 return;
-            RmazorUtils.LevelsInGroupArray = ViewSettings.LevelsInGroup; 
+            CommonDataRmazor.LevelsInGroupArray = ViewSettings.LevelsInGroup; 
             m_LastPauseTime = SystemTicker.Time;
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
-            CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
-            CameraProvider.GetConverterScale = () => CoordinateConverter.Scale;
-            CameraProvider.Init();
-            CameraProvider.UpdateState();
             InitProceeders();
             SendNotificationsOnInit();
             base.Init();

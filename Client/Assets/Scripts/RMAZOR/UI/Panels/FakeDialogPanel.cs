@@ -8,7 +8,6 @@ namespace RMAZOR.UI.Panels
     public class FakeDialogPanel : IDialogPanel
     {
         public EDialogViewerType DialogViewerType   => default;
-        public EUiCategory       Category           => EUiCategory.Fake;
         public EAppearingState   AppearingState     { get; set; }
         public RectTransform     PanelRectTransform => null;
         public Animator          Animator           => null;

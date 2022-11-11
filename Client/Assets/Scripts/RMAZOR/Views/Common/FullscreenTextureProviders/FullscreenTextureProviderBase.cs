@@ -8,13 +8,14 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Views.Utils;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
     public interface IFullscreenTextureProvider : IInit, System.ICloneable
     {
-        float       Quality  { get; }
+        float        Quality  { get; }
         MeshRenderer Renderer { get; }
         void         SetMaterial(Material _Material);
         void         Activate(bool        _Active);
@@ -34,6 +35,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic members
 
         protected static readonly int DirectionId = Shader.PropertyToID("_Direction");
+
+        protected override int SortingOrder => SortingOrders.BackgroundTexture;
 
         private IEnumerator m_LastCoroutine;
         

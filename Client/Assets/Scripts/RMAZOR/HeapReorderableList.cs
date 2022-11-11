@@ -345,8 +345,8 @@ namespace RMAZOR
 
         private static Color GetContentColor(int _Index)
         {
-            int groupIndex = RmazorUtils.GetGroupIndex(_Index);
-            int idx = (groupIndex - 1) % RmazorUtils.LevelsInGroupArray.Length;
+            int groupIndex = RmazorUtils.GetLevelsGroupIndex(_Index);
+            int idx = (groupIndex - 1) % CommonDataRmazor.LevelsInGroupArray.Length;
             return GroupColors[idx];
         }
 

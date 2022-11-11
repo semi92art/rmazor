@@ -12,24 +12,32 @@ using Common.Providers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;
 using Shapes;
+using StansAssets.Foundation.Extensions;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 {
-    public interface IViewMazeMoneyItem : IInit, IOnLevelStageChanged, ICloneable, IAppear
+    public interface IViewMazeItemPathItemMoney : 
+        IInit, 
+        IOnLevelStageChanged,
+        ICloneable,
+        IAppear
     {
-        event UnityAction      Collected;
-        bool                   IsCollected { get; set; }
-        bool                   Active      { get; set; }
-        void                   Collect(bool   _Collect);
-        void                   Init(Transform _Parent);
-        void                   UpdateShape();
+        event UnityAction       Collected;
+        bool                    IsCollected { get; set; }
+        Func<ViewMazeItemProps> GetProps    { set; }
+        Transform               Parent      { set; }
+        void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent);
+        void Collect(bool                 _Collect);
+        void UpdateShape();
+        void EnableInitializedShapes(bool _Enable);
     }
 
-    public class ViewMazeMoneyItemDisc : InitBase, IViewMazeMoneyItem
+    public class ViewMazeItemPathItemMoneyDisc : InitBase, IViewMazeItemPathItemMoney
     {
         #region nonpublic members
 
@@ -40,7 +48,21 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private Disc     m_InnerDisc, m_OuterDisc;
         private Animator m_Animator;
         private bool     m_Active;
-
+        
+        private bool Active
+        {
+            get => m_Active;
+            set
+            {
+                m_Active = value;
+                if (!Initialized)
+                    return;
+                m_MainDisc.enabled  = value;
+                m_InnerDisc.enabled = value;
+                m_OuterDisc.enabled = value;
+            }
+        }
+        
         #endregion
 
         #region inject
@@ -50,105 +72,63 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private IColorProvider              ColorProvider       { get; }
         private ICoordinateConverter        CoordinateConverter { get; }
         private IAudioManager               AudioManager        { get; }
-        private IRendererAppearTransitioner AppearTransitioner  { get; }
+        private IRendererAppearTransitioner Transitioner        { get; }
 
-        private ViewMazeMoneyItemDisc(
+        private ViewMazeItemPathItemMoneyDisc(
             ViewSettings                _ViewSettings,
             IPrefabSetManager           _PrefabSetManager,
             IColorProvider              _ColorProvider,
             ICoordinateConverter        _CoordinateConverter,
             IAudioManager               _AudioManager,
-            IRendererAppearTransitioner _AppearTransitioner)
+            IRendererAppearTransitioner _Transitioner)
         {
             ViewSettings        = _ViewSettings;
             PrefabSetManager    = _PrefabSetManager;
             ColorProvider       = _ColorProvider;
             CoordinateConverter = _CoordinateConverter;
             AudioManager        = _AudioManager;
-            AppearTransitioner  = _AppearTransitioner;
+            Transitioner        = _Transitioner;
         }
 
         #endregion
         
         #region api
         
+        public event UnityAction Collected;
+        public bool              IsCollected    { get; set; }
+        public EAppearingState   AppearingState { get; private set; }
+        
+        public Func<ViewMazeItemProps> GetProps { private get; set; }
+        public Transform               Parent   { private get; set; }
+
         public object Clone() => 
-            new ViewMazeMoneyItemDisc(
+            new ViewMazeItemPathItemMoneyDisc(
                 ViewSettings, 
                 PrefabSetManager,
                 ColorProvider, 
                 CoordinateConverter, 
                 AudioManager,
-                AppearTransitioner);
-
-        public void UpdateShape()
-        {
-            if (!Initialized)
-                return;
-            const float commonScaleCoeff = 0.3f;
-            float scale = CoordinateConverter.Scale;
-            m_MainDisc.transform.SetLocalScaleXY(Vector2.one * scale * commonScaleCoeff);
-        }
-
-        public event UnityAction Collected;
-        public bool              IsCollected    { get; set; }
-        public EAppearingState   AppearingState { get; private set; }
-
-        public bool Active
-        {
-            get => m_Active;
-            set
-            {
-                m_Active = value;
-                if (!Initialized)
-                    return;
-                m_MainDisc.enabled = value;
-                m_InnerDisc.enabled = value;
-                m_OuterDisc.enabled = value;
-            }
-        }
+                Transitioner);
         
-        public void Appear(bool _Appear)
+        public override void Init()
         {
-            var colMain = ColorProvider.GetColor(ColorIds.MoneyItem);
-            var colBlurAttenuated = colMain.SetA(0f);
-            var appearSets = new Dictionary<IEnumerable<Component>, Func<Color>>
-            {
-                {new[] {m_MainDisc, m_InnerDisc, m_OuterDisc}, () => colMain}
-            };
-            Cor.Run(Cor.WaitWhile(
-                () => !Initialized,
-                () =>
-                {
-                    if (_Appear)
-                    {
-                        m_InnerDisc.enabled = true;
-                        m_OuterDisc.enabled = true;
-                    }
-                    AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-                    AppearTransitioner.DoAppearTransition(
-                        _Appear,
-                        appearSets,
-                        ViewSettings.betweenLevelTransitionTime,
-                        () =>
-                        {
-                            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-                            if (_Appear)
-                            {
-                                m_InnerDisc.ColorInner = colBlurAttenuated;
-                                m_OuterDisc.ColorOuter = colBlurAttenuated;
-                            }
-                            else
-                            {
-                                m_InnerDisc.enabled = false;
-                                m_OuterDisc.enabled = false;
-                            }
-                        });
-                }));
+            if (Initialized)
+                return;
+            ColorProvider.ColorChanged += OnColorChanged;
+            base.Init();
+        }
+
+        public void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent)
+        {
+            GetProps = _GetProps;
+            Parent = _Parent;
+            Init();
+            InitShape();
         }
 
         public void Collect(bool _Collect)
         {
+            IsCollected = _Collect;
             if (!_Collect || !Active)
                 return;
             Collected?.Invoke();
@@ -156,14 +136,17 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             Active = false;
         }
 
-        public void Init(Transform _Parent)
+        public void UpdateShape()
         {
-            if (Initialized)
+            if (!GetProps().IsMoneyItem)
+            {
+                Active = false;
                 return;
-            ColorProvider.ColorChanged += OnColorChanged;
-            InitShape(_Parent);
-            UpdateShape();
-            base.Init();
+            }
+            Active = true;
+            const float commonScaleCoeff = 0.3f;
+            float scale = CoordinateConverter.Scale;
+            m_MainDisc.transform.SetLocalScaleXY(Vector2.one * scale * commonScaleCoeff);
         }
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -190,15 +173,41 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                     throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
+        
+        public void EnableInitializedShapes(bool _Enable)
+        {
+            if (!Initialized || m_MainDisc.IsNull())
+                return;
+            var props = GetProps();
+            Active = _Enable && props.IsMoneyItem && !props.Blank;
+        }
+        
+        public void Appear(bool _Appear)
+        {
+            AppearCore(_Appear);
+        }
 
         #endregion
 
         #region nonpublic methods
+        
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            if (_ColorId != ColorIds.MoneyItem || !Active || IsCollected)
+                return;
+            m_MainDisc.SetColor(_Color);
+            m_OuterDisc.ColorInner = _Color;
+            m_OuterDisc.ColorOuter = _Color.SetA(0f);
+            m_InnerDisc.ColorInner = _Color.SetA(0f);
+            m_InnerDisc.ColorOuter = _Color;
+            m_InnerDisc.SetColorMode(Disc.DiscColorMode.Radial);
+            m_OuterDisc.SetColorMode(Disc.DiscColorMode.Radial);
+        }
 
-        private void InitShape(Transform _Parent)
+        private void InitShape()
         {
             var go = PrefabSetManager.InitPrefab(
-                _Parent, "views", "money_item");
+                Parent, "views", "money_item");
             m_Animator = go.GetCompItem<Animator>("animator");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
             m_MainDisc = go.GetCompItem<Disc>("main_disc")
@@ -220,18 +229,64 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                     .SetColorOuter(col);
             }));
         }
-        
-        private void OnColorChanged(int _ColorId, Color _Color)
+
+        private void AppearCore(bool _Appear)
         {
-            if (_ColorId != ColorIds.MoneyItem || !Active || IsCollected)
+            if (!GetProps().IsMoneyItem)
                 return;
-            m_MainDisc.SetColor(_Color);
-            m_OuterDisc.ColorInner = _Color;
-            m_OuterDisc.ColorOuter = _Color.SetA(0f);
-            m_InnerDisc.ColorInner = _Color.SetA(0f);
-            m_InnerDisc.ColorOuter = _Color;
-            m_InnerDisc.SetColorMode(Disc.DiscColorMode.Radial);
-            m_OuterDisc.SetColorMode(Disc.DiscColorMode.Radial);
+            var colMain = ColorProvider.GetColor(ColorIds.MoneyItem);
+            var appearSets = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new[] {m_MainDisc, m_InnerDisc, m_OuterDisc}, () => colMain}
+            };
+            Cor.Run(Cor.WaitWhile(
+                () => !Initialized,
+                () =>
+                {
+                    OnAppearStart(_Appear);
+                    Transitioner.DoAppearTransition(
+                        _Appear,
+                        appearSets,
+                        ViewSettings.betweenLevelTransitionTime,
+                        () =>
+                        {
+                            OnAppearFinish(_Appear);
+                        });
+                }));
+        }
+
+        private void OnAppearStart(bool _Appear)
+        {
+            if (_Appear)
+            {
+                m_InnerDisc.enabled = true;
+                m_OuterDisc.enabled = true;
+            }
+            var props = GetProps();
+            if (!_Appear && (!props.Blank && IsCollected) 
+                || _Appear && (props.Blank || props.IsStartNode))
+            {
+                if (props.IsMoneyItem)
+                    Active = false;
+            }
+            AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
+        }
+
+        private void OnAppearFinish(bool _Appear)
+        {
+            var colMain = ColorProvider.GetColor(ColorIds.MoneyItem);
+            var colBlurAttenuated = colMain.SetA(0f);
+            AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
+            if (_Appear)
+            {
+                m_InnerDisc.ColorInner = colBlurAttenuated;
+                m_OuterDisc.ColorOuter = colBlurAttenuated;
+            }
+            else
+            {
+                m_InnerDisc.enabled = false;
+                m_OuterDisc.enabled = false;
+            }
         }
 
         #endregion

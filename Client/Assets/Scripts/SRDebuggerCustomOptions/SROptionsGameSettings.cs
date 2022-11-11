@@ -88,7 +88,7 @@ namespace SRDebuggerCustomOptions
 
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
-            var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
+            var commands = new[] {EInputCommand.ShopPanel, EInputCommand.SettingsPanel}
                 .Concat(RmazorUtils.MoveAndRotateCommands);
             if (_Visible)
                 _commandsProceeder.LockCommands(commands, nameof(SROptions));
@@ -788,7 +788,7 @@ namespace SRDebuggerCustomOptions
                 {
                     var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                         "configs", "view_settings");
-                    int group = RmazorUtils.GetGroupIndex(_levelIndex);
+                    int group = RmazorUtils.GetLevelsGroupIndex(_levelIndex);
                     int levels = RmazorUtils.GetLevelsInGroup(group);
                     _levelIndex = MathUtils.ClampInverse(
                         _levelIndex + levels,

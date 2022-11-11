@@ -86,7 +86,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            if (_Args.Args.Contains("set_back_editor"))
+            if (_Args.Args != null && _Args.Args.Contains("set_back_editor"))
                 return;
             IdleItems.SetSpawnPool(_Args.LevelIndex);
             var info = Model.Data.Info;

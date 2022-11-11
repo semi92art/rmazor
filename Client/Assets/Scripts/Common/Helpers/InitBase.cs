@@ -14,7 +14,7 @@ namespace Common.Helpers
             RaiseInitialization();
         }
 
-        private void RaiseInitialization()
+        protected void RaiseInitialization()
         {
             Initialize?.Invoke();
             Initialized = true;

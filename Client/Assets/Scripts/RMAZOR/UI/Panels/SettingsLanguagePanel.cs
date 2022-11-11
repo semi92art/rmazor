@@ -62,7 +62,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override EUiCategory       Category         => EUiCategory.Settings;
         
         public void PreInit(
             List<ELanguage>                _Languages,

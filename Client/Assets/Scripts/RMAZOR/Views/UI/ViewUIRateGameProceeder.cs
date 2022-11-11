@@ -69,7 +69,7 @@ namespace RMAZOR.Views.UI
             if (_Key != EInputCommand.RateGamePanel)
                 return;
             m_RatePanelShownThisSession = true;
-            var panel = DialogPanelsSet.RateGameDialogPanel;
+            var panel = DialogPanelsSet.GetPanel<IRateGameDialogPanel>();
             var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
             dv.Show(panel);
         }

@@ -59,7 +59,7 @@ namespace RMAZOR.Helpers
             AssetDatabase.SaveAssets();
         }
 
-        private static string LevelsAssetPath(int _GameId, int _HeapIndex)
+        private string LevelsAssetPath(int _GameId, int _HeapIndex)
         {
             return $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
         }

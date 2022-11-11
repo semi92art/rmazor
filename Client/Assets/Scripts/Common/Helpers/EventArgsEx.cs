@@ -4,6 +4,6 @@ namespace Common.Helpers
 {
     public class EventArgsEx : EventArgs
     {
-        public string[] Args { get; set; } = new string[0];
+        public object[] Args { get; set; }
     }
 }

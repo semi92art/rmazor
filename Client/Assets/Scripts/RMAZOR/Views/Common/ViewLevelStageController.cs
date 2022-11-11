@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -10,7 +11,6 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers.Achievements;
 using Common.Ticker;
-using Common.UI;
 using Common.UI.DialogViewers;
 using Common.Utils;
 using Lean.Touch;
@@ -21,6 +21,7 @@ using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common.Additional_Background;
+using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
@@ -81,7 +82,8 @@ namespace RMAZOR.Views.Common
         private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer  { get; }
         private IViewInputTouchProceeder            TouchProceeder              { get; }
         private IMoneyCounter                       MoneyCounter                { get; }
-        private IFinishLevelGroupDialogPanel        FinishLevelGroupDialogPanel { get; }
+        private ICameraProvider                     CameraProvider              { get; }
+        private ICoordinateConverter                CoordinateConverter         { get; }
 
         private ViewLevelStageController(
             ViewSettings                        _ViewSettings,
@@ -106,7 +108,8 @@ namespace RMAZOR.Views.Common
             IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer, 
             IViewInputTouchProceeder            _TouchProceeder,
             IMoneyCounter                       _MoneyCounter,
-            IFinishLevelGroupDialogPanel        _FinishLevelGroupDialogPanel)
+            ICameraProvider                     _CameraProvider,
+            ICoordinateConverter                _CoordinateConverter)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
@@ -128,7 +131,8 @@ namespace RMAZOR.Views.Common
             BetweenLevelAdLoader        = _BetweenLevelAdLoader;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
             AdditionalBackgroundDrawer  = _AdditionalBackgroundDrawer;
-            FinishLevelGroupDialogPanel = _FinishLevelGroupDialogPanel;
+            CameraProvider              = _CameraProvider;
+            CoordinateConverter         = _CoordinateConverter;
             TouchProceeder              = _TouchProceeder;
             MoneyCounter                = _MoneyCounter;
         }
@@ -141,7 +145,12 @@ namespace RMAZOR.Views.Common
         {
             MoneyCounter.Init();
             TouchProceeder.Tap += OnTapScreenAction;
+            CameraProvider.Init();
+            Cor.Run(Cor.WaitNextFrame(() =>
+            {
             CameraEffectsCustomAnimator.Init();
+                
+            }));
             CommandsProceeder.Command += OnCommand;
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
@@ -168,14 +177,15 @@ namespace RMAZOR.Views.Common
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             TickerUtils.PauseTickers(_Args.LevelStage == ELevelStage.Paused, ViewGameTicker, ModelGameTicker);
+            SetCameraProviderProps(_Args);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
             ProceedMazeItems(_Args);
             ProceedOther(_Args);
             ProceedSounds(_Args);
-            CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
             SendLevelAnalyticEvent(_Args);
+            CameraEffectsCustomAnimator.OnLevelStageChanged(_Args);
         }
 
         #endregion
@@ -190,7 +200,7 @@ namespace RMAZOR.Views.Common
                 return;
             var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
             var cp = dv.CurrentPanel;
-            if (cp == null || cp.Category != EUiCategory.FinishGroup)
+            if (!(cp is IFinishLevelGroupDialogPanel))
                 CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
         }
 
@@ -208,6 +218,15 @@ namespace RMAZOR.Views.Common
                 return;
             if(_Args[0].ToString() == CommonInputCommandArgs.LoadFirstLevelFromGroupArg)
                 m_NextLevelMustBeFirstInGroup = true;
+        }
+
+        private void SetCameraProviderProps(LevelStageArgs _Args)
+        {
+            if (_Args.LevelStage != ELevelStage.Loaded)
+                return;
+            CameraProvider.GetMazeBounds = CoordinateConverter.GetMazeBounds;
+            CameraProvider.GetConverterScale = () => CoordinateConverter.Scale;
+            CameraProvider.UpdateState();
         }
 
         private void ProceedProceedersToExecuteBeforeMazeItemGroups(LevelStageArgs _Args)
@@ -283,7 +302,8 @@ namespace RMAZOR.Views.Common
                     {
                         FileName = CommonData.SavedGameFileName,
                         Money = savedGame.Money,
-                        Level = _Args.LevelIndex
+                        Level = _Args.LevelIndex,
+                        Args = _Args.Args
                     };
                     Managers.ScoreManager.SaveGameProgress(
                         newSavedGame, false);
@@ -338,7 +358,7 @@ namespace RMAZOR.Views.Common
                 },
                 () =>
                 {
-                    CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, null, true);
+                    CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, _Args.Args, true);
                 }));
             }
             BetweenLevelAdLoader.TryShowAd(
@@ -387,11 +407,14 @@ namespace RMAZOR.Views.Common
             if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
                 // TODO сделать отдельное сообщение на окончание всех уровней
+                CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, new object[] { 0 }, true);
             }
             else if (m_NextLevelMustBeFirstInGroup)
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, null, true);
+                CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, _Args.Args, true);
+            else if (_Args.Args != null && _Args.Args.Contains("bonus"))
+                CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, _Args.Args, true);
             else if (CommonData.LoadNextLevelAutomatically)
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
+                CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, _Args.Args, true);
         }
 
         private void OnCharacterKilled(
@@ -418,7 +441,7 @@ namespace RMAZOR.Views.Common
                     }
                     else
                     {
-                        var panel = DialogPanelsSet.CharacterDiedDialogPanel;
+                        var panel = DialogPanelsSet.GetPanel<ICharacterDiedDialogPanel>();
                         var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
                         CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                         dv.Show(panel, 3f);
@@ -437,11 +460,14 @@ namespace RMAZOR.Views.Common
         {
             if (!RmazorUtils.IsLastLevelInGroup(_LevelIndex))
                 return;
+            // CommandsProceeder.RaiseCommand(EInputCommand.PlayBonusLevelPanel, null, true);
+
             BetweenLevelAdLoader.ShowAd = false;
             if (MoneyCounter.CurrentLevelGroupMoney == 0)
                 return;
-            var dv = DialogViewersController.GetViewer(FinishLevelGroupDialogPanel.DialogViewerType);
-            dv.Show(FinishLevelGroupDialogPanel);
+            var finishLevelsGroupPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
+            var dv = DialogViewersController.GetViewer(finishLevelsGroupPanel.DialogViewerType);
+            dv.Show(finishLevelsGroupPanel);
         }
 
         private void ProceedSounds(LevelStageArgs _Args)

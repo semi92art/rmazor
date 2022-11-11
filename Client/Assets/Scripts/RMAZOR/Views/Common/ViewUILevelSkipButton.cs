@@ -166,7 +166,7 @@ namespace RMAZOR.Views.Common
                     switch (_ColorId)
                     {
                         case ColorIds.UiBorder:     m_Border.color     = _Color; break;
-                        case ColorIds.Background1:  m_Background.color = _Color; break;
+                        case ColorIds.UiBackground:  m_Background.color = _Color; break;
                     }
                 }));
         }
@@ -209,7 +209,7 @@ namespace RMAZOR.Views.Common
             m_Background = go.GetCompItem<SpriteRenderer>("background");
             m_ButtonObj = go;
             m_Border.color = ColorProvider.GetColor(ColorIds.UiBorder);
-            m_Background.color = ColorProvider.GetColor(ColorIds.UiDialogItemNormal);
+            m_Background.color = ColorProvider.GetColor(ColorIds.UiBackground);
             ActivateButton(false);
         }
         

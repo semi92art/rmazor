@@ -44,7 +44,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
 
-        private static Dictionary<string, float> KeysAndDelays => new Dictionary<string, float>
+        private static Dictionary<string, float> GameLogoPartsDelaysDict => new Dictionary<string, float>
         {
             {"M", 0f}, {"A1", 0f}, {"Z", 0f}, {"E1", 0f},
             {"B", 0.2f}, {"L", 0.2f}, {"A2", 0.2f}, {"D", 0.2f}, {"E2", 0.2f},
@@ -52,11 +52,14 @@ namespace RMAZOR.Views.UI.Game_Logo
             {"bottom_text_animator", 1f}
         };
 
+        private List<Component> m_Renderers;
+
         private GameObject                   m_GameLogoObj;
         private bool                         m_GameLogoAppeared;
         private Dictionary<string, Animator> m_GameLogoCharAnims;
         private float                        m_TopOffset;
         private bool                         m_OnStart = true;
+        private bool                         m_LogoWasShown;
         
         #endregion
         
@@ -97,12 +100,18 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         public void Init(Vector4 _Offsets)
         {
+            Shown += OnShown;
             CommandsProceeder.Command  += OnCommand;
             ColorProvider.ColorChanged += OnColorChanged;
             m_TopOffset = _Offsets.w;
             InitGameLogo();
         }
-        
+
+        private void OnShown()
+        {
+            m_LogoWasShown = true;
+        }
+
         public void Show()
         {
             if (m_GameLogoAppeared)
@@ -124,22 +133,23 @@ namespace RMAZOR.Views.UI.Game_Logo
         
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.UI)
-                return;
             if (!m_GameLogoObj.activeSelf)
                 return;
-            SetColors(_Color);
+            if (!m_LogoWasShown && _ColorId == ColorIds.UI)
+                SetColors(_Color);
+            else if (m_LogoWasShown && _ColorId == ColorIds.Main)
+                SetColors(_Color);
         }
 
         private void InitGameLogo()
         {
-            const string prefabName = "start_logo_maze_blade_2";
+            const string prefabName = "start_logo_maze_blade_3";
             var go = PrefabSetManager.InitPrefab(
                 ContainersGetter.GetContainer(ContainerNames.GameUI),
                 CommonPrefabSetNames.UiGame,
                 prefabName);
             go.GetCompItem<AnimationTriggerer>("triggerer").Trigger1 = () => go.SetActive(false);
-            m_GameLogoCharAnims = KeysAndDelays.Keys
+            m_GameLogoCharAnims = GameLogoPartsDelaysDict.Keys
                 .ToDictionary(
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
@@ -169,25 +179,37 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void SetColors(Color _Color)
         {
-            var shapeTypes = new [] {typeof(Line), typeof(Disc), typeof(TextMeshPro)};
-            shapeTypes.SelectMany(_Type => m_GameLogoObj
-                    .GetComponentsInChildren(_Type, true))
-                .ToList()
-                .ForEach(_Shape =>
+            if (m_Renderers == null)
+            {
+                var shapeTypes = new []
                 {
-                    switch (_Shape)
-                    {
-                        case TextMeshPro textMeshPro:
-                            textMeshPro.sortingOrder = SortingOrders.GameLogoForeground;
-                            textMeshPro.color = _Color.SetA(textMeshPro.color.a);
-                            break;
-                        case ShapeRenderer shapeRenderer:
-                            shapeRenderer.SetSortingOrder(SortingOrders.GameLogoForeground)
-                                .SetColor(_Color.SetA(shapeRenderer.Color.a));
-                            break;
-                    }
-
-                });
+                    typeof(Line), typeof(Disc), typeof(TextMeshPro), typeof(SpriteRenderer)
+                };
+                m_Renderers = shapeTypes.SelectMany(_Type => m_GameLogoObj
+                        .GetComponentsInChildren(_Type, false))
+                    .ToList();
+            }
+            foreach (var renderer in m_Renderers)
+            {
+                switch (renderer)
+                {
+                    case TextMeshPro textMeshPro:
+                        textMeshPro.sortingOrder = SortingOrders.GameLogoForeground;
+                        textMeshPro.color = _Color.SetA(textMeshPro.color.a);
+                        break;
+                    case Line lineRenderer:
+                        lineRenderer.SetSortingOrder(SortingOrders.GameLogoForeground)
+                            .SetColor(_Color);
+                        break;
+                    case Disc discRenderer:
+                        discRenderer.SetSortingOrder(SortingOrders.GameLogoForeground)
+                            .SetColor(_Color);
+                        break;
+                    case SpriteRenderer spriteRenderer:
+                        spriteRenderer.color = _Color.SetA(spriteRenderer.color.a);
+                        break;
+                }
+            }
             static IEnumerable<string> GetItems(string _Prefix, int _Count)
             {
                 return Enumerable.Range(1, _Count).Select(_I => $"{_Prefix}_{_I}");
@@ -242,6 +264,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             yield return Cor.Delay(_Delay, GameTicker);
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
+            bool isColorSetOnEnd = false;
             Cor.Run(Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
@@ -250,6 +273,11 @@ namespace RMAZOR.Views.UI.Game_Logo
                     var pos = Vector2.Lerp(startPos, finalPos, _P);
                     float scale = Mathf.Lerp(startScale, finalScale, _P);
                     SetGameLogoTransform(pos, scale);
+                    if (!(_P > 0.5f) || isColorSetOnEnd) 
+                        return;
+                    var endCol = ColorProvider.GetColor(ColorIds.Main);
+                    SetColors(endCol);
+                    isColorSetOnEnd = true;
                 }));
             yield return Cor.Lerp(
                 GameTicker,
@@ -259,7 +287,6 @@ namespace RMAZOR.Views.UI.Game_Logo
                 {
                     LockGameplayAndUiCommands(false);
                     LogoTextureProvider.Activate(false);
-                    // CommonUtils.ShowAlertDialog("!!!", "!!!");
                     Shown?.Invoke();
                     WasShown = true;
                 });
@@ -268,7 +295,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private void LockGameplayAndUiCommands(bool _Lock)
         {
             var commands = RmazorUtils.MoveAndRotateCommands
-                .Concat(new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu});
+                .Concat(new[] {EInputCommand.ShopPanel, EInputCommand.SettingsPanel});
             const string lockGroup = nameof(IViewUIGameLogo); 
             if (_Lock)
                 CommandsProceeder.LockCommands(commands, lockGroup);
@@ -281,7 +308,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             foreach ((string key, var animator) in m_GameLogoCharAnims)
             {
                 animator.speed = 1f / _Time;
-                ShowGameLogoItem(key, KeysAndDelays[key]);
+                ShowGameLogoItem(key, GameLogoPartsDelaysDict[key]);
             }
         }
 

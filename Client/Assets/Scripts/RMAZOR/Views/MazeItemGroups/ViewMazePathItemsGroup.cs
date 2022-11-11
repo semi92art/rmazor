@@ -8,7 +8,6 @@ using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
-using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 
 namespace RMAZOR.Views.MazeItemGroups
@@ -18,6 +17,7 @@ namespace RMAZOR.Views.MazeItemGroups
         IOnLevelStageChanged,
         ICharacterMoveStarted,
         ICharacterMoveContinued,
+        ICharacterMoveFinished,
         IOnPathCompleted
     {
         List<IViewMazeItemPath> PathItems                { get; }
@@ -75,7 +75,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public void OnPathProceed(V2Int _PathItem)
         {
             var item = PathItems.First(_Item => _Item.Props.Position == _PathItem);
-            item.Collect(true);
+            item.Collect(true, false);
         }
 
         public virtual void OnLevelStageChanged(LevelStageArgs _Args)
@@ -123,6 +123,12 @@ namespace RMAZOR.Views.MazeItemGroups
                 item.OnCharacterMoveContinued(_Args);
         }
         
+        public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
+        {
+            foreach (var item in PathItems)
+                item.OnCharacterMoveFinished(_Args);
+        }
+        
         public virtual void OnPathCompleted(V2Int _LastPath)
         {
         }
@@ -157,7 +163,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 return;
             PathItems
                 .First(_P => _P.Props.IsStartNode)
-                .Collect(true);
+                .Collect(true, false);
             if (_CheckOnMoveStarted)
                 m_FirstMoveDone = true;
         }

@@ -192,7 +192,7 @@ namespace RMAZOR.Views.UI
             foreach (var checkmark in m_CheckMarks)
                 checkmark.gameObject.SetActive(false);
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-            int groupIndex = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
+            int groupIndex = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int levelsInGroup = RmazorUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - m_TopOffset - 3f;
             for (int i = 0; i < levelsInGroup; i++)

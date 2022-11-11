@@ -23,11 +23,11 @@ namespace RMAZOR.Views.ContainerGetters
         #region inject
 
         protected IModelGame                     Model               { get; }
-        private   ICoordinateConverterRmazorBase CoordinateConverter { get; }
+        private   ICoordinateConverterBase CoordinateConverter { get; }
 
         protected ContainersGetterRmazorBase(
             IModelGame                     _Model,
-            ICoordinateConverterRmazorBase _CoordinateConverter)
+            ICoordinateConverterBase _CoordinateConverter)
         {
             Model               = _Model;
             CoordinateConverter = _CoordinateConverter;

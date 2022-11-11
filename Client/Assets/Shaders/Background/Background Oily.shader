@@ -73,8 +73,6 @@ Shader "RMAZOR/Background/Oily"
                 return r - 0.5;
             }
 
-
-
             float snoise(float3 p)
             {
                 const float f3 = 0.3333333;
@@ -119,8 +117,8 @@ Shader "RMAZOR/Background/Oily"
                 float d = distance(float2(uv.x, uv.y), float2(.5, .5));
                 uv += T * .25 + (1.8 * snoise(float3(uv.x * scl, uv.y * scl, T * 0.012)));
                 float n = snoise(float3(uv.x * scl, uv.y * scl, T * .015));
-                n = S(0.146, 0.702, n - d * .1);
-                return lerp(_Color2, _Color1, n);
+                n = S(0.2, 0.8, n*1.5 - d * .01);
+                return lerp(_Color1, _Color2, n);
             }
             ENDCG
         }

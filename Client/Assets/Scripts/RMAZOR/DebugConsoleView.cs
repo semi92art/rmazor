@@ -164,7 +164,7 @@ namespace RMAZOR
         {
             Dbg.Log("Set Debug Console visibility: " + _Visible);
             VisibilityChanged?.Invoke(_Visible);
-            var commands = new[] {EInputCommand.ShopMenu, EInputCommand.SettingsMenu}
+            var commands = new[] {EInputCommand.ShopPanel, EInputCommand.SettingsPanel}
                 .Concat(RmazorUtils.MoveAndRotateCommands);
             if (_Visible)
                 m_CommandsProceeder.LockCommands(commands, nameof(DebugConsoleView));

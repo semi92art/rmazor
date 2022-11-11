@@ -47,7 +47,9 @@ MonoBehaviour:
   levelsInGroup: 3,3,3
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
   finishLevelGroupPanelBackgroundVariant: 1
-  characterDiedPanelBackgroundVariant: 3
+  characterDiedPanelBackgroundVariant: 2
+  playBonusLevelPanelBackgroundVariant: 0
   extraBordersIndices: 2,3,5
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
+  showPathItems: 1

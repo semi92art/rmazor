@@ -37,22 +37,25 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
+        private IModelGame                    Model              { get; }
         private ICameraProvider               CameraProvider     { get; }
         private IContainersGetter             ContainersGetter   { get; }
         private IBackgroundTextureProviderSet TextureProviderSet { get; }
         
         private ViewMazeBackgroundTextureController(
-            ICameraProvider                  _CameraProvider,
-            IContainersGetter                _ContainersGetter,
-            IRemotePropertiesRmazor          _RemoteProperties,
-            IColorProvider                   _ColorProvider,
-            IPrefabSetManager                _PrefabSetManager,
-            IBackgroundTextureProviderSet    _TextureProviderSet)
+            IModelGame                    _Model,
+            ICameraProvider               _CameraProvider,
+            IContainersGetter             _ContainersGetter,
+            IRemotePropertiesRmazor       _RemoteProperties,
+            IColorProvider                _ColorProvider,
+            IPrefabSetManager             _PrefabSetManager,
+            IBackgroundTextureProviderSet _TextureProviderSet)
             : base(
                 _RemoteProperties,
                 _ColorProvider, 
                 _PrefabSetManager)
         {
+            Model                 = _Model;
             CameraProvider        = _CameraProvider;
             ContainersGetter      = _ContainersGetter;
             TextureProviderSet    = _TextureProviderSet;
@@ -158,6 +161,8 @@ namespace RMAZOR.Views.Common
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
+            m_MainRenderer.gameObject.SetParent(CameraProvider.Camera.transform);
+            m_MainRenderer.transform.SetLocalPosXY(Vector2.zero);
             ActivateAndShowBackgroundTexture(_Args.LevelIndex);
         }
 
@@ -194,7 +199,7 @@ namespace RMAZOR.Views.Common
         private void ActivateAndShowBackgroundTexture(long _LevelIndex)
         {
             ActivateConcreteBackgroundTexture(_LevelIndex, out var provider);
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
             long firstLevInGroup = RmazorUtils.GetFirstLevelInGroup(group);
             bool predicate = _LevelIndex == firstLevInGroup || m_IsFirstLoad;
             var colFrom1 = predicate ? BackCol1Current : BackCol1Prev;
@@ -208,26 +213,43 @@ namespace RMAZOR.Views.Common
                 BackCol2Current);
         }
 
-        private void ActivateConcreteBackgroundTexture(long _LevelIndex, out IFullscreenTextureProvider _Provider)
+        private void ActivateConcreteBackgroundTexture(
+            long                           _LevelIndex,
+            out IFullscreenTextureProvider _Provider)
         {
             var set = TextureProviderSet.GetSet();
             foreach (var texProvider in set)
                 texProvider.Activate(false);
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
-            _Provider = TextureProviderSet.GetProvider(AdditionalInfo.backgroundName);
-            switch (_Provider)
+            if (RenderingMustBeDisabled())
             {
-                case IFullscreenTextureProviderTriangles2 triangles2:
-                    int idx2 = group % m_TextureSetItems.Count;
-                    var setItem = m_TextureSetItems[idx2];
-                    triangles2.Activate(true);
-                    triangles2.SetProperties((Triangles2TextureProps)setItem);
-                    break;
+                _Provider = TextureProviderSet.GetProvider("empty");
+                m_MainRenderer.sharedMaterial = _Provider.Renderer.material;
+            }
+            else
+            {
+                m_MainRenderer.sharedMaterial = m_MainRendererMaterial;
+                int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
+                _Provider = TextureProviderSet.GetProvider(AdditionalInfo.backgroundName);
+                switch (_Provider)
+                {
+                    case IFullscreenTextureProviderTriangles2 triangles2:
+                        int idx2 = group % m_TextureSetItems.Count;
+                        var setItem = m_TextureSetItems[idx2];
+                        triangles2.Activate(true);
+                        triangles2.SetProperties((Triangles2TextureProps)setItem);
+                        break;
+                }
             }
             _Provider.Activate(true);
             var renderTexture = m_RenderTexturesDict[_Provider.Quality];
             m_RenderCamera.targetTexture = renderTexture;
             m_MainRendererMaterial.SetTexture(MainTexId, renderTexture);
+        }
+
+        private static bool RenderingMustBeDisabled()
+        {
+            return false;
+            // return CommonDataRmazor.IsBigLevel;
         }
         
         #endregion

@@ -192,8 +192,8 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.UnloadLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
@@ -201,8 +201,8 @@ namespace RMAZOR.Views.UI
                     break;
                 case ELevelStage.Finished:
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ShopMenu, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsMenu, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.UnPauseLevel, group);

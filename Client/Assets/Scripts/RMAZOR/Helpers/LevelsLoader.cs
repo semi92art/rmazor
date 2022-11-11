@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
-using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -17,25 +15,26 @@ namespace RMAZOR.Helpers
 {
     public interface ILevelsLoader : IInit
     {
-        MazeInfo GetLevelInfo(int      _GameId, long _Index);
+        MazeInfo GetLevelInfo(int      _GameId, long _Index, object[] _Args = null);
         int      GetLevelsCount(int _GameId);
     }
     
-    public class LevelsLoader : InitBase, ILevelsLoader
+    public abstract class LevelsLoader : InitBase, ILevelsLoader
     {
         #region nonpublic members
         
-        private readonly Dictionary<int, string[]> m_SerializedLevelsFromCacheDict = new Dictionary<int, string[]>();
-        private readonly Dictionary<int, string[]> m_SerializedLevelsFromRemoteDict = new Dictionary<int, string[]>();
+        protected readonly Dictionary<int, string[]>
+            SerializedLevelsFromCacheDict  = new Dictionary<int, string[]>(), 
+            SerializedLevelsFromRemoteDict = new Dictionary<int, string[]>();
 
-        private bool m_CachedLoaded, m_RemoteLoaded;
+        protected bool CachedLevelsLoaded, RemoteLevelsLoaded;
 
         #endregion
 
         #region inject
 
         protected IPrefabSetManager  PrefabSetManager  { get; }
-        private   IMazeInfoValidator MazeInfoValidator { get; }
+        protected IMazeInfoValidator MazeInfoValidator { get; }
 
         protected LevelsLoader(
             IPrefabSetManager  _PrefabSetManager,
@@ -51,24 +50,22 @@ namespace RMAZOR.Helpers
 
         public override void Init()
         {
-            var sw = new Stopwatch();
-            sw.Start();
             PreloadLevels(CommonData.GameId, true);
             PreloadLevels(CommonData.GameId, false);
             Cor.Run(Cor.WaitWhile(
-                () => !m_CachedLoaded || !m_RemoteLoaded,
+                () => !CachedLevelsLoaded || !RemoteLevelsLoaded,
                 () => base.Init()));
         }
 
-        public MazeInfo GetLevelInfo(int _GameId, long _Index)
+        public virtual MazeInfo GetLevelInfo(int _GameId, long _Index, object[] _Args = null)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
             MazeInfo Deserialize(IReadOnlyDictionary<int, string[]> _Dict) => JsonConvert.DeserializeObject<MazeInfo>(
                 _Dict[_GameId][_Index]);
-            var mazeInfo = Deserialize(m_SerializedLevelsFromRemoteDict);
+            var mazeInfo = Deserialize(SerializedLevelsFromRemoteDict);
             bool valid = MazeInfoValidator.Validate(mazeInfo);
             if (!valid)
-                mazeInfo = Deserialize(m_SerializedLevelsFromCacheDict);
+                mazeInfo = Deserialize(SerializedLevelsFromCacheDict);
             valid = MazeInfoValidator.Validate(mazeInfo);
             if (valid)
                 return mazeInfo;
@@ -79,15 +76,15 @@ namespace RMAZOR.Helpers
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
             return Math.Min(
-                m_SerializedLevelsFromRemoteDict[_GameId].Length,
-                m_SerializedLevelsFromCacheDict[_GameId].Length);
+                SerializedLevelsFromRemoteDict[_GameId].Length,
+                SerializedLevelsFromCacheDict[_GameId].Length);
         }
 
         #endregion
 
         #region nonpublic methods
         
-        private void PreloadLevels(int _GameId, bool _Main)
+        protected virtual void PreloadLevels(int _GameId, bool _Main)
         {
             int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
@@ -106,15 +103,13 @@ namespace RMAZOR.Helpers
                     .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
                 if (_Main)
                 {
-                    m_SerializedLevelsFromRemoteDict.SetSafe(_GameId, serializedLevels);
-                    m_RemoteLoaded = true;
-                    Dbg.Log("Remote levels loaded");
+                    SerializedLevelsFromRemoteDict.SetSafe(_GameId, serializedLevels);
+                    RemoteLevelsLoaded = true;
                 }
                 else
                 {
-                    m_SerializedLevelsFromCacheDict.SetSafe(_GameId, serializedLevels);
-                    m_CachedLoaded = true;
-                    Dbg.Log("Cached levels loaded");
+                    SerializedLevelsFromCacheDict.SetSafe(_GameId, serializedLevels);
+                    CachedLevelsLoaded = true;
                 }
             });
         }
@@ -124,17 +119,17 @@ namespace RMAZOR.Helpers
             return $"game_{_GameId}_levels";
         }
 
-        protected static string LevelsAssetName(int _HeapIndex)
+        protected virtual string LevelsAssetName(int _HeapIndex, object[] _Args = null)
         {
             string heapName = _HeapIndex <= 0 ? null : $"levels_{_HeapIndex}";
             return heapName ?? $"levels_{_HeapIndex}";
         }
 
-        private void PreloadLevelsIfWereNotLoaded(int _GameId)
+        protected void PreloadLevelsIfWereNotLoaded(int _GameId)
         {
-            if (m_SerializedLevelsFromRemoteDict.GetSafe(_GameId, out _) == null)
+            if (SerializedLevelsFromRemoteDict.GetSafe(_GameId, out _) == null)
                 PreloadLevels(_GameId, true);
-            if (m_SerializedLevelsFromCacheDict.GetSafe(_GameId, out _) == null)
+            if (SerializedLevelsFromCacheDict.GetSafe(_GameId, out _) == null)
                 PreloadLevels(_GameId, false);
         }
 

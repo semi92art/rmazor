@@ -29,12 +29,14 @@ namespace RMAZOR.UI.Panels
     {
         #region nonpublic members
 
-        private Button          m_ButtonRate;
-        private Button          m_ButtonLater;
-        private Button          m_ButtonNever;
-        private TextMeshProUGUI m_TextTitle;
-        private TextMeshProUGUI m_TextMessage;
-        private Animator        m_StarsAnimator;
+        private Button       
+            m_ButtonRate,
+            m_ButtonLater,
+            m_ButtonNever;
+        private TextMeshProUGUI
+            m_TextTitle,
+            m_TextMessage;
+        private Animator m_StarsAnimator;
 
         #endregion
 
@@ -62,7 +64,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Fullscreen;
-        public override EUiCategory       Category         => EUiCategory.RateGame;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -108,6 +109,11 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            Cor.Run(Cor.Delay(
+                3f, 
+                Ticker, 
+                _OnStart: () => m_ButtonNever.SetGoActive(true),
+                _OnDelay: () => m_ButtonNever.SetGoActive(true)));
             m_StarsAnimator.SetTrigger(AnimKeys.Anim);
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogStartAppearing();
@@ -146,7 +152,7 @@ namespace RMAZOR.UI.Panels
         {
             return RmazorUtils.MoveAndRotateCommands.Concat(new []
             {
-                EInputCommand.ShopMenu, EInputCommand.SettingsMenu
+                EInputCommand.ShopPanel, EInputCommand.SettingsPanel
             });
         }
 

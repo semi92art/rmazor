@@ -51,7 +51,7 @@ namespace Editor
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
                 "configs", "view_settings");
-            int group = RmazorUtils.GetGroupIndex(m_LevelIndex);
+            int group = RmazorUtils.GetLevelsGroupIndex(m_LevelIndex);
             int levels = (_Current ? 0 : 1) * RmazorUtils.GetLevelsInGroup(group);
             m_LevelIndex = MathUtils.ClampInverse(
                 m_LevelIndex + levels, 

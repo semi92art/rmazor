@@ -81,3 +81,4 @@ get = pegue
 revive? = reviver?
 empty_key = 
 watch_video_to_the_end = Assista ao vídeo até o final para multiplicar a recompensa!
+play_bonus_level_title = Jogar o nível de bônus?

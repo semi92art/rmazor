@@ -86,7 +86,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override EUiCategory       Category         => EUiCategory.Tutorial;
         public override Animator          Animator         => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
@@ -177,8 +176,8 @@ namespace RMAZOR.UI.Panels
         {
             return new[]
                 {
-                    EInputCommand.ShopMenu,
-                    EInputCommand.SettingsMenu
+                    EInputCommand.ShopPanel,
+                    EInputCommand.SettingsPanel
                 }
                 .Concat(RmazorUtils.MoveAndRotateCommands);
         }

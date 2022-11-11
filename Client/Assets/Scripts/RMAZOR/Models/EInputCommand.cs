@@ -2,15 +2,23 @@
 {
     public enum EInputCommand
     {
+        // move commands
         MoveUp,
         MoveDown,
         MoveLeft,
         MoveRight,
+        // rotate commands
         RotateClockwise,
         RotateCounterClockwise,
+        // load level commands
         LoadCurrentLevel,
         LoadFirstLevelFromCurrentGroup,
         LoadNextLevel,
+        LoadLevelByIndex,
+        LoadRandomLevel,
+        LoadRandomLevelWithRotation,
+        LoadFirstLevelFromRandomGroup,
+        // level staging commands
         ReadyToStartLevel,
         StartOrContinueLevel,
         FinishLevel,
@@ -19,13 +27,13 @@
         PauseLevel,
         UnPauseLevel,
         KillCharacter,
-        LoadRandomLevel,
-        ShopMenu,
-        SettingsMenu,
+        // ui commands
+        ShopPanel,
+        SettingsPanel,
         RateGamePanel,
-        LoadRandomLevelWithRotation,
-        LoadLevelByIndex,
-        LoadFirstLevelFromRandomGroup,
+        FinishLevelGroupPanel,
+        PlayBonusLevelPanel,
+        // debug commands
         EnableDebug,
         DisableDebug
     }

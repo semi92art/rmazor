@@ -4,7 +4,6 @@ using Common.Managers;
 using Common.Providers;
 using Common.Ticker;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
-using RMAZOR.Views.Utils;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
@@ -20,9 +19,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         IFullscreenTextureProviderTriangles2
     {
         #region nonpublic members
-
-        protected override int    SortingOrder      => SortingOrders.BackgroundTexture;
-
+        
         private static readonly int
             SizeId        = Shader.PropertyToID("_Size"),
             RatioId       = Shader.PropertyToID("_Ratio"),

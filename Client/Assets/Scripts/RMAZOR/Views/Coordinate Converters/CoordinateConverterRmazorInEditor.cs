@@ -5,22 +5,25 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Coordinate_Converters
 {
-    public interface ICoordinateConverterRmazorInEditor : ICoordinateConverterRmazorBase
+    public interface ICoordinateConverterInEditor : ICoordinateConverterForSmallLevels
     {
         void SetMazeSize(V2Int _Size);
     }
     
     [Serializable]
     public class CoordinateConverterRmazorInEditor :
-        CoordinateConverterRmazor, 
-        ICoordinateConverterRmazorInEditor
+        CoordinateConverterForSmallLevels, 
+        ICoordinateConverterInEditor
     {
         #region inject
 
-        private CoordinateConverterRmazorInEditor(
+        public CoordinateConverterRmazorInEditor(
             ViewSettings    _ViewSettings,
-            ICameraProvider _CameraProvider)
-            : base(_ViewSettings, _CameraProvider) { }
+            ICameraProvider _CameraProvider) 
+            : base(_ViewSettings, _CameraProvider)
+        {
+            
+        }
 
         #endregion
 
@@ -31,7 +34,9 @@ namespace RMAZOR.Views.Coordinate_Converters
             ICameraProvider _CameraProvider,
             bool            _Debug)
         {
-            return new CoordinateConverterRmazorInEditor(_ViewSettings, _CameraProvider) {IsDebug = _Debug};
+            return new CoordinateConverterRmazorInEditor(
+                _ViewSettings, _CameraProvider) 
+                {IsDebug = _Debug};
         }
 
         #endregion

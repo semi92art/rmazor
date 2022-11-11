@@ -301,21 +301,21 @@ namespace RMAZOR
                                        Money = 100
                                    };
                                    ScoreManager.SaveGameProgress(savedGame, true);
-                                   LoadLevelByIndex(controller, 0);
+                                   LoadLevelByIndex(controller, 0, null);
                                    return;
                                }
-                               LoadLevelByIndex(controller, sgCache.Level);
+                               LoadLevelByIndex(controller, sgCache.Level, sgCache.Args);
                            },
                            _Seconds: 1f));
                        return;
                    }
-                   LoadLevelByIndex(controller, sgRemote.Level);
+                   LoadLevelByIndex(controller, sgRemote.Level, sgRemote.Args);
                }, _Seconds: 1f));
             };
             controller.Init();
         }
 
-        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex)
+        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex, object[] _Args)
         {
             var info = LevelsLoader.GetLevelInfo(1, _LevelIndex);
             _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);

@@ -39,28 +39,33 @@ namespace RMAZOR.UI.Panels
         
         #region nonpublic members
 
-        private Animator           m_PanelAnimator;
-        private Animator           m_AnimLoadingAds;
+        private Animator           
+            m_PanelAnimator,
+            m_AnimLoadingAds;
         private AnimationTriggerer m_Triggerer;
-        private Image              m_Background;
-        private Image              m_MoneyInBankIcon;
-        private Image              m_MoneyIconInPayButton;
-        private Image              m_IconWatchAds;
-        private Image              m_Countdown;
-        private Image              m_CountdownBackground;
-        private TextMeshProUGUI    m_TextYouHaveMoney;
-        private TextMeshProUGUI    m_MoneyInBankText;
-        private TextMeshProUGUI    m_TextContinue;
-        private TextMeshProUGUI    m_TextPayMoneyCount;
-        private TextMeshProUGUI    m_TextRevive;
-        private Button             m_ButtonWatchAds;
-        private Button             m_ButtonPayMoney;
-        private bool               m_AdsWatched;
-        private bool               m_MoneyPayed;
-        private long               m_MoneyCount;
-        private bool               m_PanelShowing;
-        private bool               m_WentToShopPanel;
-        private float              m_CountdownValue;
+        private Image
+            m_Background,
+            m_MoneyInBankIcon,
+            m_MoneyIconInPayButton,
+            m_IconWatchAds,
+            m_Countdown,
+            m_CountdownBackground;
+        private TextMeshProUGUI    
+            m_TextYouHaveMoney,
+            m_MoneyInBankText,
+            m_TextContinue,
+            m_TextPayMoneyCount,
+            m_TextRevive;
+        private Button
+            m_ButtonWatchAds,
+            m_ButtonPayMoney;
+        private bool
+            m_AdsWatched,
+            m_MoneyPayed,
+            m_PanelShowing,
+            m_WentToShopPanel;
+        private long   m_MoneyCount;
+        private float  m_CountdownValue;
 
         #endregion
 
@@ -72,7 +77,7 @@ namespace RMAZOR.UI.Panels
         private IViewInputCommandsProceeder CommandsProceeder    { get; }
         private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
 
-        protected CharacterDiedDialogPanel(
+        private CharacterDiedDialogPanel(
             GlobalGameSettings          _GlobalGameSettings,
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
@@ -100,7 +105,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override EUiCategory       Category         => EUiCategory.CharacterDied;
         public override Animator          Animator         => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
@@ -170,7 +174,7 @@ namespace RMAZOR.UI.Panels
             m_MoneyPayed       = false;
             m_WentToShopPanel  = false;
             m_PanelShowing     = true;
-            m_Countdown    .fillAmount = 1f;
+            m_Countdown          .fillAmount = 1f;
             m_CountdownBackground.fillAmount = 1f;
             IndicateAdsLoading(true);
             Cor.Run(Cor.WaitWhile(
@@ -236,7 +240,7 @@ namespace RMAZOR.UI.Panels
             bool isMoneyEnough = m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount;
             if (!isMoneyEnough)
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.ShopMenu,
+                CommandsProceeder.RaiseCommand(EInputCommand.ShopPanel,
                     new object[] {CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel}, true);
                 m_WentToShopPanel = true;
             }
@@ -353,8 +357,8 @@ namespace RMAZOR.UI.Panels
         {
             return new[]
                 {
-                    EInputCommand.ShopMenu,
-                    EInputCommand.SettingsMenu
+                    EInputCommand.ShopPanel,
+                    EInputCommand.SettingsPanel
                 }
                 .Concat(RmazorUtils.MoveAndRotateCommands);
         }

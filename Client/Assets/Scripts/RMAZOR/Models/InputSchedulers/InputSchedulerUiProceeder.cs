@@ -91,18 +91,18 @@ namespace RMAZOR.Models.InputSchedulers
                     break;
                 case EInputCommand.LoadLevelByIndex:
                     levelIndex = Convert.ToInt32(_Args[0]);
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex);
+                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, _Args);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromCurrentGroup:
-                    int group = RmazorUtils.GetGroupIndex(LevelStaging.LevelIndex);
+                    int group = RmazorUtils.GetLevelsGroupIndex(LevelStaging.LevelIndex);
                     levelIndex = RmazorUtils.GetFirstLevelInGroup(group);
                     info = LevelsLoader.GetLevelInfo(gameId, levelIndex); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromRandomGroup:
                     int randLevelIdx = Mathf.RoundToInt(Random.value * LevelsLoader.GetLevelsCount(gameId));
-                    int randGroup = RmazorUtils.GetGroupIndex(randLevelIdx);
+                    int randGroup = RmazorUtils.GetLevelsGroupIndex(randLevelIdx);
                     levelIndex = RmazorUtils.GetFirstLevelInGroup(randGroup);
                     info = LevelsLoader.GetLevelInfo(gameId, levelIndex);
                     LevelStaging.LoadLevel(info, levelIndex);
@@ -144,14 +144,14 @@ namespace RMAZOR.Models.InputSchedulers
                 case EInputCommand.UnPauseLevel:
                     LevelStaging.UnPauseLevel();
                     break;
+                case EInputCommand.ReadyToUnloadLevel:
+                    LevelStaging.ReadyToUnloadLevel(_Args);
+                    break;
                 case EInputCommand.UnloadLevel:
-                    LevelStaging.UnloadLevel();
+                    LevelStaging.UnloadLevel(_Args);
                     break;
                 case EInputCommand.KillCharacter:
                     LevelStaging.KillCharacter();
-                    break;
-                case EInputCommand.ReadyToUnloadLevel:
-                    LevelStaging.ReadyToUnloadLevel();
                     break;
             }
         }

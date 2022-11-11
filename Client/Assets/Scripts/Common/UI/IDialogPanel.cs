@@ -10,7 +10,6 @@ namespace Common.UI
     public interface IDialogPanel
     {
         EDialogViewerType DialogViewerType   { get; }
-        EUiCategory       Category           { get; }
         EAppearingState   AppearingState     { get; set; }
         RectTransform     PanelRectTransform { get; }
         Animator          Animator           { get; }
@@ -21,7 +20,6 @@ namespace Common.UI
     public class DialogPanelFake : IDialogPanel
     {
         public EDialogViewerType DialogViewerType   => default;
-        public EUiCategory       Category           => EUiCategory.Fake;
         public EAppearingState   AppearingState     { get; set; } = EAppearingState.Dissapeared;
         public RectTransform     PanelRectTransform => null;
         public Animator          Animator           => null;

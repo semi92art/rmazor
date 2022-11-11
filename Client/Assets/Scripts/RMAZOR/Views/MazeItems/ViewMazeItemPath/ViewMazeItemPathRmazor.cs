@@ -11,7 +11,6 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -57,7 +56,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             IManagersGetter                  _Managers,
             IColorProvider                   _ColorProvider,
             IViewInputCommandsProceeder      _CommandsProceeder,
-            IViewMazeMoneyItem               _MoneyItem,
+            IViewMazeItemPathItem            _PathItem,
             IViewMazeItemsPathInformer       _Informer,
             IViewMazeItemPathExtraBordersSet _ExtraBordersSet)
             : base(
@@ -70,7 +69,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 _Managers,
                 _ColorProvider,
                 _CommandsProceeder,
-                _MoneyItem,
+                _PathItem,
                 _Informer)
         {
             ExtraBordersSet = _ExtraBordersSet;
@@ -121,7 +120,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Managers,
             ColorProvider,
             CommandsProceeder,
-            MoneyItem      .Clone() as IViewMazeMoneyItem,
+            PathItem       .Clone() as IViewMazeItemPathItem, 
             Informer       .Clone() as IViewMazeItemsPathInformer,
             ExtraBordersSet.Clone() as IViewMazeItemPathExtraBordersSet);
 
@@ -140,7 +139,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             }
         }
 
-        public override void Collect(bool _Collect, bool _OnStart = false)
+        public override void Collect(bool _Collect, bool _OnStart)
         {
             bool isPortalOrShredingerWithSamePos =
                 Informer.IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal) 
@@ -428,7 +427,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         private bool GetCanHighlightCommonPredicate()
         {
             return ActivatedInSpawnPool
-                   && MoneyItem.IsCollected
+                   && PathItem.ItemPathItemMoney.IsCollected
                    && HighlightEnabled;
         }
 
@@ -441,7 +440,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         private IViewMazeItemPathExtraBorders GetCurrentExtraBorders()
         {
-            int levelGroupIndex = RmazorUtils.GetGroupIndex(Model.LevelStaging.LevelIndex);
+            int levelGroupIndex = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             var extraBordersSet = ExtraBordersSet.GetSet();
             int extraBordersIndex = (levelGroupIndex - 1) % extraBordersSet.Count;
             return extraBordersSet[extraBordersIndex];

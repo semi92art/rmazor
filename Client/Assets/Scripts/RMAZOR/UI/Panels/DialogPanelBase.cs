@@ -46,7 +46,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public abstract EDialogViewerType DialogViewerType { get; }
-        public abstract EUiCategory       Category         { get; }
 
         public EAppearingState AppearingState
         {

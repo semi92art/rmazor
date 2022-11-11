@@ -5,6 +5,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
+using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views.InputConfigurators;
 
 namespace RMAZOR.Views.UI
@@ -53,24 +54,24 @@ namespace RMAZOR.Views.UI
         {
             switch (_Key)
             {
-                case EInputCommand.SettingsMenu:
+                case EInputCommand.SettingsPanel:
                 {
-                    var panel = DialogPanelsSet.SettingDialogPanel;
+                    var panel = DialogPanelsSet.GetPanel<ISettingDialogPanel>();
                     var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
                     dv.Show(panel);
                     CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                     Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
                 }
                     break;
-                case EInputCommand.ShopMenu:
+                case EInputCommand.ShopPanel:
                 {
-                    var panel = DialogPanelsSet.ShopDialogPanel;
+                    var panel = DialogPanelsSet.GetPanel<IShopDialogPanel>();
                     var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
                     panel.SetOnCloseFinishAction(() =>
                     {
                         if (_Args != null && _Args.Contains(CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel))
                         {
-                            DialogPanelsSet.CharacterDiedDialogPanel.ReturnFromShopPanel();
+                            DialogPanelsSet.GetPanel<ICharacterDiedDialogPanel>().ReturnFromShopPanel();
                         }
                         else
                         {
@@ -84,6 +85,20 @@ namespace RMAZOR.Views.UI
                         CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
                         Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
                     }
+                }
+                    break;
+                case EInputCommand.PlayBonusLevelPanel:
+                {
+                    var playBonusLevelPanel = DialogPanelsSet.GetPanel<IPlayBonusLevelDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(playBonusLevelPanel.DialogViewerType);
+                    dv.Show(playBonusLevelPanel);
+                }
+                    break;
+                case EInputCommand.FinishLevelGroupPanel:
+                {
+                    var finishLevelGroupDialogPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(finishLevelGroupDialogPanel.DialogViewerType);
+                    dv.Show(finishLevelGroupDialogPanel);
                 }
                     break;
             }

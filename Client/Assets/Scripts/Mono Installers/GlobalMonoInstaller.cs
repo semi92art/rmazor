@@ -152,6 +152,8 @@ namespace Mono_Installers
 
         private void BindCamera()
         {
+            Container.Bind<IStaticCameraProvider>().To<StaticCameraProvider>().AsSingle();
+            Container.Bind<IDynamicCameraProvider>().To<DynamicCameraProvider>().AsSingle();
             switch (CommonData.GameId)
             {
                 case GameIds.RMAZOR:
@@ -186,7 +188,7 @@ namespace Mono_Installers
             Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()              .AsSingle();
             Container.Bind<ILocalizationManager>()         .To<LeanLocalizationManager>()         .AsSingle();
             Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()                .AsSingle();
-            Container.Bind<ILevelsLoader>()                .To<LevelsLoader>()                    .AsSingle();
+            Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()              .AsSingle();
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()               .AsSingle();
             Container.Bind<IFontProvider>()                .To<DefaultFontProvider>()             .AsSingle();
             Container.Bind<ISRDebuggerInitializer>()       .To<SRDebuggerInitializer>()           .AsSingle();

@@ -129,7 +129,8 @@ namespace Common.Debugging
             Cor.Run(Cor.Delay(
                 _Duration,
                 CommonTicker, 
-                () => m_DoRecord = false));
+                _OnStart: () => m_DoRecord = true,
+                _OnDelay: () => m_DoRecord = false));
         }
 
         public void UpdateTick()

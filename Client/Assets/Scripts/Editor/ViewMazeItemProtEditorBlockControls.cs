@@ -37,7 +37,7 @@ namespace Editor
             {
                 foreach (var props in protsList.Select(_P => _P.Props))
                     props.Blank = newBlankValue;
-            });
+            },GUILayout.Height(30f));
         }
 
         private static void SetAsBlock(IEnumerable<ViewMazeItemProt> _Items)

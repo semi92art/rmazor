@@ -52,8 +52,7 @@ Shader "RMAZOR/Background/Sunflow"
                 a += 10. * T + 123.34 * i;
                 r += (.5 + .5 * cos(a)) / N;
                 r = floor(N * r) / N;
-                return lerp(_Color1, _Color2, r);
-                return (1. - r) * fixed4(3, 2, 1, 1);
+                return lerp(_Color2, _Color1, r);
             }
             ENDCG
         }

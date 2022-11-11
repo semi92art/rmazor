@@ -32,7 +32,6 @@ namespace RMAZOR.UI.Panels
     public class FinishLevelGroupDialogPanelFake : IFinishLevelGroupDialogPanel
     {
         public EDialogViewerType DialogViewerType   => default;
-        public EUiCategory       Category           => default;
         public EAppearingState   AppearingState     { get; set; }
         public RectTransform     PanelRectTransform => null;
         public Animator          Animator           => null;
@@ -50,29 +49,35 @@ namespace RMAZOR.UI.Panels
             new AudioClipArgs("payout_reward", EAudioClipType.UiSound);
 
         private MultiplyMoneyWheelPanelView m_WheelPanelView;
-        private Animator                    m_PanelAnimator;
-        private Animator                    m_AnimLoadingAds;
-        private Animator                    m_AnimMoneyIcon;
-        private AnimationTriggerer          m_Triggerer;
-        private AnimationTriggerer          m_TriggererMoneyIcon;
-        private Image                       m_MoneyIcon;
-        private Image                       m_IconWatchAds;
-        private Image                       m_Background;
-        private Button                      m_ButtonMultiplyMoney;
-        private Button                      m_ButtonSkip;
-        private Button                      m_ButtonContinue;
-        private TextMeshProUGUI             m_TitleText;
-        private TextMeshProUGUI             m_RewardText;
-        private TextMeshProUGUI             m_MoneyCountText;
-        private TextMeshProUGUI             m_MultiplyButtonText;
-        private TextMeshProUGUI             m_GetMoneyButtonText;
-        private TextMeshProUGUI             m_ContinueButtonText;
-        private TextMeshProUGUI             m_WatchVideoToTheEndText;
-        private Sprite                      m_SpriteMoney;
-        private Sprite                      m_SpriteMoneyMultiplied;
-        private long                        m_MultiplyCoefficient;
-        private string                      m_MultiplyWord;
-        private bool                        m_RewardGot;
+        private Animator
+            m_PanelAnimator,
+            m_AnimLoadingAds,
+            m_AnimMoneyIcon;
+        private AnimationTriggerer
+            m_Triggerer,
+            m_TriggererMoneyIcon;
+        private Image           
+            m_MoneyIcon,
+            m_IconWatchAds, 
+            m_Background;
+        private Button     
+            m_ButtonMultiplyMoney,
+            m_ButtonSkip,
+            m_ButtonContinue;
+        private TextMeshProUGUI
+            m_TitleText,
+            m_RewardText,
+            m_MoneyCountText,
+            m_MultiplyButtonText,
+            m_GetMoneyButtonText,
+            m_ContinueButtonText,
+            m_WatchVideoToTheEndText;
+        private Sprite 
+            m_SpriteMoney,
+            m_SpriteMoneyMultiplied;
+        private long   m_MultiplyCoefficient;
+        private string m_MultiplyWord;
+        private bool   m_RewardGot;
 
         #endregion
 
@@ -112,7 +117,6 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override EUiCategory       Category         => EUiCategory.FinishGroup;
         public override Animator          Animator         => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
@@ -420,8 +424,8 @@ namespace RMAZOR.UI.Panels
         {
             return new[]
                 {
-                    EInputCommand.ShopMenu,
-                    EInputCommand.SettingsMenu
+                    EInputCommand.ShopPanel,
+                    EInputCommand.SettingsPanel
                 }
                 .Concat(RmazorUtils.MoveAndRotateCommands);
         }

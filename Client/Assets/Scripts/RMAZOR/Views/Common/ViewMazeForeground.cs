@@ -71,7 +71,7 @@ namespace RMAZOR.Views.Common
         private Color GetMainColor(long _LevelIndex)
         {
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
-            int group = RmazorUtils.GetGroupIndex(_LevelIndex);
+            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
             int setItemIdx = (group - 1) % colorsSet.Count;
             return colorsSet[setItemIdx].main;
         }

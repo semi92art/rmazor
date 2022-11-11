@@ -81,3 +81,4 @@ get = obtener
 revive? = ¿reanimar?
 empty_key = 
 watch_video_to_the_end = ¡Mire el video al final para multiplicar la recompensa!
+play_bonus_level_title = ¿Juega el nivel de bonificación?

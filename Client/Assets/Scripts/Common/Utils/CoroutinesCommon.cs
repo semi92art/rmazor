@@ -31,8 +31,10 @@ namespace Common.Utils
             float       _Delay,
             ITicker     _Ticker,
             UnityAction _OnDelay = null,
-            Func<bool>  _OnBreak = null)
+            Func<bool>  _OnBreak = null,
+            UnityAction _OnStart = null)
         {
+            _OnStart?.Invoke();
             float time = _Ticker?.Time ?? Time.time;
             bool IsTimeValid()
             {

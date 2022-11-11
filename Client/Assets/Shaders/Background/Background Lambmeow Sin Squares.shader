@@ -6,7 +6,6 @@ Shader "RMAZOR/Background/Lambmeow Sin Squares"
         _Color1 ("Color 1", Color) = (0,0,0,1)
         _Color2 ("Color 2", Color) = (1,1,1,1)
         _Speed("Speed", Range(1,10)) = 1
-        _Scale("Scale", Range(1,10)) = 1
     }
     SubShader
     {
@@ -32,10 +31,9 @@ Shader "RMAZOR/Background/Lambmeow Sin Squares"
 
             #include "UnityCG.cginc"
             #include "../Common.cginc"
-            #include "Toon.cginc"
 
             fixed4 _Color1, _Color2;
-            float _Speed, _Scale;
+            float _Speed;
 
             v2f vert(appdata v)
             {

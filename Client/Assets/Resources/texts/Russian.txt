@@ -81,3 +81,4 @@ get = Получить
 revive? = Оживить?
 empty_key = 
 watch_video_to_the_end = Досмотрите видео до конца, чтобы умножить награду!
+play_bonus_level_title = Играть бонусный уровень?
