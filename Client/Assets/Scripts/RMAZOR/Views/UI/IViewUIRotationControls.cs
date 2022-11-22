@@ -16,11 +16,11 @@ namespace RMAZOR.Views.UI
 
     public class ViewUIRotationControlsFake : IViewUIRotationControls
     {
-        public bool            HasButtons                                   => false;
-        public void            Init(Vector4                       _Offsets) { }
-        public void            OnLevelStageChanged(LevelStageArgs _Args)    { }
-        public void            OnTutorialStarted(ETutorialType    _Type)    { }
-        public void            OnTutorialFinished(ETutorialType   _Type)    { }
-        public List<Component> GetRenderers()                               => new List<Component>();
+        public bool                   HasButtons                                   => false;
+        public void                   Init(Vector4                       _Offsets) { }
+        public void                   OnLevelStageChanged(LevelStageArgs _Args)    { }
+        public void                   OnTutorialStarted(ETutorialType    _Type)    { }
+        public void                   OnTutorialFinished(ETutorialType   _Type)    { }
+        public IEnumerable<Component> GetRenderers()                               => new List<Component>();
     }
 }

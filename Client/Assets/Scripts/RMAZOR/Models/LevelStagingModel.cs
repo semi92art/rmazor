@@ -1,4 +1,5 @@
-﻿using Common.Helpers;
+﻿using System.Collections.Generic;
+using Common.Helpers;
 using Common.Ticker;
 using RMAZOR.Models.MazeInfos;
 
@@ -16,23 +17,26 @@ namespace RMAZOR.Models
         CharacterKilled
     }
 
-    public class LevelStageArgs : EventArgsEx
+    public class LevelStageArgs : System.EventArgs
     {
-        public long        LevelIndex       { get; }
-        public ELevelStage LevelStage       { get; }
-        public ELevelStage PreviousStage    { get; }
-        public ELevelStage PrePreviousStage { get; }
+        public long                       LevelIndex       { get; }
+        public ELevelStage                LevelStage       { get; }
+        public ELevelStage                PreviousStage    { get; }
+        public ELevelStage                PrePreviousStage { get; }
+        public Dictionary<string, object> Args        { get; }
 
         public LevelStageArgs(
-            long        _LevelIndex,
-            ELevelStage _LevelLevelStage,
-            ELevelStage _PreviousStage,
-            ELevelStage _PrePreviousStage)
+            long                       _LevelIndex,
+            ELevelStage                _LevelLevelStage,
+            ELevelStage                _PreviousStage,
+            ELevelStage                _PrePreviousStage,
+            Dictionary<string, object> _Args)
         {
             LevelIndex       = _LevelIndex;
             LevelStage       = _LevelLevelStage;
             PreviousStage    = _PreviousStage;
             PrePreviousStage = _PrePreviousStage;
+            Args             = _Args ?? new Dictionary<string, object>();
         }
     }
     public delegate void LevelStageHandler(LevelStageArgs _Args);
@@ -40,29 +44,32 @@ namespace RMAZOR.Models
 
     public interface IModelLevelStaging
     {
-        long                    LevelIndex         { get; set; }
-        float                   LevelTime          { get; }
-        int                     DiesCount          { get; }
-        ELevelStage             LevelStage         { get; }
-        ELevelStage             PrevLevelStage     { get; }
-        ELevelStage             PrevPrevLevelStage { get; }
-        event LevelStageHandler LevelStageChanged;
-        void                    LoadLevel(MazeInfo _Info, long _LevelIndex, object[] _Args = null);
-        void                    ReadyToStartLevel();
-        void                    StartOrContinueLevel();
-        void                    PauseLevel();
-        void                    UnPauseLevel();
-        void                    FinishLevel();
-        void                    KillCharacter();
-        void                    ReadyToUnloadLevel(object[] _Args = null);
-        void                    UnloadLevel(object[]        _Args = null);
+        event LevelStageHandler    LevelStageChanged;
+        long                       LevelIndex     { get; }
+        float                      LevelTime      { get; }
+        int                        DiesCount      { get; }
+        ELevelStage                LevelStage     { get; }
+        ELevelStage                PrevLevelStage { get; }
+        Dictionary<string, object> Arguments      { get; }
+
+        void LoadLevel(MazeInfo _Info, long _LevelIndex, Dictionary<string, object> _Args = null);
+        
+        void ReadyToStartLevel(Dictionary<string, object>    _Args = null);
+        void StartOrContinueLevel(Dictionary<string, object> _Args = null);
+        void PauseLevel(Dictionary<string, object>           _Args = null);
+        void UnPauseLevel(Dictionary<string, object>         _Args = null);
+        void FinishLevel(Dictionary<string, object>          _Args = null);
+        void KillCharacter(Dictionary<string, object>        _Args = null);
+        void ReadyToUnloadLevel(Dictionary<string, object>   _Args = null);
+        void UnloadLevel(Dictionary<string, object>          _Args = null);
     }
 
     public class ModelLevelStaging : InitBase, IModelLevelStaging, IUpdateTick
     {
         #region nonpublic members
 
-        private bool m_DoUpdateLevelTime;
+        private bool        m_DoUpdateLevelTime;
+        private ELevelStage PrevPrevLevelStage { get; set; } = ELevelStage.Unloaded;
         
         #endregion
     
@@ -81,12 +88,13 @@ namespace RMAZOR.Models
     
         #region api
 
-        public long                    LevelIndex         { get; set; }
-        public float                   LevelTime          { get; private set; }
-        public int                     DiesCount          { get; private set; }
-        public ELevelStage             LevelStage         { get; private set; } = ELevelStage.Unloaded;
-        public ELevelStage             PrevLevelStage     { get; private set; } = ELevelStage.Unloaded;
-        public ELevelStage             PrevPrevLevelStage { get; private set; } = ELevelStage.Unloaded;
+        public long                       LevelIndex     { get; set; }
+        public float                      LevelTime      { get; private set; }
+        public int                        DiesCount      { get; private set; }
+        public ELevelStage                LevelStage     { get; private set; } = ELevelStage.Unloaded;
+        public ELevelStage                PrevLevelStage { get; private set; } = ELevelStage.Unloaded;
+        public Dictionary<string, object> Arguments      { get; private set; }
+
         public event LevelStageHandler LevelStageChanged;
 
         public override void Init()
@@ -101,48 +109,48 @@ namespace RMAZOR.Models
                 LevelTime += GameTicker.DeltaTime;
         }
     
-        public virtual void LoadLevel(MazeInfo _Info, long _LevelIndex, object[] _Args = null)
+        public virtual void LoadLevel(MazeInfo _Info, long _LevelIndex, Dictionary<string, object> _Args = null)
         {
             (Data.Info, LevelIndex) = (_Info, _LevelIndex);
             InvokeLevelStageChanged(ELevelStage.Loaded, _Args);
         }
 
-        public void ReadyToStartLevel()
+        public void ReadyToStartLevel(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.ReadyToStart);
+            InvokeLevelStageChanged(ELevelStage.ReadyToStart, _Args);
         }
 
-        public void StartOrContinueLevel()
+        public void StartOrContinueLevel(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.StartedOrContinued);
+            InvokeLevelStageChanged(ELevelStage.StartedOrContinued, _Args);
         }
 
-        public void PauseLevel()
+        public void PauseLevel(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.Paused);
+            InvokeLevelStageChanged(ELevelStage.Paused, _Args);
         }
 
-        public void UnPauseLevel()
+        public void UnPauseLevel(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(PrevLevelStage);
+            InvokeLevelStageChanged(PrevLevelStage, _Args);
         }
 
-        public void FinishLevel()
+        public void FinishLevel(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.Finished);
+            InvokeLevelStageChanged(ELevelStage.Finished, _Args);
         }
 
-        public void KillCharacter()
+        public void KillCharacter(Dictionary<string, object> _Args = null)
         {
-            InvokeLevelStageChanged(ELevelStage.CharacterKilled);
+            InvokeLevelStageChanged(ELevelStage.CharacterKilled, _Args);
         }
 
-        public void ReadyToUnloadLevel(object[] _Args = null)
+        public void ReadyToUnloadLevel(Dictionary<string, object> _Args = null)
         {
             InvokeLevelStageChanged(ELevelStage.ReadyToUnloadLevel, _Args);
         }
 
-        public void UnloadLevel(object[] _Args = null)
+        public void UnloadLevel(Dictionary<string, object> _Args = null)
         {
             InvokeLevelStageChanged(ELevelStage.Unloaded, _Args);
         }
@@ -151,8 +159,10 @@ namespace RMAZOR.Models
 
         #region nonpublic methods
 
-        private void InvokeLevelStageChanged(ELevelStage _Stage, object[] _Args = null)
+        private void InvokeLevelStageChanged(ELevelStage _Stage, Dictionary<string, object> _Args)
         {
+            if (_Args != null)
+                Arguments = _Args;
             PrevPrevLevelStage = PrevLevelStage;
             PrevLevelStage = LevelStage;
             m_DoUpdateLevelTime = _Stage == ELevelStage.StartedOrContinued;
@@ -167,7 +177,8 @@ namespace RMAZOR.Models
                 LevelIndex,
                 LevelStage,
                 PrevLevelStage,
-                PrevPrevLevelStage) {Args = _Args};
+                PrevPrevLevelStage,
+                Arguments);
             LevelStageChanged?.Invoke(args);
         }
     

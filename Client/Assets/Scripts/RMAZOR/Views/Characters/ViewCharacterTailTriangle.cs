@@ -16,7 +16,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Characters
 {
-    public class ViewCharacterTailDefault : InitBase, IViewCharacterTail, IFixedUpdateTick
+    public class ViewCharacterTailTriangle : InitBase, IViewCharacterTail, IFixedUpdateTick
     {
         #region constants
 
@@ -46,7 +46,7 @@ namespace RMAZOR.Views.Characters
         private IViewGameTicker      ViewGameTicker      { get; }
         private IColorProvider       ColorProvider       { get; }
 
-        public ViewCharacterTailDefault(
+        public ViewCharacterTailTriangle(
             ModelSettings        _ModelSettings,
             IModelGame           _Model,
             ICoordinateConverter _CoordinateConverter,

@@ -37,12 +37,6 @@ namespace RMAZOR.UI.Panels
     
     public class PlayBonusLevelDialogPanel : DialogPanelBase, IPlayBonusLevelDialogPanel
     {
-        private ViewSettings                ViewSettings            { get; }
-        private IModelGame                  Model                   { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader    { get; }
-        private IMoneyCounter               MoneyCounter            { get; }
-        private IViewInputCommandsProceeder CommandsProceeder       { get; }
-
         #region nonpublic members
 
         private Image m_Background; 
@@ -61,27 +55,33 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
+        private IModelGame                          Model                          { get; }
+        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IMoneyCounter                       MoneyCounter                   { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+
         private PlayBonusLevelDialogPanel(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader,
-            IMoneyCounter               _MoneyCounter,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IManagersGetter             _Managers,
-            IUITicker                   _Ticker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider)
+            IModelGame                          _Model,
+            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IMoneyCounter                       _MoneyCounter,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IManagersGetter                     _Managers,
+            IUITicker                           _Ticker,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers, 
                 _Ticker, 
                 _CameraProvider,
                 _ColorProvider)
         {
-            ViewSettings         = _ViewSettings;
-            Model                = _Model;
-            BetweenLevelAdLoader = _BetweenLevelAdLoader;
-            MoneyCounter         = _MoneyCounter;
-            CommandsProceeder    = _CommandsProceeder;
+            Model                          = _Model;
+            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
+            MoneyCounter                   = _MoneyCounter;
+            CommandsProceeder              = _CommandsProceeder;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
         #endregion
@@ -104,18 +104,6 @@ namespace RMAZOR.UI.Panels
             LocalizeTextObjectsOnLoad();
             m_PlayButton.onClick.AddListener(OnPlayButtonClick);
             m_SkipButton.onClick.AddListener(OnSkipButtonClick);
-            // const string backgroundSpriteNameRaw = "play_bonus_level_panel_background";
-            // string backgroundSpriteName = ViewSettings.playBonusLevelPanelBackgroundVariant switch
-            // {
-            //     1 => $"{backgroundSpriteNameRaw}_1",
-            //     2 => $"{backgroundSpriteNameRaw}_2",
-            //     3 => $"{backgroundSpriteNameRaw}_3",
-            //     4 => $"{backgroundSpriteNameRaw}_4",
-            //     5 => $"{backgroundSpriteNameRaw}_5",
-            //     _ => $"{backgroundSpriteNameRaw}_1",
-            // };
-            // m_Background.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
-            //     "views", backgroundSpriteName);
         }
 
         public override void OnDialogStartAppearing()
@@ -128,6 +116,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogDisappeared()
         {
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
+            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             base.OnDialogDisappeared();
         }
 
@@ -177,10 +166,15 @@ namespace RMAZOR.UI.Panels
         {
             int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int bonusLevelIndex = levelsGroup - 1;
-            CommandsProceeder.RaiseCommand(
-                EInputCommand.ReadyToUnloadLevel, 
-                new object[] {bonusLevelIndex, "bonus"},
-                true);
+            var args = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus},
+                {CommonInputCommandArg.KeyLevelIndex, bonusLevelIndex},
+            };
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartUnloadingLevel, 
+                false,
+                args);
         }
 
         private void TryLoadFinishLevelsGroupPanel()
@@ -189,15 +183,11 @@ namespace RMAZOR.UI.Panels
             if (!RmazorUtils.IsLastLevelInGroup(levelIndex))
                 return;
             BetweenLevelAdLoader.ShowAd = false;
-            if (MoneyCounter.CurrentLevelGroupMoney > 0)
-            {
-                CommandsProceeder.RaiseCommand(
-                    EInputCommand.FinishLevelGroupPanel, 
-                    null, 
-                    true);
-                return;
-            }
-
+            if (MoneyCounter.CurrentLevelGroupMoney <= 0) return;
+            CommandsProceeder.RaiseCommand(
+                EInputCommand.FinishLevelGroupPanel, 
+                null, 
+                true);
         }
         
         private static IEnumerable<EInputCommand> GetCommandsToLock()

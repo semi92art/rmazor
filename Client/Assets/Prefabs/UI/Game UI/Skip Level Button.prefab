@@ -601,3 +601,5 @@ MonoBehaviour:
       name: button container
     - item: {fileID: 6230518867470089291}
       name: border
+    - item: {fileID: 2150979648357706576}
+      name: no_ads_icon

@@ -51,8 +51,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             m_PathItem = _Parent.AddComponentOnNewChild<Rectangle>("Path Item", out _)
                 .SetType(Rectangle.RectangleType.RoundedSolid)
                 .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.Uniform)
-                .SetCornerRadius(CoordinateConverter.Scale * ViewSettings.CornerRadius)
-                .SetThickness(CoordinateConverter.Scale * ViewSettings.LineThickness * 0.5f)
                 .SetSortingOrder(SortingOrders.Path);
             base.InitShape(_GetProps, _Parent);
         }
@@ -71,10 +69,9 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             else
             {
                 m_PathItem
-                        .SetWidth(scale * 0.3f)
-                        .SetHeight(scale * 0.3f)
-                        .SetCornerRadius(scale * ViewSettings.CornerRadius * 0.5f)
-                        .SetThickness(scale * 0.5f * ViewSettings.LineThickness);
+                    .SetWidth(scale * 0.25f)
+                    .SetHeight(scale * 0.25f)
+                    .SetCornerRadius(scale * ViewSettings.LineThickness * 0.4f);
             }
             Collect(false);
         }

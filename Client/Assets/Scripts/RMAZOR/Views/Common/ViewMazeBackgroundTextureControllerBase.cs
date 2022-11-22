@@ -101,9 +101,11 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            if (_Args.Args != null && _Args.Args.Contains("set_back_editor"))
+            object setBackgroundFromEditorArg = _Args.Args.GetSafe(
+                CommonInputCommandArg.KeySetBackgroundFromEditor, out bool keyExist);
+            if (keyExist && (bool)setBackgroundFromEditorArg)
                 return;
-            SetColorsOnNewLevel(_Args.LevelIndex);
+            SetColorsOnNewLevel(_Args);
         }
 
         public CurrentLevelBackgroundTexturesArgs GetBackgroundColorArgs()
@@ -137,51 +139,66 @@ namespace RMAZOR.Views.Common
                     .ToList();
         }
 
-        private Color GetBackgroundColor(int _ColorId, long _LevelIndex)
-        {
-            var colorsSet = m_AdditionalBackgorundColorsSetItems;
-            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
-            int setItemIdx = (group - 1) % colorsSet.Count;
-            if (setItemIdx < 0)
-                setItemIdx = 0;
-            var props = colorsSet[setItemIdx];
-            return _ColorId switch
-            {
-                ColorIds.Background1     => props.bacground1,
-                ColorIds.Background2     => props.bacground2,
-                ColorIds.PathItem        => props.GetColor(props.pathItemFillType),
-                ColorIds.PathBackground  => props.GetColor(props.pathBackgroundFillType),
-                ColorIds.PathFill        => props.GetColor(props.pathFillFillType),
-                ColorIds.Character2      => props.GetColor(props.characterBorderFillType),
-                ColorIds.UiBackground    => props.GetColor(props.uiBackgroundFillType),
-                ColorIds.GameUiAlternative => props.GetColor(props.uiBackgroundFillType),
-                _                        => Color.magenta
-            };
-        }
 
-        private void SetColorsOnNewLevel(long _LevelIndex)
+
+        private void SetColorsOnNewLevel(LevelStageArgs _Args)
         {
-            var colorsSet = m_AdditionalBackgorundColorsSetItems;
-            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
-            int setItemIdx = (group - 1) % colorsSet.Count;
-            m_BloomPropsArgs = colorsSet[setItemIdx].bloom;
-            AdditionalInfo = colorsSet[setItemIdx].additionalInfo;
-            ColorProvider.SetColor(ColorIds.PathItem,        GetBackgroundColor(ColorIds.PathItem, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.PathFill,        GetBackgroundColor(ColorIds.PathFill, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.PathBackground,  GetBackgroundColor(ColorIds.PathBackground, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.Character2,      GetBackgroundColor(ColorIds.Character2, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.UiBackground,    GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
-            ColorProvider.SetColor(ColorIds.GameUiAlternative, GetBackgroundColor(ColorIds.UiBackground, _LevelIndex));
+            var setItemCurrent = GetAdditionalColorsSetItemIndexForLevel(_Args);
+            var setItemPrev = GetAdditionalColorsSetItemIndexForLevel(_Args, true);
+            var setItemNext = GetAdditionalColorsSetItemIndexForLevel(_Args, _ForNextLevel: true);
+            m_BloomPropsArgs = setItemCurrent.bloom;
+            AdditionalInfo = setItemCurrent.additionalInfo;
+            ColorProvider.SetColor(ColorIds.PathItem,          GetBackgroundColor(ColorIds.PathItem,       setItemCurrent));
+            ColorProvider.SetColor(ColorIds.PathFill,          GetBackgroundColor(ColorIds.PathFill,       setItemCurrent));
+            ColorProvider.SetColor(ColorIds.PathBackground,    GetBackgroundColor(ColorIds.PathBackground, setItemCurrent));
+            ColorProvider.SetColor(ColorIds.Character2,        GetBackgroundColor(ColorIds.Character2,     setItemCurrent));
+            ColorProvider.SetColor(ColorIds.UiBackground,      GetBackgroundColor(ColorIds.UiBackground,   setItemCurrent));
+            ColorProvider.SetColor(ColorIds.GameUiAlternative, GetBackgroundColor(ColorIds.UiBackground,   setItemCurrent));
             const int idx1 = ColorIds.Background1;
             const int idx2 = ColorIds.Background2;
-            BackCol1Current = GetBackgroundColor(idx1, _LevelIndex);
-            BackCol2Current = GetBackgroundColor(idx2, _LevelIndex);
-            BackCol1Prev = GetBackgroundColor(idx1, _LevelIndex - 1);
-            BackCol2Prev = GetBackgroundColor(idx2, _LevelIndex - 1);
-            BackCol1Next = GetBackgroundColor(idx1, _LevelIndex + 1);
-            BackCol2Next = GetBackgroundColor(idx2, _LevelIndex + 1);
+            BackCol1Current = GetBackgroundColor(idx1, setItemCurrent);
+            BackCol2Current = GetBackgroundColor(idx2, setItemCurrent);
+            BackCol1Prev = GetBackgroundColor(idx1, setItemPrev);
+            BackCol2Prev = GetBackgroundColor(idx2, setItemPrev);
+            BackCol1Next = GetBackgroundColor(idx1, setItemNext);
+            BackCol2Next = GetBackgroundColor(idx2, setItemNext);
             ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
+        }
+
+        private AdditionalColorsProps GetAdditionalColorsSetItemIndexForLevel(
+            LevelStageArgs _Args,
+            bool           _ForPreviousLevel = false,
+            bool           _ForNextLevel     = false)
+        {
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            int levelIndex = (int)_Args.LevelIndex;
+            if (_ForPreviousLevel && !isBonusLevel)
+                levelIndex = (int) _Args.LevelIndex - 1;
+            else if (_ForNextLevel && !isBonusLevel)
+                levelIndex = (int) _Args.LevelIndex + 1;
+            int setItemIdx = isBonusLevel ? levelIndex : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
+            setItemIdx %= m_AdditionalBackgorundColorsSetItems.Count;
+            if (setItemIdx < 0) setItemIdx = 0;
+            var colorsSet = m_AdditionalBackgorundColorsSetItems[setItemIdx];
+            return colorsSet;
+        }
+        
+        private static Color GetBackgroundColor(int _ColorId, AdditionalColorsProps _Props)
+        {
+            return _ColorId switch
+            {
+                ColorIds.Background1       => _Props.bacground1,
+                ColorIds.Background2       => _Props.bacground2,
+                ColorIds.PathItem          => _Props.GetColor(_Props.pathItemFillType),
+                ColorIds.PathBackground    => _Props.GetColor(_Props.pathBackgroundFillType),
+                ColorIds.PathFill          => _Props.GetColor(_Props.pathFillFillType),
+                ColorIds.Character2        => _Props.GetColor(_Props.characterBorderFillType),
+                ColorIds.UiBackground      => _Props.GetColor(_Props.uiBackgroundFillType),
+                ColorIds.GameUiAlternative => _Props.GetColor(_Props.uiBackgroundFillType),
+                _                          => Color.magenta
+            };
         }
 
         #endregion

@@ -58,6 +58,8 @@ namespace Common.Extensions
 
         public static void SetSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, T2 _Value)
         {
+            if (_Dict == null)
+                return;
             if (!_Dict.ContainsKey(_Key))
                 _Dict.Add(_Key, _Value);
             else _Dict[_Key] = _Value;
@@ -65,12 +67,22 @@ namespace Common.Extensions
 
         public static T2 GetSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, out bool _ContainsKey)
         {
+            if (_Dict == null)
+            {
+                _ContainsKey = false;
+                return default;
+            }
             _ContainsKey = _Dict.ContainsKey(_Key);
             return _ContainsKey ? _Dict[_Key] : default;
         }
 
         public static void RemoveSafe<T1, T2>(this Dictionary<T1, T2> _Dict, T1 _Key, out bool _ContainsKey)
         {
+            if (_Dict == null)
+            {
+                _ContainsKey = false;
+                return;
+            }
             _ContainsKey = _Dict.ContainsKey(_Key);
             if (_ContainsKey)
                 _Dict.Remove(_Key);

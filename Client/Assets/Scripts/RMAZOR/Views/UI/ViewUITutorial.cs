@@ -170,7 +170,7 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic methods
 
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             if (m_MovementTutorialStarted && !m_MovementTutorialFinished)
                 OnMovementCommand(_Command);

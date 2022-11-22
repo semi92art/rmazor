@@ -68,8 +68,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 Model,
                 ViewSettings,
                 ColorProvider,
-                ViewGameTicker);
-            @object.GetProps = null;
+                ViewGameTicker) {GetProps = null};
             return @object;
         }
 
@@ -133,23 +132,24 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Vector2 left, right, down, up, zero;
             (left, right, down, up, zero) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up, Vector2.zero);
             Vector2 start, end;
+            float c1 = IsBorderNearTrapReact(_Side) ? 1f : 1f;
             switch (_Side)
             {
                 case EDirection.Up:
-                    start = pos + (up + left    * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
-                    end   = pos + (up + right   * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
+                    start = pos + (c1 * up + left    * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
+                    end   = pos + (c1 * up + right   * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
                     break;
                 case EDirection.Right:
-                    start = pos + (right + down * _Scale) * 0.5f + (_StartLimit ? up    * cr : zero);
-                    end   = pos + (right + up   * _Scale) * 0.5f + (_EndLimit   ? down  * cr : zero);
+                    start = pos + (c1 * right + down * _Scale) * 0.5f + (_StartLimit ? up    * cr : zero);
+                    end   = pos + (c1 * right + up   * _Scale) * 0.5f + (_EndLimit   ? down  * cr : zero);
                     break;
                 case EDirection.Down:
-                    start = pos + (down + left  * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
-                    end   = pos + (down + right * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
+                    start = pos + (c1 * down + left  * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
+                    end   = pos + (c1 * down + right * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
                     break;
                 case EDirection.Left:
-                    start = pos + (left + down * _Scale)  * 0.5f + (_StartLimit ? up     * cr : zero);
-                    end   = pos + (left + up   * _Scale)  * 0.5f + (_EndLimit   ? down   * cr : zero);
+                    start = pos + (c1 * left + down * _Scale)  * 0.5f + (_StartLimit ? up     * cr : zero);
+                    end   = pos + (c1 * left + up   * _Scale)  * 0.5f + (_EndLimit   ? down   * cr : zero);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Side);
@@ -179,14 +179,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         
         public bool MustInitBorder(EDirection _Side)
         {
-            var pathPos = GetProps().Position;
-            var pos2 = GetProps().Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
-            bool b1 = TurretExist(pos2);
-            bool b2 = PathExist(pos2);
-            bool b3 = IsBorderNearTrapIncreasing(_Side);
-            bool b4 = IsBorderNearTrapReact(_Side);
-            return !TurretExist(pos2) && !PathExist(pos2) && !IsBorderNearTrapIncreasing(_Side) &&
-                   !IsBorderNearTrapReact(_Side);
+            var pos = GetProps().Position + RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
+            return !TurretExist(pos) && !PathExist(pos);
         }
         
         public Color GetHighlightColor()

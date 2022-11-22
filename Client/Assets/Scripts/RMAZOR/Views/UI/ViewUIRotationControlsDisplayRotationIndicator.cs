@@ -82,7 +82,7 @@ namespace RMAZOR.Views.UI
             }
         }
 
-        public List<Component> GetRenderers()
+        public IEnumerable<Component> GetRenderers()
         {
             return new List<Component>();
         }

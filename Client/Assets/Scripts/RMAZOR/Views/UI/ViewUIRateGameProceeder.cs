@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
+using Common.Extensions;
 using Common.Helpers;
 using Common.UI.DialogViewers;
 using RMAZOR.Models;
@@ -54,7 +56,7 @@ namespace RMAZOR.Views.UI
             if (_Args.LevelStage != ELevelStage.Finished)
                 return;
             m_LevelsFinishedThisSession++;
-            if (MustShowPanelOnLevelFinished(_Args.LevelIndex))
+            if (MustShowPanelOnLevelFinished(_Args))
             {
                 CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             }
@@ -64,7 +66,7 @@ namespace RMAZOR.Views.UI
 
         #region nonpulic methods
 
-        private void OnCommand(EInputCommand _Key, object[] _Args)
+        private void OnCommand(EInputCommand _Key, Dictionary<string, object> _Args)
         {
             if (_Key != EInputCommand.RateGamePanel)
                 return;
@@ -80,12 +82,15 @@ namespace RMAZOR.Views.UI
             m_CanShowPanelThisSession = randVal < 0.33f;
         }
 
-        private bool MustShowPanelOnLevelFinished(long _LevelIndex)
+        private bool MustShowPanelOnLevelFinished(LevelStageArgs _Args)
         {
-            return !m_RatePanelShownThisSession
-                   && !RmazorUtils.IsLastLevelInGroup(_LevelIndex)
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            return !isThisLevelBonus 
+                   && !m_RatePanelShownThisSession
+                   && !RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
                    && m_CanShowPanelThisSession
-                   && _LevelIndex >= ViewSettings.firstLevelToRateGame
+                   && _Args.LevelIndex >= ViewSettings.firstLevelToRateGame
                    && m_LevelsFinishedThisSession >= ViewSettings.firstLevelToRateGameThisSession;
         }
 

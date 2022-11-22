@@ -60,9 +60,7 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         #region inject
 
-        private IColorProvider                       ColorProvider               { get; }
         private IPrefabSetManager                    PrefabSetManager            { get; }
-        private IRendererAppearTransitioner          Transitioner                { get; }
         private IViewMazeBackgroundTextureController BackgroundTextureController { get; }
 
         private ViewMazeAdditionalBackgroundDrawerRmazorFull(
@@ -76,11 +74,11 @@ namespace RMAZOR.Views.Common.Additional_Background
             : base (
                 _ViewSettings,
                 _CoordinateConverter,
-                _ContainersGetter)
+                _ContainersGetter,
+                _ColorProvider,
+                _Transitioner)
         {
-            ColorProvider               = _ColorProvider;
             PrefabSetManager            = _PrefabSetManager;
-            Transitioner                = _Transitioner;
             BackgroundTextureController = _BackgroundTextureController;
         }
 
@@ -91,7 +89,6 @@ namespace RMAZOR.Views.Common.Additional_Background
         public override void Init()
         {
             CommonDataRmazor.AdditionalBackgroundDrawer = this;
-            ColorProvider.ColorChanged += OnColorChanged;
             InitPools();
             InitTextures();
             base.Init();
@@ -151,6 +148,7 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         public override void Disable()
         {
+            base.Disable();
             DeactivatePools();
             m_TextureRendererBack.enabled = false;
         }
@@ -159,8 +157,9 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         #region nonpublic members
         
-        private void OnColorChanged(int _ColorId, Color _Color)
+        protected override void OnColorChanged(int _ColorId, Color _Color)
         {
+            base.OnColorChanged(_ColorId, _Color);
             if (_ColorId == ColorIds.Background1)
                 m_TextureRendererBack.color = _Color.SetA(ViewSettings.additionalBackgroundAlpha);
             if (_ColorId != ColorIds.Main)
@@ -284,12 +283,11 @@ namespace RMAZOR.Views.Common.Additional_Background
                     "background",
                     "additional_background_set",
                     EPrefabSource.Bundle).set;
-            InitMasks();
         }
         
         private void DeactivatePools()
         {
-            TextureRendererMasks  .DeactivateAll();
+            TextureRendererMasksPool  .DeactivateAll();
             m_TextureRenderers    .DeactivateAll();
             m_Borders             .DeactivateAll();
             m_Corners             .DeactivateAll();
@@ -372,6 +370,7 @@ namespace RMAZOR.Views.Common.Additional_Background
             m_TextureRendererBack.transform.SetLocalPosXY(center)
                 .SetLocalScaleXY(new Vector2(width, height));
             DrawMaskForGroup(_Group);
+            DrawNetLines(_Group);
         }
 
         private void DrawBorder(V2Int _Position, EDirection _Side, bool _StartLimit, bool _EndLimit)

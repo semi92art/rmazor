@@ -68,6 +68,7 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             CommonDataRmazor.BackgroundTextureController = this;
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             InitTextureProviders();
             SetTextureProvidersPosition();
             InitRenderTextures();
@@ -75,7 +76,7 @@ namespace RMAZOR.Views.Common
             InitMainBackgroundRenderer();
             base.Init();
         }
-
+        
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
@@ -91,6 +92,18 @@ namespace RMAZOR.Views.Common
         #endregion
         
         #region nonpublic methods
+        
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            m_MainRenderer
+                .gameObject.SetParent(_Camera.transform)
+                .transform.SetLocalPosXY(Vector2.zero);
+        }
+        
+        private void OnLevelLoaded(LevelStageArgs _Args)
+        {
+            ActivateAndShowBackgroundTexture(_Args.LevelIndex);
+        }
 
         private void InitTextureProviders()
         {
@@ -157,13 +170,6 @@ namespace RMAZOR.Views.Common
             cam.orthographicSize = CameraProvider.Camera.orthographicSize;
             cam.cullingMask = LayerMask.GetMask(LayerNamesCommon.Mu);
             m_RenderCamera = cam;
-        }
-        
-        private void OnLevelLoaded(LevelStageArgs _Args)
-        {
-            m_MainRenderer.gameObject.SetParent(CameraProvider.Camera.transform);
-            m_MainRenderer.transform.SetLocalPosXY(Vector2.zero);
-            ActivateAndShowBackgroundTexture(_Args.LevelIndex);
         }
 
         protected override void LoadSets()

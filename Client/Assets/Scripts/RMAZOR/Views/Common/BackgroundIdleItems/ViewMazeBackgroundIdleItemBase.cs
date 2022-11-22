@@ -5,17 +5,16 @@ using Common.Constants;
 using Common.Extensions;
 using Common.Managers;
 using Common.SpawnPools;
-using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
 {
-    public interface IViewMazeBackgroundIdleItem : ISpawnPoolItem, ICloneable, IOnLevelStageChanged
+    public interface IViewMazeBackgroundIdleItem : ISpawnPoolItem, ICloneable
     {
         Vector2   Position { get; set; }
-        void      SetParams(float _Scale,  float             _Thickness);
+        void      SetScale(float _Scale);
         void      Init(Transform  _Parent, PhysicsMaterial2D _Material);
         void      SetVelocity(Vector2 _Velocity, float _AngularVelocity);
         void      SetColor(Color      _Color);
@@ -40,8 +39,6 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         
         protected Collider2D  Coll;
         protected Rigidbody2D Rigidbody;
-        private   float       m_DefaultScale;
-        private   float       m_DefaultThickness;
 
         #endregion
 
@@ -78,10 +75,9 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             set => Obj.transform.SetPosXY(value);
         }
 
-        public virtual void SetParams(float _Scale, float _Thickness)
+        public virtual void SetScale(float _Scale)
         {
-            m_DefaultScale = _Scale;
-            m_DefaultThickness = _Thickness;
+            Obj.transform.localScale = (_Scale * Vector2.one);
         }
         
         public abstract object Clone();
@@ -92,13 +88,6 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         {
             Rigidbody.velocity = _Velocity;
             Rigidbody.angularVelocity = _AngularVelocity;
-        }
-
-        public void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            if (_Args.LevelStage != ELevelStage.Loaded)
-                return;
-            Obj.transform.SetLocalScaleXY(m_DefaultScale * CoordinateConverter.Scale * Vector2.one);
         }
 
         #endregion

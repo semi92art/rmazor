@@ -17,7 +17,6 @@ using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
-using Common.Managers.Notifications;
 using Common.Providers;
 using Common.Utils;
 using RMAZOR;
@@ -164,9 +163,13 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
+                var args = new Dictionary<string, object>()
+                {
+                    {CommonInputCommandArg.KeyLevelIndex, Level_Index - 1}
+                };
                 _commandsProceeder.RaiseCommand(
                     EInputCommand.LoadLevelByIndex,
-                    new object[] {Level_Index - 1},
+                    args,
                     true);
             }
         }
@@ -192,9 +195,13 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 long levelIndex = _levelStaging.LevelIndex;
+                var args = new Dictionary<string, object>()
+                {
+                    {CommonInputCommandArg.KeyLevelIndex, levelIndex - 1}
+                };
                 _commandsProceeder.RaiseCommand(
                     EInputCommand.LoadLevelByIndex,
-                    new object[] {levelIndex - 1},
+                    args,
                     true);
             }
         }
@@ -794,14 +801,16 @@ namespace SRDebuggerCustomOptions
                         _levelIndex + levels,
                         0,
                         settings.levelsCountMain - 1);
+                    var args = new Dictionary<string, object>()
+                    {
+                        { CommonInputCommandArg.KeySetBackgroundFromEditor, true}
+                    };
                     var fakeArgs = new LevelStageArgs(
                         _levelIndex,
                         ELevelStage.Loaded,
                         ELevelStage.Unloaded,
-                        ELevelStage.ReadyToUnloadLevel)
-                    {
-                        Args = new[] {"set_back_editor"}
-                    };
+                        ELevelStage.ReadyToUnloadLevel,
+                        args);
                     return fakeArgs;
                 }
 
@@ -944,16 +953,6 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-// #if UNITY_ANDROID
-//                 var man = new NotificationsManagerStanAssets(_managers.PrefabSetManager);
-//                 man.Init();
-//                 man.SendNotification(
-//                     "Come back! We are waiting for you!",
-//                     "Body",
-//                     TimeSpan.FromSeconds(10d),
-//                     _SmallIcon: "small_notification_icon",
-//                     _LargeIcon: "large_notification_icon");
-// #else
                 _managers.NotificationsManager.SendNotification(
                     "Come back! We are waiting for you!",
                     "Body",

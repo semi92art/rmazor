@@ -28,12 +28,14 @@ namespace Common.Managers.Advertising.AdsProviders
             UnityAction  _OnClicked,
             UnityAction  _OnReward,
             UnityAction  _OnClosed,
+            UnityAction  _OnFailedToShow,
             Entity<bool> _ShowAds,
             bool         _Forced);
         void ShowInterstitialAd(
             UnityAction  _OnShown,
             UnityAction  _OnClicked,
             UnityAction  _OnClosed,
+            UnityAction  _OnFailedToShow,
             Entity<bool> _ShowAds,
             bool         _Forced);
     }
@@ -84,12 +86,13 @@ namespace Common.Managers.Advertising.AdsProviders
             UnityAction  _OnClicked,
             UnityAction  _OnReward,
             UnityAction  _OnClosed,
+            UnityAction _OnFailedToShow,
             Entity<bool> _ShowAds,
             bool         _Forced)
         {
             if (_Forced)
             {
-                ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed);
+                ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
                 return;
             }
             Cor.Run(Cor.WaitWhile(
@@ -100,7 +103,7 @@ namespace Common.Managers.Advertising.AdsProviders
                         return;
                     if (!_ShowAds.Value)
                         return;
-                    ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed);
+                    ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
                 }));
         }
 
@@ -108,12 +111,13 @@ namespace Common.Managers.Advertising.AdsProviders
             UnityAction  _OnShown,
             UnityAction  _OnClicked,
             UnityAction  _OnClosed,
+            UnityAction  _OnFailedToShow,
             Entity<bool> _ShowAds,
             bool         _Forced)
         {
             if (_Forced)
             {
-                ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed);
+                ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
                 return;
             }
             Cor.Run(Cor.WaitWhile(
@@ -124,7 +128,7 @@ namespace Common.Managers.Advertising.AdsProviders
                         return;
                     if (!_ShowAds.Value)
                         return;
-                    ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed);
+                    ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
                 }));
         }
 
@@ -154,11 +158,13 @@ namespace Common.Managers.Advertising.AdsProviders
             UnityAction _OnShown,
             UnityAction _OnClicked, 
             UnityAction _OnReward,
-            UnityAction _OnClosed);
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow);
         protected abstract void ShowInterstitialAdCore(
             UnityAction _OnShown, 
             UnityAction _OnClicked,
-            UnityAction _OnClosed);
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow);
         
         #endregion
     }

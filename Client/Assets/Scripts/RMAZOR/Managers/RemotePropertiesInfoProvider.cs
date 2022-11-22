@@ -60,7 +60,6 @@ namespace RMAZOR.Managers
         private const string IdFinishLevelGroupPanelGetMoneyTextVar = "fin_lev_g_pan_get_money_button_text_variant";
         private const string IdFinishLevelGroupPanelBackgroundVar   = "fin_lev_g_pan_background_variant";
         private const string IdCharacterDiedPanelBackgroundVar      = "char_died_g_pan_background_variant";
-        private const string IdExtraBordersIndices                  = "extra_borders_indices_v2";
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
         private const string IdCornerRadius                         = "corner_radius";
@@ -199,9 +198,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterDiedPanelBackgroundVar,
                     _Value => Execute(
                         _Value, _V => ViewSettings.characterDiedPanelBackgroundVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdExtraBordersIndices,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.extraBordersIndices = ToString(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextures,
                     _Value => Execute(
                         _Value, _V =>
@@ -337,7 +333,6 @@ namespace RMAZOR.Managers
                 IdFinishLevelGroupPanelGetMoneyTextVar,
                 IdFinishLevelGroupPanelBackgroundVar,
                 IdCharacterDiedPanelBackgroundVar,
-                IdExtraBordersIndices,
                 IdBackgroundTextures,
                 IdAdditionalBackgroundType,
             }

@@ -301,7 +301,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             _AdjustEnd = false;
             if (Informer.PathExist(_Position + _Direction) || !_BorderInitialized) 
                 return;
-            var dir = RmazorUtils.GetMoveDirection(_Direction, EMazeOrientation.North);
+            var dir = RmazorUtils.GetDirection(_Direction, EMazeOrientation.North);
             var (start, end) = GetAdditionalBorderPoints(dir, true, true);
             if (Informer.PathExist(_Position + _Direction + dir1)
                 || Informer.TurretExist(_Position + _Direction + dir1))

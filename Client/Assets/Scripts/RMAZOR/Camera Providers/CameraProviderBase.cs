@@ -60,8 +60,9 @@ namespace RMAZOR.Camera_Providers
 
         #region api
 
-        public Func<Bounds> GetMazeBounds     { protected get; set; }
-        public Func<float>  GetConverterScale { protected get; set; }
+        public event UnityAction<Camera> ActiveCameraChanged;
+        public Func<Bounds>              GetMazeBounds     { protected get; set; }
+        public Func<float>               GetConverterScale { protected get; set; }
 
         public Transform Follow
         {
@@ -72,7 +73,7 @@ namespace RMAZOR.Camera_Providers
                 FollowTransformIsNotNull = value.IsNotNull();
             }
         }
-        public Camera    Camera => LevelCameraInitialized ? m_LevelCamera : Camera.main;
+        public virtual Camera    Camera => LevelCameraInitialized ? m_LevelCamera : Camera.main;
 
         public void SetEffectProps<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps
         {

@@ -1,4 +1,5 @@
-﻿using Common.CameraProviders;
+﻿using Common;
+using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -35,6 +36,13 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #endregion
 
         #region api
+
+        public override void Activate(bool _Active)
+        {
+            Renderer.enabled = true;
+            var col = ColorProvider.GetColor(ColorIds.Character);
+            Material.SetColor(Color1Id, col);
+        }
 
         public override void SetTransitionValue(float _Value, bool _Appear)
         {

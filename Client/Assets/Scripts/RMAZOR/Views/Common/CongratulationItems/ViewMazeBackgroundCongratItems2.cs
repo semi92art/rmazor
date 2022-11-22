@@ -17,7 +17,7 @@ using UnityEngine;
 
 namespace RMAZOR.Views.Common.CongratulationItems
 {
-    public class ViewMazeBackgroundCongradItems2 : ViewMazeBackgroundItemsBase, IViewMazeBackgroundCongradItems
+    public class ViewMazeBackgroundCongratItems2 : ViewMazeBackgroundItemsBase, IViewMazeBackgroundCongratItems
     {
         #region nonpublic members
         
@@ -35,7 +35,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         private IPrefabSetManager PrefabSetManager { get; }
         private IAudioManager     AudioManager     { get; }
 
-        private ViewMazeBackgroundCongradItems2(
+        private ViewMazeBackgroundCongratItems2(
             IColorProvider              _ColorProvider,
             IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,

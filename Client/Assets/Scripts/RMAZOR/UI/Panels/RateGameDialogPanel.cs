@@ -37,6 +37,7 @@ namespace RMAZOR.UI.Panels
             m_TextTitle,
             m_TextMessage;
         private Animator m_StarsAnimator;
+        private bool     m_Disappeared;
 
         #endregion
 
@@ -97,7 +98,7 @@ namespace RMAZOR.UI.Panels
                 new LocalizableTextObjectInfo(m_TextMessage, ETextType.MenuUI, "rate_game_panel_text",
                     _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(rateButtonText, ETextType.MenuUI, "rate_game",
+                new LocalizableTextObjectInfo(rateButtonText, ETextType.MenuUI, "leave_feedback",
                     _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
             Managers.LocalizationManager.AddTextObject(
                 new LocalizableTextObjectInfo(laterButtonText, ETextType.MenuUI, "later",
@@ -110,10 +111,20 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             Cor.Run(Cor.Delay(
-                3f, 
+                5f, 
                 Ticker, 
-                _OnStart: () => m_ButtonNever.SetGoActive(true),
-                _OnDelay: () => m_ButtonNever.SetGoActive(true)));
+                _OnStart: () =>
+                {
+                    m_ButtonLater.interactable = false;
+                    m_ButtonNever.interactable = false;
+                },
+                _OnDelay: () =>
+                {
+                    if (m_Disappeared)
+                        return;
+                    m_ButtonLater.interactable = true;
+                    m_ButtonNever.interactable = true;
+                }));
             m_StarsAnimator.SetTrigger(AnimKeys.Anim);
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogStartAppearing();
@@ -121,6 +132,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogDisappeared()
         {
+            m_Disappeared = true;
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogDisappeared();
         }

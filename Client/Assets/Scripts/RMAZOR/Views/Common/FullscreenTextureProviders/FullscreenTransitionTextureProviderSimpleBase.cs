@@ -12,7 +12,6 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
     {
         #region nonpublic members
 
-        protected static readonly int Color1Id          = Shader.PropertyToID("_Color1");
         protected static readonly int TransitionValueId = Shader.PropertyToID("_TransitionValue");
         
         #endregion

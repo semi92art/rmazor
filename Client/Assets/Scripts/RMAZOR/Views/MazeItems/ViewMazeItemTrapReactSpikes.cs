@@ -6,6 +6,7 @@ using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
+using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
@@ -30,11 +31,14 @@ namespace RMAZOR.Views.MazeItems
         void OnTrapReact(MazeItemTrapReactEventArgs _Args);
     }
 
-    public class ViewMazeItemTrapReactSpikes : ViewMazeItemBase, IViewMazeItemTrapReact, IUpdateTick
+    public class ViewMazeItemTrapReactSpikes 
+        : ViewMazeItemBase,
+          IViewMazeItemTrapReact, 
+          IUpdateTick
     {
         #region constants
 
-        private const float StartPos  = 0.1f;
+        private const float StartPos  = 0.15f;
         private const float MiddlePos = 0.2f;
         private const float FinalPos  = 0.7f;
 
@@ -70,21 +74,23 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
 
-        private ModelSettings                 ModelSettings        { get; }
-        private IViewMazeAdditionalBackground AdditionalBackground { get; }
+        private ModelSettings                       ModelSettings                  { get; }
+        private IViewMazeAdditionalBackground       AdditionalBackground           { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemTrapReactSpikes(
-            ViewSettings                  _ViewSettings,
-            ModelSettings                 _ModelSettings,
-            IModelGame                    _Model,
-            ICoordinateConverter    _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IRendererAppearTransitioner   _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewMazeAdditionalBackground _AdditionalBackground)
+            ViewSettings                        _ViewSettings,
+            ModelSettings                       _ModelSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewMazeAdditionalBackground       _AdditionalBackground,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -96,8 +102,9 @@ namespace RMAZOR.Views.MazeItems
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            ModelSettings        = _ModelSettings;
-            AdditionalBackground = _AdditionalBackground;
+            ModelSettings                  = _ModelSettings;
+            AdditionalBackground           = _AdditionalBackground;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
         #endregion
@@ -127,7 +134,8 @@ namespace RMAZOR.Views.MazeItems
             Managers,
             ColorProvider,
             CommandsProceeder,
-            AdditionalBackground);
+            AdditionalBackground,
+            SwitchLevelStageCommandInvoker);
         
         public void UpdateTick()
         {
@@ -182,6 +190,7 @@ namespace RMAZOR.Views.MazeItems
             line.EndCaps = LineEndCap.Round;
             var trap = Object.AddComponentOnNewChild<SpriteRenderer>("Trap Sprite", out _);
             line.Color = col;
+            line.SortingOrder = GetSortingOrder();
             trap.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "views", "trap_react_spikes_sprite");
             trap.material = Managers.PrefabSetManager.InitObject<Material>(
@@ -195,6 +204,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void UpdateShape()
         {
+            
             var mask = GetMask();
             if (mask.IsNull())
             {
@@ -222,6 +232,8 @@ namespace RMAZOR.Views.MazeItems
             trapTr.localScale = Vector3.one * scale * 0.95f;
             m_Line.Thickness = 9f * 0.01f * scale;
             mask.Width = mask.Height = scale * 0.8f;
+            SetReactProgress(Props.Directions.First(), StartPos);
+            AdjustLine();
         }
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
@@ -265,40 +277,37 @@ namespace RMAZOR.Views.MazeItems
 
         private IEnumerator HandlePreReact()
         {
-            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 GameTicker,
                 0.1f,
                 StartPos,
                 MiddlePos,
-                _Progress => SetReactProgress(dir, scale, _Progress)
+                _Progress => SetReactProgress(dir, _Progress)
             );
         }
 
         private IEnumerator HandleReact()
         {
-            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 GameTicker,
                 0.02f,
                 MiddlePos,
                 FinalPos,
-                _Progress => SetReactProgress(dir, scale, _Progress)
+                _Progress => SetReactProgress(dir, _Progress)
             );
         }
 
         private IEnumerator HandlePostReact()
         {
-            float scale = CoordinateConverter.Scale;
             Vector2 dir = Props.Directions.First();
             yield return Cor.Lerp(
                 GameTicker,
                 0.05f,
                 FinalPos,
                 StartPos,
-                _Progress => SetReactProgress(dir, scale, _Progress)
+                _Progress => SetReactProgress(dir, _Progress)
             );
         }
 
@@ -314,10 +323,10 @@ namespace RMAZOR.Views.MazeItems
             return new Tuple<Vector2, Vector2>(b, c);
         }
 
-        private void SetReactProgress(Vector2 _Direction, float _Scale, float _Progress)
+        private void SetReactProgress(Vector2 _Direction, float _Progress)
         {
             m_Progress = _Progress;
-            m_Trap.transform.SetLocalPosXY(_Direction * _Scale * _Progress);
+            m_Trap.transform.SetLocalPosXY(_Direction * CoordinateConverter.Scale * _Progress);
         }
 
         private void CheckForCharacterDeath()
@@ -328,7 +337,7 @@ namespace RMAZOR.Views.MazeItems
                 return;
             if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;
-            if (m_Progress < 0.3f)
+            if (m_Progress < 0.4f)
                 return;
             var dir = Props.Directions.First();
             var pos = Props.Position;
@@ -339,14 +348,63 @@ namespace RMAZOR.Views.MazeItems
                 var charInfo = Model.Character.MovingInfo;
                 var path = RmazorUtils.GetFullPath(
                     (V2Int) charInfo.PreviousPrecisePosition, (V2Int) charInfo.PrecisePosition);
-                if (path.Contains(itemPos))
-                    CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
-                        new object[] { CoordinateConverter.ToLocalMazeItemPosition(itemPos) });
+                if (!path.Contains(itemPos)) 
+                    return;
+                var args = new Dictionary<string, object>
+                {
+                    {CommonInputCommandArg.KeyDeathPosition, 
+                        CoordinateConverter.ToLocalCharacterPosition(itemPos)}
+                };
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                    EInputCommand.KillCharacter, 
+                    true, 
+                    args);
             }
-            else if (itemPos == character.Position) 
+            else if (itemPos == character.Position)
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
+        }
+
+        private void AdjustLine()
+        {
+            var pos = Props.Position;
+            var dir = RmazorUtils.GetDirection(Props.Directions.First(), EMazeOrientation.North);
+            float lineThicknessScaled = CoordinateConverter.Scale * ViewSettings.LineThickness * 0.75f; 
+            switch (dir)
+            {
+                case EDirection.Left:
+                    if (PathExist(pos + V2Int.Down))
+                        m_Line.Start -= Vector3.down * lineThicknessScaled;
+                    if (PathExist(pos + V2Int.Up))
+                        m_Line.End -= Vector3.up * lineThicknessScaled;
+                    break;
+                case EDirection.Right:
+                    if (PathExist(pos + V2Int.Down))
+                        m_Line.End -= Vector3.down * lineThicknessScaled;
+                    if (PathExist(pos + V2Int.Up))
+                        m_Line.Start -= Vector3.up * lineThicknessScaled;
+                    break;
+                case EDirection.Down:
+                    if (PathExist(pos + V2Int.Left))
+                        m_Line.Start -= Vector3.left * lineThicknessScaled;
+                    if (PathExist(pos + V2Int.Right))
+                        m_Line.End -= Vector3.right * lineThicknessScaled;
+                    break;
+                case EDirection.Up:
+                    if (PathExist(pos + V2Int.Left))
+                        m_Line.End -= Vector3.left * lineThicknessScaled;
+                    if (PathExist(pos + V2Int.Right))
+                        m_Line.Start -= Vector3.right * lineThicknessScaled;
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(dir);
+            }
+        }
+
+        private bool PathExist(V2Int _Position)
+        {
+            return Model.PathItemsProceeder.PathProceeds.Keys.ToList().Contains(_Position);
         }
 
         #endregion

@@ -18,6 +18,8 @@ namespace RMAZOR.Helpers
         
         public bool Validate(MazeInfo _Info)
         {
+            if (_Info == null)
+                return false;
             if (!_Info.MazeItems.Any())
                 return _Info.PathItems.Any();
             return _Info.MazeItems

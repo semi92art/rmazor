@@ -15,7 +15,6 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
 using UnityEngine;
@@ -56,19 +55,21 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
         
-        private IMazeShaker MazeShaker { get; }
+        private IMazeShaker                         MazeShaker                     { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemGravityTrap(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IRendererAppearTransitioner _Transitioner,
-            IManagersGetter             _Managers,
-            IMazeShaker                 _MazeShaker,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IMazeShaker                         _MazeShaker,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -80,7 +81,8 @@ namespace RMAZOR.Views.MazeItems
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            MazeShaker = _MazeShaker;
+            MazeShaker                     = _MazeShaker;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
         #endregion
@@ -99,7 +101,8 @@ namespace RMAZOR.Views.MazeItems
             Managers,
             MazeShaker,
             ColorProvider,
-            CommandsProceeder);
+            CommandsProceeder,
+            SwitchLevelStageCommandInvoker);
 
         protected override int LinesAndJointsColorId => ColorIds.MazeItem1;
 
@@ -265,14 +268,14 @@ namespace RMAZOR.Views.MazeItems
                     m_Position);
                 if (dist + MathUtils.Epsilon > 1f)
                     return;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
             else
             {
                 var cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
                     return;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
         }
 

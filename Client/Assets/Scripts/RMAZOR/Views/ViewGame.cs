@@ -235,7 +235,7 @@ namespace RMAZOR.Views
             }
             bool PassedEnoughTime()
             {
-                return CommandsProceeder.SecondsWithoutCommand > 30f
+                return CommandsProceeder.TimeFromLastCommandInSecs > 30f
                        && Managers.AdsManager.RewardedAdReady;
             }
             if (!IsCorrectLevelStage() 
@@ -311,6 +311,7 @@ namespace RMAZOR.Views
                         proceedersToExecuteOnLevelStageChangedAfretGroups)
                     .Where(_P => _P != null).ToList(), 2);
             ColorProvider.Init();
+            CameraProvider.Init();
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();

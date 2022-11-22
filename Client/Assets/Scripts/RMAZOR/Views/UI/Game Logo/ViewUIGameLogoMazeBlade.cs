@@ -123,7 +123,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         #region nonpublic members
         
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             if (!m_OnStart || !RmazorUtils.MoveAndRotateCommands.ContainsAlt(_Command)) 
                 return;

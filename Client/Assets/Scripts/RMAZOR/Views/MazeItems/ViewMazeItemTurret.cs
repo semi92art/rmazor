@@ -35,7 +35,10 @@ namespace RMAZOR.Views.MazeItems
         void SetProjectileSortingOrder(int _Order);
     }
     
-    public class ViewMazeItemTurret : ViewMazeItemBase, IViewMazeItemTurret, IUpdateTick
+    public class ViewMazeItemTurret : 
+        ViewMazeItemBase,
+        IViewMazeItemTurret,
+        IUpdateTick
     {
         #region constants
 
@@ -63,30 +66,32 @@ namespace RMAZOR.Views.MazeItems
         
         #region inject
 
-        private IViewBackground               Background           { get; }
-        private IViewMazeAdditionalBackground AdditionalBackground { get; }
-        private IViewTurretProjectile         Projectile           { get; }
-        private IViewTurretProjectile         ProjectileFake       { get; }
-        private IViewTurretBody               TurretBody           { get; }
-        private IViewParticlesThrower         ParticlesThrower     { get; }
-        private IViewCharacter                Character            { get; }
+        private IViewBackground                     Background                     { get; }
+        private IViewMazeAdditionalBackground       AdditionalBackground           { get; }
+        private IViewTurretProjectile               Projectile                     { get; }
+        private IViewTurretProjectile               ProjectileFake                 { get; }
+        private IViewTurretBody                     TurretBody                     { get; }
+        private IViewParticlesThrower               ParticlesThrower               { get; }
+        private IViewCharacter                      Character                      { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemTurret(
-            ViewSettings                  _ViewSettings,
-            IModelGame                    _Model,
-            ICoordinateConverter          _CoordinateConverter,
-            IContainersGetter             _ContainersGetter,
-            IViewGameTicker               _GameTicker,
-            IViewBackground               _Background,
-            IRendererAppearTransitioner   _Transitioner,
-            IManagersGetter               _Managers,
-            IColorProvider                _ColorProvider,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewMazeAdditionalBackground _AdditionalBackground,
-            IViewTurretProjectile         _Projectile,
-            IViewTurretBody               _TurretBody,
-            IViewParticlesThrower         _ParticlesThrower,
-            IViewCharacter                _Character)
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IViewBackground                     _Background,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewMazeAdditionalBackground       _AdditionalBackground,
+            IViewTurretProjectile               _Projectile,
+            IViewTurretBody                     _TurretBody,
+            IViewParticlesThrower               _ParticlesThrower,
+            IViewCharacter                      _Character,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -104,6 +109,7 @@ namespace RMAZOR.Views.MazeItems
             TurretBody           = _TurretBody;
             ParticlesThrower     = _ParticlesThrower;
             Character            = _Character;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             ProjectileFake       = Projectile.Clone() as IViewTurretProjectile;
         }
         
@@ -128,7 +134,8 @@ namespace RMAZOR.Views.MazeItems
             Projectile.Clone()       as IViewTurretProjectile,
             TurretBody.Clone()       as IViewTurretBody,
             ParticlesThrower.Clone() as IViewParticlesThrower,
-            Character);
+            Character,
+            SwitchLevelStageCommandInvoker);
 
         public override bool ActivatedInSpawnPool
         {
@@ -261,7 +268,6 @@ namespace RMAZOR.Views.MazeItems
         {
             if (m_LastShotArgs == null)
                 return;
-
             void StopProjectile()
             {
                 m_ProjectileMovingLocked = true;
@@ -269,7 +275,7 @@ namespace RMAZOR.Views.MazeItems
             }
             if (Character.GetObjects().Colliders.Contains(_Collider))
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
                 StopProjectile();
                 return;
             }
@@ -385,7 +391,7 @@ namespace RMAZOR.Views.MazeItems
 
         private void EnableProjectileMasksAndSetPositions(Vector2 _Mask1Pos)
         {
-            m_ProjectileMask.enabled = true;
+            m_ProjectileMask.enabled = false;
             var maskTr = m_ProjectileMask.transform;
             var pos = CoordinateConverter.ToLocalMazeItemPosition(_Mask1Pos);
             maskTr.SetLocalPosXY(pos).SetPosZ(-0.1f);
@@ -486,7 +492,6 @@ namespace RMAZOR.Views.MazeItems
             if (!_Appear)
             {
                 m_ProjRotating = false;
-                m_ProjectileMask.enabled = false;
                 m_ProjectileMaskCollider.enabled = false;
             }
             base.OnAppearFinish(_Appear);
@@ -503,7 +508,7 @@ namespace RMAZOR.Views.MazeItems
         {
             var a = _ProjectileFinishPosition + _ProjectileDirection * 0.5f;
             a = CoordinateConverter.ToGlobalMazeItemPosition(a);
-            var projMoveDir = RmazorUtils.GetMoveDirection(_ProjectileDirection, EMazeOrientation.North);
+            var projMoveDir = RmazorUtils.GetDirection(_ProjectileDirection, EMazeOrientation.North);
             var projRealDirVec = RmazorUtils.GetDirectionVector(projMoveDir, Model.MazeRotation.Orientation);
             Vector2 throwDir = -projRealDirVec;
             if (Model.MazeRotation.Orientation == EMazeOrientation.East || Model.MazeRotation.Orientation == EMazeOrientation.West)

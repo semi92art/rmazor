@@ -20,12 +20,17 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems
 {
-    public interface IViewMazeItemShredingerBlock : IViewMazeItem, ICharacterMoveFinished
+    public interface IViewMazeItemShredingerBlock : 
+        IViewMazeItem, 
+        ICharacterMoveFinished
     {
         bool BlockClosed { get; set; }
     }
     
-    public class ViewMazeItemShredingerBlock : ViewMazeItemBase, IViewMazeItemShredingerBlock, IUpdateTick
+    public class ViewMazeItemShredingerBlock :
+        ViewMazeItemBase, 
+        IViewMazeItemShredingerBlock, 
+        IUpdateTick
     {
         #region nonpublic members
 
@@ -157,8 +162,8 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             m_ClosedBlock = Object.AddComponentOnNewChild<Rectangle>("Shredinger Block", out _)
-                .SetType(Rectangle.RectangleType.RoundedBorder)
-                .SetSortingOrder(GetSortingOrder());
+                    .SetSortingOrder(GetSortingOrder())
+                    .SetType(Rectangle.RectangleType.RoundedBorder);
             var lp = GetLineStartEndPositions();
             var lLeft    = Object.AddComponentOnNewChild<Line>("Left Line",     out _);
             var lRight   = Object.AddComponentOnNewChild<Line>("Right Line",    out _);
@@ -216,7 +221,7 @@ namespace RMAZOR.Views.MazeItems
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             float scale = CoordinateConverter.Scale;
             m_ClosedBlock.SetSize(scale * (1f + ViewSettings.LineThickness * 0.5f))
-                .SetCornerRadius(ViewSettings.CornerRadius * scale)
+                .SetCornerRadius(ViewSettings.LineThickness * scale)
                 .SetThickness(ViewSettings.LineThickness * scale);
             foreach (var corner in m_OpenedCorners)
             {

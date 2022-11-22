@@ -5,6 +5,6 @@ namespace RMAZOR.Views.UI
 {
     public interface IViewUIGetRenderers
     {
-        List<Component> GetRenderers();
+        IEnumerable<Component> GetRenderers();
     }
 }

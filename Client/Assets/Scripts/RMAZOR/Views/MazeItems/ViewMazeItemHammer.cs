@@ -68,23 +68,25 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
         
-        private IPrefabSetManager     PrefabSetManager { get; }
-        private IMazeShaker           Shaker           { get; }
-        private IViewParticlesThrower ParticlesThrower { get; }
+        private IPrefabSetManager                   PrefabSetManager               { get; }
+        private IMazeShaker                         Shaker                         { get; }
+        private IViewParticlesThrower               ParticlesThrower               { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemHammer(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            ICoordinateConverter        _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IRendererAppearTransitioner _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IPrefabSetManager           _PrefabSetManager,
-            IMazeShaker                 _Shaker,
-            IViewParticlesThrower       _ParticlesThrower) 
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IPrefabSetManager                   _PrefabSetManager,
+            IMazeShaker                         _Shaker,
+            IViewParticlesThrower               _ParticlesThrower,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
             : base(
                 _ViewSettings,
                 _Model,
@@ -96,9 +98,10 @@ namespace RMAZOR.Views.MazeItems
                 _ColorProvider, 
                 _CommandsProceeder)
         {
-            PrefabSetManager = _PrefabSetManager;
-            Shaker           = _Shaker;
-            ParticlesThrower = _ParticlesThrower;
+            PrefabSetManager               = _PrefabSetManager;
+            Shaker                         = _Shaker;
+            ParticlesThrower               = _ParticlesThrower;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -144,7 +147,8 @@ namespace RMAZOR.Views.MazeItems
                 CommandsProceeder,
                 PrefabSetManager,
                 Shaker,
-                ParticlesThrower.Clone() as IViewParticlesThrower);
+                ParticlesThrower.Clone() as IViewParticlesThrower,
+                SwitchLevelStageCommandInvoker);
         
         public Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
         
@@ -260,7 +264,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
                 break;
             }
         }

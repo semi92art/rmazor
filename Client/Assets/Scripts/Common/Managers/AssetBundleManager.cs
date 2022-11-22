@@ -183,7 +183,12 @@ namespace Common.Managers
 
         private static string GetRemotePath(string _Name)
         {
-            return string.Join("/", BundlesUri, CommonUtils.GetOsName(), _Name);
+            return string.Join(
+            "/", 
+            BundlesUri,
+            Application.version, 
+            CommonUtils.GetOsName().ToLower(),
+            _Name);
         }
 
         private static uint GetCachedHash(string _BundleName)

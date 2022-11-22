@@ -17,6 +17,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
@@ -88,21 +89,23 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
         
-        private IPrefabSetManager PrefabSetManager { get; }
-        private ICameraProvider   CameraProvider   { get; }
+        private IPrefabSetManager                   PrefabSetManager               { get; }
+        private ICameraProvider                     CameraProvider                 { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemSpear(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            ICoordinateConverter        _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IRendererAppearTransitioner _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IPrefabSetManager           _PrefabSetManager,
-            ICameraProvider             _CameraProvider) 
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IPrefabSetManager                   _PrefabSetManager,
+            ICameraProvider                     _CameraProvider,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
             : base(
                 _ViewSettings,
                 _Model,
@@ -116,6 +119,7 @@ namespace RMAZOR.Views.MazeItems
         {
             PrefabSetManager = _PrefabSetManager;
             CameraProvider   = _CameraProvider;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -138,7 +142,8 @@ namespace RMAZOR.Views.MazeItems
                 ColorProvider,
                 CommandsProceeder,
                 PrefabSetManager,
-                CameraProvider);
+                CameraProvider,
+                SwitchLevelStageCommandInvoker);
 
         public override void UpdateState(ViewMazeItemProps _Props)
         {
@@ -339,7 +344,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
                 break;
             }
         }

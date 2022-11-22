@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using Common.Managers;
 using Common.Utils;
 using RMAZOR;
@@ -57,14 +58,16 @@ namespace Editor
                 m_LevelIndex + levels, 
                 0, 
                 settings.levelsCountMain - 1);
+            var args = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeySetBackgroundFromEditor, true}
+            };
             var fakeArgs = new LevelStageArgs(
                 m_LevelIndex, 
                 ELevelStage.Loaded, 
                 ELevelStage.Unloaded, 
-                ELevelStage.ReadyToUnloadLevel)
-            {
-                Args = new [] {"set_back_editor"}
-            };
+                ELevelStage.ReadyToUnloadLevel,
+                args);
             return fakeArgs;
         }
 

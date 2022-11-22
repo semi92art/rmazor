@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: view_settings
   m_EditorClassIdentifier: 
   lineThickness: 15
-  cornerRadius: 15
+  cornerRadius: 0
   movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: -1000
@@ -25,7 +25,7 @@ MonoBehaviour:
   finishTimeGood: 5
   gravityTrapRotationSpeed: 1000
   bottomScreenOffset: 5
-  topScreenOffset: 10
+  topScreenOffset: 5
   moveSwipeThreshold: 0.1
   afterRotationEnableMoveDelay: 0.1
   levelsCountMain: 420
@@ -39,7 +39,7 @@ MonoBehaviour:
   additionalBackgroundAlpha: 0.5
   skipLevelSeconds: 10
   animatePathFill: 1
-  animatePathFillTime: 0.2
+  animatePathFillTime: 0.5
   cameraSpeed: 0.1
   pathItemCharMoveHighlightTime: 0.3
   highlightPathItem: 1
@@ -49,7 +49,7 @@ MonoBehaviour:
   finishLevelGroupPanelBackgroundVariant: 1
   characterDiedPanelBackgroundVariant: 2
   playBonusLevelPanelBackgroundVariant: 0
-  extraBordersIndices: 2,3,5
+  extraBordersIndices: 2,5
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
   showPathItems: 1

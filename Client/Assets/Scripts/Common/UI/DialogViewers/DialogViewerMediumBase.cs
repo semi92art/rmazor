@@ -95,7 +95,8 @@ namespace Common.UI.DialogViewers
                 () =>
                 {
                     _Panel.AppearingState = EAppearingState.Appeared;
-                }));
+                },
+                false));
             _Panel.AppearingState = EAppearingState.Appearing;
             if (_Panel.Animator.IsNull())
                 return;
@@ -126,7 +127,8 @@ namespace Common.UI.DialogViewers
                     {
                         canvas.enabled = false;
                     }
-                }));
+                },
+                false));
             panel.AppearingState = EAppearingState.Dissapearing;
         }
 

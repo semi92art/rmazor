@@ -29,12 +29,14 @@
             "m_Keys": [
                 "UnityNotificationAndroidRescheduleOnDeviceRestart",
                 "UnityNotificationAndroidUseCustomActivity",
-                "UnityNotificationAndroidCustomActivityString"
+                "UnityNotificationAndroidCustomActivityString",
+                "UnityNotificationAndroidScheduleExactAlarms"
             ],
             "m_Values": [
                 "False",
                 "False",
-                "com.unity3d.player.MazeBladeNotificationsActivity"
+                "com.unity3d.player.MazeBladeNotificationsActivity",
+                "0"
             ]
         },
         "DrawableResources": [

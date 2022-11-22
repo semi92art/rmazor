@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using Common;
+using Common.CameraProviders;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Ticker;
 using Common.Utils;
@@ -20,20 +22,22 @@ namespace RMAZOR
         #region nonpublic members
 
         private IEnumerator  m_TextureCoroutine;
-        private MeshRenderer m_BetweenLevelTextureRend;
         private int          m_TransitionsCount;
 
         #endregion
 
         #region inject
 
+        private ICameraProvider                      CameraProvider  { get; }
         private IViewGameTicker                      GameTicker      { get; }
         private IFullscreenTransitionTextureProvider TextureProvider { get; }
 
         private ViewFullscreenTransitioner(
+            ICameraProvider                      _CameraProvider,
             IViewGameTicker                      _GameTicker,
             IFullscreenTransitionTextureProvider _TextureProvider)
         {
+            CameraProvider  = _CameraProvider;
             GameTicker      = _GameTicker;
             TextureProvider = _TextureProvider;
         }
@@ -46,10 +50,11 @@ namespace RMAZOR
 
         public override void Init()
         {
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             TextureProvider.Init();
             base.Init();
         }
-        
+
         public void DoTextureTransition(bool _Appear, float _Duration)
         {
             m_TransitionsCount++;
@@ -61,6 +66,12 @@ namespace RMAZOR
         #endregion
 
         #region nonpublic members
+        
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            TextureProvider.Renderer.transform.SetParent(_Camera.transform);
+            TextureProvider.Renderer.transform.SetLocalPosXY(Vector2.zero);
+        }
 
         private IEnumerator DoTextureTransitionCoroutine(bool _Appear, float _Duration)
         {

@@ -74,7 +74,14 @@ namespace Editor
                 .Select(_FileName => _FileName.Replace("AssetBundles/", string.Empty))
                 .Select(_FileName => _FileName.Replace("Android", "android"))
                 .Select(_FileName => _FileName.Replace("iOS", "ios"))
-                .Select(_FileName => dInfo.Parent?.Parent?.FullName + "/bundles/mgc/" + _FileName + ".unity3d")
+                .Select(_FileName =>
+                {
+                    return string.Join(
+                        "/",
+                        dInfo.Parent?.Parent?.FullName,
+                        "/bundles/mgc/",
+                        Application.version, _FileName) + ".unity3d";
+                })
                 .ToArray();
             for (int i = 0; i < newFileNames.Length; i++)
             {

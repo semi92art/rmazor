@@ -244,8 +244,8 @@ RectTransform:
   - {fileID: 6569357321326000540}
   - {fileID: 5187484944046015551}
   - {fileID: 4431989335975199190}
-  - {fileID: 4296229436869277962}
   - {fileID: 1053124680767079053}
+  - {fileID: 4296229436869277962}
   - {fileID: 6557622376524626494}
   m_Father: {fileID: 8400591852242932427}
   m_RootOrder: 1
@@ -449,7 +449,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 4920912180045837299}
+  m_TargetGraphic: {fileID: 8556294858767843852}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -708,7 +708,7 @@ RectTransform:
   m_Children:
   - {fileID: 3491304205397180223}
   m_Father: {fileID: 4760211238608377078}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -830,7 +830,7 @@ RectTransform:
   m_Children:
   - {fileID: 3380199539838342033}
   m_Father: {fileID: 4760211238608377078}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
@@ -915,7 +915,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 921828244442480559}
+  m_TargetGraphic: {fileID: 6307432189081556193}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1257,7 +1257,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Rate
+  m_text: Leave feedback
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 605433b68313d491a8ab88bc03a41651, type: 2}
   m_sharedMaterial: {fileID: 2830636965969884548, guid: 605433b68313d491a8ab88bc03a41651,
@@ -1285,12 +1285,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
+  m_fontSize: 40
   m_fontSizeBase: 50.6
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
-  m_fontSizeMax: 60
+  m_fontSizeMax: 40
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512

@@ -168,7 +168,7 @@ namespace RMAZOR.Views.MazeItems
             Vector2 start, end;
             Vector2 left, right, down, up, zero;
             (left, right, down, up, zero) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up, Vector2.zero);
-            var diodeDir = RmazorUtils.GetMoveDirection(_Direction, EMazeOrientation.North);
+            var diodeDir = RmazorUtils.GetDirection(_Direction, EMazeOrientation.North);
             switch (diodeDir)
             {
                 case EDirection.Up:

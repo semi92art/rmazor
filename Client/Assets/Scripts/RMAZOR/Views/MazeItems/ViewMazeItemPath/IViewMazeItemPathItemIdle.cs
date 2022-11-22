@@ -100,6 +100,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         
         private void AppearCore(bool _Appear)
         {
+            if (!ViewSettings.showPathItems)
+                return;
             if (!GetProps().IsMoneyItem)
                 return;
             var appearSets = GetAppearSets(_Appear);

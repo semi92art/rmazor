@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using Common.Ticker;
 using Lean.Common;
 using RMAZOR.Models;
@@ -49,7 +50,10 @@ namespace RMAZOR.Views.InputConfigurators
                 RaiseCommand(commandKey.Value, null, forced);
         }
 
-        public override bool RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
+        public override bool RaiseCommand(
+            EInputCommand              _Key,
+            Dictionary<string, object> _Args,
+            bool                       _Forced = false)
         {
             if (_Key == EInputCommand.EnableDebug)
                 m_DoProceed = true;
@@ -105,7 +109,7 @@ namespace RMAZOR.Views.InputConfigurators
             else if (LeanInput.GetDown(KeyCode.Alpha4))
                 (_CommandKey, _Forced) = (EInputCommand.FinishLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha5))
-                (_CommandKey, _Forced) = (EInputCommand.ReadyToUnloadLevel, true);
+                (_CommandKey, _Forced) = (EInputCommand.StartUnloadingLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha6))
                 (_CommandKey, _Forced) = (EInputCommand.UnloadLevel, true);
             else if (LeanInput.GetDown(KeyCode.Alpha7))

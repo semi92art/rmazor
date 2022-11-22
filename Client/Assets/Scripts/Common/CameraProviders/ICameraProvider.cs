@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Common.CameraProviders
 {
@@ -18,6 +19,7 @@ namespace Common.CameraProviders
 
     public interface ICameraProvider : IInit
     {
+        event UnityAction<Camera> ActiveCameraChanged;  
         Func<Bounds> GetMazeBounds     { set; }
         Func<float>  GetConverterScale { set; }
         Transform    Follow            { set; }
@@ -28,5 +30,4 @@ namespace Common.CameraProviders
         void         EnableEffect(ECameraEffect          _Effect, bool _Enabled);
         void         UpdateState();
     }
-    
 }

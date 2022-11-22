@@ -60,30 +60,33 @@ namespace RMAZOR.Views.Common
 
         #region inject
 
-        private ViewSettings                        ViewSettings                { get; }
-        private IViewGameTicker                     ViewGameTicker              { get; }
-        private IModelGameTicker                    ModelGameTicker             { get; }
-        private IUITicker                           UiTicker                    { get; }
-        private IModelGame                          Model                       { get; }
-        private IManagersGetter                     Managers                    { get; }
-        private IViewCharacter                      Character                   { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder           { get; }
-        private IContainersGetter                   ContainersGetter            { get; }
-        private IMazeShaker                         MazeShaker                  { get; }
-        private IDialogPanelsSet                    DialogPanelsSet             { get; }
-        private IDialogViewersController            DialogViewersController     { get; }
-        private IViewMazeItemsGroupSet              MazeItemsGroupSet           { get; }
-        private IViewMazePathItemsGroup             PathItemsGroup              { get; }
-        private CompanyLogo                         CompanyLogo                 { get; }
-        private IViewUIGameLogo                     GameLogo                    { get; }
-        private IViewFullscreenTransitioner         FullscreenTransitioner      { get; }
-        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader        { get; }
-        private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator { get; }
-        private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer  { get; }
-        private IViewInputTouchProceeder            TouchProceeder              { get; }
-        private IMoneyCounter                       MoneyCounter                { get; }
-        private ICameraProvider                     CameraProvider              { get; }
-        private ICoordinateConverter                CoordinateConverter         { get; }
+        private ViewSettings                        ViewSettings                   { get; }
+        private IViewGameTicker                     ViewGameTicker                 { get; }
+        private IModelGameTicker                    ModelGameTicker                { get; }
+        private IUITicker                           UiTicker                       { get; }
+        private IModelGame                          Model                          { get; }
+        private IManagersGetter                     Managers                       { get; }
+        private IViewCharacter                      Character                      { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IContainersGetter                   ContainersGetter               { get; }
+        private IMazeShaker                         MazeShaker                     { get; }
+        private IDialogPanelsSet                    DialogPanelsSet                { get; }
+        private IDialogViewersController            DialogViewersController        { get; }
+        private IViewMazeItemsGroupSet              MazeItemsGroupSet              { get; }
+        private IViewMazePathItemsGroup             PathItemsGroup                 { get; }
+        private CompanyLogo                         CompanyLogo                    { get; }
+        private IViewUIGameLogo                     GameLogo                       { get; }
+        private IViewFullscreenTransitioner         FullscreenTransitioner         { get; }
+        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator    { get; }
+        private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer     { get; }
+        private IViewInputTouchProceeder            TouchProceeder                 { get; }
+        private IMoneyCounter                       MoneyCounter                   { get; }
+        private ICameraProvider                     CameraProvider                 { get; }
+        private ICoordinateConverter                CoordinateConverter            { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private ILevelsLoader                       LevelsLoader                   { get; }
+        private IViewUILevelSkipper                 LevelSkipper                   { get; }
 
         private ViewLevelStageController(
             ViewSettings                        _ViewSettings,
@@ -109,7 +112,10 @@ namespace RMAZOR.Views.Common
             IViewInputTouchProceeder            _TouchProceeder,
             IMoneyCounter                       _MoneyCounter,
             ICameraProvider                     _CameraProvider,
-            ICoordinateConverter                _CoordinateConverter)
+            ICoordinateConverter                _CoordinateConverter,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            ILevelsLoader                       _LevelsLoader,
+            IViewUILevelSkipper                 _LevelSkipper)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
@@ -133,6 +139,9 @@ namespace RMAZOR.Views.Common
             AdditionalBackgroundDrawer  = _AdditionalBackgroundDrawer;
             CameraProvider              = _CameraProvider;
             CoordinateConverter         = _CoordinateConverter;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelsLoader                = _LevelsLoader;
+            LevelSkipper                = _LevelSkipper;
             TouchProceeder              = _TouchProceeder;
             MoneyCounter                = _MoneyCounter;
         }
@@ -146,11 +155,7 @@ namespace RMAZOR.Views.Common
             MoneyCounter.Init();
             TouchProceeder.Tap += OnTapScreenAction;
             CameraProvider.Init();
-            Cor.Run(Cor.WaitNextFrame(() =>
-            {
-            CameraEffectsCustomAnimator.Init();
-                
-            }));
+            Cor.Run(Cor.WaitNextFrame(CameraEffectsCustomAnimator.Init));
             CommandsProceeder.Command += OnCommand;
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
@@ -171,7 +176,7 @@ namespace RMAZOR.Views.Common
         public void OnPathCompleted(V2Int _LastPath)
         {
             if (CommonData.Release)
-                Model.LevelStaging.FinishLevel();
+                Model.LevelStaging.FinishLevel(Model.LevelStaging.Arguments);
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -200,23 +205,35 @@ namespace RMAZOR.Views.Common
                 return;
             var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
             var cp = dv.CurrentPanel;
-            if (!(cp is IFinishLevelGroupDialogPanel))
-                CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
+            if (cp is IFinishLevelGroupDialogPanel)
+                return;
+            if (cp is IPlayBonusLevelDialogPanel)
+                return;
+            // if (LevelSkipper.LevelSkipped)
+            //     return;
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartUnloadingLevel, false);
         }
 
         private void OnBetweenLevelTransitionFinished(bool _Appear)
         {
-            if (!_Appear)
-                CommandsProceeder.RaiseCommand(EInputCommand.ReadyToStartLevel, null, true);
+            if (_Appear)
+                return;
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.ReadyToStartLevel, true);
         }
 
-        private void OnCommand(EInputCommand _Key, object[] _Args)
+        private void OnCommand(EInputCommand _Key, Dictionary<string, object> _Args)
         {
-            if (_Key != EInputCommand.ReadyToUnloadLevel)
+            if (_Key != EInputCommand.StartUnloadingLevel)
                 return;
             if (_Args == null || !_Args.Any())
                 return;
-            if(_Args[0].ToString() == CommonInputCommandArgs.LoadFirstLevelFromGroupArg)
+            var doLoadFirstLevelInGroup =
+                _Args.GetSafe(CommonInputCommandArg.KeyLoadFirstLevelInGroup, out bool exist);
+            if (!exist)
+                return;
+            if ((bool)doLoadFirstLevelInGroup)
                 m_NextLevelMustBeFirstInGroup = true;
         }
 
@@ -298,11 +315,19 @@ namespace RMAZOR.Views.Common
                                        $"_Value: {savedGameEntity.Value}");
                         return;
                     }
+                    long levelIndex = _Args.LevelIndex;
+                    string nextLevelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+                    bool nextLevelTypeIsBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                    if (nextLevelTypeIsBonus)
+                    {
+                        long bonusLevelIndex = Model.LevelStaging.LevelIndex;
+                        levelIndex = RmazorUtils.GetFirstLevelInGroup((int) bonusLevelIndex + 1 + 1);
+                    }
                     var newSavedGame = new SavedGame
                     {
                         FileName = CommonData.SavedGameFileName,
                         Money = savedGame.Money,
-                        Level = _Args.LevelIndex,
+                        Level = levelIndex,
                         Args = _Args.Args
                     };
                     Managers.ScoreManager.SaveGameProgress(
@@ -331,9 +356,10 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
+            
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
-            CheckForAllLevelsPassed(_Args.LevelIndex);
-            CheckForLevelGroupFinished(_Args.LevelIndex);
+            CheckForAllLevelsPassed(_Args);
+            CheckForLevelGroupOrBonusLevelFinished(_Args);
         }
         
         private void OnReadyToUnloadLevel(
@@ -358,7 +384,8 @@ namespace RMAZOR.Views.Common
                 },
                 () =>
                 {
-                    CommandsProceeder.RaiseCommand(EInputCommand.UnloadLevel, _Args.Args, true);
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                        EInputCommand.UnloadLevel, true);
                 }));
             }
             BetweenLevelAdLoader.TryShowAd(
@@ -407,14 +434,40 @@ namespace RMAZOR.Views.Common
             if (SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed))
             {
                 // TODO сделать отдельное сообщение на окончание всех уровней
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, new object[] { 0 }, true);
+                var args = new Dictionary<string, object>
+                {
+                    {CommonInputCommandArg.KeyLevelIndex, 0}
+                };
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                    EInputCommand.LoadLevelByIndex, 
+                    false,
+                    args);
             }
             else if (m_NextLevelMustBeFirstInGroup)
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadFirstLevelFromCurrentGroup, _Args.Args, true);
-            else if (_Args.Args != null && _Args.Args.Contains("bonus"))
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, _Args.Args, true);
-            else if (CommonData.LoadNextLevelAutomatically)
-                CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, _Args.Args, true);
+            {
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                    EInputCommand.LoadFirstLevelFromCurrentGroup,
+                    true);
+            }
+            else
+            {
+                string nextLevelType = (string)_Args.Args.GetSafe(
+                    CommonInputCommandArg.KeyNextLevelType, out _);
+                if (nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus
+                || nextLevelType == CommonInputCommandArg.ParameterLevelTypeMain)
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                        EInputCommand.LoadLevelByIndex,
+                        true);
+                }
+                else if (CommonData.LoadNextLevelAutomatically)
+                {
+                    CommandsProceeder.RaiseCommand(
+                        EInputCommand.LoadNextLevel,
+                        _Args.Args, 
+                        true);
+                }
+            }
         }
 
         private void OnCharacterKilled(
@@ -434,40 +487,62 @@ namespace RMAZOR.Views.Common
                         _Info =>
                             _Info.CurrentPosition == Model.PathItemsProceeder.PathProceeds.First().Key))
                     {
-                        CommandsProceeder.RaiseCommand(
-                            EInputCommand.ReadyToUnloadLevel,
-                            new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
-                            true);
+                        var args = new Dictionary<string, object>
+                        {
+                            {CommonInputCommandArg.KeyLoadFirstLevelInGroup, true}
+                        };
+                        SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                            EInputCommand.StartUnloadingLevel, 
+                            true,
+                            args);
                     }
                     else
                     {
                         var panel = DialogPanelsSet.GetPanel<ICharacterDiedDialogPanel>();
                         var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
-                        CommandsProceeder.RaiseCommand(EInputCommand.PauseLevel, null, true);
+                        SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
                         dv.Show(panel, 3f);
                     }
                 });
         }
         
-        private void CheckForAllLevelsPassed(long _LevelIndex)
+        private void CheckForAllLevelsPassed(LevelStageArgs _Args)
         {
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
-            if (!allLevelsPassed && _LevelIndex + 1 >= ViewSettings.levelsCountMain)
+            if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
         }
 
-        private void CheckForLevelGroupFinished(long _LevelIndex)
+        private void CheckForLevelGroupOrBonusLevelFinished(LevelStageArgs _Args)
         {
-            if (!RmazorUtils.IsLastLevelInGroup(_LevelIndex))
-                return;
-            // CommandsProceeder.RaiseCommand(EInputCommand.PlayBonusLevelPanel, null, true);
-
-            BetweenLevelAdLoader.ShowAd = false;
-            if (MoneyCounter.CurrentLevelGroupMoney == 0)
-                return;
-            var finishLevelsGroupPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
-            var dv = DialogViewersController.GetViewer(finishLevelsGroupPanel.DialogViewerType);
-            dv.Show(finishLevelsGroupPanel);
+            string currentLevelType = (string) _Args.Args.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (_Args.Args != null && currentLevelIsBonus)
+            {
+                CommandsProceeder.RaiseCommand(
+                    EInputCommand.FinishLevelGroupPanel,
+                    _Args.Args, 
+                    true);
+            }
+            else if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) 
+                     && _Args.Args != null 
+                     && !currentLevelIsBonus)
+            {
+                int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex) - 1;
+                var args = new Dictionary<string, object>
+                {
+                    {CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus}
+                };
+                int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, args);
+                var inputCommand = nextBonusLevelIndexToLoad < bonusLevelsCount
+                    ? EInputCommand.PlayBonusLevelPanel
+                    : EInputCommand.FinishLevelGroupPanel;
+                CommandsProceeder.RaiseCommand(
+                    inputCommand,
+                    _Args.Args, 
+                    true);
+            }
         }
 
         private void ProceedSounds(LevelStageArgs _Args)

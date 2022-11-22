@@ -46,9 +46,6 @@ namespace RMAZOR.Views.Common
 #if UNITY_EDITOR
             CommonDataRmazor.CameraEffectsCustomAnimator = this;
 #endif
-            CameraProvider.EnableEffect(
-                ECameraEffect.Bloom, 
-                Application.platform == RuntimePlatform.IPhonePlayer);
             base.Init();
         }
 
@@ -111,7 +108,7 @@ namespace RMAZOR.Views.Common
                 return;
             var backgroundColorArgs = BackgroundTextureController.GetBackgroundColorArgs();
             var props = backgroundColorArgs.BloomPropsArgs.ToBloomProps(out bool enableBloom);
-            enableBloom &= Application.platform == RuntimePlatform.IPhonePlayer; // на андройде блум тормозит
+            // enableBloom &= Application.platform == RuntimePlatform.IPhonePlayer; // на андройде блум тормозит
             CameraProvider.EnableEffect(ECameraEffect.Bloom, enableBloom);
             if (!enableBloom)
                 return;

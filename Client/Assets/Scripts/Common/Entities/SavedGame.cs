@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Common.Entities
 {
@@ -11,8 +12,8 @@ namespace Common.Entities
     [Serializable]
     public class SavedGame : FileNameArgs
     {
-        public long     Level { get; set; }
-        public long     Money { get; set; }
-        public object[] Args  { get; set; }
+        public long                       Level { get; set; }
+        public long                       Money { get; set; }
+        public Dictionary<string, object> Args  { get; set; }
     }
 }

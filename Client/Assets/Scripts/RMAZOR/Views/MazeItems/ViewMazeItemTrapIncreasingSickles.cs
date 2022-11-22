@@ -14,6 +14,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -27,7 +28,10 @@ namespace RMAZOR.Views.MazeItems
         void OnIncreasing(MazeItemTrapIncreasingEventArgs _Args);
     }
     
-    public class ViewMazeItemTrapIncreasing : ViewMazeItemBase, IViewMazeItemTrapIncreasing, IUpdateTick
+    public class ViewMazeItemTrapIncreasingSickles 
+        : ViewMazeItemBase,
+          IViewMazeItemTrapIncreasing,
+          IUpdateTick
     {
         #region nonpublic members
 
@@ -43,31 +47,47 @@ namespace RMAZOR.Views.MazeItems
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         
-        private          Animator             m_Animator;
-        private          bool?                m_TrapOpened;
-        private          bool                 m_ReadyToKill;
-        private          AnimationTriggerer   m_Triggerer;
-        private          List<Vector2>        m_DeathZone;
-        private          bool                 m_IsRotatingSoundPlaying;
-        private          int                  m_LevelsLoadCount;
         private readonly List<Line>           m_BladeContainers = new List<Line>();
         private readonly List<SpriteRenderer> m_Blades          = new List<SpriteRenderer>();
-        private          Disc                 m_Center, m_Center2;
+        
+        private Animator           m_Animator;
+        private AnimationTriggerer m_Triggerer;
+        private List<Vector2>      m_DeathZone;
+        
+        private Disc               
+            m_Center,
+            m_Center2;
+        private Rectangle
+            m_Head,
+            // m_HeadBorder,
+            m_Eye1Idle,
+            m_Eye2Idle;
+        private Triangle
+            m_Eye1Angry,
+            m_Eye2Angry;
+        private Line m_Mouth;
+
+        private bool  m_IsRotatingSoundPlaying;
+        private bool? m_TrapOpened;
+        private bool  m_ReadyToKill;
 
         #endregion
 
         #region inject
+        
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
-        private ViewMazeItemTrapIncreasing(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            ICoordinateConverter  _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IRendererAppearTransitioner _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+        private ViewMazeItemTrapIncreasingSickles(
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _ViewSettings,
                 _Model,
@@ -77,18 +97,21 @@ namespace RMAZOR.Views.MazeItems
                 _Transitioner,
                 _Managers,
                 _ColorProvider,
-                _CommandsProceeder) { }
+                _CommandsProceeder)
+        {
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+        }
 
         #endregion
         
         #region api
         
-        public override Component[] Renderers => new Component[]{m_Center, m_Center2}
+        public override Component[] Renderers => new Component[]{m_Center, m_Center2, m_Head}
             .Concat(m_Blades)
             .Concat(m_BladeContainers)
             .ToArray();
         
-        public override object Clone() => new ViewMazeItemTrapIncreasing(
+        public override object Clone() => new ViewMazeItemTrapIncreasingSickles(
             ViewSettings,
             Model,
             CoordinateConverter, 
@@ -97,7 +120,8 @@ namespace RMAZOR.Views.MazeItems
             Transitioner,
             Managers,
             ColorProvider,
-            CommandsProceeder);
+            CommandsProceeder,
+            SwitchLevelStageCommandInvoker);
 
         public override bool ActivatedInSpawnPool
         {
@@ -115,9 +139,6 @@ namespace RMAZOR.Views.MazeItems
             base.OnLevelStageChanged(_Args);
             switch (_Args.LevelStage)
             {
-                case ELevelStage.Loaded:
-                    m_LevelsLoadCount++;
-                    break;
                 case ELevelStage.Finished when m_TrapOpened.HasValue && m_TrapOpened.Value:
                     CloseTrap();
                     break;
@@ -150,40 +171,63 @@ namespace RMAZOR.Views.MazeItems
         
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.MazeItem1)
-                return;
-            m_Center.Color = _Color;
-            m_Center2.Color = _Color;
-            foreach (var item in m_Blades)
-                item.color = _Color;
-            foreach (var item in m_BladeContainers)
-                item.Color = _Color.SetA(0.5f);
+            switch (_ColorId)
+            {
+                case ColorIds.Background1:
+                    // m_HeadBorder.SetColor(_Color);
+                    m_Eye1Idle  .SetColor(_Color);
+                    m_Eye2Idle  .SetColor(_Color);
+                    m_Eye1Angry .SetColor(_Color);
+                    m_Eye2Angry .SetColor(_Color);
+                    m_Mouth     .SetColor(_Color);
+                    break;
+                case ColorIds.MazeItem1:
+                    m_Center .SetColor(_Color);
+                    m_Center2.SetColor(_Color);
+                    m_Head   .SetColor(_Color);
+                    foreach (var item in m_Blades)
+                        item.color  = _Color;
+                    foreach (var item in m_BladeContainers)
+                        item.Color  = _Color.SetA(0.5f);
+                    break;
+            }
+
         }
 
         protected override void InitShape()
         {
             var prefab = Managers.PrefabSetManager.InitPrefab(
-                Object.transform, "views", "trap_increasing");
+                Object.transform, "views", "trap_increasing_2");
             prefab.transform.SetLocalPosXY(Vector2.zero);
-            m_Animator = prefab.GetCompItem<Animator>("animator");
-            m_Center = prefab.GetCompItem<Disc>("center");
-            m_Center2 = prefab.GetCompItem<Disc>("center_2");
-            m_Triggerer = prefab.GetCompItem<AnimationTriggerer>("triggerer");
-            m_Triggerer.Trigger1 += OnTrapOpeningStart;
-            m_Triggerer.Trigger2 += OnTrapOpeningFinish;
-            m_Triggerer.Trigger3 += OnTrapClosingStart;
-            m_Triggerer.Trigger4 += OnTrapClosingFinish;
-            m_Triggerer.Trigger5 += OnTrapRotatingStart;
+            m_Animator   = prefab.GetCompItem<Animator>("animator");
+            m_Triggerer  = prefab.GetCompItem<AnimationTriggerer>("triggerer");
+            m_Center     = prefab.GetCompItem<Disc>("center");
+            m_Center2    = prefab.GetCompItem<Disc>("center_2");
+            m_Head       = prefab.GetCompItem<Rectangle>("head");
+            // m_HeadBorder = prefab.GetCompItem<Rectangle>("head_border");
+            m_Eye1Idle   = prefab.GetCompItem<Rectangle>("eye_1_idle");
+            m_Eye2Idle   = prefab.GetCompItem<Rectangle>("eye_2_idle");
+            m_Eye1Angry  = prefab.GetCompItem<Triangle>("eye_1_angry");
+            m_Eye2Angry  = prefab.GetCompItem<Triangle>("eye_2_angry");
+            m_Mouth      = prefab.GetCompItem<Line>("mouth");
+            int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
+            m_Center    .SetSortingOrder(sortingOrder);
+            m_Center2   .SetSortingOrder(sortingOrder);
+            m_Head      .SetSortingOrder(sortingOrder + 1);
+            // m_HeadBorder.SetSortingOrder(sortingOrder + 2);
+            m_Eye1Idle  .SetSortingOrder(sortingOrder + 2);
+            m_Eye2Idle  .SetSortingOrder(sortingOrder + 2);
+            m_Eye1Angry .SetSortingOrder(sortingOrder + 2);
+            m_Eye2Angry .SetSortingOrder(sortingOrder + 2);
+            m_Mouth.SetSortingOrder(sortingOrder + 2);
             for (int i = 1; i <= 4; i++)
             {
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
                 m_Blades.Add(prefab.GetCompItem<SpriteRenderer>($"blade_{i}"));
             }
-            int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
-            m_Center.SortingOrder = m_Center2.SortingOrder = sortingOrder;
             foreach (var bladeContainer in m_BladeContainers)
             {
-                bladeContainer.SetSortingOrder(sortingOrder - 1)
+                bladeContainer.SetSortingOrder(sortingOrder)
                     .SetThickness(0.07f)
                     .SetEndCaps(LineEndCap.Round)
                     .enabled = false;
@@ -193,12 +237,17 @@ namespace RMAZOR.Views.MazeItems
                 blade.sortingOrder = sortingOrder;
                 blade.enabled = false;
             }
+            m_Triggerer.Trigger1 += OnTrapOpeningStart;
+            m_Triggerer.Trigger2 += OnTrapOpeningFinish;
+            m_Triggerer.Trigger3 += OnTrapClosingStart;
+            m_Triggerer.Trigger4 += OnTrapClosingFinish;
+            m_Triggerer.Trigger5 += OnTrapRotatingStart;
         }
 
         protected override void UpdateShape()
         {
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
-            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale;
+            Object.transform.localScale = Vector3.one * CoordinateConverter.Scale * 1.3f;
             m_DeathZone = new List<V2Int>
             {
                 Props.Position + V2Int.Down,
@@ -310,21 +359,29 @@ namespace RMAZOR.Views.MazeItems
                 death = true;
                 break;
             }
-            if (death)
+            if (!death) 
+                return;
+            var args = new Dictionary<string, object>
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
-                    new object[] { CoordinateConverter.ToLocalCharacterPosition(cPos) });
-            }
+                {CommonInputCommandArg.KeyDeathPosition, 
+                    CoordinateConverter.ToLocalCharacterPosition(cPos)}
+            };
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.KillCharacter, 
+                true,
+                args);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var col = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var mazeItem1Col = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var background1Col = ColorProvider.GetColor(ColorIds.Background1);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new Component[] { m_Center, m_Center2 }, () => col}, 
-                {m_Blades, () => col}, 
-                {m_BladeContainers, () => col.SetA(0.5f)}
+                {new Component[] { m_Center, m_Center2, m_Head }, () => mazeItem1Col}, 
+                {new Component[] { m_Center2, /*m_HeadBorder,*/ m_Eye1Idle, m_Eye2Idle, m_Eye1Angry, m_Eye2Angry, m_Mouth }, () => background1Col}, 
+                {m_Blades, () => mazeItem1Col}, 
+                {m_BladeContainers, () => mazeItem1Col.SetA(0.5f)}
             };
         }
 

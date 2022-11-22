@@ -50,17 +50,18 @@ namespace RMAZOR.Views.Characters
         private static int AnimKeyBump         => AnimKeys.Anim2;
         private static int AnimKeyStartJumping => AnimKeys.Anim3;
 
-        private EMazeOrientation   m_LastMazeOrientation;
-        private EDirection m_PrevHorDir = EDirection.Right;
-        private GameObject         m_Head;
-        private GameObject         m_Border;
-        private Animator           m_Animator;
-        private CircleCollider2D   m_HeadCollider;
-        private Rectangle          m_HeadShape, m_BorderShape;
-        private Rectangle          m_Eye1Shape, m_Eye2Shape;
-        private bool               m_Activated;
-        private bool               m_HorizontalScaleInverse;
-        private bool               m_VerticalScaleInverse;
+        private EMazeOrientation m_LastMazeOrientation;
+        private EDirection       m_PrevHorDir = EDirection.Right;
+        private GameObject       m_Head;
+        private GameObject       m_Border;
+        private Animator         m_Animator;
+        private CircleCollider2D m_HeadCollider;
+        private Rectangle        m_HeadShape,  m_BorderShape;
+        private Rectangle        m_Eye1Shape,  m_Eye2Shape;
+        private Line             m_MouthLine1, m_MouthLine2;
+        private bool             m_Activated;
+        private bool             m_HorizontalScaleInverse;
+        private bool             m_VerticalScaleInverse;
 
         #endregion
 
@@ -188,7 +189,14 @@ namespace RMAZOR.Views.Characters
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {new Component[] {m_HeadShape}, () => charCol},
-                    {new Component[] {m_BorderShape, m_Eye1Shape, m_Eye2Shape}, () => charCol2},
+                    {new Component[]
+                    {
+                        m_BorderShape, 
+                        m_Eye1Shape,
+                        m_Eye2Shape, 
+                        m_MouthLine1,
+                        m_MouthLine2
+                    }, () => charCol2},
                 },
                 ViewSettings.betweenLevelTransitionTime,
                 () =>
@@ -212,6 +220,8 @@ namespace RMAZOR.Views.Characters
                     m_BorderShape.SetColor(_Color);
                     m_Eye1Shape  .SetColor(_Color);
                     m_Eye2Shape  .SetColor(_Color);
+                    m_MouthLine1 .SetColor(_Color);
+                    m_MouthLine1 .SetColor(_Color);
                     break;
             }
         }
@@ -233,6 +243,8 @@ namespace RMAZOR.Views.Characters
                 .SetSortingOrder(SortingOrders.Character);
             m_Eye1Shape         = go.GetCompItem<Rectangle>("eye_1").SetSortingOrder(SortingOrders.Character + 1);
             m_Eye2Shape         = go.GetCompItem<Rectangle>("eye_2").SetSortingOrder(SortingOrders.Character + 1);
+            m_MouthLine1        = go.GetCompItem<Line>("mouth_line_1").SetSortingOrder(SortingOrders.Character + 1);
+            m_MouthLine2        = go.GetCompItem<Line>("mouth_line_2").SetSortingOrder(SortingOrders.Character + 1);
             m_BorderShape       = go.GetCompItem<Rectangle>("border").SetSortingOrder(SortingOrders.Character - 1);
             m_HeadCollider.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Gamma);
             m_HeadShape.enabled = m_Eye1Shape.enabled = m_Eye2Shape.enabled = false;
@@ -324,10 +336,12 @@ namespace RMAZOR.Views.Characters
 
         private void ActivateShapes(bool _Active)
         {
-            m_HeadShape.enabled   = _Active;
-            m_BorderShape.enabled = _Active;
-            m_Eye1Shape.enabled   = _Active;
-            m_Eye2Shape.enabled   = _Active;
+            m_HeadShape.enabled    = _Active;
+            m_BorderShape.enabled  = _Active;
+            m_Eye1Shape.enabled    = _Active;
+            m_Eye2Shape.enabled    = _Active;
+            m_MouthLine1.enabled   = _Active;
+            m_MouthLine2.enabled   = _Active;
         }
         
         private float GetMazeAngleByCurrentOrientation(EMazeOrientation? _Orientation)

@@ -6,7 +6,11 @@ namespace Common.Managers.Advertising.AdBlocks
 {
     public interface IInterstitialAdBase : IAdBase
     {
-        void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed);
+        void ShowAd(
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnClosed, 
+            UnityAction _OnFailedToShow);
     }
     
     public abstract class InterstitialAdBase : AdBase, IInterstitialAdBase
@@ -16,6 +20,10 @@ namespace Common.Managers.Advertising.AdBlocks
             ICommonTicker      _CommonTicker) 
             : base(_GlobalGameSettings, _CommonTicker) { }
 
-        public abstract void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed);
+        public abstract void ShowAd(
+            UnityAction _OnShown, 
+            UnityAction _OnClicked, 
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow);
     }
 }

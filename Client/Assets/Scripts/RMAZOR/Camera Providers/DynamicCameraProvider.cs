@@ -4,6 +4,8 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Ticker;
 using Common.Utils;
+using RMAZOR.Models;
+using RMAZOR.Views;
 using UnityEngine;
 
 namespace RMAZOR.Camera_Providers
@@ -13,7 +15,8 @@ namespace RMAZOR.Camera_Providers
     public class DynamicCameraProvider :
         CameraProviderBase,
         IDynamicCameraProvider,
-        IFixedUpdateTick
+        IFixedUpdateTick,
+        IOnLevelStageChanged
     {
         #region constants
 
@@ -34,15 +37,18 @@ namespace RMAZOR.Camera_Providers
         
         #region inject
 
-        private ViewSettings    ViewSettings   { get; }
+        private IModelGame   Model        { get; }
+        private ViewSettings ViewSettings { get; }
 
         protected DynamicCameraProvider(
+            IModelGame        _Model,
             IPrefabSetManager _PrefabSetManager,
             ViewSettings      _ViewSettings,
             IViewGameTicker   _ViewGameTicker) 
             : base(_PrefabSetManager, _ViewGameTicker)
         {
-            ViewSettings   = _ViewSettings;
+            Model        = _Model;
+            ViewSettings = _ViewSettings;
         }
 
         #endregion
@@ -54,13 +60,19 @@ namespace RMAZOR.Camera_Providers
             if (Initialized)
                 return;
             ViewGameTicker.Register(this);
-            CommonDataRmazor.LastMazeSizeChanged += OnLastMazeSizeChanged;
             base.Init();
         }
 
         public void FixedUpdateTick()
         {
             CameraFollow();
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            if (_Args.LevelStage != ELevelStage.Loaded || _Args.PreviousStage == ELevelStage.Paused)
+                return;
+            m_EnableFollow = RmazorUtils.IsBigMaze(Model.Data.Info.Size);
         }
 
         #endregion
@@ -69,7 +81,7 @@ namespace RMAZOR.Camera_Providers
         
         private void OnLastMazeSizeChanged(V2Int _Size)
         {
-            m_EnableFollow = RmazorUtils.IsBigMaze(_Size);
+            
         }
 
         private void CameraFollow()

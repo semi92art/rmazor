@@ -42,8 +42,8 @@ namespace RMAZOR.Views.MazeItems.Additional
         private ViewMazeItemProps   m_Props;
         private GameObject          m_Turret;
         private SpriteRenderer      m_MainRenderer;
-        private Rigidbody2D         m_Rb;
-        private CircleCollider2D    m_Coll;
+        private Rigidbody2D         m_Rigidbody;
+        private CircleCollider2D    m_Collider;
         private bool                m_Fake;
         private bool                m_Activated;
         private CollisionDetector2D m_CollisionDetector2D;
@@ -61,13 +61,13 @@ namespace RMAZOR.Views.MazeItems.Additional
         private IViewTurretProjectileTailFake TailFake         { get; }
 
         private ViewTurretProjectileShuriken(
-            ViewSettings                _ViewSettings,
-            IViewTurretProjectileTail   _TailReal,
+            ViewSettings                  _ViewSettings,
+            IViewTurretProjectileTail     _TailReal,
             IViewTurretProjectileTailFake _TailFake,
-            IContainersGetter           _ContainersGetter,
-            IPrefabSetManager           _PrefabSetManager,
-            IColorProvider              _ColorProvider,
-            IRendererAppearTransitioner _Transitioner)
+            IContainersGetter             _ContainersGetter,
+            IPrefabSetManager             _PrefabSetManager,
+            IColorProvider                _ColorProvider,
+            IRendererAppearTransitioner   _Transitioner)
         {
             ViewSettings     = _ViewSettings;
             TailReal         = _TailReal;
@@ -91,9 +91,9 @@ namespace RMAZOR.Views.MazeItems.Additional
                 m_MainRenderer.enabled = value;
                 if (m_Fake)
                     return;
-                m_Coll.enabled         = value;
-                if (value) m_Rb.WakeUp();
-                else m_Rb.Sleep();
+                m_Collider.enabled     = value;
+                if (value) m_Rigidbody.WakeUp();
+                else       m_Rigidbody.Sleep();
             }
         }
 
@@ -140,7 +140,7 @@ namespace RMAZOR.Views.MazeItems.Additional
 
         public void SetVelocity(Vector2 _Velocity)
         {
-            m_Rb.velocity = _Velocity;
+            m_Rigidbody.velocity = _Velocity;
         }
 
         public void SetPosition(Vector2 _Position)
@@ -202,25 +202,26 @@ namespace RMAZOR.Views.MazeItems.Additional
             var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
             m_ProjectileObj =  PrefabSetManager.InitPrefab(
                 projParent, "views", "turret_projectile");
-            m_ProjectileObj.name                = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
-            m_Rb                             = m_ProjectileObj.GetCompItem<Rigidbody2D>("rigidbody");
-            m_Coll                           = m_ProjectileObj.GetCompItem<CircleCollider2D>("collider");
-            m_CollisionDetector2D            = m_ProjectileObj.GetCompItem<CollisionDetector2D>("collider");
-            m_MainRenderer                   = m_ProjectileObj.GetCompItem<SpriteRenderer>("projectile");
-            var borderRenderer                 = m_ProjectileObj.GetCompItem<SpriteRenderer>("projectile_border");
-            borderRenderer.enabled = false;
-            m_MainRenderer.maskInteraction   = SpriteMaskInteraction.VisibleOutsideMask;
-            m_MainRenderer.color             = ColorProvider.GetColor(ColorIds.MazeItem1);
-            m_MainRenderer.maskInteraction   = SpriteMaskInteraction.None;
-            m_Coll.gameObject.layer          = LayerMask.NameToLayer(LayerNamesCommon.Psi);
+            m_ProjectileObj.name  = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
+            m_Rigidbody           = m_ProjectileObj.GetCompItem<Rigidbody2D>("rigidbody");
+            m_Collider            = m_ProjectileObj.GetCompItem<CircleCollider2D>("collider");
+            m_CollisionDetector2D = m_ProjectileObj.GetCompItem<CollisionDetector2D>("collider");
+            m_MainRenderer        = m_ProjectileObj.GetCompItem<SpriteRenderer>("projectile");
+            var borderRenderer    = m_ProjectileObj.GetCompItem<SpriteRenderer>("projectile_border");
+            m_MainRenderer.maskInteraction = SpriteMaskInteraction.VisibleOutsideMask;
+            m_MainRenderer.color           = ColorProvider.GetColor(ColorIds.MazeItem1);
+            m_MainRenderer.maskInteraction = SpriteMaskInteraction.None;
+            m_Collider.gameObject.layer    = LayerMask.NameToLayer(LayerNamesCommon.Psi);
             m_CollisionDetector2D.OnTriggerEnter += OnColliderTriggerEnter;
-            if (!(m_Fake = _Fake))
+            borderRenderer.enabled        = false;
+            m_Collider.enabled            = false;
+            m_CollisionDetector2D.enabled = false;
+            m_Fake = _Fake;
+            if (!_Fake)
                 return;
-            m_Rb.DestroySafe();
-            m_Coll.DestroySafe();
+            m_Rigidbody          .DestroySafe();
+            m_Collider           .DestroySafe();
             m_CollisionDetector2D.DestroySafe();
-            // m_Coll.enabled = false;
-            // m_CollisionDetector2D.enabled = false;
         }
 
         private void OnColliderTriggerEnter(Collider2D _Collider)

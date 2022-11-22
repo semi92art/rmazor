@@ -1,33 +1,58 @@
 ﻿using System;
 using Common.CameraProviders;
-using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
+using Common.Ticker;
+using Lean.Common;
+using RMAZOR.Models;
+using RMAZOR.Views;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace RMAZOR.Camera_Providers
 {
-    public class CameraProviderRmazor : InitBase, ICameraProvider
+    public class CameraProviderRmazor : InitBase, ICameraProvider, IOnLevelStageChanged, IUpdateTick
     {
         #region nonpublic members
         
-        private ICameraProvider CurrentProvider =>
-            RmazorUtils.IsBigMaze(CommonDataRmazor.LastMazeSize) ? 
-                (ICameraProvider) DynamicCameraProvider 
-                : StaticCameraProvider;
+        private ICameraProvider CurrentProvider
+        {
+            get
+            {
+                if (Model.Data.Info == null)
+                {
+                    if (StaticCameraProvider.Camera.IsNull())
+                        return CameraProviderFake;
+                    return StaticCameraProvider;
+                }
+                return RmazorUtils.IsBigMaze(Model.Data.Info.Size)
+                    ? (ICameraProvider) DynamicCameraProvider
+                    : StaticCameraProvider;
+            }
+        }
 
         #endregion
 
         #region inject
 
+        private IModelGame             Model                 { get; }
         private IStaticCameraProvider  StaticCameraProvider  { get; }
         private IDynamicCameraProvider DynamicCameraProvider { get; }
+        private ICameraProviderFake    CameraProviderFake    { get; }
+        private IViewGameTicker        Ticker                { get; }
 
         public CameraProviderRmazor(
+            IModelGame             _Model,
             IStaticCameraProvider  _StaticCameraProvider,
-            IDynamicCameraProvider _DynamicCameraProvider)
+            IDynamicCameraProvider _DynamicCameraProvider,
+            ICameraProviderFake    _CameraProviderFake,
+            IViewGameTicker _Ticker)
         {
+            Model                 = _Model;
             StaticCameraProvider  = _StaticCameraProvider;
             DynamicCameraProvider = _DynamicCameraProvider;
+            CameraProviderFake    = _CameraProviderFake;
+            Ticker = _Ticker;
         }
 
         #endregion
@@ -38,11 +63,13 @@ namespace RMAZOR.Camera_Providers
         {
             if (Initialized)
                 return;
-            CommonDataRmazor.LastMazeSizeChanged += OnLastMazeSizeChanged;
             StaticCameraProvider.Init();
             DynamicCameraProvider.Init();
+            Ticker.Register(this);
             base.Init();
         }
+
+        public event UnityAction<Camera> ActiveCameraChanged;
 
         public Func<Bounds> GetMazeBounds
         {
@@ -91,18 +118,27 @@ namespace RMAZOR.Camera_Providers
             StaticCameraProvider.UpdateState();
             DynamicCameraProvider.UpdateState();
         }
-
-        #endregion
-
-        #region nonpublic methods
-
-        private void OnLastMazeSizeChanged(V2Int _Size)
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            bool isBigMaze = RmazorUtils.IsBigMaze(_Size);
-            StaticCameraProvider.Camera.enabled = !isBigMaze;
-            DynamicCameraProvider.Camera.enabled = isBigMaze;
+            if (_Args.LevelStage != ELevelStage.Loaded || _Args.PreviousStage == ELevelStage.Paused)
+                return;
+            DynamicCameraProvider.Camera.enabled = false;
+            StaticCameraProvider.Camera.enabled = false;
+            Camera.enabled = true;
+            ActiveCameraChanged?.Invoke(Camera);
+            if (DynamicCameraProvider is IOnLevelStageChanged onLevelStageChangedDynamicCameraProvider)
+                onLevelStageChangedDynamicCameraProvider.OnLevelStageChanged(_Args);
+            if (CurrentProvider is IDynamicCameraProvider)
+                CurrentProvider.Camera.tag = "MainCamera";
         }
 
         #endregion
+
+        public void UpdateTick()
+        {
+            if (LeanInput.GetPressed(KeyCode.U))
+                ActiveCameraChanged?.Invoke(Camera);
+        }
     }
 }

@@ -275,14 +275,32 @@ namespace Common.Managers.Advertising
                 _OnClosed?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdClosed, eventData);
             }
+            void OnFailedToShow()
+            {
+                _OnShown?.Invoke();
+                AnalyticsManager.SendAnalytic(AnalyticIds.AdFailedToShow, eventData);
+            }
             Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
-                    selectedProvider.ShowInterstitialAd(OnShownExtended, OnClicked, OnClosed, ShowAds, _Forced);
+                    selectedProvider.ShowInterstitialAd(
+                        OnShownExtended, 
+                        OnClicked, 
+                        OnClosed, 
+                        OnFailedToShow,
+                        ShowAds, 
+                        _Forced);
                     break;
                 case AdvertisingType.Rewarded:
-                    selectedProvider.ShowRewardedAd(OnShownExtended, OnClicked, OnReward, OnClosed, ShowAds, _Forced);
+                    selectedProvider.ShowRewardedAd(
+                        OnShownExtended, 
+                        OnClicked, 
+                        OnReward, 
+                        OnClosed, 
+                        OnFailedToShow,
+                        ShowAds, 
+                        _Forced);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Type);

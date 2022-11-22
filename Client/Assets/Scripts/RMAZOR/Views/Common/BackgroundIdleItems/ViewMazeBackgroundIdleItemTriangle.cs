@@ -60,16 +60,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         public override void SetColor(Color _Color)
         {
             m_Triangle.Color = _Color.SetA(0.4f);
-            m_Border.Color = _Color.SetA(1f);
+            m_Border.Color = _Color.SetA(0.8f);
         }
 
-        public override void SetParams(float _Scale, float _Thickness)
+        public override void SetScale(float _Scale)
         {
             Obj.transform.SetLocalScaleXY(Vector2.one * _Scale);
-            m_Border.Thickness = _Thickness * 0.5f;
             Rigidbody.mass = GetTriangleArea(m_Triangle.A, m_Triangle.B, m_Triangle.C) * _Scale;
             Obj.transform.rotation = Quaternion.Euler(0f, 0f, Random.value * 360f);
-            base.SetParams(_Scale, _Thickness);
+            base.SetScale(_Scale);
         }
 
         #endregion

@@ -58,7 +58,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
 
         public override void InitPathItems(MazeInfo _Info, SpawnPool<IViewMazeItemPath> _PathPool)
         {
-            var moneyItemIndices = MoneyItemsOnPathItemsDistributor.GetMoneyItemIndices(_Info);
+            var moneyItemIndices = MoneyItemsOnPathItemsDistributor.GetMoneyItemPoints(_Info);
             for (int i = 0; i < _Info.PathItems.Count; i++)
             {
                 var pathItemPos = _Info.PathItems[i].Position;
@@ -69,7 +69,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     Position = pathItemPos,
                     Blank = _Info.PathItems[i].Blank,
                 };
-                if (moneyItemIndices.Contains(i)
+                if (moneyItemIndices.Contains(pathItemPos)
                     && _Info.MazeItems.All(_Item => _Item.Position != pathItemPos)
                     && _Info.MazeItems.All(_Item => !_Item.Path.Contains(pathItemPos)
                     && !props.Blank))
@@ -82,10 +82,12 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             }
         }
 
-        public override void InitAndActivateBlockItems(MazeInfo _Info, Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
+        public override void InitAndActivateBlockItems(
+            MazeInfo                                            _Info,
+            Dictionary<EMazeItemType, SpawnPool<IViewMazeItem>> _BlockPools)
         {
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => 
-                !new [] {EMazeItemType.Block, EMazeItemType.Spear}.Contains(_Item.Type)))
+                !(new [] {EMazeItemType.Block, EMazeItemType.Spear}.Contains(_Item.Type))))
             {
                 var props = new ViewMazeItemProps
                 {

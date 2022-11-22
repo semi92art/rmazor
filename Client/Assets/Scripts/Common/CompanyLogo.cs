@@ -28,15 +28,15 @@ namespace Common
         #region inject
 
         private IPrefabSetManager PrefabSetManager { get; set; }
-        private ICameraProvider   CameraProvider   { get; set; }
+        // private ICameraProvider   CameraProvider   { get; set; }
     
         [Inject]
         internal void Inject(
-            IPrefabSetManager    _PrefabSetManager,
-            ICameraProvider      _CameraProvider)
+            IPrefabSetManager    _PrefabSetManager)
+            // ICameraProvider      _CameraProvider)
         {
             PrefabSetManager    = _PrefabSetManager;
-            CameraProvider      = _CameraProvider;
+            // CameraProvider      = _CameraProvider;
         }
 
         #endregion
@@ -74,8 +74,8 @@ namespace Common
         
         private void ScaleTextureToViewport(Transform _Transform)
         {
-            var cam = CameraProvider.Camera;
-            _Transform.position = cam.transform.position.PlusZ(20f);
+            var cam = Camera.main;
+            _Transform.position = cam!.transform.position.PlusZ(20f);
             var bds = GraphicUtils.GetVisibleBounds();
             _Transform.localScale = new Vector3(bds.size.x, 1f, bds.size.y) * 0.1f;
         }

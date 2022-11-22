@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -20,6 +19,7 @@ using RMAZOR.Controllers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
 using Zenject;
@@ -30,22 +30,23 @@ namespace RMAZOR
     {
         #region inject
 
-        private IRemotePropertiesCommon RemoteProperties      { get; set; }
-        private GlobalGameSettings      GlobalGameSettings    { get; set; }
-        private IGameClient             GameClient            { get; set; }
-        private IAdsManager             AdsManager            { get; set; }
-        private ILocalizationManager    LocalizationManager   { get; set; }
-        private ILevelsLoader           LevelsLoader          { get; set; }
-        private IScoreManager           ScoreManager          { get; set; }
-        private IHapticsManager         HapticsManager        { get; set; }
-        private IShopManager            ShopManager           { get; set; }
-        private IRemoteConfigManager    RemoteConfigManager   { get; set; }
-        private IPermissionsRequester   PermissionsRequester  { get; set; }
-        private IAssetBundleManager     AssetBundleManager    { get; set; }
-        private ISRDebuggerInitializer  SrDebuggerInitializer { get; set; }
-        private IAchievementsSet        AchievementsSet       { get; set; }
-        private ILeaderboardsSet        LeaderboardsSet       { get; set; }
-        private CompanyLogo             CompanyLogo           { get; set; }
+        private IRemotePropertiesCommon    RemoteProperties          { get; set; }
+        private GlobalGameSettings         GlobalGameSettings        { get; set; }
+        private IGameClient                GameClient                { get; set; }
+        private IAdsManager                AdsManager                { get; set; }
+        private ILocalizationManager       LocalizationManager       { get; set; }
+        private ILevelsLoader              LevelsLoader              { get; set; }
+        private IScoreManager              ScoreManager              { get; set; }
+        private IHapticsManager            HapticsManager            { get; set; }
+        private IShopManager               ShopManager               { get; set; }
+        private IRemoteConfigManager       RemoteConfigManager       { get; set; }
+        private IPermissionsRequester      PermissionsRequester      { get; set; }
+        private IAssetBundleManager        AssetBundleManager        { get; set; }
+        private ISRDebuggerInitializer     SrDebuggerInitializer     { get; set; }
+        private IAchievementsSet           AchievementsSet           { get; set; }
+        private ILeaderboardsSet           LeaderboardsSet           { get; set; }
+        private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
+        private CompanyLogo                CompanyLogo               { get; set; }
         
 #if UNITY_ANDROID
         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
@@ -53,41 +54,42 @@ namespace RMAZOR
 
         [Inject] 
         private void Inject(
-            GlobalGameSettings       _GameSettings,
-            IRemotePropertiesCommon  _RemoteProperties,
-            IGameClient              _GameClient,
-            IAdsManager              _AdsManager,
-            ILocalizationManager     _LocalizationManager,
-            ILevelsLoader            _LevelsLoader,
-            IScoreManager            _ScoreManager,
-            IHapticsManager          _HapticsManager,
-            IAssetBundleManager      _AssetBundleManager,
-            IShopManager             _ShopManager,
-            IRemoteConfigManager     _RemoteConfigManager,
-            ICameraProvider          _CameraProvider,
-            IPermissionsRequester    _PermissionsRequester,
-            ICommonTicker            _CommonTicker,
-            ISRDebuggerInitializer   _SrDebuggerInitializer,
-            IAchievementsSet         _AchievementsSet,
-            ILeaderboardsSet         _LeaderboardsSet,
-            CompanyLogo              _CompanyLogo)
+            GlobalGameSettings         _GameSettings,
+            IRemotePropertiesCommon    _RemoteProperties,
+            IGameClient                _GameClient,
+            IAdsManager                _AdsManager,
+            ILocalizationManager       _LocalizationManager,
+            ILevelsLoader              _LevelsLoader,
+            IScoreManager              _ScoreManager,
+            IHapticsManager            _HapticsManager,
+            IAssetBundleManager        _AssetBundleManager,
+            IShopManager               _ShopManager,
+            IRemoteConfigManager       _RemoteConfigManager,
+            IPermissionsRequester      _PermissionsRequester,
+            ICommonTicker              _CommonTicker,
+            ISRDebuggerInitializer     _SrDebuggerInitializer,
+            IAchievementsSet           _AchievementsSet,
+            ILeaderboardsSet           _LeaderboardsSet,
+            IApplicationVersionUpdater _ApplicationVersionUpdater,
+            CompanyLogo                _CompanyLogo)
         {
-            GlobalGameSettings    = _GameSettings;
-            RemoteProperties      = _RemoteProperties;
-            GameClient            = _GameClient;
-            AdsManager            = _AdsManager;
-            LocalizationManager   = _LocalizationManager;
-            LevelsLoader          = _LevelsLoader;
-            ScoreManager          = _ScoreManager;
-            HapticsManager        = _HapticsManager;
-            AssetBundleManager    = _AssetBundleManager;
-            ShopManager           = _ShopManager;
-            RemoteConfigManager   = _RemoteConfigManager;
-            PermissionsRequester  = _PermissionsRequester;
-            SrDebuggerInitializer = _SrDebuggerInitializer;
-            AchievementsSet       = _AchievementsSet;
-            LeaderboardsSet       = _LeaderboardsSet;
-            CompanyLogo           = _CompanyLogo;
+            GlobalGameSettings        = _GameSettings;
+            RemoteProperties          = _RemoteProperties;
+            GameClient                = _GameClient;
+            AdsManager                = _AdsManager;
+            LocalizationManager       = _LocalizationManager;
+            LevelsLoader              = _LevelsLoader;
+            ScoreManager              = _ScoreManager;
+            HapticsManager            = _HapticsManager;
+            AssetBundleManager        = _AssetBundleManager;
+            ShopManager               = _ShopManager;
+            RemoteConfigManager       = _RemoteConfigManager;
+            PermissionsRequester      = _PermissionsRequester;
+            SrDebuggerInitializer     = _SrDebuggerInitializer;
+            AchievementsSet           = _AchievementsSet;
+            LeaderboardsSet           = _LeaderboardsSet;
+            ApplicationVersionUpdater = _ApplicationVersionUpdater;
+            CompanyLogo               = _CompanyLogo;
         }
         
         #endregion
@@ -96,9 +98,10 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
-// #if UNITY_ANDROID
-//             InitAndroidPerformanceClient();
-// #endif
+            ApplicationVersionUpdater.UpdateToCurrentVersion();
+#if UNITY_ANDROID
+            InitAndroidPerformanceClient();
+#endif
             CompanyLogo.Init();
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
@@ -118,12 +121,12 @@ namespace RMAZOR
                 yield return new WaitForEndOfFrame();
         }
 
-// #if UNITY_ANDROID
-//         private void InitAndroidPerformanceClient()
-//         {
-//             AndroidPerformanceTunerClient.Init();
-//         }
-// #endif
+#if UNITY_ANDROID
+        private void InitAndroidPerformanceClient()
+        {
+            AndroidPerformanceTunerClient.Init();
+        }
+#endif
 
         private static void LogAppInfo()
         {
@@ -194,73 +197,49 @@ namespace RMAZOR
             RemoteConfigManager.Initialize += SrDebuggerInitializer.Init;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
-            try
-            {
-                RemoteConfigManager.Init();
-            }
-            catch (System.Exception ex)
-            {
-                Dbg.LogError(ex);
-            }
+            TryExecute(RemoteConfigManager.Init);
         }
 
         private void InitAssetBundleManager()
         {
-            try
-            {
-                AssetBundleManager .Init();
-            }
-            catch (System.Exception ex)
-            {
-                Dbg.LogError(ex);
-            }
+            TryExecute(AssetBundleManager.Init);
         }
 
         private void InitShopManager()
         {
-            try
+            TryExecute(() =>
             {
                 ShopManager.RegisterProductInfos(GetProductInfos());
-                ShopManager        .Init();
-            }
-            catch (System.Exception ex)
-            {
-                Dbg.LogError(ex);
-            }
+                ShopManager.Init();
+            });
         }
 
         private void InitScoreManager()
         {
-            try
+            TryExecute(() =>
             {
                 ScoreManager.RegisterLeaderboardsSet(LeaderboardsSet.GetSet());
                 ScoreManager.RegisterAchievementsSet(AchievementsSet.GetSet());
-                ScoreManager       .Initialize += OnScoreManagerInitialize;
-                ScoreManager       .Init();
-            }
-            catch (System.Exception ex)
-            {
-                Dbg.LogError(ex);
-            }
+                ScoreManager.Initialize += OnScoreManagerInitialize;
+                ScoreManager.Init();
+            });
         }
 
         private void InitGameClient()
         {
-            try
-            {
-                GameClient         .Init();
-            }
-            catch (System.Exception ex)
-            {
-                Dbg.LogError(ex);
-            }
+            TryExecute(GameClient.Init);
         }
 
         private void InitLocalizationManager()
         {
+            TryExecute(LocalizationManager.Init);
+        }
+
+        private static void TryExecute(UnityAction _Action)
+        {
             try
             {
-                LocalizationManager.Init();
+                _Action?.Invoke();
             }
             catch (System.Exception ex)
             {
@@ -301,23 +280,23 @@ namespace RMAZOR
                                        Money = 100
                                    };
                                    ScoreManager.SaveGameProgress(savedGame, true);
-                                   LoadLevelByIndex(controller, 0, null);
+                                   LoadLevelByIndex(controller, 0);
                                    return;
                                }
-                               LoadLevelByIndex(controller, sgCache.Level, sgCache.Args);
+                               LoadLevelByIndex(controller, sgCache.Level);
                            },
                            _Seconds: 1f));
                        return;
                    }
-                   LoadLevelByIndex(controller, sgRemote.Level, sgRemote.Args);
+                   LoadLevelByIndex(controller, sgRemote.Level);
                }, _Seconds: 1f));
             };
             controller.Init();
         }
 
-        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex, object[] _Args)
+        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex)
         {
-            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex);
+            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex, null);
             _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
         }
         

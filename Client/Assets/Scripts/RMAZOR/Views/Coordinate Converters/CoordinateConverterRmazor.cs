@@ -1,4 +1,5 @@
 ﻿using System;
+using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace RMAZOR.Views.Coordinate_Converters
     {
         #region nonpublic members
         private ICoordinateConverter CurrentCoordinateConverter => 
-            RmazorUtils.IsBigMaze(CommonDataRmazor.LastMazeSize) ? 
+            RmazorUtils.IsBigMaze(Model.Data.Info.Size) ? 
             (ICoordinateConverter)CoordinateConverterForBigLevels 
             : CoordinateConverterForSmallLevels;
 
@@ -18,13 +19,16 @@ namespace RMAZOR.Views.Coordinate_Converters
 
         #region inject
 
+        private IModelGame                         Model                             { get; }
         private ICoordinateConverterForSmallLevels CoordinateConverterForSmallLevels { get; }
         private ICoordinateConverterForBigLevels   CoordinateConverterForBigLevels   { get; }
 
         protected CoordinateConverterRmazor(
+            IModelGame                         _Model,
             ICoordinateConverterForSmallLevels _CoordinateConverterForSmallLevels,
             ICoordinateConverterForBigLevels   _CoordinateConverterForBigLevels)
         {
+            Model                             = _Model;
             CoordinateConverterForSmallLevels = _CoordinateConverterForSmallLevels;
             CoordinateConverterForBigLevels   = _CoordinateConverterForBigLevels;
         }
@@ -57,7 +61,6 @@ namespace RMAZOR.Views.Coordinate_Converters
 
         public void SetMazeInfo(MazeInfo _Info)
         {
-            CommonDataRmazor.LastMazeSize = _Info.Size;
             if (RmazorUtils.IsBigMaze(_Info.Size))
                 CoordinateConverterForBigLevels.SetMazeInfo(_Info);
             else 

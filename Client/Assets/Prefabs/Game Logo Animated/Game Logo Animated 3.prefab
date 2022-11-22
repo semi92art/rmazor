@@ -12502,7 +12502,7 @@ GameObject:
   - component: {fileID: 6315798431861257964}
   - component: {fileID: 8249927184030427976}
   m_Layer: 0
-  m_Name: Game Logo Animated Maze Blade 3
+  m_Name: Game Logo Animated 3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

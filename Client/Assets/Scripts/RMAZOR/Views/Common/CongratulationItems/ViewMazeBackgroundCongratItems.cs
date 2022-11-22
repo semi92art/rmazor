@@ -10,13 +10,12 @@ using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.CongratulationItems
 {
-    public class ViewMazeBackgroundCongradItems : ViewMazeBackgroundItemsBase, IViewMazeBackgroundCongradItems 
+    public class ViewMazeBackgroundCongratItems : ViewMazeBackgroundItemsBase, IViewMazeBackgroundCongratItems 
     {
         #region constants
         
@@ -31,7 +30,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         private readonly Dictionary<Animator, ShapeRenderer[]> m_BackCongratsItemsDict = 
             new Dictionary<Animator, ShapeRenderer[]>();
         
-        private static readonly Color[] CongradColorSet =
+        private static readonly Color[] ColorSet =
         {
             new Color(0.72f, 1f, 0.58f),
             new Color(1f, 0.81f, 0.45f),
@@ -51,7 +50,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
         
         private IPrefabSetManager PrefabSetManager { get; }
 
-        private ViewMazeBackgroundCongradItems(
+        private ViewMazeBackgroundCongratItems(
             IColorProvider              _ColorProvider,
             IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,
@@ -124,8 +123,8 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     .SelectMany(_T => content.GetComponentsInChildren(_T))
                     .Cast<ShapeRenderer>()
                     .ToArray();
-                int colIdx = Mathf.FloorToInt(Random.value * CongradColorSet.Length);
-                var col = CongradColorSet[colIdx];
+                int colIdx = Mathf.FloorToInt(Random.value * ColorSet.Length);
+                var col = ColorSet[colIdx];
                 triggerer.Trigger1 = () =>
                 {
                     foreach (var shape in shapes)

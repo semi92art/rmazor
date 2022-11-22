@@ -59,16 +59,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         public override void SetColor(Color _Color)
         {
-            m_Disc.Color = _Color.SetA(0.2f);
-            m_Border.Color = _Color.SetA(0.5f);
+            m_Disc.Color = _Color.SetA(0.4f);
+            m_Border.Color = _Color.SetA(0.8f);
         }
 
-        public override void SetParams(float _Scale, float _Thickness)
+        public override void SetScale(float _Scale)
         {
             Obj.transform.SetLocalScaleXY(Vector2.one * _Scale);
-            m_Border.SetThickness(_Thickness);
             Rigidbody.mass = _Scale;
-            base.SetParams(_Scale, _Thickness);
+            base.SetScale(_Scale);
         }
 
         #endregion

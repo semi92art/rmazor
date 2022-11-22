@@ -2,6 +2,7 @@
 using System.Linq;
 using Common;
 using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.BackgroundIdleItems;
@@ -78,6 +79,7 @@ namespace RMAZOR.Views.Common.Additional_Background
             {
                 case ELevelStage.Loaded: OnLevelLoaded(_Args);  break;
             }
+            IdleItems.OnLevelStageChanged(_Args);
         }
 
         #endregion
@@ -86,7 +88,9 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            if (_Args.Args != null && _Args.Args.Contains("set_back_editor"))
+            object setBackgroundFromEditorArg = _Args.Args.GetSafe(
+                CommonInputCommandArg.KeySetBackgroundFromEditor, out bool keyExist);
+            if (keyExist && (bool)setBackgroundFromEditorArg)
                 return;
             IdleItems.SetSpawnPool(_Args.LevelIndex);
             var info = Model.Data.Info;

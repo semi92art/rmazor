@@ -71,22 +71,24 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private GlobalGameSettings          GlobalGameSettings   { get; }
-        private ViewSettings                ViewSettings         { get; }
-        private IModelGame                  Model                { get; }
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
+        private GlobalGameSettings                  GlobalGameSettings             { get; }
+        private ViewSettings                        ViewSettings                   { get; }
+        private IModelGame                          Model                          { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private CharacterDiedDialogPanel(
-            GlobalGameSettings          _GlobalGameSettings,
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IManagersGetter             _Managers,
-            IUITicker                   _UITicker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
+            GlobalGameSettings                  _GlobalGameSettings,
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            IManagersGetter                     _Managers,
+            IUITicker                           _UITicker,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
                 _UITicker, 
@@ -98,6 +100,7 @@ namespace RMAZOR.UI.Panels
             Model                   = _Model;
             CommandsProceeder       = _CommandsProceeder;
             BetweenLevelAdLoader    = _BetweenLevelAdLoader;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
         #endregion
@@ -240,8 +243,11 @@ namespace RMAZOR.UI.Panels
             bool isMoneyEnough = m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount;
             if (!isMoneyEnough)
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.ShopPanel,
-                    new object[] {CommonInputCommandArgs.LoadShopPanelFromCharacterDiedPanel}, true);
+                var args = new Dictionary<string, object>
+                {
+                    {CommonInputCommandArg.KeyLoadShopPanelFromCharacterDiedPanel, true}
+                };
+                CommandsProceeder.RaiseCommand(EInputCommand.ShopPanel, args, true);
                 m_WentToShopPanel = true;
             }
             else
@@ -286,10 +292,10 @@ namespace RMAZOR.UI.Panels
                 new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have",
                     _T => _T.ToUpper()));
             locMan.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextContinue, ETextType.MenuUI, "continue",
+                new LocalizableTextObjectInfo(m_TextContinue,     ETextType.MenuUI, "continue",
                     _T => _T.ToUpper()));
             locMan.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextRevive, ETextType.MenuUI, "revive?",
+                new LocalizableTextObjectInfo(m_TextRevive,       ETextType.MenuUI, "revive?",
                     _T => _T.ToUpper()));
         }
         
@@ -325,14 +331,6 @@ namespace RMAZOR.UI.Panels
                 _BreakPredicate: () => m_AdsWatched || m_MoneyPayed || m_WentToShopPanel,
                 _OnFinishEx: (_Broken, _) =>
                 {
-                    void RaiseLoadFirstLevelInGroupCommand()
-                    {
-                        BetweenLevelAdLoader.ShowAd = false;
-                        CommandsProceeder.RaiseCommand(
-                            EInputCommand.ReadyToUnloadLevel,
-                            new object[] { CommonInputCommandArgs.LoadFirstLevelFromGroupArg }, 
-                            true);
-                    }
                     if (_Broken && m_WentToShopPanel)
                         return;
                     OnClose(() =>
@@ -344,12 +342,34 @@ namespace RMAZOR.UI.Panels
                     });
                 });
         }
+        
+        private void RaiseLoadFirstLevelInGroupCommand()
+        {
+            var arguments = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeyLoadFirstLevelInGroup, true}
+            };
+            string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out bool _);
+            bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (isCurrentLevelBonus)
+            {
+                arguments.SetSafe(
+                    CommonInputCommandArg.KeyNextLevelType, 
+                    CommonInputCommandArg.ParameterLevelTypeMain);
+            }
+            BetweenLevelAdLoader.ShowAd = false;
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartUnloadingLevel, 
+                false, 
+                arguments);
+        }
 
         private void RaiseContinueCommand()
         {
             CommandsProceeder.RaiseCommand(
                 EInputCommand.ReadyToStartLevel,
-                null, 
+                Model.LevelStaging.Arguments, 
                 true);
         }
         

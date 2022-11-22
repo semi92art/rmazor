@@ -10,7 +10,8 @@ namespace Common.Managers.Advertising.AdBlocks
             UnityAction _OnShown,
             UnityAction _OnClicked,
             UnityAction _OnReward,
-            UnityAction _OnClosed);
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow);
     }
     
     public abstract class RewardedAdBase : AdBase, IRewardedAdBase
@@ -37,7 +38,8 @@ namespace Common.Managers.Advertising.AdBlocks
             UnityAction _OnShown, 
             UnityAction _OnClicked, 
             UnityAction _OnReward,
-            UnityAction _OnClosed);
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow);
 
         public override void UpdateTick()
         {

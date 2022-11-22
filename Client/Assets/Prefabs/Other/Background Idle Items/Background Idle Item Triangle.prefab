@@ -104,12 +104,12 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: 0.7994799, y: 0.5237212}
-      - {x: 0.044001583, y: 0.95075953}
-      - {x: 0.016995441, y: 0.9336106}
-      - {x: 0.015196443, y: 0.07372732}
-      - {x: 0.041474883, y: 0.04335527}
-      - {x: 0.8039999, y: 0.48569933}
+    - - {x: 1.1244321, y: 0.5204054}
+      - {x: 0.06721243, y: 1.1497097}
+      - {x: 0.023627091, y: 1.1060342}
+      - {x: 0.015196443, y: -0.1185913}
+      - {x: 0.06468575, y: -0.1522791}
+      - {x: 1.1223204, y: 0.4823835}
 --- !u!1 &5971775728609472470
 GameObject:
   m_ObjectHideFlags: 0
@@ -170,9 +170,9 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   colorMode: 0
-  a: {x: 0, y: 0, z: 0}
-  b: {x: 0, y: 1, z: 0}
-  c: {x: 0.86, y: 0.5, z: 0}
+  a: {x: 0, y: -0.2, z: 0}
+  b: {x: 0, y: 1.2, z: 0}
+  c: {x: 1.2, y: 0.5, z: 0}
   border: 0
   thickness: 0.5
   thicknessSpace: 0
@@ -299,9 +299,9 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   colorMode: 0
-  a: {x: 0, y: 0, z: 0}
-  b: {x: 0, y: 1, z: 0}
-  c: {x: 0.86, y: 0.5, z: 0}
+  a: {x: 0, y: -0.2, z: 0}
+  b: {x: 0, y: 1.2, z: 0}
+  c: {x: 1.2, y: 0.5, z: 0}
   border: 1
   thickness: 0.03
   thicknessSpace: 0

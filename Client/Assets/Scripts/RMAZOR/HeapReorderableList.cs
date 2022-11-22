@@ -285,9 +285,9 @@ namespace RMAZOR
 
         public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex, int _GameId)
         {
-            loadedLevelIndex = _LevelIndex;
+            loadedLevelIndex     = _LevelIndex;
             loadedLevelHeapIndex = _HeapIndex;
-            gameId = _GameId;
+            gameId               = _GameId;
         }
 
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)

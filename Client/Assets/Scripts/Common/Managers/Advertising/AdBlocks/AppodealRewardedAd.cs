@@ -48,12 +48,14 @@ namespace Common.Managers.Advertising.AdBlocks
             UnityAction _OnShown, 
             UnityAction _OnClicked, 
             UnityAction _OnReward,
-            UnityAction _OnClosed)
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow)
         {
-            OnShown   = _OnShown;
-            OnClicked = _OnClicked;
-            OnReward  = _OnReward;
-            OnClosed  = _OnClosed;
+            OnShown        = _OnShown;
+            OnClicked      = _OnClicked;
+            OnReward       = _OnReward;
+            OnClosed       = _OnClosed;
+            OnFailedToShow = _OnFailedToShow;
             if (!Ready) 
                 return;
             const string placement = "default";

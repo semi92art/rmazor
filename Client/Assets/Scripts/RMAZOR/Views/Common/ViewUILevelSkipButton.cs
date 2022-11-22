@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -14,6 +15,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI;
+using RMAZOR.Views.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -34,12 +36,6 @@ namespace RMAZOR.Views.Common
     
     public class ViewUILevelSkipperButton : InitBase, IViewUILevelSkipper
     {
-        #region constants
-
-        private const int MinimumLevelToSkip = 7;
-
-        #endregion
-        
         #region nonpublic members
 
         private float          m_TopOffset;
@@ -52,48 +48,57 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ViewSettings                ViewSettings         { get; }
-        private IModelGame                  Model                { get; }
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
-        private IContainersGetter           ContainersGetter     { get; }
-        private IPrefabSetManager           PrefabSetManager     { get; }
-        private IHapticsManager             HapticsManager       { get; }
-        private IViewInputTouchProceeder    TouchProceeder       { get; }
-        private ICameraProvider             CameraProvider       { get; }
-        private ILocalizationManager        LocalizationManager  { get; }
-        private IAdsManager                 AdsManager           { get; }
-        private IColorProvider              ColorProvider        { get; }
-        private IViewGameTicker             GameTicker           { get; }
-        private IViewBetweenLevelAdLoader   BetweenLevelAdLoader { get; }
+        private ViewSettings                        ViewSettings                   { get; }
+        private IModelGame                          Model                          { get; }
+        private IContainersGetter                   ContainersGetter               { get; }
+        private IPrefabSetManager                   PrefabSetManager               { get; }
+        private IHapticsManager                     HapticsManager                 { get; }
+        private IViewInputTouchProceeder            TouchProceeder                 { get; }
+        private ICameraProvider                     CameraProvider                 { get; }
+        private ILocalizationManager                LocalizationManager            { get; }
+        private IAdsManager                         AdsManager                     { get; }
+        private IColorProvider                      ColorProvider                  { get; }
+        private IViewGameTicker                     GameTicker                     { get; }
+        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IMoneyCounter                       MoneyCounter                   { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private ILevelsLoader                       LevelsLoader                   { get; }
 
         private ViewUILevelSkipperButton(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IContainersGetter           _ContainersGetter,
-            IPrefabSetManager           _PrefabSetManager,
-            IHapticsManager             _HapticsManager,
-            IViewInputTouchProceeder    _TouchProceeder,
-            ICameraProvider             _CameraProvider,
-            ILocalizationManager        _LocalizationManager,
-            IAdsManager                 _AdsManager,
-            IColorProvider              _ColorProvider,
-            IViewGameTicker             _GameTicker,
-            IViewBetweenLevelAdLoader   _BetweenLevelAdLoader)
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            IContainersGetter                   _ContainersGetter,
+            IPrefabSetManager                   _PrefabSetManager,
+            IHapticsManager                     _HapticsManager,
+            IViewInputTouchProceeder            _TouchProceeder,
+            ICameraProvider                     _CameraProvider,
+            ILocalizationManager                _LocalizationManager,
+            IAdsManager                         _AdsManager,
+            IColorProvider                      _ColorProvider,
+            IViewGameTicker                     _GameTicker,
+            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IMoneyCounter                       _MoneyCounter,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            ILevelsLoader _LevelsLoader)
         {
-            ViewSettings         = _ViewSettings;
-            Model                = _Model;
-            CommandsProceeder    = _CommandsProceeder;
-            ContainersGetter     = _ContainersGetter;
-            PrefabSetManager     = _PrefabSetManager;
-            HapticsManager       = _HapticsManager;
-            TouchProceeder       = _TouchProceeder;
-            CameraProvider       = _CameraProvider;
-            LocalizationManager  = _LocalizationManager;
-            AdsManager           = _AdsManager;
-            ColorProvider        = _ColorProvider;
-            GameTicker           = _GameTicker;
-            BetweenLevelAdLoader = _BetweenLevelAdLoader;
+            ViewSettings                   = _ViewSettings;
+            Model                          = _Model;
+            ContainersGetter               = _ContainersGetter;
+            PrefabSetManager               = _PrefabSetManager;
+            HapticsManager                 = _HapticsManager;
+            TouchProceeder                 = _TouchProceeder;
+            CameraProvider                 = _CameraProvider;
+            LocalizationManager            = _LocalizationManager;
+            AdsManager                     = _AdsManager;
+            ColorProvider                  = _ColorProvider;
+            GameTicker                     = _GameTicker;
+            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            MoneyCounter                   = _MoneyCounter;
+            CommandsProceeder              = _CommandsProceeder;
+            LevelsLoader = _LevelsLoader;
         }
 
         #endregion
@@ -104,16 +109,15 @@ namespace RMAZOR.Views.Common
         {
             m_TopOffset = _Offsets.w;
             ColorProvider.ColorChanged += OnColorChanged;
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             InitButton();
             Init();
         }
-        
+
         public bool LevelSkipped { get; private set; }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.LevelIndex < MinimumLevelToSkip)
-                return;
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
@@ -135,11 +139,20 @@ namespace RMAZOR.Views.Common
                     Cor.Run(m_ShowButtonCoroutine);
                     break;
                 case ELevelStage.Finished:
-                    if (LevelSkipped)
-                        CommandsProceeder.RaiseCommand(
-                            EInputCommand.ReadyToUnloadLevel,
-                            null, 
+                    
+                    bool MustStartUnloadingLevel()
+                    {
+                        string currentLevelType = (string)_Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+                        bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                        bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex);
+                        return LevelSkipped && !isCurrentLevelBonus && !isLastLevelInGroup;
+                    }
+                    if (MustStartUnloadingLevel())
+                    {
+                        SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                            EInputCommand.StartUnloadingLevel, 
                             true);
+                    }
                     Cor.Stop(m_ShowButtonCoroutine);
                     ActivateButton(false);
                     break;
@@ -157,6 +170,15 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region nonpublic methods
+        
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            m_ButtonObj.SetParent(_Camera.transform);
+            var tr = m_ButtonObj.transform;
+            var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
+            float yPos = screenBounds.max.y - m_TopOffset - 8f;
+            tr.SetLocalPosXY(screenBounds.center.x, yPos);
+        }
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
@@ -165,7 +187,7 @@ namespace RMAZOR.Views.Common
                 {
                     switch (_ColorId)
                     {
-                        case ColorIds.UiBorder:     m_Border.color     = _Color; break;
+                        case ColorIds.UiBorder:      m_Border.color     = _Color; break;
                         case ColorIds.UiBackground:  m_Background.color = _Color; break;
                     }
                 }));
@@ -176,12 +198,46 @@ namespace RMAZOR.Views.Common
             AdsManager.ShowRewardedAd(
                 _OnReward: () =>
                 {
+                    var prevArgs = Model.LevelStaging.Arguments;
+                    var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySkipLevel, true}};
+                    long levelIndex = Model.LevelStaging.LevelIndex;
+                    string levelType = (string) prevArgs.GetSafe(
+                        CommonInputCommandArg.KeyCurrentLevelType, out _);
+                    bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
                     LevelSkipped = true;
                     BetweenLevelAdLoader.ShowAd = false;
-                    CommandsProceeder.RaiseCommand(
-                        EInputCommand.FinishLevel,
-                        new object[] {"skip"},
-                        true);
+                    bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isBonusLevel;
+                    if (isLastLevelInGroup)
+                    {
+                        int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
+                        args.Add(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
+                        int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, args);
+                        EInputCommand inputCommand;
+                        if (nextBonusLevelIndexToLoad < bonusLevelsCount)
+                            inputCommand = EInputCommand.PlayBonusLevelPanel;
+                        else if (MoneyCounter.CurrentLevelGroupMoney > 0)
+                            inputCommand = EInputCommand.FinishLevelGroupPanel;
+                        else
+                            inputCommand = EInputCommand.FinishLevel;
+                        CommandsProceeder.RaiseCommand(
+                            inputCommand,
+                            args, 
+                            true);
+                    }
+                    else if (isBonusLevel && MoneyCounter.CurrentLevelGroupMoney > 0)
+                    {
+                        CommandsProceeder.RaiseCommand(
+                            EInputCommand.FinishLevelGroupPanel, 
+                            args, 
+                            true);
+                    }
+                    else
+                    {
+                        SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                            EInputCommand.FinishLevel, 
+                            true, 
+                            args);
+                    }
                 },
                 _OnClosed: () => ActivateButton(false));
         }
@@ -191,25 +247,26 @@ namespace RMAZOR.Views.Common
             var parent = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var go = PrefabSetManager.InitPrefab(
                 parent, CommonPrefabSetNames.UiGame, "skip_level_button");
-            var tr = go.transform;
-            tr.SetLocalScaleXY(Vector2.one * 0.3f); 
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-            float yPos = screenBounds.max.y - m_TopOffset - 8f;
-            tr.SetLocalPosXY(screenBounds.center.x, yPos);
-            m_Text = go.GetCompItem<TextMeshPro>("text");
-            var locInfo = new LocalizableTextObjectInfo(m_Text, ETextType.GameUI, "skip_level");
-            LocalizationManager.AddTextObject(locInfo);
+            go.transform.SetLocalScaleXY(Vector2.one * 0.3f); 
+
             var button = go.GetCompItem<ButtonOnRaycast>("button");
             button.Init(OnSkipLevelButtonPressed,
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 HapticsManager,
                 TouchProceeder);
-            m_Border = go.GetCompItem<SpriteRenderer>("border");
-            m_Background = go.GetCompItem<SpriteRenderer>("background");
             m_ButtonObj = go;
+            m_Border = go.GetCompItem<SpriteRenderer>("border");
             m_Border.color = ColorProvider.GetColor(ColorIds.UiBorder);
+            m_Border.sortingOrder = SortingOrders.GameUI + 1;
+            m_Background = go.GetCompItem<SpriteRenderer>("background");
             m_Background.color = ColorProvider.GetColor(ColorIds.UiBackground);
+            m_Background.sortingOrder = SortingOrders.GameUI;
+            go.GetCompItem<SpriteRenderer>("no_ads_icon").sortingOrder = SortingOrders.GameUI + 1;
+            m_Text = go.GetCompItem<TextMeshPro>("text");
+            m_Text.sortingOrder = SortingOrders.GameUI + 1;
+            var locInfo = new LocalizableTextObjectInfo(m_Text, ETextType.GameUI, "skip_level");
+            LocalizationManager.AddTextObject(locInfo);
             ActivateButton(false);
         }
         

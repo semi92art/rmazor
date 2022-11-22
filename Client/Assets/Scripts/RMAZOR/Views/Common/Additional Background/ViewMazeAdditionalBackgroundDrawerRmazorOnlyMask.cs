@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common.Helpers;
+using Common.Providers;
 using RMAZOR.Views.Coordinate_Converters;
 
 namespace RMAZOR.Views.Common.Additional_Background
@@ -12,27 +13,28 @@ namespace RMAZOR.Views.Common.Additional_Background
           IViewMazeAdditionalBackgroundDrawerRmazorOnlyMask
     {
         public ViewMazeAdditionalBackgroundDrawerRmazorOnlyMask(
-            ViewSettings         _ViewSettings,
-            ICoordinateConverter _CoordinateConverter,
-            IContainersGetter    _ContainersGetter) 
+            ViewSettings                _ViewSettings,
+            ICoordinateConverter        _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IColorProvider              _ColorProvider,
+            IRendererAppearTransitioner _Transitioner) 
             : base(
                 _ViewSettings,
                 _CoordinateConverter,
-                _ContainersGetter) { }
+                _ContainersGetter,
+                _ColorProvider,
+                _Transitioner) { }
 
         public override void Appear(bool _Appear) { }
-
-        public override void Init()
-        {
-            InitMasks();
-            base.Init();
-        }
-
+        
         public override void Draw(List<PointsGroupArgs> _Groups, long _LevelIndex)
         {
-            TextureRendererMasks.DeactivateAll();
+            TextureRendererMasksPool.DeactivateAll();
             foreach (var group in _Groups)
+            {
                 DrawMaskForGroup(group);
+                DrawNetLines(group);
+            }
         }
     }
 }

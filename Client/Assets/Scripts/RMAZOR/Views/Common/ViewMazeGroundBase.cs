@@ -17,9 +17,9 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            SetColorsOnNewLevel(_Args.LevelIndex);
+            SetColorsOnNewLevel(_Args);
         }
 
-        protected virtual void SetColorsOnNewLevel(long _LevelIndex) { }
+        protected virtual void SetColorsOnNewLevel(LevelStageArgs _Args) { }
     }
 }

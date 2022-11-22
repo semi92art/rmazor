@@ -54,7 +54,10 @@ namespace RMAZOR.Editor
 
         private Vector2  m_HeapScroll;
         private int      m_TabPage;
-        private GUIStyle m_HeaderStyle;
+        private GUIStyle
+            m_HeaderStyle1, 
+            m_HeaderStyle2;
+        private bool     m_ShowDebugInfo;
 
         #endregion
 
@@ -97,11 +100,18 @@ namespace RMAZOR.Editor
 
         private void OnBecameVisible()
         {
-            m_HeaderStyle = new GUIStyle
+            m_HeaderStyle1 = new GUIStyle
             {
                 fontSize = 15,
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.MiddleCenter,
+                normal = {textColor = GUI.contentColor}
+            };
+            m_HeaderStyle2 = new GUIStyle
+            {
+                fontSize = 12,
+                fontStyle = FontStyle.Bold,
+                alignment = TextAnchor.MiddleLeft,
                 normal = {textColor = GUI.contentColor}
             };
         }
@@ -163,9 +173,9 @@ namespace RMAZOR.Editor
             LD.Instance.loadedLevelHeapIndex = LD.LevelDesignerHeapIndex;
             LD.Instance.loadedLevelGameId    = LD.LevelDesignerGameId;
             LevelsList.SetupLoadedLevel(
-                LevelDesigner.Instance.loadedLevelGameId,
                 LevelDesigner.Instance.loadedLevelIndex,
-                LevelDesigner.Instance.loadedLevelHeapIndex);
+                LevelDesigner.Instance.loadedLevelHeapIndex,
+                LevelDesigner.Instance.loadedLevelGameId);
         }
 
         private static void SetReorderableLevelsListOnSelectAction()
@@ -204,9 +214,9 @@ namespace RMAZOR.Editor
             if (LD.Instance.loadedLevelIndex != -1)
             {
                 LevelsList.SetupLoadedLevel(
-                    LD.Instance.loadedLevelGameId,
-                    LD.Instance.loadedLevelIndex, 
-                    LD.Instance.loadedLevelHeapIndex);
+                    LD.Instance.loadedLevelIndex,
+                    LD.Instance.loadedLevelHeapIndex, 
+                    LD.Instance.loadedLevelGameId);
             }
         }
         
@@ -261,9 +271,32 @@ namespace RMAZOR.Editor
         
         private void ShowLevelsTabPage()
         {
+            ShowDebugInfo();
             ShowChooseGameZone();
             ShowMazeGeneratorZone();
             ShowHeapZone();
+        }
+
+        private void ShowDebugInfo()
+        {
+            GUILayout.Label("Debug Info", m_HeaderStyle1);
+            m_ShowDebugInfo = GUILayout.Toggle(m_ShowDebugInfo, "Show debug info");
+            if (!m_ShowDebugInfo)
+            {
+                EditorUtilsEx.HorizontalLine();
+                return;
+            }
+            GUILayout.Label("LevelDesigner.Instance:", m_HeaderStyle2);
+            GUILayout.Label($"Loaded Level Game Id: {LD.Instance.loadedLevelGameId}");
+            GUILayout.Label($"Loaded Level Heap Index: {LD.Instance.loadedLevelHeapIndex}");
+            GUILayout.Label($"Loaded Level Index: {LD.Instance.loadedLevelIndex}");
+            GUILayout.Label("LevelDesigner (Static):", m_HeaderStyle2);
+            GUILayout.Label($"Game Id: {LD.LevelDesignerGameId}");
+            GUILayout.Label($"Heap Index: {LD.LevelDesignerHeapIndex}");
+            GUILayout.Label("LevelsList:", m_HeaderStyle2);
+            GUILayout.Label($"Game Id: {LevelsList.GameId}");
+            GUILayout.Label($"Selected Level Index: {LevelsList.SelectedIndex}");
+            EditorUtilsEx.HorizontalLine();
         }
 
         private static void ShowFixUtilsTabPage()
@@ -325,7 +358,7 @@ namespace RMAZOR.Editor
                 window.minSize = new Vector2(300, 200);
                 window.Show();
             });
-            GUILayout.Label("Maze Generator", m_HeaderStyle);
+            GUILayout.Label("Maze Generator", m_HeaderStyle1);
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("w", GUILayout.Width(15));
@@ -362,7 +395,7 @@ namespace RMAZOR.Editor
         
         private void ShowHeapZone()
         {
-            GUILayout.Label("Heap", m_HeaderStyle);
+            GUILayout.Label("Heap", m_HeaderStyle1);
             EditorUtilsEx.HorizontalZone(() =>
             {
                 GUILayout.Label("Heap:");

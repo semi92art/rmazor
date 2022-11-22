@@ -12,8 +12,14 @@ namespace RMAZOR.Helpers
 {
     public class LevelsSaver : LevelsLoader
     {
+        #region constructor
+        
         public LevelsSaver(IPrefabSetManager _PrefabSetManager, IMazeInfoValidator _Validator) 
             : base(_PrefabSetManager, _Validator) { }
+
+        #endregion
+
+        #region api
         
         public MazeLevelsList LoadHeapLevels(int _GameId, int _HeapIndex)
         {
@@ -34,6 +40,18 @@ namespace RMAZOR.Helpers
             AssetDatabase.Refresh();
             AssetDatabase.SaveAssets();
         }
+        
+        public override MazeInfo GetLevelInfo(
+            int _GameId,
+            long _Index,
+            Dictionary<string, object> _Args)
+        {
+            throw new System.NotSupportedException();
+        }
+
+        #endregion
+
+        #region nonpublic methods
 
         private void CreateLevelsAssetIfNotExist(int _GameId, int _HeapIndex)
         {
@@ -63,6 +81,8 @@ namespace RMAZOR.Helpers
         {
             return $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
         }
+        
+        #endregion
     }
 }
 #endif

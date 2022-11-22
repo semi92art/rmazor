@@ -4,6 +4,7 @@ using Common;
 using Common.Extensions;
 using Common.Managers;
 using Common.Providers;
+using RMAZOR.Models;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common
@@ -62,21 +63,22 @@ namespace RMAZOR.Views.Common
                 .ToList();
         }
         
-        protected override void SetColorsOnNewLevel(long _LevelIndex)
+        protected override void SetColorsOnNewLevel(LevelStageArgs _Args)
         {
-            var color = GetMainColor(_LevelIndex);
+            var color = GetMainColor(_Args);
             ColorProvider.SetColor(ColorIds.Main, color);
         }
 
-        private Color GetMainColor(long _LevelIndex)
+        private Color GetMainColor(LevelStageArgs _Args)
         {
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            int levelIndex = (int)_Args.LevelIndex;
+            int setItemIdx = isBonusLevel ? levelIndex : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
-            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
-            int setItemIdx = (group - 1) % colorsSet.Count;
+            setItemIdx %= colorsSet.Count;
             return colorsSet[setItemIdx].main;
         }
-        
-        
 
         #endregion
     }

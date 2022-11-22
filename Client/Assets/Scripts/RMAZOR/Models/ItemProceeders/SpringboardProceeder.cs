@@ -80,7 +80,7 @@ namespace RMAZOR.Models.ItemProceeders
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Left : V2Int.Down;
             else if (_Info.Direction == V2Int.Down + V2Int.Right)
                 newDirection = charInverseDir == V2Int.Down ? V2Int.Right : V2Int.Down;
-            var moveDirection = RmazorUtils.GetMoveDirection(newDirection, Rotation.Orientation);
+            var moveDirection = RmazorUtils.GetDirection(newDirection, Rotation.Orientation);
             m_LastArgs = new SpringboardEventArgs(moveDirection, _Info);
             SpringboardEvent?.Invoke(m_LastArgs);
         }

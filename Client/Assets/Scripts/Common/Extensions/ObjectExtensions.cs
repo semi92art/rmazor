@@ -175,10 +175,7 @@ namespace Common.Extensions
                 s = JsonConvert.SerializeObject(_Item);
                 _Result = JsonConvert.DeserializeObject<T>(s);
                 if (_Result == null)
-                {
-                    Dbg.LogWarning(s);
                     return false;
-                }
             }
             catch (SerializationException ex)
             {

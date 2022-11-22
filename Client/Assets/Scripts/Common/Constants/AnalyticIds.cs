@@ -34,10 +34,11 @@ namespace Common.Constants
         public const string Purchase            = "purchase";
         public const string AchievementUnlocked = "achievement_unlocked";
 
-        public const string AdShown   = "ad_shown";
-        public const string AdClicked = "ad_clicked";
-        public const string AdReward  = "ad_reward";
-        public const string AdClosed  = "ad_closed";
+        public const string AdShown        = "ad_shown";
+        public const string AdClicked      = "ad_clicked";
+        public const string AdReward       = "ad_reward";
+        public const string AdClosed       = "ad_closed";
+        public const string AdFailedToShow = "ad_failed_to_show";
 
         public static string GetLanguageChangedAnalyticId(ELanguage _Language)
         {

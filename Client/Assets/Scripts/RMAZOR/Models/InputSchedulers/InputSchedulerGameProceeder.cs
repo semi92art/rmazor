@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using Common.Exceptions;
 using Common.Helpers;
 using Common.Ticker;
@@ -9,13 +10,17 @@ namespace RMAZOR.Models.InputSchedulers
 {
     public interface IInputSchedulerGameProceeder : IInit, IAddCommand, IOnLevelStageChanged
     {
-        event UnityAction<EInputCommand, object[]> MoveCommand; 
-        event UnityAction<EInputCommand, object[]> RotateCommand;
-        void                                       LockMovement(bool _Lock);
-        void                                       LockRotation(bool _Lock);
+        event UnityAction<EInputCommand, Dictionary<string, object>> MoveCommand;
+        event UnityAction<EInputCommand, Dictionary<string, object>> RotateCommand;
+
+        void LockMovement(bool _Lock);
+        void LockRotation(bool _Lock);
     }
     
-    public class InputSchedulerGameProceeder : InitBase, IInputSchedulerGameProceeder, IUpdateTick
+    public class InputSchedulerGameProceeder : 
+        InitBase, 
+        IInputSchedulerGameProceeder, 
+        IUpdateTick
     {
         #region constants
 
@@ -55,8 +60,8 @@ namespace RMAZOR.Models.InputSchedulers
 
         #region api
 
-        public event UnityAction<EInputCommand, object[]> MoveCommand; 
-        public event UnityAction<EInputCommand, object[]> RotateCommand;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> MoveCommand; 
+        public event UnityAction<EInputCommand, Dictionary<string, object>> RotateCommand;
 
         public override void Init()
         {
@@ -72,7 +77,7 @@ namespace RMAZOR.Models.InputSchedulers
             ScheduleRotationCommands();
         }
 
-        public void AddCommand(EInputCommand _Command, object[] _Args = null)
+        public void AddCommand(EInputCommand _Command, Dictionary<string, object> _Args = null)
         {
             switch (_Command)
             {
@@ -133,7 +138,7 @@ namespace RMAZOR.Models.InputSchedulers
             RotateCommand?.Invoke(cmd.Value, null);
         }
         
-        private void OnMoveCommand(EInputCommand _Command, object[] _Args)
+        private void OnMoveCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             EDirection dir = default;
             switch (_Command)
@@ -150,7 +155,7 @@ namespace RMAZOR.Models.InputSchedulers
             Character.Move(dir);
         }
         
-        private void OnRotateCommand(EInputCommand _Command, object[] _Args)
+        private void OnRotateCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             EMazeRotateDirection dir = default;
             switch (_Command)

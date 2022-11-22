@@ -89,15 +89,25 @@ namespace Common.UI.DialogViewers
             Dictionary<Graphic, float> _GraphicsAndAlphas,
             float                      _Time,
             bool                       _Disappear,
-            UnityAction                _OnFinish)
+            UnityAction                _OnFinish,
+            bool                       _UseInteractableInsteadEnabledOnSelectables)
         {
             var rectTr = _DialogPanel.PanelRectTransform;
             rectTr.gameObject.SetActive(true);
-            var selectables = rectTr.GetComponentsInChildrenEnabled<Selectable>();
-            foreach (var button in selectables)
-                button.Key.enabled = false;
+            var selectables = rectTr.GetComponentsInChildrenEx<Selectable>();
+            var selectablesActiveDict = selectables.ToDictionary(
+                _S => _S,
+                _S => _UseInteractableInsteadEnabledOnSelectables ? _S.interactable : _S.enabled);
+            foreach (var selectable in selectablesActiveDict.Keys)
+            {
+                if (_UseInteractableInsteadEnabledOnSelectables)
+                    selectable.interactable = false;
+                else 
+                    selectable.enabled = false;
+            }
             //do transition for graphic elements
             float currTime = Ticker.Time;
+            // yield return DoTranslucentBackgroundTransition(_Disappear, _Time);
             Cor.Run(DoTranslucentBackgroundTransition(_Disappear, _Time));
             if (!_Disappear)
             {
@@ -118,9 +128,14 @@ namespace Common.UI.DialogViewers
                 }
             }
             //enable selectable elements (buttons, toggles, etc.)
-            foreach ((var key, bool value) in selectables
+            foreach ((var selectable, bool active) in selectablesActiveDict
                 .Where(_Button => !_Button.Key.IsNull()))
-                key.enabled = value;
+            {
+                if (_UseInteractableInsteadEnabledOnSelectables)
+                    selectable.interactable = active;
+                else 
+                    selectable.enabled = active;
+            }
             //set color alphas to finish values for all graphic elements
             foreach ((var graphic, float value) in m_PanelsTransitionInfoDict[_DialogPanel].StartAlphaChannelsDict)
             {

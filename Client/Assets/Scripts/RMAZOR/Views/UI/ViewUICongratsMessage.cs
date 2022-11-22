@@ -4,7 +4,6 @@ using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
-using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
 using Common.Utils;
@@ -31,6 +30,7 @@ namespace RMAZOR.Views.UI
         
         private readonly List<Component> m_Renderers = new List<Component>();
 
+        private GameObject  m_CongratsGo;
         private TextMeshPro m_CongratsText;
         private TextMeshPro m_CompletedText;
         private Line        m_CongratsLine;
@@ -44,7 +44,6 @@ namespace RMAZOR.Views.UI
         private ViewSettings      ViewSettings     { get; }
         private IModelGame        Model            { get; }
         private ICameraProvider   CameraProvider   { get; }
-        private IContainersGetter ContainersGetter { get; }
         private IManagersGetter   Managers         { get; }
         private IColorProvider    ColorProvider    { get; }
 
@@ -52,14 +51,12 @@ namespace RMAZOR.Views.UI
             ViewSettings      _ViewSettings,
             IModelGame        _Model,
             ICameraProvider   _CameraProvider,
-            IContainersGetter _ContainersGetter,
             IManagersGetter   _Managers,
             IColorProvider    _ColorProvider)
         {
             ViewSettings     = _ViewSettings;
             Model            = _Model;
             CameraProvider   = _CameraProvider;
-            ContainersGetter = _ContainersGetter;
             Managers         = _Managers;
             ColorProvider    = _ColorProvider;
         }
@@ -67,6 +64,18 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region api
+        
+        public void Init(Vector4 _Offsets)
+        {
+            m_TopOffset = _Offsets.w;
+            InitCongratsMessage();
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
+        }
+
+        public IEnumerable<Component> GetRenderers()
+        {
+            return m_Renderers;
+        }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -87,33 +96,30 @@ namespace RMAZOR.Views.UI
             }
         }
 
-        public void Init(Vector4 _Offsets)
-        {
-            m_TopOffset = _Offsets.w;
-            InitCongratsMessage();
-        }
-
-        public List<Component> GetRenderers()
-        {
-            return m_Renderers;
-        }
-
         #endregion
 
         #region nonpublic methods
+        
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            var parent = CameraProvider.Camera.transform;
+            m_CongratsGo.SetParent(parent);
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+            m_CongratsGo.transform
+                .SetLocalPosX(screenBounds.center.x)
+                .SetLocalPosY(screenBounds.max.y - m_TopOffset - 5f);
+        }
 
         private void InitCongratsMessage()
         {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-            float yPos = screenBounds.max.y - m_TopOffset - 5f;
-            var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
+            var parent = CameraProvider.Camera.transform;
             var goCongrads = Managers.PrefabSetManager.InitPrefab(
-                cont, CommonPrefabSetNames.UiGame, "congratulations_panel");
-            m_CompletedText = goCongrads.GetCompItem<TextMeshPro>("text_completed");
-            m_CongratsText = goCongrads.GetCompItem<TextMeshPro>("text_congrats");
-            m_CongratsLine = goCongrads.GetCompItem<Line>("line");
-            m_CongratsAnim = goCongrads.GetCompItem<Animator>("animator");
-            goCongrads.transform.SetPosXY(new Vector2(screenBounds.center.x, yPos));
+                parent, CommonPrefabSetNames.UiGame, "congratulations_panel");
+            m_CongratsGo = goCongrads;
+            m_CompletedText = m_CongratsGo.GetCompItem<TextMeshPro>("text_completed");
+            m_CongratsText  = m_CongratsGo.GetCompItem<TextMeshPro>("text_congrats");
+            m_CongratsLine  = m_CongratsGo.GetCompItem<Line>("line");
+            m_CongratsAnim  = m_CongratsGo.GetCompItem<Animator>("animator");
         }
         
         private void SetCongratsString()

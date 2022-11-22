@@ -201,8 +201,11 @@ namespace Editor
                     m_CurrSetIdx + addict, 0, m_AdditionalColorsPropsSet.Count - 1);
             }
             AddAddict();
-            while (!m_AdditionalColorsPropsSet[m_CurrSetIdx].inUse)
-                AddAddict();
+            if (_Next.HasValue)
+            {
+                while (!m_AdditionalColorsPropsSet[m_CurrSetIdx].inUse)
+                    AddAddict();
+            }
         }
 
         private void DisplayColors()

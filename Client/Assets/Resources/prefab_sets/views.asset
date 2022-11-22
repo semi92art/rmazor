@@ -41,6 +41,10 @@ MonoBehaviour:
       item: {fileID: 5059098813564520511, guid: 29946a834dfc30b458505c36c553b042,
         type: 3}
       bundle: 0
+    - name: trap_increasing_2
+      item: {fileID: 5059098813564520511, guid: 8493facec372c42458fd84312b6817ac,
+        type: 3}
+      bundle: 0
     - name: character_legs
       item: {fileID: 1560829925993726868, guid: 8e3201c751929644b87043a76a29233a,
         type: 3}
@@ -113,4 +117,13 @@ MonoBehaviour:
       bundle: 0
     - name: character_died_panel_background_5
       item: {fileID: 21300000, guid: 95b47228ba5478f44832e46b93611e4c, type: 3}
+      bundle: 0
+    - name: character_tail_sprite_1
+      item: {fileID: 21300000, guid: 19d541d757b51f24a97c894ab0131567, type: 3}
+      bundle: 0
+    - name: character_tail_sprite_2
+      item: {fileID: 21300000, guid: 79e1bbafc7bf63d4a932ad334e76aab8, type: 3}
+      bundle: 0
+    - name: character_tail_sprite_3
+      item: {fileID: 21300000, guid: bb565c8206228d04a8296cf1ffdd4e99, type: 3}
       bundle: 0

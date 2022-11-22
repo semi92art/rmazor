@@ -29,6 +29,7 @@ namespace Common.Managers.Advertising.AdBlocks
         protected UnityAction OnShown;
         protected UnityAction OnClosed;
         protected UnityAction OnClicked;
+        protected UnityAction OnFailedToShow;
         protected string      UnitId;
         private   float       m_LoadAdDelayTimer;
 
@@ -36,6 +37,7 @@ namespace Common.Managers.Advertising.AdBlocks
         private volatile bool m_DoInvokeOnShown;
         private volatile bool m_DoInvokeOnClosed;
         private volatile bool m_DoInvokeOnClicked;
+        private volatile bool m_DoInvokeOnFailedToShow;
         
         #endregion
 
@@ -73,6 +75,7 @@ namespace Common.Managers.Advertising.AdBlocks
             ProceedShownAction();
             ProceedClickedAction();
             ProceedClosedAction();
+            ProceedFailedToShownAction();
             ProceedLoadAdOnDelay();
         }
 
@@ -111,6 +114,19 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClosed?.Invoke();
             OnClosed = null;
             m_DoInvokeOnClosed = false;
+        }
+        
+        protected void ProceedFailedToShownAction()
+        {
+            if (!m_DoInvokeOnFailedToShow) 
+                return;
+            Dbg.Log("Ad failed to show action");
+            if (OnFailedToShow == null)
+                Dbg.LogWarning("OnFailedToShowShown action is null");
+            OnFailedToShow?.Invoke();
+            OnFailedToShow = null;
+            LoadAd();
+            m_DoInvokeOnFailedToShow = false;
         }
 
         protected void ProceedLoadAdOnDelay()
@@ -152,6 +168,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             Dbg.LogWarning($"{AdSource}: {AdType} show failed");
             m_DoLoadAdWithDelay = true;
+            m_DoInvokeOnClosed = true;
         }
         
         protected void OnAdClicked()

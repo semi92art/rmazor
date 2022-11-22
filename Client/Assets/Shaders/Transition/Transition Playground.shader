@@ -74,9 +74,7 @@
 			    float result = clamp(alpha, 0.0, 1.0);
 			    fixed4 frag_col = cf.color * result + cf.color * (1.0 - result) * 0.5;
 				if (frag_col.a < 1)
-				{
-					frag_col.a = 0;
-				}
+					frag_col = fixed4(0,0,0,0);
 				return frag_col;
 			}
 			ENDCG

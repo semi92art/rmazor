@@ -378,6 +378,7 @@ MonoBehaviour:
     type: 3}
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
+  m_CursorLockBehavior: 0
 --- !u!114 &934508345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -419,6 +420,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dynamic Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4521276296573485168, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
       objectReference: {fileID: 0}
     - target: {fileID: 4521276296573485169, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
         type: 3}

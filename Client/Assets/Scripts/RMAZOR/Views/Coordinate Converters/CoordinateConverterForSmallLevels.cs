@@ -154,7 +154,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             if (_Item.Type == EMazeItemType.TrapReact)
             {
                 var dir = _Item.Directions.First();
-                _IsTrapsReact = _Direction == RmazorUtils.GetMoveDirection(dir, EMazeOrientation.North);
+                _IsTrapsReact = _Direction == RmazorUtils.GetDirection(dir, EMazeOrientation.North);
             }
             if (_Item.Type != EMazeItemType.Block && _Item.Type != EMazeItemType.TrapReact)
                 _IsOtherBlock = true;

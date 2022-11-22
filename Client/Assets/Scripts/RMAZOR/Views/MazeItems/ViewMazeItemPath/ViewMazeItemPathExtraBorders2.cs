@@ -205,16 +205,18 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 rects.AddRange(new [] { rect1, rect2, rect3 });
             }
             float scale = CoordinateConverter.Scale;
+            var props = GetProps();
+            int posSum = props.Position.X + props.Position.Y;
             foreach (var rect in rects)
             {
                 rect.SetType(Rectangle.RectangleType.RoundedSolid)
                     .SetColor(GetBorderColor())
                     .SetSortingOrder(SortingOrders.PathLine)
-                    .SetSize(scale * 0.2f)
-                    .SetCornerRadius(scale * 0.25f * ViewSettings.CornerRadius);
+                    .SetSize(scale * 0.25f)
+                    .SetCornerRadius(scale * 0.25f * ViewSettings.LineThickness);
             }
             var positions = GetRectsPositions(_Side);
-            rects[0].SetSize(scale * 0.3f);
+            rects[0].SetSize(scale * 0.33f);
             rects[0].transform.SetPosXY(positions[0]);
             rects[1].transform.SetPosXY(positions[1]);
             rects[2].transform.SetPosXY(positions[2]);
@@ -234,7 +236,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Vector2 left, right, down, up;
             (left, right, down, up) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up);
             Vector2 pos1, pos2, pos3;
-            const float c1 = 0.5f;
+            const float c1 = 0.6f;
             const float c2 = 0.33f;
             const float indent = 0.15f;
             switch (_Side)

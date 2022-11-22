@@ -46,11 +46,16 @@ namespace Common.Managers.Advertising.AdBlocks
             base.Init(_AppId, _UnitId);
         }
         
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed)
+        public override void ShowAd(
+            UnityAction _OnShown, 
+            UnityAction _OnClicked,
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow)
         {
-            OnShown = _OnShown;
-            OnClicked = _OnClicked;
-            OnClosed = _OnClosed;
+            OnShown        = _OnShown;
+            OnClicked      = _OnClicked;
+            OnClosed       = _OnClosed;
+            OnFailedToShow = _OnFailedToShow;
             m_InterstitialAd.Show();
         }
 

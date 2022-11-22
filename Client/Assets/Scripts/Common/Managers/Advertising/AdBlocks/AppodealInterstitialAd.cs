@@ -44,11 +44,16 @@ namespace Common.Managers.Advertising.AdBlocks
             Appodeal.Cache(AppoAdType);
         }
 
-        public override void ShowAd(UnityAction _OnShown, UnityAction _OnClicked, UnityAction _OnClosed)
+        public override void ShowAd(
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow)
         {
-            OnShown   = _OnShown;
-            OnClicked = _OnClicked;
-            OnClosed  = _OnClosed;
+            OnShown        = _OnShown;
+            OnClicked      = _OnClicked;
+            OnClosed       = _OnClosed;
+            OnFailedToShow = _OnFailedToShow;
             if (!Ready) 
                 return;
             const string placement = "default";

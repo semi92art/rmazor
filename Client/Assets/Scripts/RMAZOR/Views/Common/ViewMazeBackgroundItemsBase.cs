@@ -82,22 +82,7 @@ namespace RMAZOR.Views.Common
         protected abstract void InitItems();
         protected abstract void ProceedItems();
         protected virtual void OnColorChanged(int _ColorId, Color _Color) { }
-        
-        protected bool IsInsideOfScreenBounds(Vector2 _Position, Vector2 _Padding)
-        {
-            var min = m_ScreenBounds.min;
-            var max = m_ScreenBounds.max;
-            return _Position.x > min.x - _Padding.x 
-                   && _Position.y > min.y - _Padding.y
-                   && _Position.x < max.x + _Padding.x
-                   && _Position.y < max.y + _Padding.y;
-        }
-        
-        protected virtual Vector2 RandomVelocity()
-        {
-            return new Vector2(RandomGen.NextFloatAlt(), RandomGen.NextFloatAlt());
-        }
-        
+
         protected Vector2 RandomPositionOnScreen(
             bool _Inside = true,
             Vector2? _Padding = null)
@@ -140,7 +125,7 @@ namespace RMAZOR.Views.Common
             
             float x = m_ScreenBounds.center.x + xDelta;
             float y = m_ScreenBounds.center.y + yDelta;
-            return new Vector2(x, y);
+            return (Vector2)CameraProvider.Camera.transform.position + new Vector2(x, y);
         }
 
         #endregion

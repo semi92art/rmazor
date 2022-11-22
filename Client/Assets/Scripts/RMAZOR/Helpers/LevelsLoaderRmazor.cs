@@ -7,6 +7,7 @@ using Common.Extensions;
 using Common.Managers;
 using Common.Utils;
 using Newtonsoft.Json;
+using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
@@ -16,10 +17,10 @@ namespace RMAZOR.Helpers
     {
         #region nonpublic members
 
-        private readonly Dictionary<int, string[]> 
-            m_SerializedBonusLevelsFromCacheDict  = new Dictionary<int, string[]>(),
-            m_SerializedBonusLevelsFromRemoteDict = new Dictionary<int, string[]>();
-        
+        private string[]
+            m_SerializedBonusLevelsFromCache  = new string[0],
+            m_SerializedBonusLevelsFromRemote = new string[0];
+
         private bool m_CachedBonusLevelsLoaded, m_RemoteBonusLevelsLoaded;
 
         #endregion
@@ -52,22 +53,25 @@ namespace RMAZOR.Helpers
                 RaiseInitialization));
         }
 
-        public override MazeInfo GetLevelInfo(int _GameId, long _Index, object[] _Args = null)
+        public override MazeInfo GetLevelInfo(int _GameId, long _Index, Dictionary<string, object> _Args)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
-            MazeInfo Deserialize(IReadOnlyDictionary<int, string[]> _Dict) => JsonConvert.DeserializeObject<MazeInfo>(
-                _Dict[_GameId][_Index]);
-            bool isBonusLevel = IsBonusLevel(_Args);
+            MazeInfo Deserialize(string[] _Levels)
+            {
+                return _Index < _Levels.Length ? 
+                    JsonConvert.DeserializeObject<MazeInfo>(_Levels[_Index]) : null;
+            }
+            bool isBonusLevel = IsNextLevelBonus(_Args);
             var dicRemote = isBonusLevel ? 
-                m_SerializedBonusLevelsFromRemoteDict
-                : SerializedLevelsFromRemoteDict;
+                m_SerializedBonusLevelsFromRemote
+                : SerializedLevelsFromRemote;
             var mazeInfo = Deserialize(dicRemote);
             bool valid = MazeInfoValidator.Validate(mazeInfo);
             if (!valid)
             {
                 var dictCached = isBonusLevel
-                    ? m_SerializedBonusLevelsFromCacheDict
-                    : SerializedLevelsFromCacheDict;
+                    ? m_SerializedBonusLevelsFromCache
+                    : SerializedLevelsFromCache;
                 mazeInfo = Deserialize(dictCached);
             }
             valid = MazeInfoValidator.Validate(mazeInfo);
@@ -75,28 +79,46 @@ namespace RMAZOR.Helpers
                 return mazeInfo;
             throw new Exception("Maze info is not valid!");
         }
+        
+        public override int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
+        {
+            PreloadLevelsIfWereNotLoaded(_GameId);
+            if (IsNextLevelBonus(_Args))
+            {
+                return m_SerializedBonusLevelsFromRemote.Length > 0
+                    ? m_SerializedBonusLevelsFromRemote.Length
+                    : m_SerializedBonusLevelsFromCache.Length;
+            }
+            return SerializedLevelsFromRemote.Length > 0
+                ? SerializedLevelsFromRemote.Length
+                : SerializedLevelsFromCache.Length;
+        }
 
         #endregion
 
         #region nonpublic methods
 
-        protected override void PreloadLevels(int _GameId, bool _Main)
+        protected override void PreloadLevels(int _GameId, bool _Bundle)
         {
-            PreloadLevels(_GameId, _Main, true);
-            PreloadLevels(_GameId, _Main, false);
+            PreloadLevels(_GameId, _Bundle, true);
+            PreloadLevels(_GameId, _Bundle, false);
         }
         
-        private void PreloadLevels(int _GameId, bool _Main, bool _Bonus)
+        private void PreloadLevels(int _GameId, bool _Bundle, bool _Bonus)
         {
             if (!_Bonus)
             {
-                base.PreloadLevels(_GameId, _Main);
+                base.PreloadLevels(_GameId, _Bundle);
                 return;
             }
             int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
+            var args = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus}
+            };
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(heapIndex, new object[] { "bonus" }),
-                _Main ? EPrefabSource.Bundle : EPrefabSource.Asset);
+                LevelsAssetName(heapIndex, args),
+                _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
             string[] serializedLevels;
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
@@ -109,29 +131,30 @@ namespace RMAZOR.Helpers
                 serializedLevels = serializedLevels
                     .RemoveRange(new[] {serializedLevels[0]})
                     .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-                if (_Main)
+                if (_Bundle)
                 {
-                    m_SerializedBonusLevelsFromRemoteDict.SetSafe(_GameId, serializedLevels);
+                    m_SerializedBonusLevelsFromRemote = serializedLevels;
                     m_RemoteBonusLevelsLoaded = true;
                 }
                 else
                 {
-                    m_SerializedBonusLevelsFromCacheDict.SetSafe(_GameId, serializedLevels);
+                    m_SerializedBonusLevelsFromCache = serializedLevels;
                     m_CachedBonusLevelsLoaded = true;
                 }
             });
         }
         
-        protected override string LevelsAssetName(int _HeapIndex, object[] _Args = null)
+        protected override string LevelsAssetName(int _HeapIndex, Dictionary<string, object> _Args = null)
         {
-            if (!IsBonusLevel(_Args)) 
+            if (!IsNextLevelBonus(_Args)) 
                 return base.LevelsAssetName(_HeapIndex, _Args);
             return base.LevelsAssetName(_HeapIndex, _Args) + "_bonus";
         }
-        
-        private static bool IsBonusLevel(object[] _Args)
+
+        private static bool IsNextLevelBonus(Dictionary<string, object> _Args)
         {
-            return _Args != null && _Args.Contains("bonus");
+            string nextLevelType = (string)_Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            return nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
         }
 
         #endregion

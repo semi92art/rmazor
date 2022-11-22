@@ -20,6 +20,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Settings;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -61,31 +62,37 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region inject
-        
-        private ISettingLanguageDialogPanel LanguagePanel           { get; }
-        private ISettingsGetter             SettingsGetter          { get; }
-        private IViewInputCommandsProceeder CommandsProceeder       { get; }
-        private IDialogViewersController    DialogViewersController { get; }
+
+        private IModelGame                          Model                          { get; }
+        private ISettingLanguageDialogPanel         LanguagePanel                  { get; }
+        private ISettingsGetter                     SettingsGetter                 { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IDialogViewersController            DialogViewersController        { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private SettingsDialogPanel(
-            ISettingLanguageDialogPanel _LanguagePanel,
-            IManagersGetter             _Managers,
-            IUITicker                   _UITicker,
-            ISettingsGetter             _SettingsGetter,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IDialogViewersController    _DialogViewersController)
+            IModelGame                          _Model,
+            ISettingLanguageDialogPanel         _LanguagePanel,
+            IManagersGetter                     _Managers,
+            IUITicker                           _UITicker,
+            ISettingsGetter                     _SettingsGetter,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IDialogViewersController            _DialogViewersController,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
                 _UITicker,
                 _CameraProvider,
                 _ColorProvider)
         {
-            LanguagePanel           = _LanguagePanel;
-            SettingsGetter          = _SettingsGetter;
-            CommandsProceeder       = _CommandsProceeder;
-            DialogViewersController = _DialogViewersController;
+            Model                          = _Model;
+            LanguagePanel                  = _LanguagePanel;
+            SettingsGetter                 = _SettingsGetter;
+            CommandsProceeder              = _CommandsProceeder;
+            DialogViewersController        = _DialogViewersController;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -129,8 +136,8 @@ namespace RMAZOR.UI.Panels
         {
             base.OnClose(() =>
             {
-                CommandsProceeder.RaiseCommand(
-                    EInputCommand.UnPauseLevel, null, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                    EInputCommand.UnPauseLevel, true);
             });
             Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
         }

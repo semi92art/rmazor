@@ -38,7 +38,7 @@ namespace Common.Managers.IAP
 
         #region inject
 
-        protected ILocalizationManager LocalizationManager { get; }
+        private ILocalizationManager LocalizationManager { get; }
 
         protected UnityIapShopManagerBase(ILocalizationManager _LocalizationManager)
         {
@@ -125,7 +125,7 @@ namespace Common.Managers.IAP
                 string oopsText = LocalizationManager.GetTranslation("oops");
                 string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
                 CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
-                Dbg.LogWarning("Failed to rate game: No internet connection.");
+                Dbg.LogWarning("Failed to restore purchases: No internet connection.");
                 return;
             }
             if (!IsInitialized())

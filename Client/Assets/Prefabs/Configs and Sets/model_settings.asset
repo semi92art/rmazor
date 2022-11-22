@@ -19,7 +19,7 @@ MonoBehaviour:
   trapPreReactTime: 0.5
   trapReactTime: 0.5
   trapAfterReactTime: 0.1
-  trapIncreasingIdleTime: 2
+  trapIncreasingIdleTime: 3
   trapIncreasingIncreasedTime: 2
   turretPreShootInterval: 1.5
   turretShootInterval: 0.5

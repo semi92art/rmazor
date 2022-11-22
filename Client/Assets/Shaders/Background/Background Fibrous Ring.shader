@@ -44,7 +44,6 @@ Shader "RMAZOR/Background/Fibrous Ring"
             float _Speed, _Scale, _Angle;
             fixed _Gc1, _Gc2, _Mc1, _Mc2;
 
-
             v2f vert(appdata v)
             {
                 return vert_default(v);
@@ -61,7 +60,7 @@ Shader "RMAZOR/Background/Fibrous Ring"
                 c = dot(40.*(s-c), clamp(f*r.y, 0., 1.)) * (s-.1) - f;
                 float cc = (c.r+c.g+c.b);
                 cc = clamp(cc,0,1);
-                return lerp(_Color2,_Color1,cc);
+                return lerp(_Color2,_Color1, 0.5 + 0.5 * cc);
             }
             ENDCG
         }

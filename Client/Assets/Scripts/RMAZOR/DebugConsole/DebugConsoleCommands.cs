@@ -261,9 +261,13 @@ namespace RMAZOR.DebugConsole
                 return;
             }
             levelIndex -= 1;
+            var args = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeyLevelIndex, levelIndex}
+            };
             Controller.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object [] { levelIndex },
+                args,
                 true);
         }
 
@@ -275,9 +279,13 @@ namespace RMAZOR.DebugConsole
         private static void LoadPreviousLevel(string[] _Args)
         {
             long levelIndex = Controller.Model.LevelStaging.LevelIndex - 1;
+            var args = new Dictionary<string, object>
+            {
+                {CommonInputCommandArg.KeyLevelIndex, levelIndex}
+            };
             Controller.CommandsProceeder.RaiseCommand(
                 EInputCommand.LoadLevelByIndex, 
-                new object [] { levelIndex },
+                args,
                 true);
         }
         

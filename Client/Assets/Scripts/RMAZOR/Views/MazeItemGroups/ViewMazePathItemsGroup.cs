@@ -2,6 +2,7 @@
 using System.Linq;
 using Common;
 using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
 using Common.SpawnPools;
 using RMAZOR.Helpers;
@@ -99,7 +100,19 @@ namespace RMAZOR.Views.MazeItemGroups
                 case ELevelStage.ReadyToUnloadLevel:
                     m_CurrentLevelMoney = 0;
                     MoneyCounter.CurrentLevelMoney = 0;
-                    if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
+                    bool MustResetCurrentLevelGroupMoney()
+                    {
+                        string thisLevelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+                        string nextLevelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+                        bool isThisLevelBonus = thisLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                        bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                        if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) && !isNextLevelBonus)
+                            return true;
+                        if (isThisLevelBonus)
+                            return true;
+                        return false;
+                    }
+                    if (MustResetCurrentLevelGroupMoney())
                         MoneyCounter.CurrentLevelGroupMoney = 0;
                     break;
             }

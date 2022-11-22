@@ -45,7 +45,7 @@ namespace Common.Utils
             float vertExtent = cam!.orthographicSize * 2f;
             float horzExtent = vertExtent * AspectRatio;
             var size = new Vector3(horzExtent, vertExtent, 0);
-            return new Bounds(cam.transform.position.SetZ(0), size);
+            return new Bounds(Vector3.zero, size);
         }
     }
 }

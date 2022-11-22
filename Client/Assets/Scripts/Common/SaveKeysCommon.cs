@@ -25,6 +25,7 @@ namespace Common
         private static SaveKey<List<string>> _debugConsoleCommandsHistory;
         private static SaveKey<bool>         _lowPerformanceDevice;
         private static SaveKey<List<int>>    _scheduleNotificationIds;
+        private static SaveKey<string>       _appVersion;
         
         private static readonly Dictionary<string, SaveKey<uint>> BundleVersions =
             new Dictionary<string, SaveKey<uint>>();
@@ -71,6 +72,7 @@ namespace Common
             SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          onlyCache);
             SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory),onlyCache);
             SaveUtils.PutValue(LowPerformanceDevice,        SaveUtils.GetValue(LowPerformanceDevice),       onlyCache);
+            SaveUtils.PutValue(AppVersion,                  SaveUtils.GetValue(AppVersion),                 onlyCache);
         }
 
         public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
@@ -112,7 +114,7 @@ namespace Common
         public static SaveKey<string> ServerUrl                =>
             new SaveKey<string>(nameof(ServerUrl));
         public static SaveKey<string> AppVersion               =>
-            new SaveKey<string>(nameof(AppVersion));
+            _appVersion ??= new SaveKey<string>(nameof(AppVersion));
         public static SaveKey<List<int>> BoughtPurchaseIds     => 
             _boughtPurchaseIds ??= new SaveKey<List<int>>(nameof(BoughtPurchaseIds));
         public static SaveKey<List<string>> DebugConsoleCommandsHistory =>
@@ -122,6 +124,7 @@ namespace Common
 
         public static SaveKey<List<int>> ScheduleNotificationIds =>
             _scheduleNotificationIds ??= new SaveKey<List<int>>(nameof(ScheduleNotificationIds));
+
         
         public static SaveKey<uint> BundleVersion(string _BundleName)
         {

@@ -194,7 +194,7 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
                     CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.StartUnloadingLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.UnloadLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.UnPauseLevel, group);
@@ -203,7 +203,7 @@ namespace RMAZOR.Views.UI
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
                     CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ReadyToUnloadLevel, group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.StartUnloadingLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
                     CommandsProceeder.UnlockCommand(EInputCommand.UnPauseLevel, group);
                     break;

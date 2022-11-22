@@ -218,8 +218,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     .SetSides(5)
                     .SetColor(GetBorderColor())
                     .SetSortingOrder(SortingOrders.PathLine)
-                    .SetRadius(scale * 0.15f)
-                    .SetRoundness(scale * 0.25f * ViewSettings.CornerRadius)
+                    .SetRadius(scale * 0.17f)
+                    .SetRoundness(scale * 0.25f * ViewSettings.LineThickness)
                     .SetAngle(polygonAngle);
             }
             var positions = GetPolygonPositions(_Side);
@@ -233,7 +233,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 case EDirection.Right: m_RightExtraBorders  = polygons; RightExtraBordersInited  = true; break;
                 case EDirection.Down:  m_BottomExtraBorders = polygons; BottomExtraBordersInited = true; break;
                 case EDirection.Up:    m_TopExtraBorders    = polygons; TopExtraBordersInited    = true; break;
-                default:                       throw new SwitchCaseNotImplementedException(_Side);
+                default: throw new SwitchCaseNotImplementedException(_Side);
             }
         }
 
@@ -243,7 +243,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Vector2 left, right, down, up;
             (left, right, down, up) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up);
             Vector2 pos1, pos2, pos3;
-            const float c1 = 0.55f;
+            const float c1 = 0.65f;
             const float c2 = 0.33f;
             const float indent = 0.1f;
             switch (_Side)

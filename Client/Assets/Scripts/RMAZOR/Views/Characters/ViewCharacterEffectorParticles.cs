@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
 using Common.Entities;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
 using Common.Utils;
@@ -68,7 +70,7 @@ namespace RMAZOR.Views.Characters
                         ColorProvider.ColorChanged += OnColorChanged;
                         CommandsProceeder.Command += OnCommand;
                         ParticlesThrower.ParticleType = EParticleType.Bubbles;
-                        ParticlesThrower.SetPoolSize(100);
+                        ParticlesThrower.SetPoolSize(300);
                         ParticlesThrower.Init();
                         ParticlesThrower.SetSortingOrder(SortingOrders.Character + 2);
                         m_Initialized = true;
@@ -129,23 +131,26 @@ namespace RMAZOR.Views.Characters
         
         #region nonpublic methods
         
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             if (_Command != EInputCommand.KillCharacter)
                 return;
-            if (_Args == null || !_Args.Any())
+            Vector2? deathPosition = default;
+            var deathPositionArg = _Args.GetSafe(CommonInputCommandArg.KeyDeathPosition, out bool keyExist);
+            if (keyExist)
+                deathPosition = (Vector2) deathPositionArg;
+            if (_Args == null || !_Args.Any() || !keyExist)
                 m_DeathPos = null;
             else
             {
-                var newDeathPos = (Vector2) _Args[0];
                 if (!m_DeathPos.HasValue)
-                    m_DeathPos = newDeathPos;
+                    m_DeathPos = deathPosition;
                 else if (m_FromPos.HasValue)
                 {
-                    if (Vector2.Distance(newDeathPos, m_FromPos.Value) <
+                    if (Vector2.Distance(deathPosition.Value, m_FromPos.Value) <
                         Vector2.Distance(m_DeathPos.Value, m_FromPos.Value))
                     {
-                        m_DeathPos = newDeathPos;
+                        m_DeathPos = deathPosition;
                     }
                 }
             }
@@ -205,10 +210,10 @@ namespace RMAZOR.Views.Characters
         private void ThrowParticlesOnMoveFinished(EDirection _MoveDirection)
         {
             const float directSpeedCoefficient = 2f;
-            const float orthogonalSpeedCoeficient = 4f;
+            const float orthogonalSpeedCoeficient = 2f;
             float GetDirectSpeedAddict(float _DirectionCoordinate)
             {
-                return -_DirectionCoordinate * directSpeedCoefficient;
+                return -_DirectionCoordinate * directSpeedCoefficient * (0.5f * (1f + Random.value));
             }
             float GetOrthogonalSpeedAddict(float _DirectionCoordinate, float _OrthogonalDirection)
             {
@@ -216,7 +221,7 @@ namespace RMAZOR.Views.Characters
                     _OrthogonalDirection * Random.value * orthogonalSpeedCoeficient : 0f;
             }
             Vector2 moveDir = RmazorUtils.GetDirectionVector(_MoveDirection, EMazeOrientation.North);
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 20; i++)
             {
                 float orthDirCoeff = i % 2 == 0 ? 1f : -1f;
                 var throwSpeed = new Vector2(
@@ -224,6 +229,8 @@ namespace RMAZOR.Views.Characters
                     GetOrthogonalSpeedAddict(moveDir.x, orthDirCoeff),
                     GetDirectSpeedAddict(moveDir.y) +
                     GetOrthogonalSpeedAddict(moveDir.y, orthDirCoeff));
+                throwSpeed = -throwSpeed;
+                throwSpeed *= 2f;
                 var cont = ContainersGetter.GetContainer(ContainerNames.Character);
                 var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff;
                 float orthDirCoeff2 = _MoveDirection switch
@@ -235,9 +242,9 @@ namespace RMAZOR.Views.Characters
                     _ => throw new SwitchExpressionException(_MoveDirection)
                 };
                 orthDir *= orthDirCoeff2;
-                var pos = (Vector2)cont.position + moveDir * CoordinateConverter.Scale * 0.5f + orthDir;
-                float randScale = 0.4f + 0.3f * Random.value;
-                ParticlesThrower.ThrowParticle(pos, throwSpeed, randScale, 0.2f);
+                var pos = (Vector2)cont.position + moveDir * CoordinateConverter.Scale * 0.5f + orthDir * (Random.value * 1.1f);
+                float randScale = 0.6f + 0.4f * Random.value;
+                ParticlesThrower.ThrowParticle(pos, throwSpeed, randScale, 0.8f);
             }
         }
 

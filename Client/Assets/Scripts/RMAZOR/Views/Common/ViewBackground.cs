@@ -11,12 +11,12 @@ namespace RMAZOR.Views.Common
     {
         #region inject
 
-        private IViewMazeBackgroundCongradItems      FireworkItems     { get; }
+        private IViewMazeBackgroundCongratItems      FireworkItems     { get; }
         private IViewMazeBackgroundTextureController TextureController { get; }
 
         private ViewBackground(
             IColorProvider                       _ColorProvider,
-            IViewMazeBackgroundCongradItems      _FireworkItems,
+            IViewMazeBackgroundCongratItems      _FireworkItems,
             IViewMazeBackgroundTextureController _TextureController) 
             : base(_ColorProvider)
         {

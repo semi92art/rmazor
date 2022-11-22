@@ -46,7 +46,7 @@ namespace Mono_Installers
             BindAds();
             BindStoreAndGameServices();
             BindHaptics();
-            BindCamera();
+            // BindCamera();
             BindPermissionsRequester();
             BindOther();
         }
@@ -217,13 +217,15 @@ namespace Mono_Installers
                 .AsSingle();
             
             Container.Bind<IAssetBundleManager>()
-                .To<AssetBundleManager>()
-                // .To<AssetBundleManagerFake>()
+                // .To<AssetBundleManager>()
+                .To<AssetBundleManagerFake>()
                 .AsSingle();
             
 #if UNITY_ANDROID
             Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
 #endif
+
+            Container.Bind<IApplicationVersionUpdater>().To<ApplicationVersionUpdater>().AsSingle();
         }
     }
 }

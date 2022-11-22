@@ -157,7 +157,8 @@ namespace Common.UI.DialogViewers
                         var canvas = CanvasGetter.GetCanvas();
                         if (canvas.enabled && !OtherDialogViewersShowing() && panelToObj.IsNull())
                             canvas.enabled = false; 
-                    }));
+                    },
+                    true));
             }
             if (panelToObj.IsNotNull())
             {
@@ -177,7 +178,8 @@ namespace Common.UI.DialogViewers
                     () =>
                     {
                         _PanelTo.AppearingState = EAppearingState.Appeared;
-                    }));
+                    },
+                    true));
             }
             FinishShowing(panelFrom, _PanelTo, _GoBack, panelToObj);
         }

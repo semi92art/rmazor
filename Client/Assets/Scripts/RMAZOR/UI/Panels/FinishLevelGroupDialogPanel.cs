@@ -19,6 +19,7 @@ using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI;
 using TMPro;
@@ -83,33 +84,36 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private ViewSettings                ViewSettings      { get; }
-        private IViewUIPrompt               Prompt            { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private IModelGame                  Model             { get; }
-        private IMoneyCounter               MoneyCounter      { get; }
+        private ViewSettings                        ViewSettings                   { get; }
+        private IViewUIPrompt                       Prompt                         { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IModelGame                          Model                          { get; }
+        private IMoneyCounter                       MoneyCounter                   { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private FinishLevelGroupDialogPanel(
-            ViewSettings                _ViewSettings,
-            IManagersGetter             _Managers,
-            IUITicker                   _Ticker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewUIPrompt               _Prompt,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IModelGame                  _Model,
-            IMoneyCounter               _MoneyCounter)
+            ViewSettings                        _ViewSettings,
+            IManagersGetter                     _Managers,
+            IUITicker                           _Ticker,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewUIPrompt                       _Prompt,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IModelGame                          _Model,
+            IMoneyCounter                       _MoneyCounter,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
                 _Ticker,
                 _CameraProvider,
                 _ColorProvider)
         {
-            ViewSettings      = _ViewSettings;
-            Prompt            = _Prompt;
-            CommandsProceeder = _CommandsProceeder;
-            Model             = _Model;
-            MoneyCounter      = _MoneyCounter;
+            ViewSettings                   = _ViewSettings;
+            Prompt                         = _Prompt;
+            CommandsProceeder              = _CommandsProceeder;
+            Model                          = _Model;
+            MoneyCounter                   = _MoneyCounter;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -361,13 +365,35 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = 1;
             Multiply();
             OnClose(null);
-            CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
+            var args = new Dictionary<string, object>();
+            var prevArgs = Model.LevelStaging.Arguments;
+            string currentLevelType = (string)prevArgs.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (currentLevelIsBonus)
+            {
+                args.SetSafe(
+                    CommonInputCommandArg.KeyNextLevelType, 
+                    CommonInputCommandArg.ParameterLevelTypeMain);
+            }
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartUnloadingLevel, false, args);
         }
 
         private void OnContinueButtonPressed()
         {
             OnClose(null);
-            CommandsProceeder.RaiseCommand(EInputCommand.ReadyToUnloadLevel, null);
+            var args = new Dictionary<string, object>();
+            var prevArgs = Model.LevelStaging.Arguments;
+            string currentLevelType = (string)prevArgs.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (currentLevelIsBonus)
+            {
+                args.SetSafe(
+                    CommonInputCommandArg.KeyNextLevelType, 
+                    CommonInputCommandArg.ParameterLevelTypeMain);
+            }
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartUnloadingLevel, false, args);
         }
 
         private void Multiply()

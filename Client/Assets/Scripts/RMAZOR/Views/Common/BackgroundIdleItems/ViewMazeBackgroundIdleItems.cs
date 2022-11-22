@@ -2,6 +2,7 @@
 using Common;
 using Common.CameraProviders;
 using Common.Exceptions;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Providers;
@@ -9,6 +10,7 @@ using Common.SpawnPools;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.Coordinate_Converters;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.BackgroundIdleItems
@@ -18,13 +20,19 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         void SetSpawnPool(long _LevelIndex);
     }
     
+    public class ViewMazeBackgroundIdleItemsFake : InitBase, IViewMazeBackgroundIdleItems
+    {
+        public void SetSpawnPool(long                  _LevelIndex) { }
+        public void OnLevelStageChanged(LevelStageArgs _Args)       { }
+    }
+    
     public class ViewMazeBackgroundIdleItems
         : ViewMazeBackgroundItemsBase,
           IViewMazeBackgroundIdleItems
     {
         #region nonpublic members
 
-        protected override int PoolSize => 15;
+        protected override int PoolSize => 30;
         
         private            Color                                          m_BackItemsColor;
         private            SpawnPool<IViewMazeBackgroundIdleItemDisc>     m_DiscsPool;
@@ -32,6 +40,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private            SpawnPool<IViewMazeBackgroundIdleItemTriangle> m_TrianglesPool;
 
         private SpawnPool<IViewMazeBackgroundIdleItem> m_CurrentPool;
+
+        private bool m_CurrentLevelIsBonus;
         
         #endregion
 
@@ -41,6 +51,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         private IViewMazeBackgroundIdleItemDisc     BackgroundIdleItemDisc     { get; }
         private IViewMazeBackgroundIdleItemSquare   BackgroundIdleItemSquare   { get; }
         private IViewMazeBackgroundIdleItemTriangle BackgroundIdleItemTriangle { get; }
+        private ICoordinateConverter                CoordinateConverter        { get; }
 
         private ViewMazeBackgroundIdleItems(
             IColorProvider                      _ColorProvider,
@@ -51,7 +62,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             IPrefabSetManager                   _PrefabSetManager,
             IViewMazeBackgroundIdleItemDisc     _BackgroundIdleItemDisc,
             IViewMazeBackgroundIdleItemSquare   _BackgroundIdleItemSquare,
-            IViewMazeBackgroundIdleItemTriangle _BackgroundIdleItemTriangle)
+            IViewMazeBackgroundIdleItemTriangle _BackgroundIdleItemTriangle,
+            ICoordinateConverter                _CoordinateConverter)
             : base(
                 _ColorProvider,
                 _Transitioner,
@@ -63,6 +75,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             BackgroundIdleItemDisc     = _BackgroundIdleItemDisc;
             BackgroundIdleItemSquare   = _BackgroundIdleItemSquare;
             BackgroundIdleItemTriangle = _BackgroundIdleItemTriangle;
+            CoordinateConverter        = _CoordinateConverter;
         }
 
         #endregion
@@ -92,12 +105,10 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            foreach (var disc in m_DiscsPool.GetAllActiveItems())
-                disc.OnLevelStageChanged(_Args);
-            foreach (var square in m_SquaresPool.GetAllActiveItems())
-                square.OnLevelStageChanged(_Args);
-            foreach (var triangle in m_TrianglesPool.GetAllActiveItems())
-                triangle.OnLevelStageChanged(_Args);
+            if (_Args.LevelStage != ELevelStage.Loaded)
+                return;
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            m_CurrentLevelIsBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
         }
         
         #endregion
@@ -122,8 +133,8 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             var physicsMaterial = PrefabSetManager.GetObject<PhysicsMaterial2D>(
                 "background",
                 "background_idle_items_physics_material");
-            m_DiscsPool = new SpawnPool<IViewMazeBackgroundIdleItemDisc>();
-            m_SquaresPool = new SpawnPool<IViewMazeBackgroundIdleItemSquare>();
+            m_DiscsPool     = new SpawnPool<IViewMazeBackgroundIdleItemDisc>();
+            m_SquaresPool   = new SpawnPool<IViewMazeBackgroundIdleItemSquare>();
             m_TrianglesPool = new SpawnPool<IViewMazeBackgroundIdleItemTriangle>();
             for (int i = 0; i < PoolSize; i++)
             {
@@ -135,11 +146,11 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 squareItem  .Init(Container, physicsMaterial);
                 triangleItem.Init(Container, physicsMaterial);
                 
-                const float multiplier = 0.5f;
+                const float multiplier = 1.5f;
                 float coeff = 1f + RandomGen.NextFloat() * 1f;
-                discItem    .SetParams(multiplier * coeff, 0.2f);
-                squareItem  .SetParams(3f * multiplier * coeff, 0.2f);
-                triangleItem.SetParams(3f * multiplier * coeff, 0.2f);
+                discItem    .SetScale(multiplier * coeff);
+                squareItem  .SetScale(multiplier * coeff);
+                triangleItem.SetScale(multiplier * coeff);
                 
                 discItem    .SetColor(m_BackItemsColor);
                 squareItem  .SetColor(m_BackItemsColor);
@@ -157,14 +168,14 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 return;
             foreach (var item in m_CurrentPool)
             {
-                if (IsInsideOfScreenBounds(item.Position, 3f * Vector2.one))
+                if (GetMazeSpaceBounds().Contains(item.Position))
                     continue;
-                item.Position = RandomPositionOnScreen(false, 3f * Vector2.one);
+                item.Position = RandomPositionOnMazeSpace(false);
                 item.SetVelocity(RandomVelocity(), RandomAngularVelocity());
             }
         }
 
-        protected override Vector2 RandomVelocity()
+        private Vector2 RandomVelocity()
         {
             return new Vector2(
                 RandomGen.NextFloatAlt() * 3f, 
@@ -186,12 +197,56 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             return pool;
         }
 
-        #endregion
-    }
+        private Vector2 RandomPositionOnMazeSpace(bool _Inside)
+        {
+            var bounds = GetMazeSpaceBounds();
+            float xDelta, yDelta;
+            if (_Inside)
+            {
+                xDelta = RandomGen.NextFloatAlt() * bounds.size.x * 0.5f;
+                yDelta = RandomGen.NextFloatAlt() * bounds.size.y * 0.5f;
+            }
+            else
+            {
+                int posCase = RandomGen.Next(1, 4);
+                switch (posCase)
+                {
+                    case 1: // right
+                        xDelta = bounds.size.x  * 0.5f;
+                        yDelta = bounds.size.y  * 0.5f * RandomGen.NextFloatAlt();
+                        break;
+                    case 2: // left
+                        xDelta = -bounds.size.x * 0.5f;
+                        yDelta = bounds.size.y  * 0.5f * RandomGen.NextFloatAlt();
+                        break;
+                    case 3: // top
+                        xDelta = bounds.size.x  * 0.5f * RandomGen.NextFloatAlt();
+                        yDelta = bounds.size.y  * 0.5f;
+                        break;
+                    case 4: // bottom
+                        xDelta = bounds.size.x  * 0.5f * RandomGen.NextFloatAlt();
+                        yDelta = -bounds.size.y * 0.5f;
+                        break;
+                    default:
+                        throw new SwitchCaseNotImplementedException(posCase);
+                }
+            }
+            float x = bounds.center.x + xDelta;
+            float y = bounds.center.y + yDelta;
+            return (Vector2)CameraProvider.Camera.transform.position + new Vector2(x, y);
+        }
+        
+        private Bounds GetMazeSpaceBounds()
+        {
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+            var mazeBounds = CoordinateConverter.GetMazeBounds();
+            screenBounds.size += 6f * Vector3.one;
+            var bounds = m_CurrentLevelIsBonus
+                ? new Bounds(mazeBounds.center, mazeBounds.size + screenBounds.size)
+                : screenBounds;
+            return bounds;
+        }
 
-    public class ViewMazeBackgroundIdleItemsFake : InitBase, IViewMazeBackgroundIdleItems
-    {
-        public void SetSpawnPool(long                   _LevelIndex) { }
-        public void OnLevelStageChanged(LevelStageArgs _Args) { }
+        #endregion
     }
 }

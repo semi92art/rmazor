@@ -19,7 +19,7 @@ namespace RMAZOR
 
         public static bool IsBigMaze(V2Int _Size)
         {
-            const int bigMazeSideThreshold = 30; 
+            const int bigMazeSideThreshold = 21; 
             return _Size.X > bigMazeSideThreshold
                    || _Size.Y > bigMazeSideThreshold;
         }
@@ -132,7 +132,7 @@ namespace RMAZOR
             return GetDirectionVector(direction, _Orientation);
         }
 
-        public static EDirection GetMoveDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
+        public static EDirection GetDirection(V2Int _DirectionVector, EMazeOrientation _Orientation)
         {
             switch (_Orientation)
             {
@@ -225,9 +225,7 @@ namespace RMAZOR
                     }
                 }
             }
-            if (res == null)
-                throw new ArgumentException($"Cannot build direct path from {_From} to {_To}");
-            return res;
+            return res ?? new V2Int[0];
         }
 
         /// <summary>
@@ -289,7 +287,7 @@ namespace RMAZOR
             return (int)(_LevelIndex - levelsCount);
         }
 
-        public static int GetFirstLevelInGroup(int _GroupIndex)
+        public static long GetFirstLevelInGroup(int _GroupIndex)
         {
             int groupIndexInList = 0;
             int index = 0;

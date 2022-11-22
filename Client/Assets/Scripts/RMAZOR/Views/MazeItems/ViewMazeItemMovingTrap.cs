@@ -7,6 +7,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
@@ -38,17 +39,20 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region inject
+        
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewMazeItemMovingTrap(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            ICoordinateConverter        _CoordinateConverter,
-            IContainersGetter           _ContainersGetter,
-            IViewGameTicker             _GameTicker,
-            IRendererAppearTransitioner _Transitioner,
-            IManagersGetter             _Managers,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            ICoordinateConverter                _CoordinateConverter,
+            IContainersGetter                   _ContainersGetter,
+            IViewGameTicker                     _GameTicker,
+            IRendererAppearTransitioner         _Transitioner,
+            IManagersGetter                     _Managers,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _ViewSettings,
                 _Model, 
@@ -58,7 +62,10 @@ namespace RMAZOR.Views.MazeItems
                 _Transitioner,
                 _Managers,
                 _ColorProvider,
-                _CommandsProceeder) { }
+                _CommandsProceeder)
+        {
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+        }
         
         #endregion
         
@@ -75,7 +82,8 @@ namespace RMAZOR.Views.MazeItems
             Transitioner,
             Managers,
             ColorProvider,
-            CommandsProceeder);
+            CommandsProceeder,
+            SwitchLevelStageCommandInvoker);
 
         public override EProceedingStage ProceedingStage
         {
@@ -188,15 +196,14 @@ namespace RMAZOR.Views.MazeItems
                     m_PrecisePosition);
                 if (dist + MathUtils.Epsilon > 1f)
                     return;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, 
-                    null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
             else
             {
                 Vector2 cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_PrecisePosition) + MathUtils.Epsilon > 1f)
                     return;
-                CommandsProceeder.RaiseCommand(EInputCommand.KillCharacter, null);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
         }
 

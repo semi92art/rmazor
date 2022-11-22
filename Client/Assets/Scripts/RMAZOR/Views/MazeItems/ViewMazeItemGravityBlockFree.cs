@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common;
 using Common.Entities;
 using Common.Enums;
@@ -11,11 +10,8 @@ using Common.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -23,7 +19,9 @@ namespace RMAZOR.Views.MazeItems
 {
     public interface IViewMazeItemGravityBlockFree : IViewMazeItemMovingBlock { }
     
-    public class ViewMazeItemGravityBlockFree : ViewMazeItemMovingBase, IViewMazeItemGravityBlockFree 
+    public class ViewMazeItemGravityBlockFree 
+        : ViewMazeItemMovingBase,
+          IViewMazeItemGravityBlockFree 
     {
         #region nonpublic members
 
@@ -35,6 +33,7 @@ namespace RMAZOR.Views.MazeItems
         #region shapes
 
         protected override string ObjectName => "Gravity Block Free";
+        private Rectangle m_Border;
         private Rectangle m_Shape;
         
         #endregion
@@ -66,7 +65,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Renderers => new Component[] {m_Shape};
+        public override Component[] Renderers => new Component[] {m_Border, m_Shape};
         public override object Clone() => new ViewMazeItemGravityBlockFree(
             ViewSettings,
             Model,
@@ -108,9 +107,13 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            m_Shape = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
+            m_Border = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedBorder)
+                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
+            m_Shape = Object.AddComponentOnNewChild<Rectangle>("Joint", out _)
+                .SetSortingOrder(GetSortingOrder())
+                .SetType(Rectangle.RectangleType.RoundedSolid)
                 .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
         }
 
@@ -118,9 +121,12 @@ namespace RMAZOR.Views.MazeItems
         {
             base.UpdateShape();
             float scale = CoordinateConverter.Scale;
-            m_Shape.SetSize(scale * (1f + ViewSettings.LineThickness * 0.5f))
+            m_Border.SetSize(scale)
                 .SetThickness(ViewSettings.LineThickness * scale)
-                .SetCornerRadius(ViewSettings.CornerRadius * scale);
+                .SetCornerRadius(ViewSettings.LineThickness * scale);
+            m_Shape.SetSize(scale)
+                .SetThickness(ViewSettings.LineThickness * scale)
+                .SetCornerRadius(ViewSettings.LineThickness * scale);
         }
 
         protected override void InitWallBlockMovingPaths() { }
@@ -128,14 +134,17 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId == ColorIds.MazeItem2)
-                m_Shape.Color = _Color;
+            if (_ColorId != ColorIds.MazeItem2) 
+                return;
+            m_Border.Color = _Color;
+            m_Shape.Color = _Color.SetA(0.3f);
         }
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            sets.Add(Renderers, () => ColorProvider.GetColor(ColorIds.MazeItem2));
+            sets.Add(new [] {m_Shape},  () => ColorProvider.GetColor(ColorIds.MazeItem2).SetA(0.3f));
+            sets.Add(new [] {m_Border}, () => ColorProvider.GetColor(ColorIds.MazeItem2));
             return sets;
         }
 

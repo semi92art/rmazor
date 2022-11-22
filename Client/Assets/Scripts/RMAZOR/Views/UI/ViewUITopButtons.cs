@@ -4,13 +4,13 @@ using Common.Constants;
 using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
-using Common.UI;
 using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Utils;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
@@ -38,7 +38,6 @@ namespace RMAZOR.Views.UI
         #region inject
 
         private IModelGame                  Model                   { get; }
-        private IContainersGetter           ContainersGetter        { get; }
         private ICameraProvider             CameraProvider          { get; }
         private IManagersGetter             Managers                { get; }
         private IDialogViewerFullscreen     DialogViewerFullscreen  { get; }
@@ -47,7 +46,6 @@ namespace RMAZOR.Views.UI
 
         private ViewUITopButtons(
             IModelGame                  _Model,
-            IContainersGetter           _ContainersGetter,
             ICameraProvider             _CameraProvider,
             IManagersGetter             _Managers,
             IDialogViewerFullscreen     _DialogViewerFullscreen,
@@ -55,7 +53,6 @@ namespace RMAZOR.Views.UI
             IViewInputTouchProceeder    _ViewInputTouchProceeder)
         {
             Model                   = _Model;
-            ContainersGetter        = _ContainersGetter;
             CameraProvider          = _CameraProvider;
             Managers                = _Managers;
             DialogViewerFullscreen  = _DialogViewerFullscreen;
@@ -70,7 +67,9 @@ namespace RMAZOR.Views.UI
         public void Init(Vector4 _Offsets)
         {
             m_TopOffset = _Offsets.w;
-            InitTopButtons();
+            InitShopButton();
+            InitSettingsButton();
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
         }
         
         public void ShowControls(bool _Show, bool _Instantly)
@@ -84,7 +83,7 @@ namespace RMAZOR.Views.UI
             m_SettingsButton.enabled = _Show;
         }
 
-        public List<Component> GetRenderers()
+        public IEnumerable<Component> GetRenderers()
         {
             return m_Renderers;
         }
@@ -93,49 +92,64 @@ namespace RMAZOR.Views.UI
 
         #region nonpublic methods
         
-        private void InitTopButtons()
+        private void OnActiveCameraChanged(Camera _Camera)
         {
-            const float topOffset = 0f;
-            const float horOffset = 1f;
-            float scale = GraphicUtils.AspectRatio * 3f;
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-            float yPos = screenBounds.max.y - m_TopOffset;
-            var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
+            const float additionalVerticalOffset = 0f;
+            const float horizontalOffset = 1f;
+            var parent = _Camera.transform;
+            var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
+            var scaleVec = Vector2.one * GraphicUtils.AspectRatio * 3f;
+            float yPos = screenBounds.max.y - m_TopOffset - additionalVerticalOffset;
+            m_ShopButton.transform
+                .SetParentEx(parent)
+                .SetLocalScaleXY(scaleVec)
+                .SetLocalPosX(screenBounds.min.x + horizontalOffset)
+                .SetLocalPosY(yPos)
+                .SetLocalPosZ(10f);
+            m_SettingsButton.transform
+                .SetParentEx(parent)
+                .SetLocalScaleXY(scaleVec)
+                .SetLocalPosX(screenBounds.max.x - horizontalOffset)
+                .SetLocalPosY(yPos)
+                .SetLocalPosZ(10f);
+        }
+
+        private void InitShopButton()
+        {
+            var cont = CameraProvider.Camera.transform;
             var goShopButton = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "shop_button");
-            var goSettingsButton = Managers.PrefabSetManager.InitPrefab(
-                cont, CommonPrefabSetNames.UiGame, "settings_button");
-            m_Renderers.AddRange( new Component[]
-            {
-                goShopButton.GetCompItem<SpriteRenderer>("button"),
-                goSettingsButton.GetCompItem<SpriteRenderer>("button")
-            });
-            goShopButton.transform.localScale = scale * Vector3.one;
-            goShopButton.transform.SetPosXY(
-                new Vector2(screenBounds.min.x, yPos)
-                + Vector2.right * horOffset + Vector2.down * topOffset);
-            goSettingsButton.transform.localScale = scale * Vector3.one;
-            goSettingsButton.transform.SetPosXY(
-                new Vector2(screenBounds.max.x, yPos)
-                + Vector2.left * horOffset + Vector2.down * topOffset);
+            var renderer = goShopButton.GetCompItem<SpriteRenderer>("button");
+            renderer.sortingOrder = SortingOrders.GameUI;
+            m_Renderers.Add( renderer);
             m_ShopButton = goShopButton.GetCompItem<ButtonOnRaycast>("button");
-            m_SettingsButton = goSettingsButton.GetCompItem<ButtonOnRaycast>("button");
             m_ShopButton.Init(
                 CommandShop, 
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
+            goShopButton.SetActive(false);
+        }
+
+        private void InitSettingsButton()
+        {
+            var cont = CameraProvider.Camera.transform;
+            var goSettingsButton = Managers.PrefabSetManager.InitPrefab(
+                cont, CommonPrefabSetNames.UiGame, "settings_button");
+            var renderer = goSettingsButton.GetCompItem<SpriteRenderer>("button");
+            renderer.sortingOrder = SortingOrders.GameUI;
+            m_Renderers.Add( renderer);
+            m_SettingsButton = goSettingsButton.GetCompItem<ButtonOnRaycast>("button");
             m_SettingsButton.Init(
                 CommandSettings, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
-            goShopButton.SetActive(false);
             goSettingsButton.SetActive(false);
         }
-        
+
         private void CommandShop()
         {
             if (DialogViewerFullscreen.CurrentPanel != null

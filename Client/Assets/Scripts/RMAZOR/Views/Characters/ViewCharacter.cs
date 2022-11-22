@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using Common.Constants;
 using Common.Entities;
 using Common.Enums;
@@ -27,10 +28,10 @@ namespace RMAZOR.Views.Characters
         
         #region nonpublic members
 
-        protected bool    EnableMoving;
-        private   bool    m_Activated;
-        private   Vector2 m_NewPosition;
-        private   bool    m_IsMoving;
+        private bool    m_EnableMoving;
+        private bool    m_Activated;
+        private Vector2 m_NewPosition;
+        private bool    m_IsMoving;
 
         #endregion
         
@@ -132,7 +133,7 @@ namespace RMAZOR.Views.Characters
 
         public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
-            if (!EnableMoving)
+            if (!m_EnableMoving)
                 return;
             var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             SetPosition(pos);
@@ -146,7 +147,7 @@ namespace RMAZOR.Views.Characters
 
         public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
         {
-            if (!EnableMoving)
+            if (!m_EnableMoving)
                 return;
             m_NewPosition = CoordinateConverter.ToLocalCharacterPosition(_Args.PrecisePosition);
             Tail.OnCharacterMoveContinued(_Args);
@@ -155,7 +156,7 @@ namespace RMAZOR.Views.Characters
 
         public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
         {
-            if (!EnableMoving)
+            if (!m_EnableMoving)
                 return;
             if (_Args.BlockOnFinish != null &&
                 (_Args.BlockOnFinish.Type == EMazeItemType.Springboard
@@ -193,7 +194,7 @@ namespace RMAZOR.Views.Characters
                     {
                         SetDefaultPosition();
                     }
-                    EnableMoving = true;
+                    m_EnableMoving = true;
                     break;
                 case ELevelStage.CharacterKilled:
                     m_IsMoving = false;
@@ -226,11 +227,11 @@ namespace RMAZOR.Views.Characters
         
         #region nonpublic methods
 
-        private void OnCommand(EInputCommand _Command, object[] _Args)
+        private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
             if (_Command != EInputCommand.KillCharacter)
                 return;
-            EnableMoving = false;
+            m_EnableMoving = false;
         }
         
         private void SetDefaultPosition()

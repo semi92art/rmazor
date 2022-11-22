@@ -92,7 +92,7 @@ namespace RMAZOR.Views.UI
             ColorProvider       = _ColorProvider;
             PrefabSetManager    = _PrefabSetManager;
             RotationControls    = _RotationControls;
-            MoneyCounter = _MoneyCounter;
+            MoneyCounter        = _MoneyCounter;
         }
 
         #endregion
@@ -101,6 +101,7 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             GameTicker.Register(this);
             m_BottomOffset = _Offsets.z;
             m_PromptObject = PrefabSetManager.InitPrefab(
@@ -110,7 +111,7 @@ namespace RMAZOR.Views.UI
             m_PromptText.fontSize = 18f;
             m_PromptText.enabled = false;
         }
-        
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             switch (_Args.LevelStage)
@@ -128,8 +129,7 @@ namespace RMAZOR.Views.UI
                 }        
                     break;
                 case ELevelStage.Finished 
-                    when _Args.PreviousStage != ELevelStage.Paused
-                    && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex) && MoneyCounter.CurrentLevelGroupMoney > 0:
+                    when _Args.PreviousStage != ELevelStage.Paused:
                 {
                     ShopPromptTapToNext();
                 }
@@ -184,6 +184,11 @@ namespace RMAZOR.Views.UI
         #endregion
 
         #region nonpublic methods
+        
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            m_PromptObject.SetParent(_Camera.transform);
+        }
 
         private void ShowPromptSwipeToStart()
         {
@@ -205,7 +210,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             float xPos = screenBounds.center.x;
             float yPos = GraphicUtils.GetVisibleBounds(CameraProvider.Camera).min.y + addIndentY;
-            return new Vector3(xPos, yPos);
+            return new Vector2(xPos, yPos);
         }
 
         private void ShowPrompt(string _Key, Vector3 _Position)
@@ -217,7 +222,7 @@ namespace RMAZOR.Views.UI
             }
             if (m_CurrentPromptInfo?.Key == _Key)
                 return;
-            m_PromptObject.transform.position = _Position;
+            m_PromptObject.transform.SetLocalPosXY(_Position);
             var info = new LocalizableTextObjectInfo(m_PromptText, ETextType.GameUI, _Key);
             LocalizationManager.AddTextObject(info);
             m_PromptText.enabled = true;
@@ -226,8 +231,8 @@ namespace RMAZOR.Views.UI
             m_PromptText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
             m_CurrentPromptInfo = new PromptInfo
             {
-                Key = _Key, 
-                PromptGo = m_PromptObject,
+                Key        = _Key, 
+                PromptGo   = m_PromptObject,
                 PromptText = m_PromptText
             };
             m_RunShowPromptCoroutine = true;

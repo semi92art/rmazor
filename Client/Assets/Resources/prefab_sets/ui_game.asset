@@ -90,6 +90,10 @@ MonoBehaviour:
       item: {fileID: 6624169740486630875, guid: 80c2fa2114012d1469d77680028f7233,
         type: 3}
       bundle: 0
+    - name: start_logo_4
+      item: {fileID: 6624169740486630875, guid: 657651291fa7a3a49ad35f57dac1eff5,
+        type: 3}
+      bundle: 0
     - name: money_mini_panel
       item: {fileID: 4343252772721228017, guid: b9bd8eab7fc1f8d45b369504bc2b451b,
         type: 3}

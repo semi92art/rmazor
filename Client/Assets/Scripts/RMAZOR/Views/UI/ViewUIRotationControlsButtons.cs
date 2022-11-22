@@ -12,6 +12,7 @@ using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -34,36 +35,39 @@ namespace RMAZOR.Views.UI
         
         #region inject
 
-        private IModelGame                  Model             { get; }
-        private IColorProvider              ColorProvider     { get; }
-        private ICameraProvider             CameraProvider    { get; }
-        private IContainersGetter           ContainersGetter  { get; }
-        private IManagersGetter             Managers          { get; }
-        private IRendererAppearTransitioner Transitioner      { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private IViewInputTouchProceeder    TouchProceeder    { get; }
-        private IViewGameTicker             GameTicker        { get; }
+        private IModelGame                          Model                          { get; }
+        private IColorProvider                      ColorProvider                  { get; }
+        private ICameraProvider                     CameraProvider                 { get; }
+        private IContainersGetter                   ContainersGetter               { get; }
+        private IManagersGetter                     Managers                       { get; }
+        private IRendererAppearTransitioner         Transitioner                   { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IViewInputTouchProceeder            TouchProceeder                 { get; }
+        private IViewGameTicker                     GameTicker                     { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private ViewUIRotationControlsButtons(
-            IModelGame                  _Model,
-            IColorProvider              _ColorProvider,
-            ICameraProvider             _CameraProvider,
-            IContainersGetter           _ContainersGetter,
-            IManagersGetter             _Managers,
-            IRendererAppearTransitioner _Transitioner,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IViewInputTouchProceeder    _TouchProceeder,
-            IViewGameTicker             _GameTicker)
+            IModelGame                          _Model,
+            IColorProvider                      _ColorProvider,
+            ICameraProvider                     _CameraProvider,
+            IContainersGetter                   _ContainersGetter,
+            IManagersGetter                     _Managers,
+            IRendererAppearTransitioner         _Transitioner,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewInputTouchProceeder            _TouchProceeder,
+            IViewGameTicker                     _GameTicker,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
         {
-            Model             = _Model;
-            ColorProvider     = _ColorProvider;
-            CameraProvider    = _CameraProvider;
-            ContainersGetter  = _ContainersGetter;
-            Managers          = _Managers;
-            Transitioner      = _Transitioner;
-            CommandsProceeder = _CommandsProceeder;
-            TouchProceeder    = _TouchProceeder;
-            GameTicker        = _GameTicker;
+            Model                          = _Model;
+            ColorProvider                  = _ColorProvider;
+            CameraProvider                = _CameraProvider;
+            ContainersGetter               = _ContainersGetter;
+            Managers                       = _Managers;
+            Transitioner                   = _Transitioner;
+            CommandsProceeder              = _CommandsProceeder;
+            TouchProceeder                 = _TouchProceeder;
+            GameTicker                     = _GameTicker;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -93,7 +97,7 @@ namespace RMAZOR.Views.UI
                 CommandsProceeder.LockCommands(commands, group);
         }
 
-        public List<Component> GetRenderers()
+        public IEnumerable<Component> GetRenderers()
         {
             return new List<Component>();
         }
@@ -192,8 +196,11 @@ namespace RMAZOR.Views.UI
                 return;
             Cor.Run(ButtonOnClickCoroutine(_Clockwise ? m_RotateClockwiseButton : m_RotateCounterClockwiseButton));
             LockCommandsOnRotationStarted();
-            if (Model.LevelStaging.LevelStage == ELevelStage.ReadyToStart)
-                CommandsProceeder.RaiseCommand(EInputCommand.StartOrContinueLevel, null, true);
+            if (Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart)
+                return;
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                EInputCommand.StartOrContinueLevel, 
+                true);
         }
         
         private void LockCommandsOnRotationStarted()

@@ -11,8 +11,9 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
     public interface IFullscreenTransitionTextureProvider : IInit
     {
-        void Activate(bool            _Active);
-        void SetTransitionValue(float _Value, bool _Appear);
+        MeshRenderer Renderer { get; }
+        void         Activate(bool            _Active);
+        void         SetTransitionValue(float _Value, bool _Appear);
     }
     
     public abstract class FullscreenTransitionTextureProviderBase 
@@ -42,7 +43,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         #region api
         
-        public MeshRenderer Renderer { get; protected set; }
+        public MeshRenderer Renderer { get; private set; }
 
         public override void Init()
         {

@@ -1,11 +1,12 @@
-﻿using Common.Helpers;
+﻿using System.Collections.Generic;
+using Common.Helpers;
 using UnityEngine.Events;
 
 namespace RMAZOR.Models.InputSchedulers
 {
     public interface IAddCommand
     {
-        void AddCommand(EInputCommand _Command, params object[] _Args);
+        void AddCommand(EInputCommand _Command, Dictionary<string, object> _Args = null);
     }
     
     public interface IInputScheduler : IInputSchedulerGameProceeder, IInputSchedulerUiProceeder { }
@@ -36,9 +37,9 @@ namespace RMAZOR.Models.InputSchedulers
         
         #region api
         
-        public event UnityAction<EInputCommand, object[]> MoveCommand;
-        public event UnityAction<EInputCommand, object[]> RotateCommand;
-        public event UnityAction<EInputCommand, object[]> UiCommand;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> MoveCommand;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> RotateCommand;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> UiCommand;
 
         public override void Init()
         {
@@ -47,7 +48,7 @@ namespace RMAZOR.Models.InputSchedulers
             base.Init();
         }
 
-        public void AddCommand(EInputCommand _Command, object[] _Args = null)
+        public void AddCommand(EInputCommand _Command, Dictionary<string, object> _Args = null)
         {
             InputSchedulerGameProceeder.AddCommand(_Command, _Args);
             InputSchedulerUiProceeder.AddCommand(_Command, _Args);

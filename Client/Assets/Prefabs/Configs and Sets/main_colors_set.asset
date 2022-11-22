@@ -17,9 +17,9 @@ MonoBehaviour:
     - name: Main
       color: {r: 0.6313726, g: 0.46799824, b: 0, a: 1}
     - name: Maze Item 1
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 0, g: 0.97254896, b: 1, a: 1}
     - name: Maze Item 2
-      color: {r: 0, g: 1, b: 0.98823524, a: 1}
+      color: {r: 0.13919187, g: 1, b: 0, a: 1}
     - name: Path Item
       color: {r: 1, g: 0, b: 0, a: 1}
     - name: Path Fill
@@ -27,11 +27,11 @@ MonoBehaviour:
     - name: Path Background
       color: {r: 0.20754719, g: 0, b: 0, a: 0.8352941}
     - name: Money Item
-      color: {r: 1, g: 0.8855696, b: 0.3820755, a: 1}
+      color: {r: 1, g: 0.9803922, b: 0, a: 1}
     - name: Character
-      color: {r: 1, g: 1, b: 1, a: 1}
+      color: {r: 1, g: 0.97981787, b: 0, a: 1}
     - name: Character Tail
-      color: {r: 1, g: 1, b: 1, a: 0.5019608}
+      color: {r: 1, g: 0.9803922, b: 0, a: 1}
     - name: Background 1
       color: {r: 0, g: 0, b: 0, a: 1}
     - name: Background 2

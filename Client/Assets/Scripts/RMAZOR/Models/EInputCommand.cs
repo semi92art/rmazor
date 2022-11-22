@@ -10,19 +10,14 @@
         // rotate commands
         RotateClockwise,
         RotateCounterClockwise,
-        // load level commands
-        LoadCurrentLevel,
-        LoadFirstLevelFromCurrentGroup,
-        LoadNextLevel,
-        LoadLevelByIndex,
-        LoadRandomLevel,
-        LoadRandomLevelWithRotation,
-        LoadFirstLevelFromRandomGroup,
         // level staging commands
+        LoadFirstLevelFromCurrentGroup,
+        LoadLevelByIndex,
+        LoadNextLevel,
         ReadyToStartLevel,
         StartOrContinueLevel,
         FinishLevel,
-        ReadyToUnloadLevel,
+        StartUnloadingLevel,
         UnloadLevel,
         PauseLevel,
         UnPauseLevel,
@@ -35,6 +30,11 @@
         PlayBonusLevelPanel,
         // debug commands
         EnableDebug,
-        DisableDebug
+        DisableDebug,
+        // debug load level commands
+        LoadCurrentLevel,
+        LoadRandomLevel,
+        LoadRandomLevelWithRotation,
+        LoadFirstLevelFromRandomGroup,
     }
 }

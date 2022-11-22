@@ -13,18 +13,19 @@ namespace RMAZOR.Views.InputConfigurators
 {
     public interface IViewInputCommandsProceeder : IInit
     {
-        List<Tuple<EInputCommand, object[]>>       CommandsHistory       { get; }
-        float                                      SecondsWithoutCommand { get; }
-        event UnityAction<EInputCommand, object[]> Command; 
-        event UnityAction<EInputCommand, object[]> InternalCommand; 
+        event UnityAction<EInputCommand, Dictionary<string, object>> Command;
+        event UnityAction<EInputCommand, Dictionary<string, object>> InternalCommand;
         
-        void                       LockCommand(EInputCommand _Key, string _Group);
-        void                       UnlockCommand(EInputCommand _Key, string _Group);
-        void                       LockCommands(IEnumerable<EInputCommand> _Keys, string _Group);
-        void                       UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group);
+        float                                                        TimeFromLastCommandInSecs { get; }
+        List<Tuple<EInputCommand, Dictionary<string, object>>>       CommandsHistory           { get; }
+        
         IEnumerable<EInputCommand> GetAllCommands();
+        void                       LockCommand(EInputCommand _Key, string _Group);
+        void                       LockCommands(IEnumerable<EInputCommand> _Keys, string _Group);
+        void                       UnlockCommand(EInputCommand _Key, string _Group);
+        void                       UnlockCommands(IEnumerable<EInputCommand> _Keys, string _Group);
         void                       UnlockAllCommands(string _Group = "common");
-        bool                       RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false);
+        bool                       RaiseCommand(EInputCommand _Key, Dictionary<string, object> _Args, bool _Forced = false);
         bool                       IsCommandLocked(EInputCommand _Key);
     }
     
@@ -55,13 +56,13 @@ namespace RMAZOR.Views.InputConfigurators
 
         #region api
 
-        public List<Tuple<EInputCommand, object[]>> CommandsHistory { get; } =
-            new List<Tuple<EInputCommand, object[]>>();
+        public List<Tuple<EInputCommand, Dictionary<string, object>>> CommandsHistory { get; } =
+            new List<Tuple<EInputCommand, Dictionary<string, object>>>();
 
-        public float SecondsWithoutCommand { get; private set; }
+        public float TimeFromLastCommandInSecs { get; private set; }
         
-        public event UnityAction<EInputCommand, object[]> Command;
-        public event UnityAction<EInputCommand, object[]> InternalCommand;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> Command;
+        public event UnityAction<EInputCommand, Dictionary<string, object>> InternalCommand;
         
         public override void Init()
         {
@@ -74,7 +75,7 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (CommonTicker == null)
                 return;
-            SecondsWithoutCommand += CommonTicker.DeltaTime;
+            TimeFromLastCommandInSecs += CommonTicker.DeltaTime;
         }
         
         public void LockCommand(EInputCommand _Key, string _Group)
@@ -126,10 +127,13 @@ namespace RMAZOR.Views.InputConfigurators
             UnlockCommands(allCommands, _Group);
         }
         
-        public virtual bool RaiseCommand(EInputCommand _Key, object[] _Args, bool _Forced = false)
+        public virtual bool RaiseCommand(
+            EInputCommand              _Key,
+            Dictionary<string, object> _Args,
+            bool                       _Forced = false)
         {
-            CommandsHistory.Add(new Tuple<EInputCommand, object[]>(_Key, _Args));
-            SecondsWithoutCommand = 0f;
+            CommandsHistory.Add(new Tuple<EInputCommand, Dictionary<string, object>>(_Key, _Args));
+            TimeFromLastCommandInSecs = 0f;
             InternalCommand?.Invoke(_Key, _Args);
             if (_Forced)
             {

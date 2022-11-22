@@ -787,7 +787,7 @@ GameObject:
   - component: {fileID: 5645051723886357035}
   - component: {fileID: 9171679553502429605}
   m_Layer: 0
-  m_Name: Trap Increasing
+  m_Name: Trap Increasing Sickles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
