@@ -107,15 +107,9 @@ namespace Common.Managers.Advertising
                 ? m_Providers.Values
                 : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
                     .Select(_Kvp => _Kvp.Value)).ToList();
-            bool IsProviderReady(IAdsProvider _Provider)
+            static bool IsProviderReady(IAdsProvider _Provider)
             {
-                if (_Provider == null
-                    || !_Provider.Initialized
-                    || !_Provider.RewardedAdReady)
-                {
-                    return false;
-                }
-                return true;
+                return _Provider != null && _Provider.Initialized && _Provider.RewardedAdReady;
             }
             var readyProviders = providers
                 .Where(_P => _P.Initialized && _P.RewardedAdReady)
@@ -156,15 +150,9 @@ namespace Common.Managers.Advertising
                 ? m_Providers.Values
                 : m_Providers.Where(_Kvp => _Kvp.Key == _AdsNetwork)
                     .Select(_Kvp => _Kvp.Value)).ToList();
-            bool IsProviderReady(IAdsProvider _Provider)
+            static bool IsProviderReady(IAdsProvider _Provider)
             {
-                if (_Provider == null
-                    || !_Provider.Initialized
-                    || !_Provider.InterstitialAdReady)
-                {
-                    return false;
-                }
-                return true;
+                return _Provider != null && _Provider.Initialized && _Provider.InterstitialAdReady;
             }
             var readyProviders = providers
                 .Where(_P => _P.Initialized && _P.InterstitialAdReady)
