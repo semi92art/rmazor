@@ -47,7 +47,7 @@ namespace RMAZOR.Helpers
             {
                 bool mainLevelsLoaded  = CachedLevelsLoaded        || RemoteLevelsLoaded;
                 bool bonusLevelsLoaded = m_CachedBonusLevelsLoaded || m_RemoteBonusLevelsLoaded;
-                return mainLevelsLoaded && bonusLevelsLoaded;
+                return !mainLevelsLoaded || !bonusLevelsLoaded;
             }
             Cor.Run(Cor.WaitWhile(
                 InitializationPredicate,
