@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adMobAndroidAppId: ca-app-pub-5357184552698168~9131218519
   adMobIosAppId: ca-app-pub-5357184552698168~8964338187
-  accessCoarseLocationPermission: 0
+  accessCoarseLocationPermission: 1
   writeExternalStoragePermission: 1
   accessWifiStatePermission: 1
   vibratePermission: 1
-  accessFineLocationPermission: 0
+  accessFineLocationPermission: 1
   nSUserTrackingUsageDescription: 1
   nSLocationWhenInUseUsageDescription: 1
-  nSCalendarsUsageDescription: 1
+  nSCalendarsUsageDescription: 0
   nSAppTransportSecurity: 1
   iosSkAdNetworkItems: 1
   iosSkAdNetworkItemsList:
