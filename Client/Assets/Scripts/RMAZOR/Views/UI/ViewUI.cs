@@ -98,6 +98,7 @@ namespace RMAZOR.Views.UI
                     break;
                 case EInputCommand.PlayBonusLevelPanel:
                 {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
                     var playBonusLevelPanel = DialogPanelsSet.GetPanel<IPlayBonusLevelDialogPanel>();
                     var dv = DialogViewersController.GetViewer(playBonusLevelPanel.DialogViewerType);
                     dv.Show(playBonusLevelPanel);
@@ -105,6 +106,7 @@ namespace RMAZOR.Views.UI
                     break;
                 case EInputCommand.FinishLevelGroupPanel:
                 {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
                     var finishLevelGroupDialogPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
                     var dv = DialogViewersController.GetViewer(finishLevelGroupDialogPanel.DialogViewerType);
                     dv.Show(finishLevelGroupDialogPanel);

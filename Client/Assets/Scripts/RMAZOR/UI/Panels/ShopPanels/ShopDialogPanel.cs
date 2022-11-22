@@ -18,6 +18,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Items;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -50,14 +51,14 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         #region inject
         
-        private IModelGame Model { get; }
+        private IModelGame                          Model                          { get; }
 
         private ShopDialogPanel(
-            IModelGame                  _Model,
-            IManagersGetter             _Managers,
-            IUITicker                   _UITicker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider)
+            IModelGame      _Model,
+            IManagersGetter _Managers,
+            IUITicker       _UITicker,
+            ICameraProvider _CameraProvider,
+            IColorProvider  _ColorProvider)
             : base(
                 _Managers, 
                 _UITicker,

@@ -14,6 +14,7 @@ using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -61,8 +62,9 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private IContainersGetter           ContainersGetter     { get; }
-        private IViewInputCommandsProceeder CommandsProceeder    { get; }
+        private IContainersGetter                   ContainersGetter               { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         public TutorialDialogPanel(
             IManagersGetter             _Managers,
@@ -70,7 +72,8 @@ namespace RMAZOR.UI.Panels
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
             IContainersGetter           _ContainersGetter,
-            IViewInputCommandsProceeder _CommandsProceeder) 
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
             : base(
                 _Managers, 
                 _Ticker,
@@ -79,6 +82,7 @@ namespace RMAZOR.UI.Panels
         {
             ContainersGetter     = _ContainersGetter;
             CommandsProceeder    = _CommandsProceeder;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -150,6 +154,7 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel, true);
             base.OnDialogDisappeared();
         }
 

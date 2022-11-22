@@ -181,7 +181,7 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            TickerUtils.PauseTickers(_Args.LevelStage == ELevelStage.Paused, ViewGameTicker, ModelGameTicker);
+            ProceedPausingTickers(_Args);
             SetCameraProviderProps(_Args);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
@@ -196,6 +196,12 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region nonpublic methods
+
+        private void ProceedPausingTickers(LevelStageArgs _Args)
+        {
+            if (_Args.LevelStage == ELevelStage.Paused)
+                TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker);
+        }
 
         private void OnTapScreenAction(LeanFinger _Finger)
         {
