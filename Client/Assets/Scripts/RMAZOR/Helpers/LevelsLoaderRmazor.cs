@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Common;
 using Common.Extensions;
@@ -62,23 +63,26 @@ namespace RMAZOR.Helpers
                     JsonConvert.DeserializeObject<MazeInfo>(_Levels[_Index]) : null;
             }
             bool isBonusLevel = IsNextLevelBonus(_Args);
-            var dicRemote = isBonusLevel ? 
-                m_SerializedBonusLevelsFromRemote
-                : SerializedLevelsFromRemote;
+            var dicRemote  = isBonusLevel ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
+            var dictCached = isBonusLevel ? m_SerializedBonusLevelsFromCache  : SerializedLevelsFromCache;
             var mazeInfo = Deserialize(dicRemote);
             bool valid = MazeInfoValidator.Validate(mazeInfo, out string error);
             if (!valid)
             {
                 Dbg.LogError("Remote maze info is not valid: " + error);
-                var dictCached = isBonusLevel
-                    ? m_SerializedBonusLevelsFromCache
-                    : SerializedLevelsFromCache;
                 mazeInfo = Deserialize(dictCached);
             }
             valid = MazeInfoValidator.Validate(mazeInfo, out error);
             if (valid)
                 return mazeInfo;
-            throw new Exception("Local maze info is not valid: " + error);
+            var sb = new StringBuilder();
+            sb.AppendLine("Local maze info is not valid: " + error);
+            sb.AppendLine("Game Id: " + _GameId);
+            sb.AppendLine("Level index: " + _Index);
+            sb.AppendLine("Is bonus level: " + isBonusLevel);
+            sb.AppendLine("Remote levels list count: " + dicRemote.Length);
+            sb.AppendLine("Local levels list count: " + dictCached.Length);
+            throw new Exception(sb.ToString());
         }
         
         public override int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
