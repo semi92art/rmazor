@@ -181,7 +181,6 @@ namespace RMAZOR.Views.Common
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            ProceedPausingTickers(_Args);
             SetCameraProviderProps(_Args);
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
@@ -197,10 +196,17 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic methods
 
-        private void ProceedPausingTickers(LevelStageArgs _Args)
+        private void ProceedPausingTickers(EInputCommand _Key)
         {
-            if (_Args.LevelStage == ELevelStage.Paused)
-                TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker);
+            switch (_Key)
+            {
+                case EInputCommand.PauseLevel:
+                    TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker);
+                    break;
+                case EInputCommand.UnPauseLevel:
+                    TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker);
+                    break;
+            }
         }
 
         private void OnTapScreenAction(LeanFinger _Finger)
@@ -231,6 +237,8 @@ namespace RMAZOR.Views.Common
 
         private void OnCommand(EInputCommand _Key, Dictionary<string, object> _Args)
         {
+            ProceedPausingTickers(_Key);
+            
             if (_Key != EInputCommand.StartUnloadingLevel)
                 return;
             if (_Args == null || !_Args.Any())
