@@ -6,6 +6,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
+using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -233,8 +234,21 @@ namespace RMAZOR.UI.Panels
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
             Managers.AdsManager.ShowRewardedAd(
                 _OnReward:      () => m_AdsWatched = true, 
-                _OnBeforeShown: () => TickerUtils.PauseTickers(true, Ticker),
-                _OnClosed:      () => TickerUtils.PauseTickers(false, Ticker),
+                _OnBeforeShown: () =>
+                {
+                    Managers.AudioManager.MuteAudio(EAudioClipType.Music);
+                    TickerUtils.PauseTickers(true, Ticker);
+                },
+                _OnClosed:      () =>
+                {
+                    Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+                    TickerUtils.PauseTickers(false, Ticker);
+                },
+                _OnFailedToShow: () =>
+                {
+                    Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+                    TickerUtils.PauseTickers(false, Ticker);
+                },
                 _Skippable:     false);
         }
 

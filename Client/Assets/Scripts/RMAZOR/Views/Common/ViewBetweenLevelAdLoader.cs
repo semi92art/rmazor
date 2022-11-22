@@ -11,8 +11,7 @@ namespace RMAZOR.Views.Common
         void TryShowAd(
             long _LevelIndex,
             UnityAction _OnBeforeAdShown,
-            UnityAction _OnAdClosed,
-            UnityAction _OnAdWasNotShown);
+            UnityAction _OnAdClosed);
     }
     
     public class ViewBetweenLevelAdLoader : IViewBetweenLevelAdLoader
@@ -39,8 +38,7 @@ namespace RMAZOR.Views.Common
         public void TryShowAd(
             long        _LevelIndex,
             UnityAction _OnBeforeAdShown,
-            UnityAction _OnAdClosed,
-            UnityAction _OnAdWasNotShown)
+            UnityAction _OnAdClosed)
         {
             bool doTryToShowAd = 
                 _LevelIndex >= GameSettings.firstLevelToShowAds
@@ -50,28 +48,24 @@ namespace RMAZOR.Views.Common
             if (doTryToShowAd)
             {
                 bool showRewardedOnUnload = UnityEngine.Random.value > GameSettings.interstitialAdsRatio;
-                if (showRewardedOnUnload)
+                if (showRewardedOnUnload && AdsManager.RewardedAdReady)
                 {
-                    AdsManager.ShowRewardedAd(
-                        AdsManager.RewardedAdReady ? _OnBeforeAdShown : null,
-                        _OnClosed: _OnAdClosed);
+                    AdsManager.ShowRewardedAd(_OnBeforeAdShown, _OnClosed: _OnAdClosed, _OnFailedToShow: _OnAdClosed);
                 }
-                else
+                else if (!showRewardedOnUnload && AdsManager.InterstitialAdReady)
                 {
-                    AdsManager.ShowInterstitialAd(
-                        AdsManager.InterstitialAdReady ? _OnBeforeAdShown : null,
-                        _OnClosed: _OnAdClosed);
+                    AdsManager.ShowInterstitialAd(_OnBeforeAdShown, _OnClosed: _OnAdClosed, _OnFailedToShow: _OnAdClosed);
 
                 }
                 if (showRewardedOnUnload && !AdsManager.RewardedAdReady
                     || !showRewardedOnUnload && !AdsManager.InterstitialAdReady)
                 {
-                    _OnAdWasNotShown?.Invoke();
+                    _OnAdClosed?.Invoke();
                 }
             }
             else
             {
-                _OnAdWasNotShown?.Invoke();
+                _OnAdClosed?.Invoke();
             }
         }
 

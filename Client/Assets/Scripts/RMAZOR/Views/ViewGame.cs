@@ -244,7 +244,15 @@ namespace RMAZOR.Views
             {
                 return;
             }
-            Managers.AdsManager.ShowRewardedAd();
+            void OnBeforeAdShown()
+            {
+                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
+            }
+            void OnAdClosed()
+            {
+                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+            }
+            Managers.AdsManager.ShowRewardedAd(OnBeforeAdShown, _OnClosed: OnAdClosed);
         }
 
         private void InitAdsProvidersMuteAudioAction()

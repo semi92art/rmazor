@@ -164,6 +164,7 @@ namespace RMAZOR.UI.Panels
 
         private void LoadBonusLevel()
         {
+            BetweenLevelAdLoader.ShowAd = false;
             int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int bonusLevelIndex = levelsGroup - 1;
             var args = new Dictionary<string, object>

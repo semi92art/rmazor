@@ -23,22 +23,24 @@ namespace Common.Managers.Advertising
         Entity<bool> ShowAds                     { get; set; }
 
         void ShowRewardedAd(
-            UnityAction _OnBeforeShown = null,
-            UnityAction _OnShown       = null,
-            UnityAction _OnClicked     = null,
-            UnityAction _OnReward      = null,
-            UnityAction _OnClosed      = null,
-            string      _AdsNetwork    = null,
-            bool        _Forced        = false,
-            bool        _Skippable     = true);
+            UnityAction _OnBeforeShown  = null,
+            UnityAction _OnShown        = null,
+            UnityAction _OnClicked      = null,
+            UnityAction _OnReward       = null,
+            UnityAction _OnClosed       = null,
+            UnityAction _OnFailedToShow = null,
+            string      _AdsNetwork     = null,
+            bool        _Forced         = false,
+            bool        _Skippable      = true);
 
         void ShowInterstitialAd(
-            UnityAction _OnBeforeShown = null,
-            UnityAction _OnShown       = null,
-            UnityAction _OnClicked     = null,
-            UnityAction _OnClosed      = null,
-            string      _AdsNetwork    = null,
-            bool        _Forced        = false);
+            UnityAction _OnBeforeShown  = null,
+            UnityAction _OnShown        = null,
+            UnityAction _OnClicked      = null,
+            UnityAction _OnClosed       = null,
+            UnityAction _OnFailedToShow = null,
+            string      _AdsNetwork     = null,
+            bool        _Forced         = false);
     }
 
     public class AdsManager : InitBase, IAdsManager
@@ -96,6 +98,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnClicked,
             UnityAction _OnReward,
             UnityAction _OnClosed,
+            UnityAction _OnFailedToShow,
             string      _AdsNetwork = null,
             bool        _Forced     = false,
             bool        _Skippable  = true)
@@ -135,6 +138,7 @@ namespace Common.Managers.Advertising
                 _OnClicked, 
                 _OnReward,
                 _OnClosed,
+                _OnFailedToShow,
                 AdvertisingType.Rewarded,
                 _Forced);
         }
@@ -144,6 +148,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnShown,
             UnityAction _OnClicked,
             UnityAction _OnClosed,
+            UnityAction _OnFailedToShow,
             string      _AdsNetwork = null,
             bool        _Forced     = false)
         {
@@ -181,6 +186,7 @@ namespace Common.Managers.Advertising
                 _OnClicked, 
                 null,
                 _OnClosed,
+                _OnFailedToShow,
                 AdvertisingType.Interstitial,
                 _Forced);
         }
@@ -218,9 +224,11 @@ namespace Common.Managers.Advertising
             UnityAction                       _OnClicked,
             UnityAction                       _OnReward,
             UnityAction                       _OnClosed,
+            UnityAction                       _OnFailedToShow,
             AdvertisingType                   _Type,
             bool                              _Forced)
         {
+            _OnBeforeShown?.Invoke();
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
                 selectedProvider = _Providers.First();
@@ -242,7 +250,6 @@ namespace Common.Managers.Advertising
                     showRateSumIteration += provider.ShowRate;
                 }
             }
-            _OnBeforeShown?.Invoke();
             if (Application.isEditor)
             {
                 selectedProvider = _Providers.First(
@@ -277,7 +284,7 @@ namespace Common.Managers.Advertising
             }
             void OnFailedToShow()
             {
-                _OnShown?.Invoke();
+                _OnFailedToShow?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdFailedToShow, eventData);
             }
             Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");

@@ -93,7 +93,7 @@ namespace Common.Ticker
 
         private void Update()
         {
-            if (Pause)
+            if (m_Paused)
             {
                 m_Delta += UnityEngine.Time.deltaTime;
                 return;
@@ -105,7 +105,7 @@ namespace Common.Ticker
 
         private void FixedUpdate()
         {
-            if (Pause)
+            if (m_Paused)
             {
                 m_FixedDelta += UnityEngine.Time.fixedDeltaTime;
                 return;
@@ -117,7 +117,7 @@ namespace Common.Ticker
 
         private void LateUpdate()
         {
-            if (Pause)
+            if (m_Paused)
                 return;
             for (int i = 0; i < m_LateUpdateInfoDict.Count; i++)
                 m_LateUpdateInfoDict[i]?.LateUpdateTick();
@@ -125,7 +125,7 @@ namespace Common.Ticker
 
         private void OnDrawGizmos()
         {
-            if (Pause)
+            if (m_Paused)
                 return;
             if (!m_DrawGizmosInfoDict.Any())
                 return;

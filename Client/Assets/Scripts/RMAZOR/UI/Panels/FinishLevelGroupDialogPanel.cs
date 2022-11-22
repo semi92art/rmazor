@@ -339,23 +339,31 @@ namespace RMAZOR.UI.Panels
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             m_WheelPanelView.HighlightCurrentCoefficient();
 
+            void OnBeforeShown()
+            {
+                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
+                TickerUtils.PauseTickers(true, Ticker);
+            }
+            void OnReward()
+            {
+                Multiply();
+                m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
+                m_RewardGot = true;
+            }
+            void OnClosed()
+            {
+                if (!m_RewardGot)
+                    m_WatchVideoToTheEndText.enabled = true;
+                m_ButtonMultiplyMoney.gameObject.SetActive(false);
+                m_ButtonSkip         .gameObject.SetActive(false);
+                m_ButtonContinue     .gameObject.SetActive(true);
+                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+                TickerUtils.PauseTickers(false, Ticker);
+            }
             Managers.AdsManager.ShowRewardedAd(
-                () => TickerUtils.PauseTickers(true, Ticker),
-                _OnReward: () =>
-                {
-                    Multiply();
-                    m_AnimMoneyIcon.SetTrigger(AnimKeys.Anim);
-                    m_RewardGot = true;
-                },
-                _OnClosed: () =>
-                {
-                    if (!m_RewardGot)
-                        m_WatchVideoToTheEndText.enabled = true;
-                    m_ButtonMultiplyMoney.gameObject.SetActive(false);
-                    m_ButtonSkip         .gameObject.SetActive(false);
-                    m_ButtonContinue     .gameObject.SetActive(true);
-                    TickerUtils.PauseTickers(false, Ticker);
-                },
+                OnBeforeShown,
+                _OnReward: OnReward,
+                _OnClosed: OnClosed,
                 _Skippable: false);
         }
 

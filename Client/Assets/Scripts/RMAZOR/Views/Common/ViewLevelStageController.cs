@@ -391,7 +391,6 @@ namespace RMAZOR.Views.Common
             BetweenLevelAdLoader.TryShowAd(
                 _Args.LevelIndex,
                 OnBeforeAdShown, 
-                UnloadLevel, 
                 UnloadLevel);
         }
 

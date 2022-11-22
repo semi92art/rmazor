@@ -5,6 +5,7 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
+using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.IAP;
@@ -229,7 +230,20 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     if (_Info.BuyForWatchingAd)
                     {
                         Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
-                        Managers.AdsManager.ShowRewardedAd(_OnReward: OnPaidReal);
+                        void OnBeforeAdShown()
+                        {
+                            Managers.AudioManager.MuteAudio(EAudioClipType.Music);
+                            TickerUtils.PauseTickers(true, Ticker);
+                        }
+                        void OnAdClosed()
+                        {
+                            Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+                            TickerUtils.PauseTickers(false, Ticker);
+                        }
+                        Managers.AdsManager.ShowRewardedAd(
+                            OnBeforeAdShown, 
+                            _OnReward: OnPaidReal, 
+                            _OnClosed: OnAdClosed);
                     }
                     else
                     {
