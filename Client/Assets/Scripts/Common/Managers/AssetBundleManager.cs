@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Common.Extensions;
 using Common.Helpers;
+using Common.Ticker;
 using Common.Utils;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -208,11 +210,22 @@ namespace Common.Managers
 
     public class AssetBundleManagerFake : InitBase, IAssetBundleManager
     {
-        public bool BundlesLoaded => true;
+        public bool BundlesLoaded { get; private set; }
+
+        public AssetBundleManagerFake()
+        {
+            Task.Run(DelayAndIndicateBundlesLoaded);
+        }
 
         public T GetAsset<T>(string _AssetName, string _BundleName) where T : Object
         {
             return null;
+        }
+
+        private async Task DelayAndIndicateBundlesLoaded()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1d));
+            BundlesLoaded = true;
         }
     }
 }
