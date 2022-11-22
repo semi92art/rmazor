@@ -368,12 +368,15 @@ namespace RMAZOR.Views.Common
         {
             void OnBeforeAdShown()
             {
+                Dbg.Log("OnBeforeAdShown");
+                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
                 TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker, UiTicker);
             }
             void UnloadLevel()
             {
                 CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
                 FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
+                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
                 TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker, UiTicker);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);

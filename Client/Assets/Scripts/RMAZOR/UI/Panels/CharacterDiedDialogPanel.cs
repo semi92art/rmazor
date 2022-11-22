@@ -236,6 +236,7 @@ namespace RMAZOR.UI.Panels
                 _OnReward:      () => m_AdsWatched = true, 
                 _OnBeforeShown: () =>
                 {
+                    Dbg.Log("OnBeforeAdShown");
                     Managers.AudioManager.MuteAudio(EAudioClipType.Music);
                     TickerUtils.PauseTickers(true, Ticker);
                 },
