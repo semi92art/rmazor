@@ -51,13 +51,13 @@ namespace Common.Managers.Advertising.AdBlocks
             UnityAction _OnClosed,
             UnityAction _OnFailedToShow)
         {
+            if (!Ready) 
+                return;
             OnShown        = _OnShown;
             OnClicked      = _OnClicked;
             OnReward       = _OnReward;
             OnClosed       = _OnClosed;
             OnFailedToShow = _OnFailedToShow;
-            if (!Ready) 
-                return;
             const string placement = "default";
             Appodeal.Show(ShowStyle, placement);
         }

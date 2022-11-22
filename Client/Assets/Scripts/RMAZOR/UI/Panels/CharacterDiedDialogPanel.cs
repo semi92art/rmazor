@@ -242,8 +242,8 @@ namespace RMAZOR.UI.Panels
                 },
                 _OnClosed:      () =>
                 {
-                    Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                    TickerUtils.PauseTickers(false, Ticker);
+                    // Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+                    // TickerUtils.PauseTickers(false, Ticker);
                 },
                 _OnFailedToShow: () =>
                 {

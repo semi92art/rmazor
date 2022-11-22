@@ -168,7 +168,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             Dbg.LogWarning($"{AdSource}: {AdType} show failed");
             m_DoLoadAdWithDelay = true;
-            m_DoInvokeOnClosed = true;
+            m_DoInvokeOnFailedToShow = true;
         }
         
         protected void OnAdClicked()

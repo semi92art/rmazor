@@ -47,6 +47,7 @@ namespace Common.Managers.Advertising.AdBlocks
             ProceedClickedAction();
             ProceedRewardAction();
             ProceedClosedAction();
+            ProceedFailedToShownAction();
             ProceedLoadAdOnDelay();
         }
 
