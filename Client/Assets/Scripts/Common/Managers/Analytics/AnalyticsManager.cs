@@ -45,6 +45,8 @@ namespace Common.Managers.Analytics
         
         public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (string.IsNullOrEmpty(_AnalyticId))
+                return;
             if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
                 return;
             Cor.RunSync(() =>

@@ -75,6 +75,9 @@ namespace Common.Managers.Analytics
                 };
                 return p;
             }).Where(_P => _P != null).ToArray();
+            Dbg.Log("Trying to send analytic to " +
+                    $"firebase with analytic id {_AnalyticId} " +
+                    $"and event data {(_EventData == null ? "not null" : "null")}");
             if (@params == null)
                 FirebaseAnalytics.LogEvent(_AnalyticId);
             else
