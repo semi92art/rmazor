@@ -66,18 +66,19 @@ namespace RMAZOR.Helpers
                 m_SerializedBonusLevelsFromRemote
                 : SerializedLevelsFromRemote;
             var mazeInfo = Deserialize(dicRemote);
-            bool valid = MazeInfoValidator.Validate(mazeInfo);
+            bool valid = MazeInfoValidator.Validate(mazeInfo, out string error);
             if (!valid)
             {
+                Dbg.LogError("Remote maze info is not valid: " + error);
                 var dictCached = isBonusLevel
                     ? m_SerializedBonusLevelsFromCache
                     : SerializedLevelsFromCache;
                 mazeInfo = Deserialize(dictCached);
             }
-            valid = MazeInfoValidator.Validate(mazeInfo);
+            valid = MazeInfoValidator.Validate(mazeInfo, out error);
             if (valid)
                 return mazeInfo;
-            throw new Exception("Maze info is not valid!");
+            throw new Exception("Local maze info is not valid: " + error);
         }
         
         public override int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
