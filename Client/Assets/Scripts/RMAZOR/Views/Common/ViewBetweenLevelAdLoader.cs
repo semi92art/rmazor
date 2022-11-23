@@ -2,6 +2,7 @@
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using RMAZOR.Models;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
@@ -19,21 +20,24 @@ namespace RMAZOR.Views.Common
     {
         #region inject
 
-        private IAdsManager        AdsManager   { get; }
-        private GlobalGameSettings GameSettings { get; }
-        private IViewTimePauser    TimePauser   { get; }
-        private IAudioManager      AudioManager { get; }
+        private IAdsManager                         AdsManager                     { get; }
+        private GlobalGameSettings                  GameSettings                   { get; }
+        private IViewTimePauser                     TimePauser                     { get; }
+        private IAudioManager                       AudioManager                   { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         public ViewBetweenLevelAdLoader(
-            IAdsManager         _AdsManager,
-            GlobalGameSettings  _GameSettings,
-            IViewTimePauser     _TimePauser,
-            IAudioManager       _AudioManager)
+            IAdsManager                         _AdsManager,
+            GlobalGameSettings                  _GameSettings,
+            IViewTimePauser                     _TimePauser,
+            IAudioManager                       _AudioManager,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
         {
-            AdsManager   = _AdsManager;
-            GameSettings = _GameSettings;
-            TimePauser = _TimePauser;
-            AudioManager = _AudioManager;
+            AdsManager                     = _AdsManager;
+            GameSettings                   = _GameSettings;
+            TimePauser                     = _TimePauser;
+            AudioManager                   = _AudioManager;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -49,6 +53,7 @@ namespace RMAZOR.Views.Common
             void OnBeforeAdShown()
             {
                 TimePauser.PauseTimeInGame();
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
                 AudioManager.MuteAudio(EAudioClipType.Music);
             }
             void OnAdClosedOrFailedToShow()

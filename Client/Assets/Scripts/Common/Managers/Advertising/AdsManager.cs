@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
@@ -8,6 +9,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Analytics;
+using Common.Ticker;
 using Common.Utils;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,17 +58,20 @@ namespace Common.Managers.Advertising
         private IRemotePropertiesCommon RemoteProperties { get; }
         private IAdsProvidersSet        AdsProvidersSet  { get; }
         private IAnalyticsManager       AnalyticsManager { get; }
+        private ICommonTicker           CommonTicker     { get; }
 
         private AdsManager(
             GlobalGameSettings      _GameGameSettings,
             IRemotePropertiesCommon _RemoteProperties,
             IAdsProvidersSet        _AdsProvidersSet,
-            IAnalyticsManager       _AnalyticsManager)
+            IAnalyticsManager       _AnalyticsManager,
+            ICommonTicker           _CommonTicker)
         {
             GameGameSettings = _GameGameSettings;
             RemoteProperties = _RemoteProperties;
             AdsProvidersSet  = _AdsProvidersSet;
             AnalyticsManager = _AnalyticsManager;
+            CommonTicker     = _CommonTicker;
         }
 
         #endregion
@@ -123,7 +128,7 @@ namespace Common.Managers.Advertising
                 }
                 return;
             }
-            ShowAd(
+            Cor.Run(ShowAd(
                 readyProviders,
                 _OnBeforeShown, 
                 _OnShown,
@@ -132,7 +137,8 @@ namespace Common.Managers.Advertising
                 _OnClosed,
                 _OnFailedToShow,
                 AdvertisingType.Rewarded,
-                _Forced);
+                _Forced));
+
         }
 
         public void ShowInterstitialAd(
@@ -165,7 +171,7 @@ namespace Common.Managers.Advertising
                 }
                 return;
             }
-            ShowAd(
+            Cor.Run(ShowAd(
                 readyProviders,
                 _OnBeforeShown,
                 _OnShown,
@@ -174,7 +180,7 @@ namespace Common.Managers.Advertising
                 _OnClosed,
                 _OnFailedToShow,
                 AdvertisingType.Interstitial,
-                _Forced);
+                _Forced));
         }
 
         #endregion
@@ -203,7 +209,7 @@ namespace Common.Managers.Advertising
             }
         }
 
-        private void ShowAd(
+        private IEnumerator ShowAd(
             IReadOnlyCollection<IAdsProvider> _Providers,
             UnityAction                       _OnBeforeShown,
             UnityAction                       _OnShown,
@@ -215,6 +221,7 @@ namespace Common.Managers.Advertising
             bool                              _Forced)
         {
             _OnBeforeShown?.Invoke();
+            yield return Cor.Delay(0.05f, CommonTicker);
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
                 selectedProvider = _Providers.First();
@@ -242,7 +249,7 @@ namespace Common.Managers.Advertising
                     _P => _P.Source == AdvertisingNetworks.Admob);
             }
             if (selectedProvider == null)
-                return;
+                yield break;
             var eventData = new Dictionary<string, object>
             {
                 {AnalyticIds.ParameterAdSource, selectedProvider.Source},
@@ -273,7 +280,6 @@ namespace Common.Managers.Advertising
                 _OnFailedToShow?.Invoke();
                 AnalyticsManager.SendAnalytic(AnalyticIds.AdFailedToShow, eventData);
             }
-            Dbg.Log($"Selected ads provider to show {_Type} ad: { selectedProvider.Source}");
             switch (_Type)
             {
                 case AdvertisingType.Interstitial:
