@@ -30,8 +30,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnClosed       = null,
             UnityAction _OnFailedToShow = null,
             string      _AdsNetwork     = null,
-            bool        _Forced         = false,
-            bool        _Skippable      = true);
+            bool        _Forced         = false);
 
         void ShowInterstitialAd(
             UnityAction _OnBeforeShown  = null,
@@ -100,8 +99,7 @@ namespace Common.Managers.Advertising
             UnityAction _OnClosed,
             UnityAction _OnFailedToShow,
             string      _AdsNetwork = null,
-            bool        _Forced     = false,
-            bool        _Skippable  = true)
+            bool        _Forced     = false)
         {
             var providers = (string.IsNullOrEmpty(_AdsNetwork)
                 ? m_Providers.Values

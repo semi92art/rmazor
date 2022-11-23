@@ -86,6 +86,7 @@ namespace RMAZOR.UI.Panels
             IManagersGetter                     _Managers,
             IUITicker                           _UITicker,
             ICameraProvider                     _CameraProvider,
+            IViewTimePauser                     _TimePauser,
             IColorProvider                      _ColorProvider,
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
@@ -94,13 +95,14 @@ namespace RMAZOR.UI.Panels
                 _Managers,
                 _UITicker, 
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
-            GlobalGameSettings      = _GlobalGameSettings;
-            ViewSettings            = _ViewSettings;
-            Model                   = _Model;
-            CommandsProceeder       = _CommandsProceeder;
-            BetweenLevelAdLoader    = _BetweenLevelAdLoader;
+            GlobalGameSettings             = _GlobalGameSettings;
+            ViewSettings                   = _ViewSettings;
+            Model                          = _Model;
+            CommandsProceeder              = _CommandsProceeder;
+            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
@@ -173,6 +175,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            TimePauser.PauseTimeInGame();
             m_CountdownValue = 1f;
             m_AdsWatched       = false;
             m_MoneyPayed       = false;
@@ -232,25 +235,26 @@ namespace RMAZOR.UI.Panels
         private void OnWatchAdsButtonClick()
         {
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
+            void OnAdReward()
+            {
+                m_AdsWatched = true;
+            }
+            void OnBeforeAdShown()
+            {
+                TimePauser.PauseTimeInUi();
+                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
+            }
+            void OnAdClosed()
+            {
+                TimePauser.UnpauseTimeInGame();
+                TimePauser.UnpauseTimeInUi();
+                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
+            }
             Managers.AdsManager.ShowRewardedAd(
-                _OnReward:      () => m_AdsWatched = true, 
-                _OnBeforeShown: () =>
-                {
-                    Dbg.Log("OnBeforeAdShown");
-                    Managers.AudioManager.MuteAudio(EAudioClipType.Music);
-                    TickerUtils.PauseTickers(true, Ticker);
-                },
-                _OnClosed:      () =>
-                {
-                    Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                    TickerUtils.PauseTickers(false, Ticker);
-                },
-                _OnFailedToShow: () =>
-                {
-                    Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                    TickerUtils.PauseTickers(false, Ticker);
-                },
-                _Skippable:     false);
+                _OnReward:       OnAdReward, 
+                _OnBeforeShown:  OnBeforeAdShown,
+                _OnClosed:       OnAdClosed,
+                _OnFailedToShow: OnAdClosed);
         }
 
         private void OnPayMoneyButtonClick()
@@ -382,6 +386,8 @@ namespace RMAZOR.UI.Panels
 
         private void RaiseContinueCommand()
         {
+            TimePauser.UnpauseTimeInGame();
+            TimePauser.UnpauseTimeInUi();
             CommandsProceeder.RaiseCommand(
                 EInputCommand.ReadyToStartLevel,
                 Model.LevelStaging.Arguments, 
