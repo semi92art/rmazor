@@ -364,6 +364,8 @@ namespace RMAZOR.UI.Panels
         
         private void RaiseLoadFirstLevelInGroupCommand()
         {
+            TimePauser.UnpauseTimeInGame();
+            TimePauser.UnpauseTimeInUi();
             var arguments = new Dictionary<string, object>
             {
                 {CommonInputCommandArg.KeyLoadFirstLevelInGroup, true}
