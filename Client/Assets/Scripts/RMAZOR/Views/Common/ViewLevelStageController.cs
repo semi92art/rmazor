@@ -535,7 +535,7 @@ namespace RMAZOR.Views.Common
                     audioManager.PlayClip(AudioClipArgsLevelComplete);
                     break;
                 case ELevelStage.Paused:
-                    audioManager.MuteAudio(EAudioClipType.GameSound);
+                    // audioManager.MuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     Cor.Run(Cor.WaitWhile(

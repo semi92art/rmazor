@@ -111,7 +111,6 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
-            Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogStartAppearing();
         }
@@ -119,7 +118,6 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
-            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogDisappeared();
         }
@@ -168,7 +166,6 @@ namespace RMAZOR.UI.Panels
 
         private void LoadBonusLevel()
         {
-            BetweenLevelAdLoader.ShowAd = false;
             int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int bonusLevelIndex = levelsGroup - 1;
             var args = new Dictionary<string, object>
