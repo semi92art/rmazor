@@ -141,12 +141,14 @@ namespace RMAZOR.Views.UI
                     HidePrompt();
                 }    
                     break;
+                case ELevelStage.Unloaded:
+                    HidePrompt(true);
+                    break;
                 case ELevelStage.Loaded:
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                 case ELevelStage.Finished:
                 case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
                 case ELevelStage.Paused:
                 case ELevelStage.CharacterKilled:
                     break;
@@ -238,8 +240,15 @@ namespace RMAZOR.Views.UI
             m_RunShowPromptCoroutine = true;
         }
 
-        private void HidePrompt()
+        private void HidePrompt(bool _Instantly = false)
         {
+            if (m_CurrentPromptInfo == null)
+                return;
+            if (_Instantly)
+            {
+                m_CurrentPromptInfo.PromptText.enabled = false;
+                return;
+            }
             if (m_CurrentPromptInfo != null)
                 m_CurrentPromptInfo.NeedToHide = true;
         }
