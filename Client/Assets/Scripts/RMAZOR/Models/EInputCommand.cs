@@ -28,6 +28,7 @@
         RateGamePanel,
         FinishLevelGroupPanel,
         PlayBonusLevelPanel,
+        TutorialPanel,
         // debug commands
         EnableDebug,
         DisableDebug,

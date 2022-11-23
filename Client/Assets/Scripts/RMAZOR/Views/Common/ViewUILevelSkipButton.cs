@@ -61,12 +61,12 @@ namespace RMAZOR.Views.Common
         private IAdsManager                         AdsManager                     { get; }
         private IColorProvider                      ColorProvider                  { get; }
         private IViewGameTicker                     ViewGameTicker                 { get; }
-        private IModelGameTicker                    ModelGameTicker                { get; }
         private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private ILevelsLoader                       LevelsLoader                   { get; }
+        private IViewTimePauser                     TimePauser                     { get; }
 
         private ViewUILevelSkipperButton(
             ViewSettings                        _ViewSettings,
@@ -81,12 +81,12 @@ namespace RMAZOR.Views.Common
             IAdsManager                         _AdsManager,
             IColorProvider                      _ColorProvider,
             IViewGameTicker                     _ViewGameTicker,
-            IModelGameTicker                    _ModelGameTicker,
             IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
             IMoneyCounter                       _MoneyCounter,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            ILevelsLoader _LevelsLoader)
+            ILevelsLoader                       _LevelsLoader,
+            IViewTimePauser                     _TimePauser)
         {
             ViewSettings                   = _ViewSettings;
             Model                          = _Model;
@@ -100,12 +100,12 @@ namespace RMAZOR.Views.Common
             AdsManager                     = _AdsManager;
             ColorProvider                  = _ColorProvider;
             ViewGameTicker                 = _ViewGameTicker;
-            ModelGameTicker                = _ModelGameTicker;
             BetweenLevelAdLoader           = _BetweenLevelAdLoader;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             MoneyCounter                   = _MoneyCounter;
             CommandsProceeder              = _CommandsProceeder;
             LevelsLoader                   = _LevelsLoader;
+            TimePauser                     = _TimePauser;
         }
 
         #endregion
@@ -204,62 +204,62 @@ namespace RMAZOR.Views.Common
         {
             void OnBeforeAdShown()
             {
+                TimePauser.PauseTimeInGame();
                 AudioManager.MuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker);
-            }
-            void OnReward()
-            {
-                var prevArgs = Model.LevelStaging.Arguments;
-                var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySkipLevel, true}};
-                long levelIndex = Model.LevelStaging.LevelIndex;
-                string levelType = (string) prevArgs.GetSafe(
-                    CommonInputCommandArg.KeyCurrentLevelType, out _);
-                bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-                LevelSkipped = true;
-                BetweenLevelAdLoader.ShowAd = false;
-                bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isBonusLevel;
-                if (isLastLevelInGroup)
-                {
-                    int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
-                    args.Add(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
-                    int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, args);
-                    EInputCommand inputCommand;
-                    if (nextBonusLevelIndexToLoad < bonusLevelsCount)
-                        inputCommand = EInputCommand.PlayBonusLevelPanel;
-                    else if (MoneyCounter.CurrentLevelGroupMoney > 0)
-                        inputCommand = EInputCommand.FinishLevelGroupPanel;
-                    else
-                        inputCommand = EInputCommand.FinishLevel;
-                    CommandsProceeder.RaiseCommand(
-                        inputCommand,
-                        args, 
-                        true);
-                }
-                else if (isBonusLevel && MoneyCounter.CurrentLevelGroupMoney > 0)
-                {
-                    CommandsProceeder.RaiseCommand(
-                        EInputCommand.FinishLevelGroupPanel, 
-                        args, 
-                        true);
-                }
-                else
-                {
-                    SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                        EInputCommand.FinishLevel, 
-                        true, 
-                        args);
-                }
             }
             void OnAdClosed()
             {
                 AudioManager.UnmuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker);
                 ActivateButton(false);
             }
             AdsManager.ShowRewardedAd(
                 OnBeforeAdShown,
-                _OnReward: OnReward,
+                _OnReward: OnAdReward,
                 _OnClosed: OnAdClosed);
+        }
+        
+        private void OnAdReward()
+        {
+            var prevArgs = Model.LevelStaging.Arguments;
+            var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySkipLevel, true}};
+            long levelIndex = Model.LevelStaging.LevelIndex;
+            string levelType = (string) prevArgs.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            LevelSkipped = true;
+            BetweenLevelAdLoader.ShowAd = false;
+            bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isBonusLevel;
+            if (isLastLevelInGroup)
+            {
+                int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
+                args.Add(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
+                int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, args);
+                EInputCommand inputCommand;
+                if (nextBonusLevelIndexToLoad < bonusLevelsCount)
+                    inputCommand = EInputCommand.PlayBonusLevelPanel;
+                else if (MoneyCounter.CurrentLevelGroupMoney > 0)
+                    inputCommand = EInputCommand.FinishLevelGroupPanel;
+                else
+                    inputCommand = EInputCommand.FinishLevel;
+                CommandsProceeder.RaiseCommand(
+                    inputCommand,
+                    args, 
+                    true);
+            }
+            else if (isBonusLevel && MoneyCounter.CurrentLevelGroupMoney > 0)
+            {
+                CommandsProceeder.RaiseCommand(
+                    EInputCommand.FinishLevelGroupPanel, 
+                    args, 
+                    true);
+            }
+            else
+            {
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(
+                    EInputCommand.FinishLevel, 
+                    true, 
+                    args);
+            }
         }
         
         private void InitButton()

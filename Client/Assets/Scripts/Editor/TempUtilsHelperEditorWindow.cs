@@ -67,6 +67,7 @@ namespace Editor
                 ELevelStage.Loaded, 
                 ELevelStage.Unloaded, 
                 ELevelStage.ReadyToUnloadLevel,
+                ELevelStage.Finished,
                 args);
             return fakeArgs;
         }

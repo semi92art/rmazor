@@ -62,8 +62,6 @@ namespace RMAZOR.Views.Common
 
         private ViewSettings                        ViewSettings                   { get; }
         private IViewGameTicker                     ViewGameTicker                 { get; }
-        private IModelGameTicker                    ModelGameTicker                { get; }
-        private IUITicker                           UiTicker                       { get; }
         private IModelGame                          Model                          { get; }
         private IManagersGetter                     Managers                       { get; }
         private IViewCharacter                      Character                      { get; }
@@ -86,13 +84,10 @@ namespace RMAZOR.Views.Common
         private ICoordinateConverter                CoordinateConverter            { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private ILevelsLoader                       LevelsLoader                   { get; }
-        private IViewUILevelSkipper                 LevelSkipper                   { get; }
 
         private ViewLevelStageController(
             ViewSettings                        _ViewSettings,
             IViewGameTicker                     _ViewGameTicker,
-            IModelGameTicker                    _ModelGameTicker,
-            IUITicker                           _UiTicker,
             IModelGame                          _Model,
             IManagersGetter                     _Managers,
             IViewCharacter                      _Character,
@@ -114,13 +109,10 @@ namespace RMAZOR.Views.Common
             ICameraProvider                     _CameraProvider,
             ICoordinateConverter                _CoordinateConverter,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            ILevelsLoader                       _LevelsLoader,
-            IViewUILevelSkipper                 _LevelSkipper)
+            ILevelsLoader                       _LevelsLoader)
         {
             ViewSettings                = _ViewSettings;
             ViewGameTicker              = _ViewGameTicker;
-            ModelGameTicker             = _ModelGameTicker;
-            UiTicker                    = _UiTicker;
             Model                       = _Model;
             Managers                    = _Managers;
             Character                   = _Character;
@@ -141,7 +133,6 @@ namespace RMAZOR.Views.Common
             CoordinateConverter         = _CoordinateConverter;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             LevelsLoader                = _LevelsLoader;
-            LevelSkipper                = _LevelSkipper;
             TouchProceeder              = _TouchProceeder;
             MoneyCounter                = _MoneyCounter;
         }
@@ -196,19 +187,6 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic methods
 
-        private void ProceedPausingTickers(EInputCommand _Key)
-        {
-            switch (_Key)
-            {
-                case EInputCommand.PauseLevel:
-                    TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker);
-                    break;
-                case EInputCommand.UnPauseLevel:
-                    TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker);
-                    break;
-            }
-        }
-
         private void OnTapScreenAction(LeanFinger _Finger)
         {
             if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f)
@@ -221,8 +199,6 @@ namespace RMAZOR.Views.Common
                 return;
             if (cp is IPlayBonusLevelDialogPanel)
                 return;
-            // if (LevelSkipper.LevelSkipped)
-            //     return;
             SwitchLevelStageCommandInvoker.SwitchLevelStage(
                 EInputCommand.StartUnloadingLevel, false);
         }
@@ -237,8 +213,6 @@ namespace RMAZOR.Views.Common
 
         private void OnCommand(EInputCommand _Key, Dictionary<string, object> _Args)
         {
-            ProceedPausingTickers(_Key);
-            
             if (_Key != EInputCommand.StartUnloadingLevel)
                 return;
             if (_Args == null || !_Args.Any())
@@ -380,18 +354,10 @@ namespace RMAZOR.Views.Common
             LevelStageArgs                     _Args,
             IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            void OnBeforeAdShown()
-            {
-                Dbg.Log("OnBeforeAdShown");
-                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(true, ViewGameTicker, ModelGameTicker, UiTicker);
-            }
             void UnloadLevel()
             {
                 CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
                 FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
-                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(false, ViewGameTicker, ModelGameTicker, UiTicker);
                 foreach (var mazeItem in _MazeItems)
                     mazeItem.Appear(false);
                 AdditionalBackgroundDrawer.Appear(false);
@@ -405,10 +371,7 @@ namespace RMAZOR.Views.Common
                         EInputCommand.UnloadLevel, true);
                 }));
             }
-            BetweenLevelAdLoader.TryShowAd(
-                _Args.LevelIndex,
-                OnBeforeAdShown, 
-                UnloadLevel);
+            BetweenLevelAdLoader.TryShowAd(_Args.LevelIndex, UnloadLevel);
         }
 
         private void OnLevelUnloaded(LevelStageArgs _Args)

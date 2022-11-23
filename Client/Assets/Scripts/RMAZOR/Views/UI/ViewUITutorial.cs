@@ -225,7 +225,10 @@ namespace RMAZOR.Views.UI
             Cor.Run(Cor.WaitWhile(() => !TutorialDialogPanel.IsVideoReady,
                 () =>
                 {
-                    dv.Show(TutorialDialogPanel, 3f);
+                    CommandsProceeder.RaiseCommand(
+                        EInputCommand.TutorialPanel, 
+                        null, 
+                        true);
                     SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
                 }));
         }

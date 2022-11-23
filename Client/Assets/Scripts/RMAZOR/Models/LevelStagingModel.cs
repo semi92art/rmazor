@@ -19,24 +19,27 @@ namespace RMAZOR.Models
 
     public class LevelStageArgs : System.EventArgs
     {
-        public long                       LevelIndex       { get; }
-        public ELevelStage                LevelStage       { get; }
-        public ELevelStage                PreviousStage    { get; }
-        public ELevelStage                PrePreviousStage { get; }
-        public Dictionary<string, object> Args        { get; }
+        public long                       LevelIndex          { get; }
+        public ELevelStage                LevelStage          { get; }
+        public ELevelStage                PreviousStage       { get; }
+        public ELevelStage                PrePreviousStage    { get; }
+        public ELevelStage                PrePrePreviousStage { get; }
+        public Dictionary<string, object> Args                { get; }
 
         public LevelStageArgs(
             long                       _LevelIndex,
             ELevelStage                _LevelLevelStage,
             ELevelStage                _PreviousStage,
             ELevelStage                _PrePreviousStage,
+            ELevelStage                _PrePrePreviousStage,
             Dictionary<string, object> _Args)
         {
-            LevelIndex       = _LevelIndex;
-            LevelStage       = _LevelLevelStage;
-            PreviousStage    = _PreviousStage;
-            PrePreviousStage = _PrePreviousStage;
-            Args             = _Args ?? new Dictionary<string, object>();
+            LevelIndex          = _LevelIndex;
+            LevelStage          = _LevelLevelStage;
+            PreviousStage       = _PreviousStage;
+            PrePreviousStage    = _PrePreviousStage;
+            PrePrePreviousStage = _PrePrePreviousStage;
+            Args                = _Args ?? new Dictionary<string, object>();
         }
     }
     public delegate void LevelStageHandler(LevelStageArgs _Args);
@@ -69,7 +72,8 @@ namespace RMAZOR.Models
         #region nonpublic members
 
         private bool        m_DoUpdateLevelTime;
-        private ELevelStage PrevPrevLevelStage { get; set; } = ELevelStage.Unloaded;
+        private ELevelStage PrevPrevLevelStage { get; set; }     = ELevelStage.Unloaded;
+        private ELevelStage PrevPrevPrevLevelStage { get; set; } = ELevelStage.Unloaded;
         
         #endregion
     
@@ -163,8 +167,9 @@ namespace RMAZOR.Models
         {
             if (_Args != null)
                 Arguments = _Args;
-            PrevPrevLevelStage = PrevLevelStage;
-            PrevLevelStage = LevelStage;
+            PrevPrevPrevLevelStage = PrevPrevLevelStage;
+            PrevPrevLevelStage     = PrevLevelStage;
+            PrevLevelStage         = LevelStage;
             m_DoUpdateLevelTime = _Stage == ELevelStage.StartedOrContinued;
             if (_Stage == ELevelStage.ReadyToStart && PrevLevelStage != ELevelStage.Paused)
                 LevelTime = 0f;
@@ -178,6 +183,7 @@ namespace RMAZOR.Models
                 LevelStage,
                 PrevLevelStage,
                 PrevPrevLevelStage,
+                PrevPrevPrevLevelStage,
                 Arguments);
             LevelStageChanged?.Invoke(args);
         }

@@ -99,31 +99,7 @@ namespace RMAZOR.Views.Common
                 case EInputCommand.UnPauseLevel:
                 case EInputCommand.KillCharacter:
                 case EInputCommand.FinishLevel:
-                    // string currentLevelType = (string) prevArguments.GetSafe(
-                    //     CommonInputCommandArg.KeyCurrentLevelType, out _);
-                    // if (currentLevelType == CommonInputCommandArg.ParamenterLevelTypeBonus)
-                    //     newArguments.SetSafe(CommonInputCommandArg.KeyCurrentLevelType);
-                    // if (prevArguments.Contains("bonus_level"))
-                    // {
-                    //     newArguments = newArguments?
-                    //         .RemoveRange(new[] {"bonus_level"})
-                    //         .Concat(new[] {"bonus_level"})
-                    //         .ToArray();
-                    // }
-                    CommandsProceeder.RaiseCommand(_SwitchStageCommand, newArguments, true);
-                    break;
                 case EInputCommand.StartUnloadingLevel:
-                {
-                    // if (prevArguments.Contains("bonus_level"))
-                    // {
-                    //     newArguments = newArguments?
-                    //         .Concat(new[] {"bonus_level"})
-                    //         .Distinct()
-                    //         .ToArray();
-                    // }
-                    CommandsProceeder.RaiseCommand(_SwitchStageCommand, newArguments, true);
-                }
-                    break;
                 case EInputCommand.UnloadLevel:
                     CommandsProceeder.RaiseCommand(_SwitchStageCommand, newArguments, true);
                     break;

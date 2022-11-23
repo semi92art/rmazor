@@ -12,6 +12,7 @@ using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -47,15 +48,17 @@ namespace RMAZOR.UI.Panels
         #region inject
         
         private SettingsLanguagePanel(
-            IManagersGetter          _Managers,
-            IUITicker                _UITicker,
-            ICameraProvider          _CameraProvider,
-            IColorProvider           _ColorProvider) 
+            IManagersGetter _Managers,
+            IUITicker       _UITicker,
+            ICameraProvider _CameraProvider,
+            IColorProvider  _ColorProvider,
+            IViewTimePauser _TimePauser) 
             : base(
                 _Managers, 
                 _UITicker,
                 _CameraProvider,
-                _ColorProvider) { }
+                _ColorProvider,
+                _TimePauser) { }
         
         #endregion
 

@@ -63,34 +63,30 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private IModelGame                          Model                          { get; }
         private ISettingLanguageDialogPanel         LanguagePanel                  { get; }
         private ISettingsGetter                     SettingsGetter                 { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IDialogViewersController            DialogViewersController        { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private SettingsDialogPanel(
-            IModelGame                          _Model,
             ISettingLanguageDialogPanel         _LanguagePanel,
             IManagersGetter                     _Managers,
             IUITicker                           _UITicker,
             ISettingsGetter                     _SettingsGetter,
             ICameraProvider                     _CameraProvider,
             IColorProvider                      _ColorProvider,
-            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewTimePauser                     _TimePauser,
             IDialogViewersController            _DialogViewersController,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
                 _UITicker,
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
-            Model                          = _Model;
             LanguagePanel                  = _LanguagePanel;
             SettingsGetter                 = _SettingsGetter;
-            CommandsProceeder              = _CommandsProceeder;
             DialogViewersController        = _DialogViewersController;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
@@ -126,6 +122,18 @@ namespace RMAZOR.UI.Panels
             InitOtherButtons();
             PanelRectTransform = go.RTransform();
             PanelRectTransform.SetGoActive(false);
+        }
+
+        public override void OnDialogStartAppearing()
+        {
+            TimePauser.PauseTimeInGame();
+            base.OnDialogStartAppearing();
+        }
+
+        public override void OnDialogDisappeared()
+        {
+            TimePauser.UnpauseTimeInGame();
+            base.OnDialogDisappeared();
         }
 
         #endregion

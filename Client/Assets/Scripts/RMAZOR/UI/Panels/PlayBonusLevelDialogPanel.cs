@@ -66,6 +66,7 @@ namespace RMAZOR.UI.Panels
             IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
             IMoneyCounter                       _MoneyCounter,
             IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewTimePauser                     _TimePauser,
             IManagersGetter                     _Managers,
             IUITicker                           _Ticker,
             ICameraProvider                     _CameraProvider,
@@ -75,7 +76,8 @@ namespace RMAZOR.UI.Panels
                 _Managers, 
                 _Ticker, 
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
             Model                          = _Model;
             BetweenLevelAdLoader           = _BetweenLevelAdLoader;
@@ -108,15 +110,17 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
-            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
+            TimePauser.PauseTimeInGame();
             Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
+            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogStartAppearing();
         }
 
         public override void OnDialogDisappeared()
         {
-            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
+            TimePauser.UnpauseTimeInGame();
             Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
+            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogDisappeared();
         }
 

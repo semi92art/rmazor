@@ -103,9 +103,9 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.Loaded:
                     ShowControls(m_ControlsShownFirstTime, !m_ControlsShownFirstTime);
                     break;
-                case ELevelStage.StartedOrContinued 
-                    when _Args.PreviousStage == ELevelStage.ReadyToStart
-                    && _Args.PrePreviousStage == ELevelStage.Loaded:
+                case ELevelStage.StartedOrContinued when 
+                    _Args.PreviousStage == ELevelStage.ReadyToStart
+                    && _Args.PrePrePreviousStage != ELevelStage.CharacterKilled:
                     if (!m_ControlsShownFirstTime)
                     {
                         ShowControls(true, true);

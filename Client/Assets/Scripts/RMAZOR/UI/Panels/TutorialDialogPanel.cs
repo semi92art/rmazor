@@ -67,21 +67,23 @@ namespace RMAZOR.UI.Panels
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         public TutorialDialogPanel(
-            IManagersGetter             _Managers,
-            IUITicker                   _Ticker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IContainersGetter           _ContainersGetter,
-            IViewInputCommandsProceeder _CommandsProceeder,
+            IManagersGetter                     _Managers,
+            IUITicker                           _Ticker,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewTimePauser                     _TimePauser,
+            IContainersGetter                   _ContainersGetter,
+            IViewInputCommandsProceeder         _CommandsProceeder,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
             : base(
                 _Managers, 
                 _Ticker,
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
-            ContainersGetter     = _ContainersGetter;
-            CommandsProceeder    = _CommandsProceeder;
+            ContainersGetter               = _ContainersGetter;
+            CommandsProceeder              = _CommandsProceeder;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
@@ -130,6 +132,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            TimePauser.PauseTimeInGame();
             var locInfoTitle = new LocalizableTextObjectInfo(
                 m_Title, ETextType.MenuUI, m_Info.TitleLocalizationKey,
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture));
@@ -148,6 +151,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogDisappeared()
         {
+            TimePauser.UnpauseTimeInGame();
             CommandsProceeder.UnlockCommands(
                 GetCommandsToLock(), 
                 nameof(ITutorialDialogPanel));

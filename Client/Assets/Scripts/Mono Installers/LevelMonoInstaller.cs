@@ -324,6 +324,7 @@ namespace Mono_Installers
             Container.Bind<IManagersGetter>()          .To<ManagersGetter>()          .AsSingle();
             Container.Bind<IViewBetweenLevelAdLoader>().To<ViewBetweenLevelAdLoader>().AsSingle();
             Container.Bind<IMoneyCounter>()            .To<MoneyCounter>()            .AsSingle();
+            Container.Bind<IViewTimePauser>()          .To<ViewTimePauser>()          .AsSingle();
 
             Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
                 .To<AudioManagerRmazor>()

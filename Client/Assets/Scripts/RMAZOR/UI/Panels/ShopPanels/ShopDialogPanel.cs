@@ -44,26 +44,30 @@ namespace RMAZOR.UI.Panels.ShopPanels
             SizeDelta = new Vector2(300f, 100)
         };
         
-        private readonly Dictionary<int, ShopItemArgs> m_ShopItemArgsDict = new Dictionary<int, ShopItemArgs>();
-        private readonly Dictionary<int, ShopMoneyItem> m_Items = new Dictionary<int, ShopMoneyItem>();
+        private readonly Dictionary<int, ShopItemArgs> m_ShopItemArgsDict
+            = new Dictionary<int, ShopItemArgs>();
+        private readonly Dictionary<int, ShopMoneyItem> m_Items 
+            = new Dictionary<int, ShopMoneyItem>();
 
         #endregion
         
         #region inject
-        
-        private IModelGame                          Model                          { get; }
+
+        private IModelGame Model { get; }
 
         private ShopDialogPanel(
             IModelGame      _Model,
             IManagersGetter _Managers,
             IUITicker       _UITicker,
             ICameraProvider _CameraProvider,
-            IColorProvider  _ColorProvider)
+            IColorProvider  _ColorProvider,
+            IViewTimePauser _TimePauser)
             : base(
                 _Managers, 
                 _UITicker,
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
             Model = _Model;
         }
@@ -234,17 +238,18 @@ namespace RMAZOR.UI.Panels.ShopPanels
                         void OnBeforeAdShown()
                         {
                             Managers.AudioManager.MuteAudio(EAudioClipType.Music);
-                            TickerUtils.PauseTickers(true, Ticker);
+                            TimePauser.PauseTimeInUi();
                         }
                         void OnAdClosed()
                         {
                             Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                            TickerUtils.PauseTickers(false, Ticker);
+                            TimePauser.UnpauseTimeInUi();
                         }
                         Managers.AdsManager.ShowRewardedAd(
-                            OnBeforeAdShown, 
-                            _OnReward: OnPaidReal, 
-                            _OnClosed: OnAdClosed);
+                            _OnReward:       OnPaidReal, 
+                            _OnBeforeShown:  OnBeforeAdShown, 
+                            _OnClosed:       OnAdClosed,
+                            _OnFailedToShow: OnAdClosed);
                     }
                     else
                     {

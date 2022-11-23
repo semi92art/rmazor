@@ -12,6 +12,7 @@ using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Shop_Items;
+using RMAZOR.Views.Common;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -53,15 +54,17 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
 
         protected ShopDialogPanelBase(
-            IManagersGetter             _Managers,
-            IUITicker                   _Ticker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider) 
+            IManagersGetter _Managers,
+            IUITicker       _Ticker,
+            ICameraProvider _CameraProvider,
+            IColorProvider  _ColorProvider,
+            IViewTimePauser _TimePauser) 
             : base(
                 _Managers,
                 _Ticker,
                 _CameraProvider,
-                _ColorProvider) { }
+                _ColorProvider,
+                _TimePauser) { }
 
         #endregion
 
@@ -90,18 +93,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
         {
             m_OnCloseFinishAction = _Action;
         }
-
-        #endregion
-
-        #region nonpublic methods
-
+        
         public override void OnDialogStartAppearing()
         {
+            TimePauser.PauseTimeInGame();
             InitMoneyMiniPanel();
             base.OnDialogStartAppearing();
         }
 
-        protected virtual void OnButtonCloseClick()
+        #endregion
+
+        #region nonpublic methods
+        
+        private void OnButtonCloseClick()
         {
             base.OnClose(() =>
             {

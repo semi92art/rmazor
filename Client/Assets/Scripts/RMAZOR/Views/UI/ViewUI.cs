@@ -22,6 +22,7 @@ namespace RMAZOR.Views.UI
         private IManagersGetter                     Managers                       { get; }
         private IViewUIRateGamePanelController      RateGamePanelController        { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewTimePauser                     TimePauser                     { get; }
 
         private ViewUI(
             IDialogViewersController            _DialogViewersController,
@@ -30,7 +31,8 @@ namespace RMAZOR.Views.UI
             IViewInputCommandsProceeder         _CommandsProceeder,
             IManagersGetter                     _Managers,
             IViewUIRateGamePanelController      _RateGamePanelController,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IViewTimePauser                    _TimePauser)
             : base(_GameControls)
         {
             DialogViewersController        = _DialogViewersController;
@@ -39,6 +41,7 @@ namespace RMAZOR.Views.UI
             Managers                       = _Managers;
             RateGamePanelController        = _RateGamePanelController;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            TimePauser                     = _TimePauser;
         }
 
         #endregion
@@ -82,6 +85,7 @@ namespace RMAZOR.Views.UI
                         }
                         else
                         {
+                            TimePauser.UnpauseTimeInGame();
                             SwitchLevelStageCommandInvoker.SwitchLevelStage(
                                 EInputCommand.UnPauseLevel, true);
                         }
@@ -110,6 +114,14 @@ namespace RMAZOR.Views.UI
                     var finishLevelGroupDialogPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
                     var dv = DialogViewersController.GetViewer(finishLevelGroupDialogPanel.DialogViewerType);
                     dv.Show(finishLevelGroupDialogPanel);
+                }
+                    break;
+                case EInputCommand.TutorialPanel:
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
+                    var tutorialDialogPanel = DialogPanelsSet.GetPanel<ITutorialDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(tutorialDialogPanel.DialogViewerType);
+                    dv.Show(tutorialDialogPanel, 3f);
                 }
                     break;
             }

@@ -97,6 +97,7 @@ namespace RMAZOR.UI.Panels
             IUITicker                           _Ticker,
             ICameraProvider                     _CameraProvider,
             IColorProvider                      _ColorProvider,
+            IViewTimePauser                     _TimePauser,
             IViewUIPrompt                       _Prompt,
             IViewInputCommandsProceeder         _CommandsProceeder,
             IModelGame                          _Model,
@@ -106,7 +107,8 @@ namespace RMAZOR.UI.Panels
                 _Managers,
                 _Ticker,
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
             ViewSettings                   = _ViewSettings;
             Prompt                         = _Prompt;
@@ -162,6 +164,8 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            TimePauser.PauseTimeInGame();
+            Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             m_MoneyIcon.sprite = m_SpriteMoney;
             m_MultiplyWord = Managers.LocalizationManager
                 .GetTranslation("multiply")
@@ -177,7 +181,6 @@ namespace RMAZOR.UI.Panels
             CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
             m_WheelPanelView.ResetWheel();
-            Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             base.OnDialogStartAppearing();
         }
 
@@ -191,9 +194,10 @@ namespace RMAZOR.UI.Panels
         
         public override void OnDialogDisappeared()
         {
+            TimePauser.UnpauseTimeInGame();
+            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             Prompt.ShowPrompt(EPromptType.TapToNext);
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
-            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             base.OnDialogDisappeared();
         }
 
@@ -338,11 +342,10 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = m_WheelPanelView.GetMultiplyCoefficient();
             m_WheelPanelView.SetArrowOnCurrentCoefficientPosition();
             m_WheelPanelView.HighlightCurrentCoefficient();
-
             void OnBeforeShown()
             {
-                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(true, Ticker);
+                TimePauser.PauseTimeInUi();
+                Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             }
             void OnReward()
             {
@@ -352,19 +355,18 @@ namespace RMAZOR.UI.Panels
             }
             void OnClosed()
             {
+                TimePauser.UnpauseTimeInUi();
+                Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
                 if (!m_RewardGot)
                     m_WatchVideoToTheEndText.enabled = true;
                 m_ButtonMultiplyMoney.gameObject.SetActive(false);
                 m_ButtonSkip         .gameObject.SetActive(false);
                 m_ButtonContinue     .gameObject.SetActive(true);
-                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-                TickerUtils.PauseTickers(false, Ticker);
             }
             Managers.AdsManager.ShowRewardedAd(
                 OnBeforeShown,
                 _OnReward: OnReward,
-                _OnClosed: OnClosed,
-                _Skippable: false);
+                _OnClosed: OnClosed);
         }
 
         private void OnSkipButtonPressed()

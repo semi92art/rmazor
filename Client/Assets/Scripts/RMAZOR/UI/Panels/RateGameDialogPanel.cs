@@ -14,6 +14,7 @@ using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -50,12 +51,14 @@ namespace RMAZOR.UI.Panels
             IUITicker                   _Ticker,
             ICameraProvider             _CameraProvider,
             IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder)
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewTimePauser             _TimePauser)
             : base(
                 _Managers, 
                 _Ticker, 
                 _CameraProvider,
-                _ColorProvider)
+                _ColorProvider,
+                _TimePauser)
         {
             CommandsProceeder = _CommandsProceeder;
         }
@@ -110,6 +113,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            TimePauser.PauseTimeInGame();
             Cor.Run(Cor.Delay(
                 5f, 
                 Ticker, 
@@ -132,6 +136,7 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogDisappeared()
         {
+            TimePauser.UnpauseTimeInGame();
             m_Disappeared = true;
             CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogDisappeared();
