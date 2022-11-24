@@ -26,14 +26,16 @@ namespace RMAZOR.Managers
             IUITicker         _UIUiTicker,
             IMusicSetting     _MusicSetting,
             ISoundSetting     _SoundSetting,
-            IPrefabSetManager _PrefabSetManager)
+            IPrefabSetManager _PrefabSetManager,
+            ICommonTicker     _CommonTicker)
             : base(
                 _ContainersGetter,
                 _GameTicker,
                 _UIUiTicker,
                 _MusicSetting,
                 _SoundSetting,
-                _PrefabSetManager) { }
+                _PrefabSetManager,
+                _CommonTicker) { }
 
         #endregion
 
