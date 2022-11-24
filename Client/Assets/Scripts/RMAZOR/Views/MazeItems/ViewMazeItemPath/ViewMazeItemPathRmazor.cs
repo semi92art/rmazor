@@ -13,6 +13,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -300,11 +301,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             out float _TopRight, 
             out float _BottomRight)
         {
-            float radius = ViewSettings.CornerRadius * CoordinateConverter.Scale;
-            _BottomLeft  = BottomLeftCornerInited  && IsBottomLeftCornerInner  ? radius : 0f;
-            _TopLeft     = TopLeftCornerInited     && IsTopLeftCornerInner     ? radius : 0f;
-            _TopRight    = TopRightCornerInited    && IsTopRightCornerInner    ? radius : 0f;
-            _BottomRight = BottomRightCornerInited && IsBottomRightCornerInner ? radius : 0f;
+            _BottomLeft  = 0f;
+            _TopLeft     = 0f;
+            _TopRight    = 0f;
+            _BottomRight = 0f;
         }
 
         protected override void EnableInitializedShapes(bool _Enable)
@@ -329,18 +329,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             GetCurrentExtraBorders().DrawBorders();
         }
 
-        protected override void AdjustBorders()
-        {
-            base.AdjustBorders();
-            GetCurrentExtraBorders().AdjustBorders();
-        }
-
-        protected override void AdjustBordersOnCornerInitialization(bool _Right, bool _Up, bool _Inner)
-        {
-            base.AdjustBordersOnCornerInitialization(_Right, _Up, _Inner);
-            GetCurrentExtraBorders().AdjustBordersOnCornerInitialization(_Right, _Up, _Inner);
-        }
-        
         protected override void OnAppearStart(bool _Appear)
         {
             base.OnAppearStart(_Appear);

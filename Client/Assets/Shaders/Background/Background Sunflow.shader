@@ -5,8 +5,6 @@ Shader "RMAZOR/Background/Sunflow"
     {
         _Color1 ("Tint", Color) = (1,1,1,1)
         _Color2 ("Tint", Color) = (1,1,1,1)
-        _Gc1("Gradient Coefficient 1", Range(0, 1)) = 0.5
-        _Gc2("Gradient Coefficient 2", Range(0, 1)) = 0.5
         _Speed("Speed", Range(1,10)) = 1
         _Scale("Scale", Range(1,10)) = 1
     }
@@ -33,7 +31,6 @@ Shader "RMAZOR/Background/Sunflow"
             #include "../Common.cginc"
 
             fixed4 _Color1, _Color2;
-            fixed _Gc1, _Gc2;
             float _Scale, _Speed;
 
             v2f vert(appdata v)

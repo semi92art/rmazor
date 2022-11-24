@@ -4,11 +4,11 @@ using Common.Helpers;
 using RMAZOR.Views.MazeItems.Props;
 using UnityEngine;
 
-namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
+namespace RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders
 {
-    public interface IViewMazeItemPathExtraBorders4 : IViewMazeItemPathExtraBorders { }
+    public interface IViewMazeItemPathExtraBorders1 : IViewMazeItemPathExtraBorders { }
     
-    public class ViewMazeItemPathExtraBorders4 : InitBase, IViewMazeItemPathExtraBorders4
+    public class ViewMazeItemPathExtraBorders1 : InitBase, IViewMazeItemPathExtraBorders1
     {
         public bool                                            Activated      { get; set; }
         public Func<GameObject>                                GetParent      { get; set; }
@@ -16,7 +16,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public Func<Color>                                     GetBorderColor { get; set; }
         public Component[]                                     Renderers => new Component[0];
         
-        public object Clone() => new ViewMazeItemPathExtraBorders4();
+        public object Clone() => new ViewMazeItemPathExtraBorders1();
 
         public void HighlightBordersAndCorners()          { }
         public void DrawBorders()                         { }

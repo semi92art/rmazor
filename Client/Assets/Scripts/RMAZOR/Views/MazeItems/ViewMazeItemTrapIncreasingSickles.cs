@@ -47,8 +47,10 @@ namespace RMAZOR.Views.MazeItems
         private static int AnimKeyOpen => AnimKeys.Anim;
         private static int AnimKeyClose => AnimKeys.Stop;
         
-        private readonly List<Line>           m_BladeContainers = new List<Line>();
-        private readonly List<SpriteRenderer> m_Blades          = new List<SpriteRenderer>();
+        private readonly List<Line> m_BladeContainers 
+            = new List<Line>();
+        private readonly List<SpriteRenderer> m_Blades          
+            = new List<SpriteRenderer>();
         
         private Animator           m_Animator;
         private AnimationTriggerer m_Triggerer;
@@ -59,7 +61,7 @@ namespace RMAZOR.Views.MazeItems
             m_Center2;
         private Rectangle
             m_Head,
-            // m_HeadBorder,
+            m_HeadBorder,
             m_Eye1Idle,
             m_Eye2Idle;
         private Triangle
@@ -173,8 +175,8 @@ namespace RMAZOR.Views.MazeItems
         {
             switch (_ColorId)
             {
-                case ColorIds.Background1:
-                    // m_HeadBorder.SetColor(_Color);
+                case ColorIds.Main:
+                    m_HeadBorder.SetColor(_Color);
                     m_Eye1Idle  .SetColor(_Color);
                     m_Eye2Idle  .SetColor(_Color);
                     m_Eye1Angry .SetColor(_Color);
@@ -204,7 +206,7 @@ namespace RMAZOR.Views.MazeItems
             m_Center     = prefab.GetCompItem<Disc>("center");
             m_Center2    = prefab.GetCompItem<Disc>("center_2");
             m_Head       = prefab.GetCompItem<Rectangle>("head");
-            // m_HeadBorder = prefab.GetCompItem<Rectangle>("head_border");
+            m_HeadBorder = prefab.GetCompItem<Rectangle>("head_border");
             m_Eye1Idle   = prefab.GetCompItem<Rectangle>("eye_1_idle");
             m_Eye2Idle   = prefab.GetCompItem<Rectangle>("eye_2_idle");
             m_Eye1Angry  = prefab.GetCompItem<Triangle>("eye_1_angry");
@@ -214,7 +216,7 @@ namespace RMAZOR.Views.MazeItems
             m_Center    .SetSortingOrder(sortingOrder);
             m_Center2   .SetSortingOrder(sortingOrder);
             m_Head      .SetSortingOrder(sortingOrder + 1);
-            // m_HeadBorder.SetSortingOrder(sortingOrder + 2);
+            m_HeadBorder.SetSortingOrder(sortingOrder + 2);
             m_Eye1Idle  .SetSortingOrder(sortingOrder + 2);
             m_Eye2Idle  .SetSortingOrder(sortingOrder + 2);
             m_Eye1Angry .SetSortingOrder(sortingOrder + 2);
@@ -374,14 +376,14 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var mazeItem1Col = ColorProvider.GetColor(ColorIds.MazeItem1);
-            var background1Col = ColorProvider.GetColor(ColorIds.Background1);
+            var colMazeItem1 = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var colMain = ColorProvider.GetColor(ColorIds.Main);
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new Component[] { m_Center, m_Center2, m_Head }, () => mazeItem1Col}, 
-                {new Component[] { m_Center2, /*m_HeadBorder,*/ m_Eye1Idle, m_Eye2Idle, m_Eye1Angry, m_Eye2Angry, m_Mouth }, () => background1Col}, 
-                {m_Blades, () => mazeItem1Col}, 
-                {m_BladeContainers, () => mazeItem1Col.SetA(0.5f)}
+                {new Component[] { m_Center, m_Center2, m_Head }, () => colMazeItem1}, 
+                {new Component[] { m_Center2, m_HeadBorder, m_Eye1Idle, m_Eye2Idle, m_Eye1Angry, m_Eye2Angry, m_Mouth }, () => colMain}, 
+                {m_Blades, () => colMazeItem1}, 
+                {m_BladeContainers, () => colMazeItem1.SetA(0.5f)}
             };
         }
 

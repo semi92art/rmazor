@@ -73,6 +73,8 @@ namespace RMAZOR.Helpers
         protected virtual void PreloadLevels(int _GameId, bool _Bundle)
         {
             int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
+            if (heapIndex <= 0)
+                heapIndex = 1;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
                 LevelsAssetName(heapIndex), _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
             string[] serializedLevels;

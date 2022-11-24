@@ -62,7 +62,6 @@ namespace RMAZOR.Managers
         private const string IdCharacterDiedPanelBackgroundVar      = "char_died_g_pan_background_variant";
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
-        private const string IdCornerRadius                         = "corner_radius";
 
         #endregion
         
@@ -160,9 +159,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdLineThickness,
                     _Value => Execute(
                         _Value, _V => ViewSettings.lineThickness = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdCornerRadius,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.cornerRadius = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeRotationSpeed,
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeRotationSpeed = ToFloat(_V))),

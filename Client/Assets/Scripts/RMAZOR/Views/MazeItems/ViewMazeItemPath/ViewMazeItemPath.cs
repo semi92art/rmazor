@@ -144,20 +144,11 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             PathItem.Collect(_Collect);
         }
 
-        public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
-        {
+        public override void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args) { }
 
-        }
+        public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args) { }
 
-        public override void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
-        {
-            
-        }
-
-        public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
-        {
-            
-        }
+        public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args) { }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -294,7 +285,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             DrawBorders();
             DrawCorners();
-            AdjustBorders();
+            // AdjustBorders();
             EnableInitializedShapes(false);
         }
 
@@ -362,72 +353,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 DrawCorner(true, true, true);
         }
 
-        protected virtual void AdjustBorders()
-        {
-            var pos = Props.Position;
-            AdjustBorder(pos, V2Int.Left, m_LeftBorderInited,
-                ref m_LeftBorder, out bool adjStart, out bool adjEnd);
-            if (adjStart && !adjEnd)
-            {
-                m_IsLeftBorderInverseOffset = true;
-                (m_LeftBorder.Start, m_LeftBorder.End) = (m_LeftBorder.End, m_LeftBorder.Start);
-            }
-            AdjustBorder(pos, V2Int.Right, m_RightBorderInited,
-                ref m_RightBorder, out adjStart, out adjEnd);
-            if (adjStart && !adjEnd)
-            {
-                m_IsRightBorderInverseOffset = true;
-                (m_RightBorder.Start, m_RightBorder.End) = (m_RightBorder.End, m_RightBorder.Start);
-            }
-            AdjustBorder(pos, V2Int.Down, m_BottomBorderInited,
-                ref m_BottomBorder, out adjStart, out adjEnd);
-            if (adjStart && !adjEnd)
-            {
-                m_IsBottomBorderInverseOffset = true;
-                (m_BottomBorder.Start, m_BottomBorder.End) = (m_BottomBorder.End, m_BottomBorder.Start);
-            }
-            AdjustBorder(pos, V2Int.Up, m_TopBorderInited,
-                ref m_TopBorder, out adjStart, out adjEnd);
-            if (adjStart && !adjEnd)
-            {
-                m_IsTopBorderInverseOffset = true;
-                (m_TopBorder.Start, m_TopBorder.End) = (m_TopBorder.End, m_TopBorder.Start);
-            }
-        }
-
-        private void AdjustBorder(
-            V2Int                  _Position,
-            V2Int                  _Direction,
-            bool                   _BorderInitialized,
-            ref Line               _Border,
-            out bool               _AdjustStart,
-            out bool               _AdjustEnd)
-        {
-            var dir1 = _Direction == V2Int.Left || _Direction == V2Int.Right ? V2Int.Down : V2Int.Left;
-            var dir2 = _Direction == V2Int.Left || _Direction == V2Int.Right ? V2Int.Up : V2Int.Right;
-            _AdjustStart = false;
-            _AdjustEnd = false;
-            if (Informer.PathExist(_Position + _Direction) || !_BorderInitialized) 
-                return;
-            var dir = RmazorUtils.GetDirection(_Direction, EMazeOrientation.North);
-            var (start, end, _) = GetBorderPointsAndDashed(dir, true, true);
-            if (Informer.PathExist(_Position + _Direction + dir1)
-                || Informer.TurretExist(_Position + _Direction + dir1))
-            {
-                (_AdjustStart, _Border.Start) = (true, start);
-            }
-            if (Informer.PathExist(_Position + _Direction + dir2)
-                || Informer.TurretExist(_Position + _Direction + dir2))
-            {
-                (_AdjustEnd, _Border.End) = (true, end);
-            }
-            if (!Informer.PathExist(_Position + dir1))
-            {
-                (_AdjustStart, _Border.Start) = (true, start);
-            }
-            _Border.DashSize = 4f * Vector3.Distance(_Border.Start, _Border.End) / CoordinateConverter.Scale;
-        }
-
         private void DrawBorder(EDirection _Side)
         {
             Line border = _Side switch
@@ -440,7 +365,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             };
             if (border.IsNull())
                 border = Object.AddComponentOnNewChild<Line>("Border", out _);
-            border.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale)
+            border.SetThickness(ViewSettings.PathItemBorderThickness * CoordinateConverter.Scale)
                 .SetEndCaps(LineEndCap.None)
                 .SetSortingOrder(SortingOrders.PathLine)
                 .SetDashed(false)
@@ -497,8 +422,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             var scale = CoordinateConverter.Scale;
             corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(isConerNearTurret || isCornerNearTrapIncreasing ? ArcEndCap.Round : ArcEndCap.None)
-                .SetRadius((ViewSettings.CornerRadius + ViewSettings.LineThickness * (_Inner ? .5f : -.5f)) * scale)
-                .SetThickness(ViewSettings.LineThickness * scale)
+                .SetRadius((ViewSettings.PathItemBorderThickness * (_Inner ? .5f : -.5f)) * scale)
+                .SetThickness(ViewSettings.PathItemBorderThickness * scale)
                 .SetAngRadiansStart(Mathf.Deg2Rad * angles.x)
                 .SetAngRadiansEnd(Mathf.Deg2Rad * angles.y)
                 .SetSortingOrder(SortingOrders.PathJoint)
@@ -529,50 +454,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 TopRightCornerInited = true;
                 IsTopRightCornerInner = _Inner;
             }
-            AdjustBordersOnCornerInitialization(_Right, _Up, _Inner);
         }
-
-        protected virtual void AdjustBordersOnCornerInitialization(
-            bool _Right,
-            bool _Up,
-            bool _Inner)
-        {
-            const EDirection left  = EDirection.Left;
-            const EDirection right = EDirection.Right;
-            const EDirection down  = EDirection.Down;
-            const EDirection up    = EDirection.Up;
-            if (!_Inner)
-                return;
-            if (!_Right && !_Up)
-            {
-                if (m_BottomBorder.IsNotNull())
-                    m_BottomBorder.Start = GetBorderPointsAndDashed(down, true, true).Item1;
-                if (m_LeftBorder.IsNotNull())
-                    m_LeftBorder.Start = GetBorderPointsAndDashed(left, true, true).Item1;
-            }
-            else if (_Right && !_Up)
-            {
-                if (m_BottomBorder.IsNotNull())
-                    m_BottomBorder.End = GetBorderPointsAndDashed(down, true, true).Item2;
-                if (m_RightBorder.IsNotNull())
-                    m_RightBorder.Start = GetBorderPointsAndDashed(right, true, true).Item1;
-            }
-            else if (!_Right)
-            {
-                if (m_LeftBorder.IsNotNull())
-                    m_LeftBorder.End = GetBorderPointsAndDashed(left, true, true).Item2;
-                if (m_TopBorder.IsNotNull())
-                    m_TopBorder.Start = GetBorderPointsAndDashed(up, true, true).Item1;
-            }
-            else
-            {
-                if (m_TopBorder.IsNotNull())
-                    m_TopBorder.End = GetBorderPointsAndDashed(up, true, true).Item2;
-                if (m_RightBorder.IsNotNull())
-                    m_RightBorder.End = GetBorderPointsAndDashed(right, true, true).Item2;
-            }
-        }
-
+        
         private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(
             EDirection _Side,
             bool       _StartLimit,
@@ -587,8 +470,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             start = CoordinateConverter.ToLocalMazeItemPosition(start);
             end = CoordinateConverter.ToLocalMazeItemPosition(end);
             var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
-            start += dir * CoordinateConverter.Scale * ViewSettings.LineThickness * Vector2.one * .5f;
-            end   += dir * CoordinateConverter.Scale * ViewSettings.LineThickness * Vector2.one * .5f;
+            start += dir * CoordinateConverter.Scale * ViewSettings.PathItemBorderThickness * Vector2.one * .5f;
+            end   += dir * CoordinateConverter.Scale * ViewSettings.PathItemBorderThickness * Vector2.one * .5f;
             bool dashed = Model.GetAllProceedInfos().Any(_Item =>
                 _Item.CurrentPosition == Props.Position + dir 
                 && (_Item.Type == EMazeItemType.TrapReact && _Item.Direction == -dir
@@ -603,14 +486,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             bool _Inner)
         {
             Vector2 pos = Props.Position;
-            float cr = ViewSettings.CornerRadius;
-            float xIndent = (_Right ? 1f : -1f) * (_Inner ? -1f : 1f);
-            float yIndent = (_Up ? 1f : -1f) * (_Inner ? -1f : 1f);
-            var crVec = cr * new Vector2(xIndent, yIndent);
             var dir = (_Right ? Vector2.right : Vector2.left)
                       + (_Up ? Vector2.up : Vector2.down);
             var center = pos
-                         + dir * 0.5f + crVec;
+                         + dir * 0.5f;
             center = CoordinateConverter.ToLocalMazeItemPosition(center);
             return center;
         }

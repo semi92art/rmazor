@@ -56,14 +56,14 @@ namespace RMAZOR.UI.Panels
         #region inject
         
         private IModelGame                          Model                          { get; }
-        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private PlayBonusLevelDialogPanel(
             IModelGame                          _Model,
-            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewBetweenLevelAdShower           _BetweenLevelAdShower,
             IMoneyCounter                       _MoneyCounter,
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewTimePauser                     _TimePauser,
@@ -80,7 +80,7 @@ namespace RMAZOR.UI.Panels
                 _TimePauser)
         {
             Model                          = _Model;
-            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
+            BetweenLevelAdShower           = _BetweenLevelAdShower;
             MoneyCounter                   = _MoneyCounter;
             CommandsProceeder              = _CommandsProceeder;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
@@ -184,7 +184,7 @@ namespace RMAZOR.UI.Panels
             long levelIndex = Model.LevelStaging.LevelIndex;
             if (!RmazorUtils.IsLastLevelInGroup(levelIndex))
                 return;
-            BetweenLevelAdLoader.ShowAd = false;
+            BetweenLevelAdShower.ShowAd = false;
             if (MoneyCounter.CurrentLevelGroupMoney <= 0) return;
             CommandsProceeder.RaiseCommand(
                 EInputCommand.FinishLevelGroupPanel, 

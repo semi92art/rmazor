@@ -145,7 +145,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         {
             m_TurretBackground = Container.AddComponentOnNewChild<Rectangle>(
                     "Turret Background", out GameObject _)
-                .SetSortingOrder(SortingOrders.PathLine - 1)
+                .SetSortingOrder(SortingOrders.PathJoint + 1)
                 .SetColor(Color.Lerp(
                     ColorProvider.GetColor(ColorIds.Background1),
                     ColorProvider.GetColor(ColorIds.Background2),
@@ -166,11 +166,6 @@ namespace RMAZOR.Views.MazeItems.Additional
             if (!_Appear)
                 m_TurretBackground.enabled = false;
             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
-        }
-        
-        protected static int GetSortingOrder()
-        {
-            return SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret);
         }
 
         protected abstract Vector4 GetBackgroundCornerRadii();

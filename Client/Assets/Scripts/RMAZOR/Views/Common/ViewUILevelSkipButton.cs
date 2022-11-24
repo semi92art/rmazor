@@ -61,7 +61,7 @@ namespace RMAZOR.Views.Common
         private IAdsManager                         AdsManager                     { get; }
         private IColorProvider                      ColorProvider                  { get; }
         private IViewGameTicker                     ViewGameTicker                 { get; }
-        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
@@ -81,7 +81,7 @@ namespace RMAZOR.Views.Common
             IAdsManager                         _AdsManager,
             IColorProvider                      _ColorProvider,
             IViewGameTicker                     _ViewGameTicker,
-            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewBetweenLevelAdShower           _BetweenLevelAdShower,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
             IMoneyCounter                       _MoneyCounter,
             IViewInputCommandsProceeder         _CommandsProceeder,
@@ -100,7 +100,7 @@ namespace RMAZOR.Views.Common
             AdsManager                     = _AdsManager;
             ColorProvider                  = _ColorProvider;
             ViewGameTicker                 = _ViewGameTicker;
-            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
+            BetweenLevelAdShower           = _BetweenLevelAdShower;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             MoneyCounter                   = _MoneyCounter;
             CommandsProceeder              = _CommandsProceeder;
@@ -227,7 +227,7 @@ namespace RMAZOR.Views.Common
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
             bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             LevelSkipped = true;
-            BetweenLevelAdLoader.ShowAd = false;
+            BetweenLevelAdShower.ShowAd = false;
             bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isBonusLevel;
             if (isLastLevelInGroup)
             {

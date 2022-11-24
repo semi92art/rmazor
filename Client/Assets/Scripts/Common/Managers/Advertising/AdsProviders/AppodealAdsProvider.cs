@@ -68,9 +68,7 @@ namespace Common.Managers.Advertising.AdsProviders
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
             m_OnSuccess = _OnSuccess;
-            Appodeal.SetTesting(TestMode && !GlobalGameSettings.apkForAppodeal);
-            var logLevel = TestMode || GlobalGameSettings.apkForAppodeal ? AppodealLogLevel.Verbose : AppodealLogLevel.None;
-            Appodeal.SetLogLevel(logLevel);
+            Appodeal.SetLogLevel(AppodealLogLevel.Verbose);
             Appodeal.SetChildDirectedTreatment(true);
             const int adTypes = AppodealAdType.Interstitial | AppodealAdType.RewardedVideo;
             Appodeal.SetAutoCache(adTypes, false);

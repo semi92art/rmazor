@@ -470,7 +470,7 @@ namespace RMAZOR.Views.MazeItems
             return new List<Vector2> {bottomLeft, topLeft, topRight, bottomRight};
         }
 
-        private float GetCornerRadius() => ViewSettings.CornerRadius * CoordinateConverter.Scale * 0.5f;
+        private float GetCornerRadius() => ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f;
 
         #endregion
     }

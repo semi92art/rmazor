@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1192954588194726633
 Transform:
   m_ObjectHideFlags: 0
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 1}
+  color: {r: 1, g: 0, b: 0, a: 1}
   detailLevel: 2
   renderQueue: -1
   zTest: 4
@@ -60,7 +60,7 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   type: 2
-  colorMode: 1
+  colorMode: 0
   colorOuterStart: {r: 1, g: 1, b: 1, a: 0.05882353}
   colorInnerEnd: {r: 1, g: 1, b: 1, a: 1}
   colorOuterEnd: {r: 1, g: 1, b: 1, a: 1}
@@ -98,7 +98,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1455836875806820725}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -131,7 +131,7 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!1 &3312965024029319640
 GameObject:
@@ -281,7 +281,7 @@ MonoBehaviour:
   angRadiansEnd: 2.3561945
   radius: 0.7
   radiusSpace: 0
-  thickness: 0.62
+  thickness: 0.5
   thicknessSpace: 0
   arcEndCaps: 0
   matchDashSpacingToSize: 1
@@ -362,7 +362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &551698704203800136
 Transform:
   m_ObjectHideFlags: 0
@@ -392,7 +392,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blendMode: 1
   scaleMode: 0
-  color: {r: 1, g: 1, b: 1, a: 0.05882353}
+  color: {r: 1, g: 0, b: 0, a: 1}
   detailLevel: 2
   renderQueue: -1
   zTest: 4
@@ -404,7 +404,7 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   type: 2
-  colorMode: 1
+  colorMode: 0
   colorOuterStart: {r: 1, g: 1, b: 1, a: 1}
   colorInnerEnd: {r: 1, g: 1, b: 1, a: 1}
   colorOuterEnd: {r: 1, g: 1, b: 1, a: 1}
@@ -442,7 +442,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8686265018881294800}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -475,5 +475,5 @@ MeshRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_AdditionalVertexStreams: {fileID: 0}

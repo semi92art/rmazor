@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
@@ -34,9 +33,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         #region nonpublic members
         
         private static int AnimKeyGameLogoAppear    => AnimKeys.Anim;
-
-        private static readonly int StencilRefId = Shader.PropertyToID("_StencilRef");
-
+        
         private static Dictionary<string, float> GameLogoPartsDelaysDict => new Dictionary<string, float>
         {
             {"top_text_animator", 0f},
@@ -51,7 +48,6 @@ namespace RMAZOR.Views.UI.Game_Logo
         private Dictionary<string, Animator> m_GameLogoCharAnims;
         private float                        m_TopOffset;
         private bool                         m_OnStart = true;
-        private bool                         m_LogoWasShown;
         
         #endregion
         
@@ -92,16 +88,10 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         public void Init(Vector4 _Offsets)
         {
-            Shown += OnShown;
             CommandsProceeder.Command  += OnCommand;
             ColorProvider.ColorChanged += OnColorChanged;
             m_TopOffset = _Offsets.w;
             InitGameLogo();
-        }
-
-        private void OnShown()
-        {
-            m_LogoWasShown = true;
         }
 
         public void Show()
@@ -127,9 +117,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             if (!m_GameLogoObj.activeSelf)
                 return;
-            if (!m_LogoWasShown && _ColorId == ColorIds.UI)
-                SetColors(_Color);
-            else if (m_LogoWasShown && _ColorId == ColorIds.Main)
+            if (_ColorId == ColorIds.UI)
                 SetColors(_Color);
         }
 
@@ -141,7 +129,7 @@ namespace RMAZOR.Views.UI.Game_Logo
                 CommonPrefabSetNames.UiGame,
                 prefabName);
             var trigerrer = go.GetCompItem<AnimationTriggerer>("triggerer");
-            trigerrer.Trigger1 += () => Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine(0f));
+            trigerrer.Trigger1 += () => Cor.Run(HideBackgroundAndDecreaseGameLogoCoroutine());
             m_GameLogoCharAnims = GameLogoPartsDelaysDict.Keys
                 .ToDictionary(
                     _C => _C, 
@@ -203,17 +191,15 @@ namespace RMAZOR.Views.UI.Game_Logo
             LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
             LogoTextureProvider.SetTransitionValue(1f, true);
             yield return Cor.Delay(0.5f, GameTicker);
-            SetColors(ColorProvider.GetColor(ColorIds.Main));
+            SetColors(ColorProvider.GetColor(ColorIds.UI));
             ShowGameLogo(ShowTime);
             yield return Cor.Delay(ShowTime, GameTicker,() => m_GameLogoAppeared = true);
         }
 
-        private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine(float _Delay)
+        private IEnumerator HideBackgroundAndDecreaseGameLogoCoroutine()
         {
-            yield return Cor.Delay(_Delay, GameTicker);
             GetStartGameLogoTransform(out Vector2 startPos, out float startScale);
             GetFinalGameLogoTransform(out Vector2 finalPos, out float finalScale);
-            bool isColorSetOnEnd = false;
             Cor.Run(Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
@@ -222,11 +208,6 @@ namespace RMAZOR.Views.UI.Game_Logo
                     var pos = Vector2.Lerp(startPos, finalPos, _P);
                     float scale = Mathf.Lerp(startScale, finalScale, _P);
                     SetGameLogoTransform(pos, scale);
-                    if (!(_P > 0.5f) || isColorSetOnEnd) 
-                        return;
-                    var endCol = ColorProvider.GetColor(ColorIds.Main);
-                    SetColors(endCol);
-                    isColorSetOnEnd = true;
                 }));
             yield return Cor.Lerp(
                 GameTicker,

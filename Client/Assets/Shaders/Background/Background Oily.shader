@@ -7,10 +7,6 @@ Shader "RMAZOR/Background/Oily"
         _Color2 ("Color 2", Color) = (1,1,1,1)
         _Speed("Speed", Range(1,10)) = 1
         _Scale("Scale", Range(1,10)) = 1
-        _Gc1("Gradient Coefficient 1", Range(0, 1)) = 0.5
-        _Gc2("Gradient Coefficient 2", Range(0, 1)) = 0.5
-        _Mc1("Multiply Coefficient 1", Range(0, 1)) = 0.5
-        [IntRange]_Mc2("Multiply Coefficient 2", Range(1, 50)) = 1
     }
     SubShader
     {
@@ -41,8 +37,6 @@ Shader "RMAZOR/Background/Oily"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale;
-            fixed _Gc1, _Gc2, _Mc1;
-            int _Mc2;
 
             v2f vert(appdata v)
             {

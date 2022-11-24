@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using System;
+using System.Collections.Generic;
+using Common;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Providers;
@@ -10,6 +12,7 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
+using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems
@@ -33,6 +36,7 @@ namespace RMAZOR.Views.MazeItems
         protected override string ObjectName => "Moving Trap Block";
 
         private SpriteRenderer   m_Saw;
+        private Disc             m_Center;
         private Vector2          m_PrecisePosition;
         private CircleCollider2D m_Collider;
 
@@ -71,7 +75,7 @@ namespace RMAZOR.Views.MazeItems
         
         #region api
         
-        public override Component[] Renderers => new Component[] {m_Saw};
+        public override Component[] Renderers => new Component[0];
         
         public override object Clone() => new ViewMazeItemMovingTrap(
             ViewSettings,
@@ -100,7 +104,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override int  LinesAndJointsColorId => ColorIds.MazeItem1;
         
-        public override    void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
+        public override void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
         public override void OnMoving(MazeItemMoveEventArgs _Args)
         {
@@ -137,8 +141,12 @@ namespace RMAZOR.Views.MazeItems
             var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
             saw.sprite = Managers.PrefabSetManager.GetObject<Sprite>("views", "moving_trap");
             saw.color = ColorProvider.GetColor(ColorIds.MazeItem1);
-            saw.sortingOrder = GetSortingOrder();
+            int sortingOrder = GetSortingOrder();
+            saw.sortingOrder = sortingOrder;
             saw.enabled = false;
+            m_Center = Object.AddComponentOnNewChild<Disc>("Center", out _);
+            m_Center.SetRadius(0.15f);
+            m_Center.SetSortingOrder(sortingOrder + 1);
             m_Saw = saw;
             m_Collider = Object.AddComponent<CircleCollider2D>();
             m_Collider.radius = 0.5f;
@@ -173,7 +181,8 @@ namespace RMAZOR.Views.MazeItems
         {
             switch (_ColorId)
             {
-                case ColorIds.MazeItem1: m_Saw.color = _Color; break;
+                case ColorIds.MazeItem1: m_Saw.color    = _Color; break;
+                case ColorIds.Main:      m_Center.Color = _Color; break;
             }
             base.OnColorChanged(_ColorId, _Color);
         }
@@ -205,6 +214,16 @@ namespace RMAZOR.Views.MazeItems
                     return;
                 SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
             }
+        }
+
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var sets = base.GetAppearSets(_Appear);
+            var colMazeItem1 = ColorProvider.GetColor(ColorIds.MazeItem1);
+            sets.Add(new[] {m_Saw}, () => colMazeItem1);
+            var colMain = ColorProvider.GetColor(ColorIds.Main);
+            sets.Add(new[] {m_Center}, () => colMain);
+            return sets;
         }
 
         protected override void OnAppearStart(bool _Appear)

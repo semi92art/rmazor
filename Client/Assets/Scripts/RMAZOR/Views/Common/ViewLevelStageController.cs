@@ -75,7 +75,7 @@ namespace RMAZOR.Views.Common
         private CompanyLogo                         CompanyLogo                    { get; }
         private IViewUIGameLogo                     GameLogo                       { get; }
         private IViewFullscreenTransitioner         FullscreenTransitioner         { get; }
-        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator    { get; }
         private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer     { get; }
         private IViewInputTouchProceeder            TouchProceeder                 { get; }
@@ -101,7 +101,7 @@ namespace RMAZOR.Views.Common
             CompanyLogo                         _CompanyLogo,
             IViewUIGameLogo                     _GameLogo,
             IViewFullscreenTransitioner         _FullscreenTransitioner,
-            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewBetweenLevelAdShower           _BetweenLevelAdShower,
             IViewCameraEffectsCustomAnimator    _CameraEffectsCustomAnimator,
             IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer, 
             IViewInputTouchProceeder            _TouchProceeder,
@@ -126,7 +126,7 @@ namespace RMAZOR.Views.Common
             CompanyLogo                 = _CompanyLogo;
             GameLogo                    = _GameLogo;
             FullscreenTransitioner      = _FullscreenTransitioner;
-            BetweenLevelAdLoader        = _BetweenLevelAdLoader;
+            BetweenLevelAdShower        = _BetweenLevelAdShower;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
             AdditionalBackgroundDrawer  = _AdditionalBackgroundDrawer;
             CameraProvider              = _CameraProvider;
@@ -303,14 +303,16 @@ namespace RMAZOR.Views.Common
                                        $"_Value: {savedGameEntity.Value}");
                         return;
                     }
+                    var args = _Args.Args ?? savedGame.Args;
                     long levelIndex = _Args.LevelIndex;
-                    string nextLevelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+                    string nextLevelType = (string) args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
                     bool nextLevelTypeIsBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
                     if (nextLevelTypeIsBonus)
                     {
                         long bonusLevelIndex = Model.LevelStaging.LevelIndex;
                         levelIndex = RmazorUtils.GetFirstLevelInGroup((int) bonusLevelIndex + 1 + 1);
                     }
+                    
                     var newSavedGame = new SavedGame
                     {
                         FileName = CommonData.SavedGameFileName,
@@ -371,7 +373,10 @@ namespace RMAZOR.Views.Common
                         EInputCommand.UnloadLevel, true);
                 }));
             }
-            BetweenLevelAdLoader.TryShowAd(_Args.LevelIndex, UnloadLevel);
+            string currentLevelType = (string) _Args.Args.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            BetweenLevelAdShower.TryShowAd(_Args.LevelIndex, currentLevelIsBonus, UnloadLevel);
         }
 
         private void OnLevelUnloaded(LevelStageArgs _Args)

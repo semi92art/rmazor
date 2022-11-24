@@ -92,7 +92,6 @@ namespace Common.Managers.Advertising.AdBlocks
                 Dbg.LogWarning("OnShown action is null");
             OnShown?.Invoke();
             OnShown = null;
-            LoadAd();
             m_DoInvokeOnShown = false;
         }
         
@@ -114,6 +113,7 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClosed?.Invoke();
             OnClosed = null;
             m_DoInvokeOnClosed = false;
+            LoadAd();
         }
         
         protected void ProceedFailedToShownAction()
@@ -131,9 +131,9 @@ namespace Common.Managers.Advertising.AdBlocks
 
         protected void ProceedLoadAdOnDelay()
         {
+            m_LoadAdDelayTimer += CommonTicker.DeltaTime;
             if (!m_DoLoadAdWithDelay)
                 return;
-            m_LoadAdDelayTimer += CommonTicker.DeltaTime;
             if (m_LoadAdDelayTimer < GlobalGameSettings.adsLoadDelay) 
                 return;
             LoadAd();

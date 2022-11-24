@@ -36,8 +36,6 @@ Shader "RMAZOR/Background/Squares Fall"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale, _Angle;
-            fixed _Gc1, _Gc2, _Mc1;
-            int _Mc2;
 
             v2f vert(appdata v)
             {

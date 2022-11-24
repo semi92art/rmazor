@@ -176,6 +176,10 @@ namespace Editor
                 return;
             }
             var props = m_AdditionalColorsPropsSet[m_CurrSetIdx];
+            CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
+            CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
+            CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
+            m_ColorProvider.SetColor(ColorIds.MoneyItem, m_ColorProvider.GetColor(ColorIds.MoneyItem));
             m_ColorProvider.SetColor(ColorIds.Main, props.main);
             m_ColorProvider.SetColor(ColorIds.Background1, props.bacground1);
             m_ColorProvider.SetColor(ColorIds.Background2, props.bacground2);
@@ -185,9 +189,6 @@ namespace Editor
             m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
             m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType));
             m_ColorProvider.SetColor(ColorIds.GameUiAlternative, props.GetColor(props.uiBackgroundFillType));
-            CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
-            CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
-            CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
         }
 
         private void SetNextOrPreviousOrCurrentAdditionalColorSet(bool? _Next)

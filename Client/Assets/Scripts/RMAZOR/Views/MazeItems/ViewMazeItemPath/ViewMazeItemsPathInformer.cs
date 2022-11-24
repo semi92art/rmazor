@@ -128,7 +128,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             float              _Scale)
         {
             Vector2 pos = GetProps().Position;
-            float cr = ViewSettings.CornerRadius;
+            float cr = ViewSettings.PathItemBorderThickness;
             Vector2 left, right, down, up, zero;
             (left, right, down, up, zero) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up, Vector2.zero);
             Vector2 start, end;

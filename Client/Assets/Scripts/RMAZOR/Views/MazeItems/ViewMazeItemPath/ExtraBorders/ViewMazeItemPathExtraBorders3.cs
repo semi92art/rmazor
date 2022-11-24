@@ -12,13 +12,13 @@ using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
-namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
+namespace RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders
 {
-    public interface IViewMazeItemPathExtraBorders5 : IViewMazeItemPathExtraBorders { }
+    public interface IViewMazeItemPathExtraBorders3 : IViewMazeItemPathExtraBorders { }
     
-    public class ViewMazeItemPathExtraBorders5 :
+    public class ViewMazeItemPathExtraBorders3 :
         ViewMazeItemPathExtraBordersBase,
-        IViewMazeItemPathExtraBorders5
+        IViewMazeItemPathExtraBorders3
     {
         #region nonpublic members
 
@@ -32,7 +32,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         #region inject
         
-        private ViewMazeItemPathExtraBorders5(
+        private ViewMazeItemPathExtraBorders3(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             ICoordinateConverter        _CoordinateConverter,
@@ -77,7 +77,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 .Concat(m_TopExtraBorders)
                 .ToArray();
 
-        public override object Clone() => new ViewMazeItemPathExtraBorders5(
+        public override object Clone() => new ViewMazeItemPathExtraBorders3(
             ViewSettings,
             Model,
             CoordinateConverter,

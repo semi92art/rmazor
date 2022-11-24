@@ -8,10 +8,6 @@ Shader "RMAZOR/Background/Fall In Deep"
         _Speed("Speed", Range(1,10)) = 1
         _Scale("Scale", Range(1,10)) = 1
         _Angle("Angle", Range(0,2)) = 0
-        _Gc1("Gradient Coefficient 1", Range(0, 1)) = 0.5
-        _Gc2("Gradient Coefficient 2", Range(0, 1)) = 0.5
-        _Mc1("Multiply Coefficient 1", Range(-100, 100)) = 0
-        _Mc2("Multiply Coefficient 2", Range(-100, 100)) = 0
     }
     SubShader
     {
@@ -41,8 +37,6 @@ Shader "RMAZOR/Background/Fall In Deep"
 
             fixed4 _Color1, _Color2;
             float _Speed, _Scale, _Angle;
-            fixed _Gc1, _Gc2, _Mc1, _Mc2;
-
 
             v2f vert(appdata v)
             {

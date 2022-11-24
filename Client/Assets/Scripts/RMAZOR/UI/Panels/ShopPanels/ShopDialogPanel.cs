@@ -257,6 +257,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     }
                 },
                 _Info);
+            item.UpdateState(() =>
+                {
+                    if (_Args != null)
+                        return _Args.Result() != EShopProductResult.Pending;
+                    return Managers.AdsManager.RewardedAdReady;
+                },
+                () =>
+                {
+                    if (_Args?.Result() != EShopProductResult.Success)
+                        return;
+                    _Info.Currency = _Args.Currency;
+                    _Info.Price = _Args.Price;
+                });
             Cor.Run(Cor.WaitWhile(
                 () =>
                 {

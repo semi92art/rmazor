@@ -10,7 +10,9 @@ using Common.Providers;
 using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Models;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
@@ -119,7 +121,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected override void InitShape()
         {
             base.InitShape();
-            int sortingOrder = GetSortingOrder();
+            int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Turret);
             m_Body = Container.AddComponentOnNewChild<Rectangle>("Turret Body", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.Main))
                 .SetSortingOrder(sortingOrder)
@@ -146,7 +148,7 @@ namespace RMAZOR.Views.MazeItems.Additional
             m_Body.SetHeight(scale * (1f + ViewSettings.LineThickness))
                 .SetWidth(scale * (1f + ViewSettings.LineThickness))
                 .SetThickness(scale * ViewSettings.LineThickness)
-                .SetCornerRadius(scale * ViewSettings.CornerRadius);
+                .SetCornerRadius(scale * ViewSettings.LineThickness);
             m_HolderBorder.SetRadius(scale * ProjectileContainerRadius * 0.9f)
                 .SetThickness(ViewSettings.LineThickness * scale * 0.5f);
         }
@@ -229,7 +231,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         protected override Vector4 GetBackgroundCornerRadii()
         {
             var pos = Props.Position;
-            float radius = CoordinateConverter.Scale * ViewSettings.CornerRadius;
+            float radius = CoordinateConverter.Scale * ViewSettings.LineThickness;
             float bottomLeftR  = IsPathItem(pos + V2Int.Down + V2Int.Left)  ? 0f : radius;
             float topLeftR     = IsPathItem(pos + V2Int.Up + V2Int.Left)    ? 0f : radius;
             float topRightR    = IsPathItem(pos + V2Int.Up + V2Int.Right)   ? 0f : radius;

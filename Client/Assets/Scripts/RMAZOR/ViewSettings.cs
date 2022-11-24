@@ -10,7 +10,7 @@ namespace RMAZOR
     public class ViewSettings : ScriptableObject
     {
         public float  lineThickness;
-        public float  cornerRadius;
+        public float  pathItemBorderThickness;
         public float  movingTrapRotationSpeed;
         public float  shredingerLineOffsetSpeed;
         public float  turretProjectileRotationSpeed;
@@ -31,7 +31,6 @@ namespace RMAZOR
         public float  betweenLevelTransitionTime;
         public float  spearProjectileSpeed;
         public float  spearRotationSpeed;
-        public string additionalBackTexturesInUse;
         public float  filledPathAlpha;
         public float  additionalBackgroundAlpha;
         public float  skipLevelSeconds;
@@ -45,7 +44,6 @@ namespace RMAZOR
         public int    finishLevelGroupPanelGetMoneyButtonTextVariant;
         public int    finishLevelGroupPanelBackgroundVariant;
         public int    characterDiedPanelBackgroundVariant;
-        public int    playBonusLevelPanelBackgroundVariant;
         public string extraBordersIndices;
         public string backgroundTextures;
         public int    additionalBackgroundType;
@@ -55,13 +53,13 @@ namespace RMAZOR
         public float LineThickness
         {
             get => lineThickness * 0.01f;
-            set => lineThickness = value / 0.01f;
+            set => lineThickness = value * 100f;
         }
-
-        public float CornerRadius
+        
+        public float PathItemBorderThickness
         {
-            get => cornerRadius * 0.01f;
-            set => cornerRadius = value / 0.01f;
+            get => pathItemBorderThickness * 0.01f;
+            set => pathItemBorderThickness = value * 100f;
         }
 
         public float ShredingerLineOffsetSpeed

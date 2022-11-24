@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
@@ -12,27 +11,27 @@ using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
 
-namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
+namespace RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders
 {
-    public interface IViewMazeItemPathExtraBorders3 : IViewMazeItemPathExtraBorders { }
+    public interface IViewMazeItemPathExtraBorders2 : IViewMazeItemPathExtraBorders { }
     
-    public class ViewMazeItemPathExtraBorders3 :
+    public class ViewMazeItemPathExtraBorders2 :
         ViewMazeItemPathExtraBordersBase,
-        IViewMazeItemPathExtraBorders3
+        IViewMazeItemPathExtraBorders2
     {
         #region nonpublic members
 
-        private List<RegularPolygon>
-            m_LeftExtraBorders   = new List<RegularPolygon>(),
-            m_RightExtraBorders  = new List<RegularPolygon>(),
-            m_BottomExtraBorders = new List<RegularPolygon>(),
-            m_TopExtraBorders    = new List<RegularPolygon>();
+        private List<Rectangle>
+            m_LeftRectangles   = new List<Rectangle>(),
+            m_RightRectangles  = new List<Rectangle>(),
+            m_BottomRectangles = new List<Rectangle>(),
+            m_TopRectangles    = new List<Rectangle>();
 
         #endregion
 
         #region inject
         
-        private ViewMazeItemPathExtraBorders3(
+        private ViewMazeItemPathExtraBorders2(
             ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             ICoordinateConverter        _CoordinateConverter,
@@ -41,10 +40,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             IViewMazeItemsPathInformer  _Informer) 
             : base(
                 _ViewSettings, 
-                _Model,
+                _Model, 
                 _CoordinateConverter,
                 _ContainersGetter,
-                _ColorProvider, 
+                _ColorProvider,
                 _Informer) { }
 
         #endregion
@@ -56,28 +55,28 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             get => base.Activated;
             set
             {
-                static void EnableBorder(List<RegularPolygon> _Borders, bool _Enable, bool _Inited)
+                static void EnableBorder(List<Rectangle> _Borders, bool _Enable, bool _Inited)
                 {
                     if (_Inited)
                         _Borders.ForEach(_Border => _Border.enabled = _Enable);
                 }
-                EnableBorder(m_LeftExtraBorders, value,   LeftExtraBordersInited);
-                EnableBorder(m_RightExtraBorders, value,  RightExtraBordersInited);
-                EnableBorder(m_BottomExtraBorders, value, BottomExtraBordersInited);
-                EnableBorder(m_TopExtraBorders, value,    TopExtraBordersInited);
+                EnableBorder(m_LeftRectangles, value,   LeftExtraBordersInited);
+                EnableBorder(m_RightRectangles, value,  RightExtraBordersInited);
+                EnableBorder(m_BottomRectangles, value, BottomExtraBordersInited);
+                EnableBorder(m_TopRectangles, value,    TopExtraBordersInited);
                 base.Activated = value;
             }
         }
         
-        public override Component[] Renderers => 
-            m_LeftExtraBorders
+        public override Component[] Renderers =>
+            m_LeftRectangles
                 .Cast<Component>()
-                .Concat(m_RightExtraBorders)
-                .Concat(m_BottomExtraBorders)
-                .Concat(m_TopExtraBorders)
+                .Concat(m_RightRectangles)
+                .Concat(m_BottomRectangles)
+                .Concat(m_TopRectangles)
                 .ToArray();
 
-        public override object Clone() => new ViewMazeItemPathExtraBorders3(
+        public override object Clone() => new ViewMazeItemPathExtraBorders2(
             ViewSettings,
             Model,
             CoordinateConverter,
@@ -87,16 +86,16 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         public override void EnableInitializedShapes(bool _Enable)
         {
-            EnableBorderShapes(_Enable, m_LeftExtraBorders,   LeftExtraBordersInited);
-            EnableBorderShapes(_Enable, m_RightExtraBorders,  RightExtraBordersInited);
-            EnableBorderShapes(_Enable, m_BottomExtraBorders, BottomExtraBordersInited);
-            EnableBorderShapes(_Enable, m_TopExtraBorders,    TopExtraBordersInited);
+            EnableBorderShapes(_Enable, m_LeftRectangles,   LeftExtraBordersInited);
+            EnableBorderShapes(_Enable, m_RightRectangles,  RightExtraBordersInited);
+            EnableBorderShapes(_Enable, m_BottomRectangles, BottomExtraBordersInited);
+            EnableBorderShapes(_Enable, m_TopRectangles,    TopExtraBordersInited);
         }
 
         public override void HighlightBordersAndCorners()
         {
             var col = Informer.GetHighlightColor();
-            void SetPolygonColor(bool _Inited, IEnumerable<ShapeRenderer> _Rectangles)
+            void SetRectsColor(bool _Inited, IEnumerable<ShapeRenderer> _Rectangles)
             {
                 if (!_Inited) 
                     return;
@@ -106,15 +105,15 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                         rect.Color = col;
                 }
             }
-            SetPolygonColor(LeftExtraBordersInited,   m_LeftExtraBorders);
-            SetPolygonColor(RightExtraBordersInited,  m_RightExtraBorders);
-            SetPolygonColor(BottomExtraBordersInited, m_BottomExtraBorders);
-            SetPolygonColor(TopExtraBordersInited,    m_TopExtraBorders);
+            SetRectsColor(LeftExtraBordersInited,   m_LeftRectangles);
+            SetRectsColor(RightExtraBordersInited,  m_RightRectangles);
+            SetRectsColor(BottomExtraBordersInited, m_BottomRectangles);
+            SetRectsColor(TopExtraBordersInited,    m_TopRectangles);
         }
 
         public override void DrawBorders()
         {
-            static void DisablePolygons(bool _Inited, IEnumerable<ShapeRenderer> _Rectangles)
+            static void DisableRects(bool _Inited, IEnumerable<ShapeRenderer> _Rectangles)
             {
                 if (!_Inited) 
                     return;
@@ -123,10 +122,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     rect.enabled = false;
                 }
             }
-            DisablePolygons(LeftExtraBordersInited,   m_LeftExtraBorders);
-            DisablePolygons(RightExtraBordersInited,  m_RightExtraBorders);
-            DisablePolygons(BottomExtraBordersInited, m_BottomExtraBorders);
-            DisablePolygons(TopExtraBordersInited,    m_TopExtraBorders);
+            DisableRects(LeftExtraBordersInited,   m_LeftRectangles);
+            DisableRects(RightExtraBordersInited,  m_RightRectangles);
+            DisableRects(BottomExtraBordersInited, m_BottomRectangles);
+            DisableRects(TopExtraBordersInited,    m_TopRectangles);
             LeftExtraBordersInited = RightExtraBordersInited = BottomExtraBordersInited = TopExtraBordersInited = false;
             var sides = Enum
                 .GetValues(typeof(EDirection))
@@ -153,10 +152,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             var colorBottom = GetBorderColorWithAlpha(EDirection.Down);
             var colorTop    = GetBorderColorWithAlpha(EDirection.Up);
             var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
-            if (LeftExtraBordersInited)   sets.Add(m_LeftExtraBorders,   () => colorLeft);
-            if (RightExtraBordersInited)  sets.Add(m_RightExtraBorders,  () => colorRight);
-            if (BottomExtraBordersInited) sets.Add(m_BottomExtraBorders, () => colorBottom);
-            if (TopExtraBordersInited)    sets.Add(m_TopExtraBorders,    () => colorTop);
+            if (LeftExtraBordersInited)   sets.Add(m_LeftRectangles,   () => colorLeft);
+            if (RightExtraBordersInited)  sets.Add(m_RightRectangles,  () => colorRight);
+            if (BottomExtraBordersInited) sets.Add(m_BottomRectangles, () => colorBottom);
+            if (TopExtraBordersInited)    sets.Add(m_TopRectangles,    () => colorTop);
             return sets;
         }
 
@@ -167,7 +166,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             var borderCol = GetBorderColor();
-            void SetPolygonsColor(
+            void SetRectsColor(
                 bool                       _Inited,
                 EDirection         _Direction,
                 IEnumerable<ShapeRenderer> _Rectangles)
@@ -176,77 +175,70 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     return;
                 foreach (var rect in _Rectangles)
                 {
-                    rect.Color = borderCol.SetA(
-                        Informer.IsBorderNearTrapReact(_Direction) 
-                        || Informer.IsBorderNearTrapIncreasing(_Direction) ? 0f : 1f);
+                    float alphaChannel = Informer.IsBorderNearTrapReact(_Direction)
+                                         || Informer.IsBorderNearTrapIncreasing(_Direction)
+                        ? 0f : 1f;
+                    rect.Color = borderCol.SetA(alphaChannel);
                 }
             }
-            SetPolygonsColor(LeftExtraBordersInited,   EDirection.Left,  m_LeftExtraBorders);
-            SetPolygonsColor(RightExtraBordersInited,  EDirection.Right, m_RightExtraBorders);
-            SetPolygonsColor(BottomExtraBordersInited, EDirection.Down,  m_BottomExtraBorders);
-            SetPolygonsColor(TopExtraBordersInited,    EDirection.Up,    m_TopExtraBorders);
+            SetRectsColor(LeftExtraBordersInited,   EDirection.Left,  m_LeftRectangles);
+            SetRectsColor(RightExtraBordersInited,  EDirection.Right, m_RightRectangles);
+            SetRectsColor(BottomExtraBordersInited, EDirection.Down,  m_BottomRectangles);
+            SetRectsColor(TopExtraBordersInited,    EDirection.Up,    m_TopRectangles);
         }
 
         private void DrawExtraBorder(EDirection _Side)
         {
-            List<RegularPolygon> polygons = _Side switch
+            List<Rectangle> rects = _Side switch
             {
-                EDirection.Left  => m_LeftExtraBorders,
-                EDirection.Right => m_RightExtraBorders,
-                EDirection.Down  => m_BottomExtraBorders,
-                EDirection.Up    => m_TopExtraBorders,
-                _                => throw new SwitchCaseNotImplementedException(_Side)
+                EDirection.Left  => m_LeftRectangles,
+                EDirection.Right => m_RightRectangles,
+                EDirection.Down  => m_BottomRectangles,
+                EDirection.Up    => m_TopRectangles,
+                _                        => throw new SwitchCaseNotImplementedException(_Side)
             };
-            if (!polygons.Any())
+            if (!rects.Any())
             {
-                var polygon1 = GetParent().AddComponentOnNewChild<RegularPolygon>($"{_Side} Extra Rect 1", out _);
-                var polygon2 = GetParent().AddComponentOnNewChild<RegularPolygon>($"{_Side} Extra Rect 2", out _);
-                var polygon3 = GetParent().AddComponentOnNewChild<RegularPolygon>($"{_Side} Extra Rect 3", out _);
-                polygons.AddRange(new [] { polygon1, polygon2, polygon3 });
+                var rect1 = GetParent().AddComponentOnNewChild<Rectangle>($"{_Side} Extra Rect 1", out _);
+                var rect2 = GetParent().AddComponentOnNewChild<Rectangle>($"{_Side} Extra Rect 2", out _);
+                var rect3 = GetParent().AddComponentOnNewChild<Rectangle>($"{_Side} Extra Rect 3", out _);
+                rects.AddRange(new [] { rect1, rect2, rect3 });
             }
             float scale = CoordinateConverter.Scale;
-            float polygonAngle = _Side switch
+            var props = GetProps();
+            int posSum = props.Position.X + props.Position.Y;
+            foreach (var rect in rects)
             {
-                EDirection.Right => Mathf.Deg2Rad * (0 - 30f),
-                EDirection.Up    => Mathf.Deg2Rad * (90f - 30f),
-                EDirection.Left  => Mathf.Deg2Rad * (180f - 30f),
-                EDirection.Down  => Mathf.Deg2Rad * (270f - 30f),
-                _                => throw new SwitchExpressionException(_Side)
-            };
-            foreach (var polygon in polygons)
-            {
-                polygon
-                    .SetSides(3)
+                rect.SetType(Rectangle.RectangleType.RoundedSolid)
                     .SetColor(GetBorderColor())
                     .SetSortingOrder(SortingOrders.PathLine)
-                    .SetRadius(scale * 0.15f)
-                    .SetRoundness(scale * 0.25f * ViewSettings.CornerRadius)
-                    .SetAngle(polygonAngle);
+                    .SetSize(scale * 0.25f)
+                    .SetCornerRadius(scale * 0.25f * ViewSettings.LineThickness);
             }
-            var positions = GetPolygonPositions(_Side);
-            polygons[0].SetRadius(scale * 0.25f);
-            polygons[0].transform.SetPosXY(positions[0]);
-            polygons[1].transform.SetPosXY(positions[1]);
-            polygons[2].transform.SetPosXY(positions[2]);
+            var positions = GetRectsPositions(_Side);
+            rects[0].SetSize(scale * 0.33f);
+            rects[0].transform.SetPosXY(positions[0]);
+            rects[1].transform.SetPosXY(positions[1]);
+            rects[2].transform.SetPosXY(positions[2]);
             switch (_Side)
             {
-                case EDirection.Left:  m_LeftExtraBorders   = polygons; LeftExtraBordersInited   = true; break;
-                case EDirection.Right: m_RightExtraBorders  = polygons; RightExtraBordersInited  = true; break;
-                case EDirection.Down:  m_BottomExtraBorders = polygons; BottomExtraBordersInited = true; break;
-                case EDirection.Up:    m_TopExtraBorders    = polygons; TopExtraBordersInited    = true; break;
+                case EDirection.Left:  m_LeftRectangles   = rects; LeftExtraBordersInited   = true; break;
+                case EDirection.Right: m_RightRectangles  = rects; RightExtraBordersInited  = true; break;
+                case EDirection.Down:  m_BottomRectangles = rects; BottomExtraBordersInited = true; break;
+                case EDirection.Up:    m_TopRectangles    = rects; TopExtraBordersInited    = true; break;
                 default:                       throw new SwitchCaseNotImplementedException(_Side);
             }
         }
-
-        private List<Vector2> GetPolygonPositions(EDirection _Side)
+        
+        private List<Vector2> GetRectsPositions(EDirection _Side)
         {
             Vector2 pos = GetProps().Position;
             Vector2 left, right, down, up;
             (left, right, down, up) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up);
             Vector2 pos1, pos2, pos3;
-            const float c1 = 0.5f;
+            const float c1 = 0.6f;
             const float c2 = 0.33f;
-            const float indent = 0.1f;
+            const float indent = 0.15f;
             switch (_Side)
             {
                 case EDirection.Up:
@@ -277,7 +269,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             pos3 = CoordinateConverter.ToGlobalMazeItemPosition(pos3);
             return new List<Vector2> {pos1, pos2, pos3};
         }
-
+        
         #endregion
     }
 }

@@ -148,6 +148,7 @@ namespace RMAZOR.Views.UI
         private void OnLanguageChanged(ELanguage _Language)
         {
             var locMan = Managers.LocalizationManager;
+            m_LevelText.font = FontProvider.GetFont(ETextType.GameUI, locMan.GetCurrentLanguage());
             string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
             m_LevelText.text = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus

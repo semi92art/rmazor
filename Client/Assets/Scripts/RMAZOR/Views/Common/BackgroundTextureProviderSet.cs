@@ -5,6 +5,7 @@ using Common.Helpers;
 using Common.Managers;
 using RMAZOR.Helpers;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common
 {
@@ -22,8 +23,7 @@ namespace RMAZOR.Views.Common
             = new Dictionary<string, IFullscreenTextureProvider>();
 
         #endregion
-        
-        
+
         #region inject
         
         private IFullscreenTextureProviderCustom     TextureProviderCustom     { get; }
@@ -84,7 +84,8 @@ namespace RMAZOR.Views.Common
                     "empty"       => TextureProviderEmpty,
                     _             => (IFullscreenTextureProvider) TextureProviderCustom.Clone()
                 };
-                provider.SetMaterial(setItem.material);
+                var material = Object.Instantiate(setItem.material);
+                provider.SetMaterial(material);
                 provider.Init();
                 m_TextureProvidersDict.Add(setItem.name, provider);
             }

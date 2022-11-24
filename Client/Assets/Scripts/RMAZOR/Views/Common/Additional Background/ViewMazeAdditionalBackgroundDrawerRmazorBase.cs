@@ -194,7 +194,7 @@ namespace RMAZOR.Views.Common.Additional_Background
             mask.SetWidth(width)
                 .SetHeight(height)
                 .SetStencilRefId(Convert.ToByte(_Group.GroupIndex))
-                .SetCornerRadius(ViewSettings.CornerRadius * CornerScaleCoefficient * scale)
+                .SetCornerRadius(ViewSettings.LineThickness * CornerScaleCoefficient * scale)
                 .transform.SetLocalPosXY(center);
             TextureRendererMasksPool.Activate(mask);
         }

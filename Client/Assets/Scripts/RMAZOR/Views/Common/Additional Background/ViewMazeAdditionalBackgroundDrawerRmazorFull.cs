@@ -400,7 +400,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         {
             var angles = Mathf.Deg2Rad * GetCornerAngles(_Right, _Up, _Inner);
             var position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
-            float radius = ViewSettings.CornerRadius * BorderScaleCoefficient
+            float radius = ViewSettings.LineThickness * BorderScaleCoefficient
                                                      * CoordinateConverter.Scale;
             var corner = m_Corners.FirstInactive;
             corner.SetRadius(radius)
@@ -432,7 +432,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         {
             Vector2 start, end;
             Vector2 pos = _Point;
-            float cr = ViewSettings.CornerRadius * BorderScaleCoefficient;
+            float cr = ViewSettings.LineThickness * BorderScaleCoefficient;
             Vector2 up, down, left, right, zero;
             (up, down, left, right, zero) = (Vector2.up, Vector2.down, Vector2.left, Vector2.right, Vector2.zero);
             const float bIndent = BorderRelativeIndent;
@@ -496,7 +496,7 @@ namespace RMAZOR.Views.Common.Additional_Background
             bool _Right,
             bool _Up)
         {
-            float cr = ViewSettings.CornerRadius * BorderScaleCoefficient;
+            float cr = ViewSettings.LineThickness * BorderScaleCoefficient;
             float xIndent = _Right ? -1f : 1f;
             float yIndent = _Up ? -1f : 1f;
             var crVec = cr * new Vector2(xIndent, yIndent);

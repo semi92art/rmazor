@@ -76,7 +76,7 @@ namespace RMAZOR.UI.Panels
         private ViewSettings                        ViewSettings                   { get; }
         private IModelGame                          Model                          { get; }
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
-        private IViewBetweenLevelAdLoader           BetweenLevelAdLoader           { get; }
+        private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private CharacterDiedDialogPanel(
@@ -89,7 +89,7 @@ namespace RMAZOR.UI.Panels
             IViewTimePauser                     _TimePauser,
             IColorProvider                      _ColorProvider,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewBetweenLevelAdLoader           _BetweenLevelAdLoader,
+            IViewBetweenLevelAdShower           _BetweenLevelAdShower,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
@@ -102,7 +102,7 @@ namespace RMAZOR.UI.Panels
             ViewSettings                   = _ViewSettings;
             Model                          = _Model;
             CommandsProceeder              = _CommandsProceeder;
-            BetweenLevelAdLoader           = _BetweenLevelAdLoader;
+            BetweenLevelAdShower           = _BetweenLevelAdShower;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
@@ -379,7 +379,7 @@ namespace RMAZOR.UI.Panels
                     CommonInputCommandArg.KeyNextLevelType, 
                     CommonInputCommandArg.ParameterLevelTypeMain);
             }
-            BetweenLevelAdLoader.ShowAd = false;
+            BetweenLevelAdShower.ShowAd = false;
             SwitchLevelStageCommandInvoker.SwitchLevelStage(
                 EInputCommand.StartUnloadingLevel, 
                 false, 

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: view_settings
   m_EditorClassIdentifier: 
   lineThickness: 15
-  cornerRadius: 0
+  pathItemBorderThickness: 40
   movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: -1000
@@ -34,7 +34,6 @@ MonoBehaviour:
   betweenLevelTransitionTime: 1
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
-  additionalBackTexturesInUse: 1,3,5
   filledPathAlpha: 1
   additionalBackgroundAlpha: 0.5
   skipLevelSeconds: 10
@@ -48,8 +47,7 @@ MonoBehaviour:
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
   finishLevelGroupPanelBackgroundVariant: 1
   characterDiedPanelBackgroundVariant: 2
-  playBonusLevelPanelBackgroundVariant: 0
-  extraBordersIndices: 2,5
+  extraBordersIndices: 2
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
   showPathItems: 1

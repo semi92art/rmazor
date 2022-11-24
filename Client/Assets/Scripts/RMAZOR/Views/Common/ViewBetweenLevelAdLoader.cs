@@ -7,16 +7,17 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
 {
-    public interface IViewBetweenLevelAdLoader
+    public interface IViewBetweenLevelAdShower
     {
         bool ShowAd { get; set; }
         
         void TryShowAd(
-            long _LevelIndex,
+            long        _LevelIndex,
+            bool        _IsBonus,
             UnityAction _OnAdClosed);
     }
     
-    public class ViewBetweenLevelAdLoader : IViewBetweenLevelAdLoader
+    public class ViewBetweenLevelAdShower : IViewBetweenLevelAdShower
     {
         #region inject
 
@@ -26,7 +27,7 @@ namespace RMAZOR.Views.Common
         private IAudioManager                       AudioManager                   { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
-        public ViewBetweenLevelAdLoader(
+        public ViewBetweenLevelAdShower(
             IAdsManager                         _AdsManager,
             GlobalGameSettings                  _GameSettings,
             IViewTimePauser                     _TimePauser,
@@ -48,6 +49,7 @@ namespace RMAZOR.Views.Common
 
         public void TryShowAd(
             long        _LevelIndex,
+            bool        _IsBonus,
             UnityAction _OnAdClosed)
         {
             void OnBeforeAdShown()
@@ -62,12 +64,15 @@ namespace RMAZOR.Views.Common
                 AudioManager.UnmuteAudio(EAudioClipType.Music);
                 _OnAdClosed?.Invoke();
             }
-            bool doTryToShowAd = 
-                _LevelIndex >= GameSettings.firstLevelToShowAds
-                && (_LevelIndex + GameSettings.firstLevelToShowAds) % GameSettings.showAdsEveryLevel == 0
-                && ShowAd;
-            ShowAd = true;
-            if (doTryToShowAd)
+            bool DoTryShowAd()
+            {
+                int levelIndexInGroup = RmazorUtils.GetIndexInGroup(_LevelIndex);
+                return levelIndexInGroup < 2
+                       && _LevelIndex >= GameSettings.firstLevelToShowAds
+                       && !_IsBonus
+                       && ShowAd;
+            }
+            if (DoTryShowAd())
             {
                 bool showRewardedOnUnload = UnityEngine.Random.value > GameSettings.interstitialAdsRatio;
                 if (showRewardedOnUnload && AdsManager.RewardedAdReady)
@@ -95,6 +100,7 @@ namespace RMAZOR.Views.Common
             {
                 _OnAdClosed?.Invoke();
             }
+            ShowAd = true;
         }
 
         #endregion

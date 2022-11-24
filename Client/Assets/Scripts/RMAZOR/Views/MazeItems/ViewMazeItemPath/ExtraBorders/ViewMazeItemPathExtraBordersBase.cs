@@ -10,10 +10,9 @@ using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems.Props;
 using Shapes;
-using TMPro;
 using UnityEngine;
 
-namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
+namespace RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders
 {
     public interface IViewMazeItemPathExtraBorders : ICloneable, IInit, IActivated
     {

@@ -26,6 +26,8 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
     
     public abstract class ShopItemBase : SimpleUiItemBase
     {
+        #region serialized fields
+        
         public                     TextMeshProUGUI price;
         public                     TextMeshProUGUI title;
         public                     Image           itemIcon;
@@ -33,11 +35,17 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
         [SerializeField] protected Image           watchAdImage;
         [SerializeField] protected Animator        loadingAnim;
 
-        private ViewShopItemInfo     m_Info;
-        private bool                 m_IsBuyButtonNotNull;
-        private bool                 m_IsWatchAdImageNotNull;
-        private IEnumerator          m_StopIndicateLoadingCoroutine;
+        #endregion
 
+        #region nonpublic members
+        
+        private ViewShopItemInfo m_Info;
+        private IEnumerator      m_StopIndicateLoadingCoroutine;
+
+        #endregion
+
+        #region api
+        
         public virtual void Init(
             IUITicker            _UITicker,
             IAudioManager        _AudioManager,
@@ -57,15 +65,6 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
             itemIcon.sprite = _Info.Icon;
             if (_Info.Background.IsNotNull())
                 background.sprite = _Info.Background;
-            IndicateLoading(true, _Info.BuyForWatchingAd);
-            m_StopIndicateLoadingCoroutine = Cor.WaitWhile(
-                () => !_Info.Ready,
-                () =>
-                {
-                    IndicateLoading(false, _Info.BuyForWatchingAd);
-                    FinishAction();
-                });
-            Cor.Run(m_StopIndicateLoadingCoroutine);
         }
         
         public override void Init(
@@ -76,19 +75,38 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
             throw new NotSupportedException();
         }
 
-        protected override void CheckIfSerializedItemsNotNull()
+        public void UpdateState(
+            Func<bool>  _Ready,
+            UnityAction _OnFinish)
         {
-            base.CheckIfSerializedItemsNotNull();
-            m_IsBuyButtonNotNull = buyButton.IsNotNull();
-            m_IsWatchAdImageNotNull = watchAdImage.IsNotNull();
+            bool ready = _Ready();
+            IndicateLoading(!ready);
+            if (ready)
+            {
+                FinishAction();
+                return;
+            }
+            m_StopIndicateLoadingCoroutine = Cor.WaitWhile(
+                () => !_Ready(),
+                () =>
+                {
+                    IndicateLoading(false);
+                    _OnFinish?.Invoke();
+                    FinishAction();
+                });
+            Cor.Run(m_StopIndicateLoadingCoroutine);
         }
 
-        private void IndicateLoading(bool _Indicate, bool _BuyForWatchingAd)
+        #endregion
+
+        #region nonpublic methods
+        
+        private void IndicateLoading(bool _Indicate)
         {
-            watchAdImage.SetGoActive(!_Indicate && _BuyForWatchingAd);
-            price.SetGoActive(!_Indicate && !_BuyForWatchingAd);
-            loadingAnim.SetGoActive(_Indicate);
-            loadingAnim.enabled = _Indicate;
+            watchAdImage.SetGoActive(!_Indicate && m_Info.BuyForWatchingAd);
+            price       .SetGoActive(!_Indicate && !m_Info.BuyForWatchingAd);
+            loadingAnim .SetGoActive(_Indicate);
+            loadingAnim .enabled = _Indicate;
         }
 
         private void FinishAction()
@@ -107,5 +125,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Items
         {
             Cor.Stop(m_StopIndicateLoadingCoroutine);
         }
+
+        #endregion
     }
 }

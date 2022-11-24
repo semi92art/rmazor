@@ -44,7 +44,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             new AudioClipArgs("collect_point", EAudioClipType.GameSound);
 
         private Disc     m_MainDisc;
-        // private Disc     m_InnerDisc, m_OuterDisc;
+        private Disc     m_InnerDisc, m_OuterDisc;
         private Animator m_Animator;
         private bool     m_Active;
         
@@ -57,8 +57,10 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 if (!Initialized)
                     return;
                 m_MainDisc.enabled  = value;
-                // m_InnerDisc.enabled = value;
-                // m_OuterDisc.enabled = value;
+                var additionalBackgroundInfo = BackgroundTextureController.GetBackgroundColorArgs().AdditionalInfo;
+                bool isDarkColorTheme = additionalBackgroundInfo != null && additionalBackgroundInfo.dark;
+                m_InnerDisc.enabled = value && !isDarkColorTheme;
+                m_OuterDisc.enabled = value && !isDarkColorTheme;
             }
         }
         
@@ -66,27 +68,30 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         #region inject
 
-        private ViewSettings                ViewSettings        { get; }
-        private IPrefabSetManager           PrefabSetManager    { get; }
-        private IColorProvider              ColorProvider       { get; }
-        private ICoordinateConverter        CoordinateConverter { get; }
-        private IAudioManager               AudioManager        { get; }
-        private IRendererAppearTransitioner Transitioner        { get; }
+        private ViewSettings                         ViewSettings                { get; }
+        private IPrefabSetManager                    PrefabSetManager            { get; }
+        private IColorProvider                       ColorProvider               { get; }
+        private ICoordinateConverter                 CoordinateConverter         { get; }
+        private IAudioManager                        AudioManager                { get; }
+        private IRendererAppearTransitioner          Transitioner                { get; }
+        private IViewMazeBackgroundTextureController BackgroundTextureController { get; }
 
         private ViewMazeItemPathItemMoneyDisc(
-            ViewSettings                _ViewSettings,
-            IPrefabSetManager           _PrefabSetManager,
-            IColorProvider              _ColorProvider,
-            ICoordinateConverter        _CoordinateConverter,
-            IAudioManager               _AudioManager,
-            IRendererAppearTransitioner _Transitioner)
+            ViewSettings                         _ViewSettings,
+            IPrefabSetManager                    _PrefabSetManager,
+            IColorProvider                       _ColorProvider,
+            ICoordinateConverter                 _CoordinateConverter,
+            IAudioManager                        _AudioManager,
+            IRendererAppearTransitioner          _Transitioner,
+            IViewMazeBackgroundTextureController _BackgroundTextureController)
         {
-            ViewSettings        = _ViewSettings;
-            PrefabSetManager    = _PrefabSetManager;
-            ColorProvider       = _ColorProvider;
-            CoordinateConverter = _CoordinateConverter;
-            AudioManager        = _AudioManager;
-            Transitioner        = _Transitioner;
+            ViewSettings                = _ViewSettings;
+            PrefabSetManager            = _PrefabSetManager;
+            ColorProvider               = _ColorProvider;
+            CoordinateConverter         = _CoordinateConverter;
+            AudioManager                = _AudioManager;
+            Transitioner                = _Transitioner;
+            BackgroundTextureController = _BackgroundTextureController;
         }
 
         #endregion
@@ -107,7 +112,8 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 ColorProvider, 
                 CoordinateConverter, 
                 AudioManager,
-                Transitioner);
+                Transitioner,
+                BackgroundTextureController);
         
         public override void Init()
         {
@@ -194,14 +200,17 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!Active || IsCollected)
                 return;
+            bool isDarkColorTheme = BackgroundTextureController.GetBackgroundColorArgs().AdditionalInfo.dark;
+            m_OuterDisc.enabled = !isDarkColorTheme;
+            m_InnerDisc.enabled = !isDarkColorTheme; 
             switch (_ColorId)
             {
                 case ColorIds.MoneyItem:
                     m_MainDisc.SetColor(_Color);
-                    // m_OuterDisc.Color = _Color;
-                    // m_InnerDisc.Color = _Color;
                     break;
                 case ColorIds.Main:
+                    m_OuterDisc.Color = _Color;
+                    m_InnerDisc.Color = _Color; 
                     break;
             }
         }
@@ -213,17 +222,13 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             m_Animator = go.GetCompItem<Animator>("animator");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
             const int sortingOrder = SortingOrders.MoneyItem;
-            const Disc.DiscColorMode colorMode = Disc.DiscColorMode.Single;
             m_MainDisc = go.GetCompItem<Disc>("main_disc")
                 .SetSortingOrder(sortingOrder)
-                .SetColorMode(colorMode)
                 .SetColor(col);
-            // m_OuterDisc = go.GetCompItem<Disc>("outer_disc")
-            //     .SetSortingOrder(sortingOrder)
-            //     .SetColorMode(colorMode);
-            // m_InnerDisc = go.GetCompItem<Disc>("inner_disc")
-            //     .SetSortingOrder(sortingOrder)
-            //     .SetColorMode(colorMode);
+            m_OuterDisc = go.GetCompItem<Disc>("outer_disc")
+                .SetSortingOrder(sortingOrder + 1);
+            m_InnerDisc = go.GetCompItem<Disc>("inner_disc")
+                .SetSortingOrder(sortingOrder + 1);
             go.transform.SetLocalPosXY(Vector2.zero);
         }
 
@@ -231,13 +236,17 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!GetProps().IsMoneyItem)
                 return;
-            var colMoneyItem = ColorProvider.GetColor(ColorIds.MoneyItem);
-            var colMain = ColorProvider.GetColor(ColorIds.Main);
+            var colBody = ColorProvider.GetColor(ColorIds.MoneyItem);
             var appearSets = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                {new[] {m_MainDisc}, () => colMoneyItem},
-                // {new[] {m_InnerDisc, m_OuterDisc}, () => colMoneyItem},
+                {new[] {m_MainDisc}, () => colBody},
             };
+            bool isDarkColorTheme = BackgroundTextureController.GetBackgroundColorArgs().AdditionalInfo.dark;
+            if (!isDarkColorTheme)
+            {
+                var colBorder = ColorProvider.GetColor(ColorIds.Main);
+                appearSets.Add(new[] {m_InnerDisc, m_OuterDisc}, () => colBorder);
+            }
             Cor.Run(Cor.WaitWhile(
                 () => !Initialized,
                 () =>
@@ -256,11 +265,12 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 
         private void OnAppearStart(bool _Appear)
         {
+            bool isDarkColorTheme = BackgroundTextureController.GetBackgroundColorArgs().AdditionalInfo.dark;
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
             {
-                // m_InnerDisc.enabled = true;
-                // m_OuterDisc.enabled = true;
+                m_InnerDisc.enabled = !isDarkColorTheme;
+                m_OuterDisc.enabled = !isDarkColorTheme;
             }
             var props = GetProps();
             if ((_Appear || (props.Blank || !IsCollected)) &&
@@ -276,8 +286,8 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         {
             if (!_Appear)
             {
-                // m_InnerDisc.enabled = false;
-                // m_OuterDisc.enabled = false;
+                m_InnerDisc.enabled = false;
+                m_OuterDisc.enabled = false;
             }
             AppearingState = _Appear ? EAppearingState.Appeared : EAppearingState.Dissapeared;
         }
