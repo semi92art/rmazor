@@ -231,6 +231,8 @@ namespace RMAZOR.Views.MazeItems
             base.OnAppearStart(_Appear);
             if (!_Appear)
                 return;
+            m_Saw     .enabled = true;
+            m_Center  .enabled = true;
             m_Collider.enabled = true;
         }
 
@@ -239,6 +241,8 @@ namespace RMAZOR.Views.MazeItems
             base.OnAppearFinish(_Appear);
             if (_Appear)
                 return;
+            m_Saw     .enabled = false;
+            m_Center  .enabled = false;
             m_Collider.enabled = false;
         }
 

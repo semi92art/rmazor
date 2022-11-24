@@ -45,6 +45,7 @@ namespace Common.Managers
         private IMusicSetting     MusicSetting     { get; }
         private ISoundSetting     SoundSetting     { get; }
         private IPrefabSetManager PrefabSetManager { get; }
+        private ICommonTicker     CommonTicker     { get; }
 
         protected AudioManagerCommon(
             IContainersGetter _ContainersGetter,
@@ -52,7 +53,8 @@ namespace Common.Managers
             IUITicker         _UIUiTicker,
             IMusicSetting     _MusicSetting,
             ISoundSetting     _SoundSetting,
-            IPrefabSetManager _PrefabSetManager)
+            IPrefabSetManager _PrefabSetManager,
+            ICommonTicker     _CommonTicker)
         {
             ContainersGetter = _ContainersGetter;
             GameTicker       = _GameTicker;
@@ -60,6 +62,7 @@ namespace Common.Managers
             MusicSetting     = _MusicSetting;
             SoundSetting     = _SoundSetting;
             PrefabSetManager = _PrefabSetManager;
+            CommonTicker     = _CommonTicker;
         }
 
         #endregion
@@ -133,11 +136,13 @@ namespace Common.Managers
 
         public void MuteAudio(EAudioClipType _Type)
         {
+            Dbg.Log("Mute Audio, time:" + CommonTicker.Time);
             MuteAudio(true, _Type);
         }
 
         public void UnmuteAudio(EAudioClipType _Type)
         {
+            Dbg.Log("Unmute Audio, time:" + CommonTicker.Time);
             MuteAudio(false, _Type);
         }
 

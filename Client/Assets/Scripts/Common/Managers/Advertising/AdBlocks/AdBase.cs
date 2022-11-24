@@ -87,7 +87,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             if (!m_DoInvokeOnShown) 
                 return;
-            Dbg.Log("Ad shown action");
+            Dbg.Log("Ad shown action, time:" + CommonTicker.Time);
             if (OnShown == null)
                 Dbg.LogWarning("OnShown action is null");
             OnShown?.Invoke();
@@ -99,7 +99,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             if (!m_DoInvokeOnClicked)
                 return;
-            Dbg.Log("Ad click action");
+            Dbg.Log("Ad click action, time:" + CommonTicker.Time);
             OnClicked?.Invoke();
             OnClicked = null;
             m_DoInvokeOnClicked = false;
@@ -109,7 +109,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             if (!m_DoInvokeOnClosed) 
                 return;
-            Dbg.Log("Ad close action");
+            Dbg.Log("Ad close action, time:" + CommonTicker.Time);
             OnClosed?.Invoke();
             OnClosed = null;
             m_DoInvokeOnClosed = false;
@@ -120,7 +120,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             if (!m_DoInvokeOnFailedToShow) 
                 return;
-            Dbg.Log("Ad failed to show action");
+            Dbg.Log("Ad failed to show action, time:" + CommonTicker.Time);
             if (OnFailedToShow == null)
                 Dbg.LogWarning("OnFailedToShowShown action is null");
             OnFailedToShow?.Invoke();

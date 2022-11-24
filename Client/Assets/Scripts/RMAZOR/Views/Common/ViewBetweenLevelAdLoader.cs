@@ -67,7 +67,7 @@ namespace RMAZOR.Views.Common
             bool DoTryShowAd()
             {
                 int levelIndexInGroup = RmazorUtils.GetIndexInGroup(_LevelIndex);
-                return levelIndexInGroup < 2
+                return (levelIndexInGroup == 0 || levelIndexInGroup == 2)
                        && _LevelIndex >= GameSettings.firstLevelToShowAds
                        && !_IsBonus
                        && ShowAd;
