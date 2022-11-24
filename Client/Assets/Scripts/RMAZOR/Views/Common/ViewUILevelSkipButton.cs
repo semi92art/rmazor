@@ -205,11 +205,9 @@ namespace RMAZOR.Views.Common
             void OnBeforeAdShown()
             {
                 TimePauser.PauseTimeInGame();
-                AudioManager.MuteAudio(EAudioClipType.Music);
             }
             void OnAdClosed()
             {
-                AudioManager.UnmuteAudio(EAudioClipType.Music);
                 ActivateButton(false);
             }
             AdsManager.ShowRewardedAd(

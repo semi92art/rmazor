@@ -6,7 +6,6 @@ using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Entities.UI;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -242,13 +241,11 @@ namespace RMAZOR.UI.Panels
             void OnBeforeAdShown()
             {
                 TimePauser.PauseTimeInUi();
-                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
             }
             void OnAdClosed()
             {
                 TimePauser.UnpauseTimeInGame();
                 TimePauser.UnpauseTimeInUi();
-                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
             }
             Managers.AdsManager.ShowRewardedAd(
                 _OnReward:       OnAdReward, 

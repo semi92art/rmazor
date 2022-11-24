@@ -221,7 +221,6 @@ namespace Common.Managers.Advertising
             bool                              _Forced)
         {
             _OnBeforeShown?.Invoke();
-            yield return Cor.Delay(0.05f, CommonTicker);
             IAdsProvider selectedProvider = null;
             if (_Providers.Count == 1)
                 selectedProvider = _Providers.First();

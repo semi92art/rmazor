@@ -345,7 +345,6 @@ namespace RMAZOR.UI.Panels
             void OnBeforeShown()
             {
                 TimePauser.PauseTimeInUi();
-                Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             }
             void OnReward()
             {
@@ -356,7 +355,6 @@ namespace RMAZOR.UI.Panels
             void OnClosed()
             {
                 TimePauser.UnpauseTimeInUi();
-                Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
                 if (!m_RewardGot)
                     m_WatchVideoToTheEndText.enabled = true;
                 m_ButtonMultiplyMoney.gameObject.SetActive(false);

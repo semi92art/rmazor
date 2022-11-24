@@ -56,12 +56,10 @@ namespace RMAZOR.Views.Common
             {
                 TimePauser.PauseTimeInGame();
                 SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
-                AudioManager.MuteAudio(EAudioClipType.Music);
             }
             void OnAdClosedOrFailedToShow()
             {
                 TimePauser.UnpauseTimeInGame();
-                AudioManager.UnmuteAudio(EAudioClipType.Music);
                 _OnAdClosed?.Invoke();
             }
             bool DoTryShowAd()

@@ -65,12 +65,17 @@ namespace Common.Managers.Advertising.AdsProviders
             if (!RewardedAdReady) 
                 return;
             MuteAudio(true);
-            void OnShown()
+            void OnClosed()
             {
                 MuteAudio(false);
-                _OnShown?.Invoke();
+                _OnClosed?.Invoke();
             }
-            m_RewardedAd.ShowAd(OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
+            void OnFailedToShow()
+            {
+                MuteAudio(false);
+                _OnFailedToShow?.Invoke();
+            }
+            m_RewardedAd.ShowAd(_OnShown, _OnClicked, _OnReward, OnClosed, OnFailedToShow);
         }
         
         protected override void ShowInterstitialAdCore(
@@ -82,12 +87,17 @@ namespace Common.Managers.Advertising.AdsProviders
             if (!InterstitialAdReady) 
                 return;
             MuteAudio(true);
-            void OnShown()
+            void OnClosed()
             {
                 MuteAudio(false);
-                _OnShown?.Invoke();
+                _OnClosed?.Invoke();
             }
-            m_InterstitialAd.ShowAd(OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
+            void OnFailedToShow()
+            {
+                MuteAudio(false);
+                _OnFailedToShow?.Invoke();
+            }
+            m_InterstitialAd.ShowAd(_OnShown, _OnClicked, OnClosed, OnFailedToShow);
         }
 
         #endregion
