@@ -146,6 +146,7 @@ namespace RMAZOR.Views.Common
                     Cor.Stop(m_ShowButtonCoroutine);
                     break;
                 case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.StartedOrContinued:
                 case ELevelStage.Unloaded:
                 case ELevelStage.Paused:
                     break;
