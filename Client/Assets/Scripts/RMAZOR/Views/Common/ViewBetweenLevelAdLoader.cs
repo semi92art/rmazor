@@ -55,7 +55,7 @@ namespace RMAZOR.Views.Common
             void OnBeforeAdShown()
             {
                 TimePauser.PauseTimeInGame();
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
             }
             void OnAdClosedOrFailedToShow()
             {
@@ -65,7 +65,7 @@ namespace RMAZOR.Views.Common
             bool DoTryShowAd()
             {
                 int levelIndexInGroup = RmazorUtils.GetIndexInGroup(_LevelIndex);
-                return (levelIndexInGroup == 0 || levelIndexInGroup == 2)
+                return levelIndexInGroup == 2
                        && _LevelIndex >= GameSettings.firstLevelToShowAds
                        && !_IsBonus
                        && ShowAd;

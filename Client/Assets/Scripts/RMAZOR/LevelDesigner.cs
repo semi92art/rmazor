@@ -212,7 +212,6 @@ namespace RMAZOR
             {
                 int selectedLevel = SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerSelectedLevel);
                 controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
-                CommonData.LoadNextLevelAutomatically = false;
             };
             controller.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;

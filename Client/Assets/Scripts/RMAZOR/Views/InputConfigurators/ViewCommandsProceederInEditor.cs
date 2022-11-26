@@ -96,8 +96,6 @@ namespace RMAZOR.Views.InputConfigurators
                     _CommandKey = EInputCommand.LoadRandomLevel;
                 else if (LeanInput.GetPressed(KeyCode.LeftShift))
                     _CommandKey = EInputCommand.LoadNextLevel;
-                else if (LeanInput.GetPressed(KeyCode.LeftAlt))
-                    _CommandKey = EInputCommand.LoadFirstLevelFromCurrentGroup;
                 else
                     _CommandKey = EInputCommand.LoadCurrentLevel;
                 _Forced = true;

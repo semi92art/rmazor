@@ -13,10 +13,7 @@ using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
-using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.Helpers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -172,7 +169,7 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var col = ColorProvider.GetColor(ColorIds.MazeItem2);
-            return new Dictionary<IEnumerable<Component>, Func<Color>> {{Renderers, () => col}};
+            return new Dictionary<IEnumerable<Component>, Func<Color>> {{new [] {m_Springboard, m_Pillar}, () => col}};
         }
         
         #endregion

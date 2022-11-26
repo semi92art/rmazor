@@ -373,35 +373,20 @@ namespace RMAZOR.UI.Panels
             m_MultiplyCoefficient = 1;
             Multiply();
             OnClose(null);
-            var args = new Dictionary<string, object>();
-            var prevArgs = Model.LevelStaging.Arguments;
-            string currentLevelType = (string)prevArgs.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            if (currentLevelIsBonus)
-            {
-                args.SetSafe(
-                    CommonInputCommandArg.KeyNextLevelType, 
-                    CommonInputCommandArg.ParameterLevelTypeMain);
-            }
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                EInputCommand.StartUnloadingLevel, false, args);
+            InvokeStartUnloadingLevel();
         }
 
         private void OnContinueButtonPressed()
         {
             OnClose(null);
+            InvokeStartUnloadingLevel();
+        }
+
+        private void InvokeStartUnloadingLevel()
+        {
             var args = new Dictionary<string, object>();
-            var prevArgs = Model.LevelStaging.Arguments;
-            string currentLevelType = (string)prevArgs.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            if (currentLevelIsBonus)
-            {
-                args.SetSafe(
-                    CommonInputCommandArg.KeyNextLevelType, 
-                    CommonInputCommandArg.ParameterLevelTypeMain);
-            }
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                EInputCommand.StartUnloadingLevel, false, args);
+            args.SetSafe(CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterFinishLevelGroupPanel);
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
 
         private void Multiply()

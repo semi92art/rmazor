@@ -34,7 +34,11 @@ namespace RMAZOR.Views.MazeItems
         void OnSpearShot(SpearEventArgs   _Args);
     }
     
-    public class ViewMazeItemSpear : ViewMazeItemBase, IViewMazeItemSpear, IUpdateTick, IFixedUpdateTick
+    public class ViewMazeItemSpear :
+        ViewMazeItemBase, 
+        IViewMazeItemSpear, 
+        IUpdateTick, 
+        IFixedUpdateTick
     {
         #region constants
 
@@ -344,7 +348,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
                 break;
             }
         }

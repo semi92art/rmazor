@@ -158,7 +158,7 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel, true);
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
             base.OnDialogDisappeared();
         }
 

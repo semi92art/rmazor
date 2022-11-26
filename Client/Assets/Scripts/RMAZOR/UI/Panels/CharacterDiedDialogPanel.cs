@@ -363,24 +363,12 @@ namespace RMAZOR.UI.Panels
         {
             TimePauser.UnpauseTimeInGame();
             TimePauser.UnpauseTimeInUi();
+            BetweenLevelAdShower.ShowAd = false;
             var arguments = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeyLoadFirstLevelInGroup, true}
+                {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterCharacterDiedPanel}
             };
-            string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out bool _);
-            bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            if (isCurrentLevelBonus)
-            {
-                arguments.SetSafe(
-                    CommonInputCommandArg.KeyNextLevelType, 
-                    CommonInputCommandArg.ParameterLevelTypeMain);
-            }
-            BetweenLevelAdShower.ShowAd = false;
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                EInputCommand.StartUnloadingLevel, 
-                false, 
-                arguments);
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, arguments);
         }
 
         private void RaiseContinueCommand()

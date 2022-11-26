@@ -128,7 +128,7 @@ namespace RMAZOR.Views.UI
             string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
                 CommonInputCommandArg.KeyNextLevelType, out _);
             m_LevelText.text = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus
-                ? locMan.GetTranslation("bonus_level")
+                ? string.Empty
                 : locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
         }
         
@@ -152,7 +152,7 @@ namespace RMAZOR.Views.UI
             string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
             m_LevelText.text = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus
-                ? locMan.GetTranslation("bonus_level")
+                ? string.Empty
                 : locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
         }
         
@@ -237,9 +237,9 @@ namespace RMAZOR.Views.UI
             int groupIndex = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
                 CommonInputCommandArg.KeyNextLevelType, out _);
-            bool nextLevelTypeIsBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            int checkMarksCount = nextLevelTypeIsBonus ?
-                1 :  RmazorUtils.GetLevelsInGroup(groupIndex);
+            bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            int checkMarksCount = isNextLevelBonus ?
+                0 :  RmazorUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - m_TopOffset - 3f;
             for (int i = 0; i < checkMarksCount; i++)
             {
@@ -259,8 +259,10 @@ namespace RMAZOR.Views.UI
         {
             string nextLevelType = (string)_Args.Args.GetSafe(
                 CommonInputCommandArg.KeyNextLevelType, out _);
-            bool nextLevelTypeIsBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            int lastPassedLevelInGroupIndex = nextLevelTypeIsBonus ? 0 : RmazorUtils.GetIndexInGroup(_Args.LevelIndex);
+            bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (isNextLevelBonus)
+                return;
+            int lastPassedLevelInGroupIndex = RmazorUtils.GetIndexInGroup(_Args.LevelIndex);
             for (int i = 0; i < lastPassedLevelInGroupIndex; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyChekMarkSet);
             m_CheckMarks[lastPassedLevelInGroupIndex].SetTrigger(

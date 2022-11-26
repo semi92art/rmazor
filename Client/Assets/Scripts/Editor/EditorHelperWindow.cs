@@ -131,6 +131,24 @@ namespace Editor
                         scenePath,
                         GUILayout.Height(30f));
                 }
+
+                var lastLevelStageArgs = CommonDataRmazor.LastLevelStageArgs;
+                if (CommonDataRmazor.LastLevelStageArgs == null)
+                    return;
+                GUILayout.Label("Level Index: " + lastLevelStageArgs.LevelIndex);
+                GUILayout.Label("Current Level Stage: " + lastLevelStageArgs.LevelStage);
+                GUILayout.Label("Previous Level Stage: " + lastLevelStageArgs.PreviousStage);
+                GUILayout.Label("PrePrevious Level Stage: " + lastLevelStageArgs.PrePreviousStage);
+                GUILayout.Label("PrePrePrevious Level Stage: " + lastLevelStageArgs.PrePrePreviousStage);
+                if (lastLevelStageArgs.Args == null)
+                {
+                    GUILayout.Label("Args is null");
+                }
+                else
+                {
+                    foreach ((string key, var value) in lastLevelStageArgs.Args)
+                        GUILayout.Label(key + ": " + value);
+                }
             });
             UpdateTestUrl();
         }

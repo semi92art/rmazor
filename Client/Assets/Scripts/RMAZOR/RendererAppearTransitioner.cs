@@ -18,7 +18,7 @@ namespace RMAZOR
     {
         void DoAppearTransition(
             bool                                            _Appear,
-            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
+            Dictionary<IEnumerable<Component>, Func<Color>> _RenderersSets,
             float                                           _Delay,
             UnityAction                                     _OnFinish = null);
     }
@@ -40,38 +40,40 @@ namespace RMAZOR
 
         public void DoAppearTransition(
             bool                                            _Appear,
-            Dictionary<IEnumerable<Component>, Func<Color>> _Sets,
+            Dictionary<IEnumerable<Component>, Func<Color>> _RenderersSets,
             float                                           _Delay,
             UnityAction                                     _OnFinish = null)
         {
             Cor.Run(WaitWhileAndNextFrame(_Appear ? 0f : _Delay + 0.01f, _OnFinish));
-            if (_Sets == null)
+            if (_RenderersSets == null)
                 return;
-            foreach (var set in _Sets)
+            foreach (var set in _RenderersSets)
             {
-                var endCol = !_Appear ? () => set.Value().SetA(0f) : set.Value;
-                var shapes = set.Key.Where(_Shape => _Shape.IsNotNull()).ToList();
-                void FastTransit()
-                {
-                    foreach (var shape in shapes)
-                    {
-                        switch (shape)
-                        {
-                            case Behaviour beh: beh.enabled = true; break;
-                            case Renderer rend: rend.enabled = true; break;
-                        }
-                        switch (shape)
-                        {
-                            case ShapeRenderer shapeRenderer:   shapeRenderer.Color  = endCol(); break;
-                            case SpriteRenderer spriteRenderer: spriteRenderer.color = endCol(); break;
-                            case TextMeshPro textMeshPro:       textMeshPro.color    = endCol(); break;
-                        }
-                    }
-                }
                 Cor.Run(Cor.Delay(
                     _Appear ? 0f : _Delay,
                     GameTicker,
-                    FastTransit));
+                    () => FastTransit(_Appear, set)));
+            }
+        }
+        
+        private static void FastTransit(bool _Appear, KeyValuePair<IEnumerable<Component>, Func<Color>> _RenderersSet)
+        {
+            var endCol = !_Appear ? () => _RenderersSet.Value().SetA(0f) : _RenderersSet.Value;
+            var renderers = _RenderersSet.Key?.Where(_Shape => _Shape.IsNotNull()).ToList();
+            renderers ??= new List<Component>();
+            foreach (var renderer in renderers)
+            {
+                switch (renderer)
+                {
+                    case Behaviour beh: beh.enabled = true; break;
+                    case Renderer rend: rend.enabled = true; break;
+                }
+                switch (renderer)
+                {
+                    case ShapeRenderer shapeRenderer:   shapeRenderer.Color  = endCol(); break;
+                    case SpriteRenderer spriteRenderer: spriteRenderer.color = endCol(); break;
+                    case TextMeshPro textMeshPro:       textMeshPro.color    = endCol(); break;
+                }
             }
         }
 

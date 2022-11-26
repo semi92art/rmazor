@@ -15,17 +15,37 @@ using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
-using Shapes;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI
 {
+    public interface IViewUIRotationControls :
+        IOnLevelStageChanged,
+        IInitViewUIItem,
+        IViewUIGetRenderers
+    {
+        bool HasButtons { get; }
+        void OnTutorialStarted(ETutorialType  _Type);
+        void OnTutorialFinished(ETutorialType _Type);
+    }
+
+    public class ViewUIRotationControlsFake : IViewUIRotationControls
+    {
+        public bool                   HasButtons                                   => false;
+        public void                   Init(Vector4                       _Offsets) { }
+        public void                   OnLevelStageChanged(LevelStageArgs _Args)    { }
+        public void                   OnTutorialStarted(ETutorialType    _Type)    { }
+        public void                   OnTutorialFinished(ETutorialType   _Type)    { }
+        public IEnumerable<Component> GetRenderers()                               => new List<Component>();
+    }
+    
     public class ViewUIRotationControlsButtons : IViewUIRotationControls
     {
         #region nonpublic members
-        
-        private readonly List<ShapeRenderer> m_RotatingButtonShapes  = new List<ShapeRenderer>();
-        private readonly List<ShapeRenderer> m_RotatingButtonShapes2 = new List<ShapeRenderer>();
+
+        private SpriteRenderer 
+            m_RotateCounterClockwiseRenderer,
+            m_RotateClockwiseRenderer;
         
         private float           m_BottomOffset;
         private ButtonOnRaycast m_RotateClockwiseButton;
@@ -60,7 +80,7 @@ namespace RMAZOR.Views.UI
         {
             Model                          = _Model;
             ColorProvider                  = _ColorProvider;
-            CameraProvider                = _CameraProvider;
+            CameraProvider                 = _CameraProvider;
             ContainersGetter               = _ContainersGetter;
             Managers                       = _Managers;
             Transitioner                   = _Transitioner;
@@ -114,11 +134,9 @@ namespace RMAZOR.Views.UI
         {
             switch (_ColorId)
             {
-                case ColorIds.UI:
-                    foreach (var shapeComp in m_RotatingButtonShapes)
-                        shapeComp.Color = _Color;
-                    foreach (var shapeComp in m_RotatingButtonShapes2)
-                        shapeComp.Color = _Color.SetA(0.3f);
+                case ColorIds.Main:
+                    m_RotateCounterClockwiseRenderer.color = _Color;
+                    m_RotateClockwiseRenderer.color = _Color;
                     break;
             }
         }
@@ -126,25 +144,24 @@ namespace RMAZOR.Views.UI
         private void InitRotateButtons()
         {
             var screenBounds = GraphicUtils.GetVisibleBounds();
-            const float horOffset = 3f;
+            const float horOffset = 5f;
             const float localScale = 1.5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goRcB = Managers.PrefabSetManager.InitPrefab(
-                cont, CommonPrefabSetNames.UiGame, "rotate_clockwise_button");
+                cont, CommonPrefabSetNames.UiGame, "rotate_clockwise_button_2");
             var goRccB = Managers.PrefabSetManager.InitPrefab(
-                cont, CommonPrefabSetNames.UiGame, "rotate_counter_clockwise_button");
+                cont, CommonPrefabSetNames.UiGame, "rotate_counter_clockwise_button_2");
             float scale = 0.5f;
-            float yPos = screenBounds.min.y + m_BottomOffset;
-            var rcbDisc = goRcB.GetCompItem<Disc>("button");
+            float yPos = screenBounds.min.y + m_BottomOffset + 4f;
             goRcB.transform.localScale = Vector3.one * (scale * localScale);
             goRcB.transform.SetPosXY(
                 new Vector2(screenBounds.center.x, yPos) 
-                + (Vector2.right + Vector2.up) * (scale * rcbDisc.Radius * localScale) 
+                + (Vector2.right + Vector2.up) * (scale * 1.2f * localScale) 
                 + Vector2.right * horOffset);
             goRccB.transform.localScale = Vector3.one * (scale * localScale);
             goRccB.transform.SetPosXY(
                 new Vector2(screenBounds.center.x, yPos)
-                + (Vector2.left + Vector2.up) * (scale * rcbDisc.Radius * localScale)
+                + (Vector2.left + Vector2.up) * (scale * 1.2f * localScale)
                 + Vector2.left * horOffset);
             m_RotateClockwiseButton = goRcB.GetCompItem<ButtonOnRaycast>("button");
             m_RotateCounterClockwiseButton = goRccB.GetCompItem<ButtonOnRaycast>("button");
@@ -160,26 +177,10 @@ namespace RMAZOR.Views.UI
                 CameraProvider,
                 Managers.HapticsManager,
                 TouchProceeder);
-            m_RotatingButtonShapes.AddRange(new ShapeRenderer[]
-            {
-                goRcB.GetCompItem<Disc>("outer_disc"),
-                goRcB.GetCompItem<Disc>("line"),
-                goRcB.GetCompItem<Line>("arrow_part_1"), 
-                goRcB.GetCompItem<Line>("arrow_part_2"), 
-                goRccB.GetCompItem<Disc>("outer_disc"), 
-                goRccB.GetCompItem<Disc>("line"),
-                goRccB.GetCompItem<Line>("arrow_part_1"), 
-                goRccB.GetCompItem<Line>("arrow_part_2"),
-            });
-            m_RotatingButtonShapes2.AddRange(new ShapeRenderer[]
-            {
-                goRcB.GetCompItem<Disc>("inner_disc"),
-                goRccB.GetCompItem<Disc>("inner_disc")
-            });
-            foreach (var shape in m_RotatingButtonShapes)
-                shape.SetSortingOrder(SortingOrders.GameUI + 1);
-            foreach (var shape in m_RotatingButtonShapes2)
-                shape.SetSortingOrder(SortingOrders.GameUI);
+            m_RotateCounterClockwiseRenderer = goRccB.GetCompItem<SpriteRenderer>("renderer");
+            m_RotateClockwiseRenderer = goRcB.GetCompItem<SpriteRenderer>("renderer");
+            m_RotateCounterClockwiseRenderer.sortingOrder = SortingOrders.GameUI;
+            m_RotateClockwiseRenderer.sortingOrder = SortingOrders.GameUI;
             goRcB.SetActive(false);
             goRccB.SetActive(false);
         }
@@ -199,13 +200,14 @@ namespace RMAZOR.Views.UI
             if (Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart)
                 return;
             SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                EInputCommand.StartOrContinueLevel, 
-                true);
+                EInputCommand.StartOrContinueLevel);
         }
         
         private void LockCommandsOnRotationStarted()
         {
-            CommandsProceeder.LockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewInputTouchProceeder));
+            CommandsProceeder.LockCommands(
+                RmazorUtils.MoveAndRotateCommands,
+                nameof(IViewInputTouchProceeder));
         }
 
         private void ShowRotatingButtons(LevelStageArgs _Args)
@@ -240,12 +242,11 @@ namespace RMAZOR.Views.UI
             }
             if (_Instantly)
                 return;
-            var mainCol = ColorProvider.GetColor(ColorIds.UI);
+            var mainCol = ColorProvider.GetColor(ColorIds.Main);
             Transitioner.DoAppearTransition(_Show, 
                 new Dictionary<IEnumerable<Component>, System.Func<Color>>
                 {
-                    {m_RotatingButtonShapes, () => mainCol},
-                    {m_RotatingButtonShapes2, () => mainCol.SetA(0.2f)}
+                    {new [] {m_RotateClockwiseRenderer, m_RotateCounterClockwiseRenderer}, () => mainCol},
                 }, 0f);
         }
         

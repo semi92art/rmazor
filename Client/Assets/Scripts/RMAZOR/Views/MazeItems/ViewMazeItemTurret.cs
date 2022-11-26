@@ -275,7 +275,7 @@ namespace RMAZOR.Views.MazeItems
             }
             if (Character.GetObjects().Colliders.Contains(_Collider))
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
                 StopProjectile();
                 return;
             }

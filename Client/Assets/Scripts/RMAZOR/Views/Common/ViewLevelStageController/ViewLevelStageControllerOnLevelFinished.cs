@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Enums;
 using Common.Extensions;
@@ -10,7 +12,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 
-namespace RMAZOR.Views.Common
+namespace RMAZOR.Views.Common.ViewLevelStageController
 {
     public interface IViewLevelStageControllerOnLevelFinished
     {
@@ -28,25 +30,31 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private ViewSettings                ViewSettings      { get; }
-        private IModelGame                  Model             { get; }
-        private IManagersGetter             Managers          { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private ILevelsLoader               LevelsLoader      { get; }
+        private ViewSettings                        ViewSettings                   { get; }
+        private IModelGame                          Model                          { get; }
+        private IManagersGetter                     Managers                       { get; }
+        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
+        private ILevelsLoader                       LevelsLoader                   { get; }
+        private IViewUILevelSkipper                 LevelSkipper                   { get; }
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
 
         public ViewLevelStageControllerOnLevelFinished(
-            ViewSettings                _ViewSettings,
-            IModelGame                  _Model,
-            IManagersGetter             _Managers,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            ILevelsLoader               _LevelsLoader)
+            ViewSettings                        _ViewSettings,
+            IModelGame                          _Model,
+            IManagersGetter                     _Managers,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            ILevelsLoader                       _LevelsLoader,
+            IViewUILevelSkipper                 _LevelSkipper,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
         {
             ViewSettings      = _ViewSettings;
             Model             = _Model;
             Managers          = _Managers;
             CommandsProceeder = _CommandsProceeder;
             LevelsLoader      = _LevelsLoader;
+            LevelSkipper      = _LevelSkipper;
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
         #endregion
@@ -61,11 +69,29 @@ namespace RMAZOR.Views.Common
             CheckForAllLevelsPassed(_Args);
             CheckForLevelGroupOrBonusLevelFinished(_Args);
             ProceedSounds(_Args);
+            SendAnalyticsEvent(_Args);
+            if (MustStartUnloadingLevel(_Args))
+            {
+                Dbg.Log("!!! 2");
+                var args = new Dictionary<string, object>
+                {
+                    {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterLevelSkipper}
+                };
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
+            }
         }
         
         #endregion
 
         #region nonpublic methods
+        
+        private bool MustStartUnloadingLevel(LevelStageArgs _Args)
+        {
+            string currentLevelType = (string)_Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isLastLevelInMainGroup = RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex);
+            bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            return LevelSkipper.LevelSkipped && (isCurrentLevelBonus || !isLastLevelInMainGroup);
+        }
 
         private void UnlockAchievementOnLevelFinishedIfKeyExist(LevelStageArgs _Args)
         {
@@ -149,11 +175,39 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.Finished:
                     audioManager.UnmuteAudio(EAudioClipType.GameSound);
                     break;
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.Unloaded:
-                case ELevelStage.CharacterKilled:
-                    break;
             }
+        }
+        
+        private void SendAnalyticsEvent(LevelStageArgs _Args)
+        {
+            if (_Args.PreviousStage != ELevelStage.StartedOrContinued)
+                return;
+            const string analyticId = AnalyticIds.LevelFinished;
+            if (CheckIfLevelWasFinishedAtLeastOnce(_Args.LevelIndex))
+                return;
+            Managers.AnalyticsManager.SendAnalytic(analyticId, 
+                new Dictionary<string, object>
+                {
+                    {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
+                });
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex));
+            if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelStageFinished);
+        }
+        
+        private static bool CheckIfLevelWasFinishedAtLeastOnce(long _LevelIndex)
+        {
+            bool wasFinishedAtLeastOnce = false;
+            var finishedOnceDict = SaveUtils.GetValue(SaveKeysRmazor.LevelsFinishedOnce);
+            if (finishedOnceDict != null && finishedOnceDict.Contains(_LevelIndex))
+                wasFinishedAtLeastOnce = true;
+            if (wasFinishedAtLeastOnce) 
+                return true;
+            finishedOnceDict ??= new List<long>();
+            finishedOnceDict.Add(_LevelIndex);
+            finishedOnceDict = finishedOnceDict.Distinct().ToList();
+            SaveUtils.PutValue(SaveKeysRmazor.LevelsFinishedOnce, finishedOnceDict);
+            return false;
         }
 
         #endregion

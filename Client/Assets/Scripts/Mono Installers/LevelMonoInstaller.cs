@@ -22,6 +22,7 @@ using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Common.BackgroundIdleItems;
 using RMAZOR.Views.Common.CongratulationItems;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
+using RMAZOR.Views.Common.ViewLevelStageController;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Coordinate_Converters;
@@ -129,6 +130,12 @@ namespace Mono_Installers
             Container.Bind<IRendererAppearTransitioner>()        .To<RendererAppearTransitioner>()        .AsSingle();
             Container.Bind<IViewFullscreenTransitioner>()        .To<ViewFullscreenTransitioner>()        .AsSingle();
             Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
+            Container.Bind<IViewLevelStageControllerOnLevelLoaded>()       .To<ViewLevelStageControllerOnLevelLoaded>().AsSingle();
+            Container.Bind<IViewLevelStageControllerOnLevelReadyToStart>() .To<ViewLevelStageControllerOnLevelReadyToStart>().AsSingle();
+            Container.Bind<IViewLevelStageControllerOnLevelFinished>()     .To<ViewLevelStageControllerOnLevelFinished>().AsSingle();
+            Container.Bind<IViewLevelStageControllerOnReadyToUnloadLevel>().To<ViewLevelStageControllerOnReadyToUnloadLevel>().AsSingle();
+            Container.Bind<IViewLevelStageControllerOnLevelUnloaded>()     .To<ViewLevelStageControllerOnLevelUnloaded>().AsSingle();
+            Container.Bind<IViewLevelStageControllerOnCharacterKilled>()   .To<ViewLevelStageControllerOnCharacterKilled>().AsSingle();
             Container.Bind<IViewCameraEffectsCustomAnimator>()   .To<ViewCameraEffectsCustomAnimator>()   .AsSingle();
             Container.Bind<IRotatingPossibilityIndicator>()      .To<RotatingPossibilityIndicator>()      .AsTransient();
             
@@ -254,7 +261,7 @@ namespace Mono_Installers
                     .AsSingle();
                 
                 Container.Bind<IViewUIRotationControls>()
-                    .To<ViewUIRotationControlsButtons2>()
+                    .To<ViewUIRotationControlsButtons>()
                     // .To<ViewUIRotationControlsFake>()
                     .AsSingle();
             }

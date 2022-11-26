@@ -185,14 +185,7 @@ namespace RMAZOR.Views.MazeItems
                 ActivateRenderers(true);
         }
 
-        protected virtual Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
-        {
-            var col = ColorProvider.GetColor(ColorIds.MazeItem1);
-            return new Dictionary<IEnumerable<Component>, Func<Color>>
-            {
-                {Renderers, () => col}
-            };
-        }
+        protected abstract Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear);
 
         protected virtual void OnAppearFinish(bool _Appear)
         {

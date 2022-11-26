@@ -1,4 +1,5 @@
-﻿using RMAZOR.Views.Common;
+﻿using RMAZOR.Models;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
 using UnityEngine;
 
@@ -11,13 +12,16 @@ namespace RMAZOR
         public static ViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator;
         public static ViewMazeBackgroundTextureController          BackgroundTextureController;
         public static ViewMazeAdditionalBackgroundDrawerRmazorFull AdditionalBackgroundDrawer;
+
+        public static LevelStageArgs LastLevelStageArgs;
         
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void ResetState()
         {
             CameraEffectsCustomAnimator = null;
             BackgroundTextureController = null;
-            AdditionalBackgroundDrawer = null;
+            AdditionalBackgroundDrawer  = null;
+            LastLevelStageArgs          = null;
         }
     }
 }

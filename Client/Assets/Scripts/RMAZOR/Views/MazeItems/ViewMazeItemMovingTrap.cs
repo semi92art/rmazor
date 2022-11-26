@@ -74,8 +74,8 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region api
-        
-        public override Component[] Renderers => new Component[0];
+
+        public override Component[] Renderers => new Component[] {m_Center, m_Saw};
         
         public override object Clone() => new ViewMazeItemMovingTrap(
             ViewSettings,
@@ -102,7 +102,7 @@ namespace RMAZOR.Views.MazeItems
             }
         }
 
-        protected override int  LinesAndJointsColorId => ColorIds.MazeItem1;
+        protected override int LinesAndJointsColorId => ColorIds.MazeItem1;
         
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args) { }
 
@@ -205,14 +205,14 @@ namespace RMAZOR.Views.MazeItems
                     m_PrecisePosition);
                 if (dist + MathUtils.Epsilon > 1f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
             }
             else
             {
                 Vector2 cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_PrecisePosition) + MathUtils.Epsilon > 1f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
             }
         }
 

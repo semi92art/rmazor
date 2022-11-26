@@ -264,7 +264,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
                 break;
             }
         }
@@ -337,7 +337,7 @@ namespace RMAZOR.Views.MazeItems
         
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var sets = base.GetAppearSets(_Appear);
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
             var additCol = ColorProvider.GetColor(ColorIds.Background2);
             var additCol2 = ColorProvider.GetColor(ColorIds.Main);
             sets.Add(m_AdditionalShapes, () => additCol);

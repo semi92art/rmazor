@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Enums;
 using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
@@ -32,7 +31,6 @@ namespace RMAZOR.Views.Common
         public bool LevelSkipped                                 => false;
         public void Init(Vector4                       _Offsets) { }
         public void OnLevelStageChanged(LevelStageArgs _Args)    { }
-        public void SkipLevel()                                  { }
     }
     
     public class ViewUILevelSkipperButton : InitBase, IViewUILevelSkipper
@@ -54,7 +52,6 @@ namespace RMAZOR.Views.Common
         private IContainersGetter                   ContainersGetter               { get; }
         private IPrefabSetManager                   PrefabSetManager               { get; }
         private IHapticsManager                     HapticsManager                 { get; }
-        private IAudioManager                       AudioManager                   { get; }
         private IViewInputTouchProceeder            TouchProceeder                 { get; }
         private ICameraProvider                     CameraProvider                 { get; }
         private ILocalizationManager                LocalizationManager            { get; }
@@ -74,7 +71,6 @@ namespace RMAZOR.Views.Common
             IContainersGetter                   _ContainersGetter,
             IPrefabSetManager                   _PrefabSetManager,
             IHapticsManager                     _HapticsManager,
-            IAudioManager                       _AudioManager,
             IViewInputTouchProceeder            _TouchProceeder,
             ICameraProvider                     _CameraProvider,
             ILocalizationManager                _LocalizationManager,
@@ -93,7 +89,6 @@ namespace RMAZOR.Views.Common
             ContainersGetter               = _ContainersGetter;
             PrefabSetManager               = _PrefabSetManager;
             HapticsManager                 = _HapticsManager;
-            AudioManager                   = _AudioManager;
             TouchProceeder                 = _TouchProceeder;
             CameraProvider                 = _CameraProvider;
             LocalizationManager            = _LocalizationManager;
@@ -134,32 +129,16 @@ namespace RMAZOR.Views.Common
                 case ELevelStage.ReadyToStart:
                     ActivateButton(false);
                     break;
-                case ELevelStage.StartedOrContinued:
-                    if (_Args.PreviousStage != ELevelStage.ReadyToStart
-                        || (_Args.PrePreviousStage != ELevelStage.Loaded
-                        && _Args.PrePreviousStage != ELevelStage.CharacterKilled))
-                    {
-                        return;
-                    }
+                case ELevelStage.StartedOrContinued when 
+                    _Args.PreviousStage == ELevelStage.ReadyToStart
+                    || (_Args.PreviousStage == ELevelStage.Paused 
+                        && _Args.PrePreviousStage == ELevelStage.CharacterKilled):
+                    ActivateButton(false);
                     Cor.Stop(m_ShowButtonCoroutine);
                     m_ShowButtonCoroutine = ShowButtonCountdownCoroutine();
                     Cor.Run(m_ShowButtonCoroutine);
                     break;
                 case ELevelStage.Finished:
-                    
-                    bool MustStartUnloadingLevel()
-                    {
-                        string currentLevelType = (string)_Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
-                        bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-                        bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex);
-                        return LevelSkipped && !isCurrentLevelBonus && !isLastLevelInGroup;
-                    }
-                    if (MustStartUnloadingLevel())
-                    {
-                        SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                            EInputCommand.StartUnloadingLevel, 
-                            true);
-                    }
                     Cor.Stop(m_ShowButtonCoroutine);
                     ActivateButton(false);
                     break;
@@ -183,7 +162,15 @@ namespace RMAZOR.Views.Common
             m_ButtonObj.SetParent(_Camera.transform);
             var tr = m_ButtonObj.transform;
             var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
-            float yPos = screenBounds.max.y - m_TopOffset - 8f;
+            float yPos = screenBounds.max.y - m_TopOffset;
+            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyNextLevelType, out _);
+            yPos = nextLevelType switch
+            {
+                CommonInputCommandArg.ParameterLevelTypeMain  => yPos - 8f,
+                CommonInputCommandArg.ParameterLevelTypeBonus => yPos - 4f,
+                _                                             => yPos
+            };
             tr.SetLocalPosXY(screenBounds.center.x, yPos);
         }
 
@@ -209,6 +196,7 @@ namespace RMAZOR.Views.Common
             void OnAdClosed()
             {
                 ActivateButton(false);
+                TimePauser.UnpauseTimeInGame();
             }
             AdsManager.ShowRewardedAd(
                 OnBeforeAdShown,
@@ -221,12 +209,12 @@ namespace RMAZOR.Views.Common
             var prevArgs = Model.LevelStaging.Arguments;
             var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySkipLevel, true}};
             long levelIndex = Model.LevelStaging.LevelIndex;
-            string levelType = (string) prevArgs.GetSafe(
+            string currentLevelType = (string) prevArgs.GetSafe(
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             LevelSkipped = true;
             BetweenLevelAdShower.ShowAd = false;
-            bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isBonusLevel;
+            bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isCurrentLevelBonus;
             if (isLastLevelInGroup)
             {
                 int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
@@ -238,13 +226,16 @@ namespace RMAZOR.Views.Common
                 else if (MoneyCounter.CurrentLevelGroupMoney > 0)
                     inputCommand = EInputCommand.FinishLevelGroupPanel;
                 else
-                    inputCommand = EInputCommand.FinishLevel;
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.FinishLevel, args);
+                    return;
+                }
                 CommandsProceeder.RaiseCommand(
                     inputCommand,
                     args, 
                     true);
             }
-            else if (isBonusLevel && MoneyCounter.CurrentLevelGroupMoney > 0)
+            else if (isCurrentLevelBonus && MoneyCounter.CurrentLevelGroupMoney > 0)
             {
                 CommandsProceeder.RaiseCommand(
                     EInputCommand.FinishLevelGroupPanel, 
@@ -253,10 +244,8 @@ namespace RMAZOR.Views.Common
             }
             else
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                    EInputCommand.FinishLevel, 
-                    true, 
-                    args);
+                Dbg.Log("!!! 1");
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.FinishLevel, args);
             }
         }
         

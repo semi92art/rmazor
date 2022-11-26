@@ -138,7 +138,7 @@ namespace RMAZOR.Views.Characters
             Vector2? deathPosition = default;
             var deathPositionArg = _Args.GetSafe(CommonInputCommandArg.KeyDeathPosition, out bool keyExist);
             if (keyExist)
-                deathPosition = (Vector2) deathPositionArg;
+                deathPosition = (V2) deathPositionArg;
             if (_Args == null || !_Args.Any() || !keyExist)
                 m_DeathPos = null;
             else

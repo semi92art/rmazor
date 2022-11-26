@@ -342,7 +342,6 @@ namespace RMAZOR
 
         private void InitStartData()
         {
-            CommonData.LoadNextLevelAutomatically = true;
             CommonData.Release = true;
             SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();

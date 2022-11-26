@@ -268,14 +268,14 @@ namespace RMAZOR.Views.MazeItems
                     m_Position);
                 if (dist + MathUtils.Epsilon > 1f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
             }
             else
             {
                 var cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
             }
         }
 

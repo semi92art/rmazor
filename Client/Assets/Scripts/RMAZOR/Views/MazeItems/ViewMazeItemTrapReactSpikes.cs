@@ -243,7 +243,17 @@ namespace RMAZOR.Views.MazeItems
             m_Line.Color = _Color;
             m_Trap.color = _Color;
         }
-        
+
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
+        {
+            var colMazeItem1 = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new Component[] {m_Line, m_Trap}, () => colMazeItem1}
+            };
+            return sets;
+        }
+
         private void SetStencilRefValues(List<PointsGroupArgs> _Groups)
         {
             int GetGroupIndexByPoint()
@@ -353,16 +363,13 @@ namespace RMAZOR.Views.MazeItems
                 var args = new Dictionary<string, object>
                 {
                     {CommonInputCommandArg.KeyDeathPosition, 
-                        CoordinateConverter.ToLocalCharacterPosition(itemPos)}
+                        (V2)CoordinateConverter.ToLocalCharacterPosition(itemPos)}
                 };
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                    EInputCommand.KillCharacter, 
-                    true, 
-                    args);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, args);
             }
             else if (itemPos == character.Position)
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
             }
         }
 

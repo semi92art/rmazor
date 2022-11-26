@@ -2,7 +2,6 @@
 using System.Linq;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Entities;
 using Common.Entities.UI;
 using Common.Enums;
 using Common.Extensions;
@@ -39,7 +38,6 @@ namespace RMAZOR.UI.Panels
     {
         #region nonpublic members
 
-        private Image m_Background; 
         private TextMeshProUGUI
             m_TitleText,
             m_PlayButtonText,
@@ -47,9 +45,6 @@ namespace RMAZOR.UI.Panels
         private Button 
             m_PlayButton,
             m_SkipButton;
-        
-        private static AudioClipArgs AudioClipArgsMainTheme =>
-            new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
 
         #endregion
 
@@ -142,7 +137,6 @@ namespace RMAZOR.UI.Panels
         private void GetPrefabContentObjects(GameObject _GameObject)
         {
             var go = _GameObject;
-            m_Background     = go.GetCompItem<Image>("background");
             m_TitleText      = go.GetCompItem<TextMeshProUGUI>("title_text");
             m_PlayButtonText = go.GetCompItem<TextMeshProUGUI>("button_play_text");
             m_SkipButtonText = go.GetCompItem<TextMeshProUGUI>("button_skip_text");
@@ -166,16 +160,12 @@ namespace RMAZOR.UI.Panels
 
         private void LoadBonusLevel()
         {
-            int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
-            int bonusLevelIndex = levelsGroup - 1;
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus},
-                {CommonInputCommandArg.KeyLevelIndex, bonusLevelIndex},
+                {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterPlayBonusLevelPanel},
             };
             SwitchLevelStageCommandInvoker.SwitchLevelStage(
                 EInputCommand.StartUnloadingLevel, 
-                false,
                 args);
         }
 

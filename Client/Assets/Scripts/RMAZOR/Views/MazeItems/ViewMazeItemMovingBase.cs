@@ -170,7 +170,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var sets = base.GetAppearSets(_Appear);
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
             var col = ColorProvider.GetColor(LinesAndJointsColorId);
             if (m_PathLines.Any())
                 sets.Add(m_PathLines, () => col);

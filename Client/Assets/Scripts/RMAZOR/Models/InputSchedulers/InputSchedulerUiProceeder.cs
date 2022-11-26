@@ -54,7 +54,6 @@ namespace RMAZOR.Models.InputSchedulers
             {
                 case EInputCommand.LoadCurrentLevel:
                 case EInputCommand.LoadNextLevel:
-                case EInputCommand.LoadFirstLevelFromCurrentGroup:
                 case EInputCommand.LoadFirstLevelFromRandomGroup:
                 case EInputCommand.LoadRandomLevel:
                 case EInputCommand.LoadRandomLevelWithRotation:
@@ -97,12 +96,6 @@ namespace RMAZOR.Models.InputSchedulers
                         Dbg.LogError("Level index does not exist in command arguments");
                     levelIndex = Convert.ToInt64(levelIndexArg);
                     info = LevelsLoader.GetLevelInfo(gameId, levelIndex, _Args);
-                    LevelStaging.LoadLevel(info, levelIndex);
-                    break;
-                case EInputCommand.LoadFirstLevelFromCurrentGroup:
-                    int group = RmazorUtils.GetLevelsGroupIndex(LevelStaging.LevelIndex);
-                    levelIndex = RmazorUtils.GetFirstLevelInGroup(group);
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null); 
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadFirstLevelFromRandomGroup:

@@ -11,7 +11,6 @@
         RotateClockwise,
         RotateCounterClockwise,
         // level staging commands
-        LoadFirstLevelFromCurrentGroup,
         LoadLevelByIndex,
         LoadNextLevel,
         ReadyToStartLevel,

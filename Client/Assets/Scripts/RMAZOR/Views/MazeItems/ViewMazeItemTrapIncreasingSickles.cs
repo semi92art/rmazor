@@ -366,12 +366,9 @@ namespace RMAZOR.Views.MazeItems
             var args = new Dictionary<string, object>
             {
                 {CommonInputCommandArg.KeyDeathPosition, 
-                    CoordinateConverter.ToLocalCharacterPosition(cPos)}
+                    (V2)CoordinateConverter.ToLocalCharacterPosition(cPos)}
             };
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                EInputCommand.KillCharacter, 
-                true,
-                args);
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, args);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

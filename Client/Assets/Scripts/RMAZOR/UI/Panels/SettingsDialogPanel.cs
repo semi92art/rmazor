@@ -21,7 +21,6 @@ using RMAZOR.Models;
 using RMAZOR.Settings;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
 using RMAZOR.Views.Common;
-using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -144,8 +143,7 @@ namespace RMAZOR.UI.Panels
         {
             base.OnClose(() =>
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(
-                    EInputCommand.UnPauseLevel, true);
+                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
             });
             Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
         }

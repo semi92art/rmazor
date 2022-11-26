@@ -7,7 +7,6 @@ namespace Common
     {
         public const string SavedGameFileName = "main_save";
 
-        public static bool LoadNextLevelAutomatically;
         public static int  GameId;
         public static bool DevelopmentBuild;
         public static bool Release = false;
@@ -26,8 +25,7 @@ namespace Common
 #if FIREBASE
             FirebaseApp = null;
 #endif
-            LoadNextLevelAutomatically = false;
-            DevelopmentBuild           = false;
+            DevelopmentBuild = false;
 #if !UNITY_EDITOR && DEVELOPMENT_BUILD
             DevelopmentBuild = true;
 #endif
