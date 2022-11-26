@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Enums;
 using Common.Extensions;
 using Common.Utils;
@@ -41,7 +42,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         public void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-
             string currentLevelType = (string) _Args.Args.GetSafe(
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
             bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
@@ -53,6 +53,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         private void UnloadLevel(IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
+            Dbg.Log("Unload level (!!!)");
             CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
             FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
             foreach (var mazeItem in _MazeItems)
