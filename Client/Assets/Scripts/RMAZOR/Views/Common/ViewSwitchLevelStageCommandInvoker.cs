@@ -37,7 +37,6 @@ namespace RMAZOR.Views.Common
             EInputCommand              _SwitchStageCommand,
             Dictionary<string, object> _Arguments = null)
         {
-            Dbg.Log("New switch stage command: " + _SwitchStageCommand);
             var newArguments = SupplementNewArgumentsByPrevious(_Arguments);
             switch (_SwitchStageCommand)
             {

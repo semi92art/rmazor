@@ -166,7 +166,6 @@ namespace RMAZOR.Models
 
         private void InvokeLevelStageChanged(ELevelStage _Stage, Dictionary<string, object> _Args)
         {
-            Dbg.Log("New level stage: " + _Stage);
             if (_Stage == LevelStage)
                 return;
             if (_Args != null)

@@ -53,16 +53,6 @@ namespace RMAZOR.Views.Common
             bool        _IsBonus,
             UnityAction _OnAdClosed)
         {
-            void OnBeforeAdShown()
-            {
-                TimePauser.PauseTimeInGame();
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-            }
-            void OnAdClosedOrFailedToShow()
-            {
-                TimePauser.UnpauseTimeInGame();
-                _OnAdClosed?.Invoke();
-            }
             bool DoTryShowAd()
             {
                 int levelIndexInGroup = RmazorUtils.GetIndexInGroup(_LevelIndex);
@@ -74,6 +64,16 @@ namespace RMAZOR.Views.Common
             }
             if (DoTryShowAd())
             {
+                void OnBeforeAdShown()
+                {
+                    TimePauser.PauseTimeInGame();
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                }
+                void OnAdClosedOrFailedToShow()
+                {
+                    TimePauser.UnpauseTimeInGame();
+                    _OnAdClosed?.Invoke();
+                }
                 AdsManager.ShowRewardedAd(
                     OnBeforeAdShown, 
                     _OnClosed: OnAdClosedOrFailedToShow,
