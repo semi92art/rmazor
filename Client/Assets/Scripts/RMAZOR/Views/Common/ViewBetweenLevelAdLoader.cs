@@ -1,4 +1,5 @@
-﻿using Common.Enums;
+﻿using Common;
+using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -68,31 +69,15 @@ namespace RMAZOR.Views.Common
                 return levelIndexInGroup == 2
                        && _LevelIndex >= GameSettings.firstLevelToShowAds
                        && !_IsBonus
-                       && ShowAd;
+                       && ShowAd
+                       && AdsManager.RewardedAdReady;
             }
             if (DoTryShowAd())
             {
-                bool showRewardedOnUnload = UnityEngine.Random.value > GameSettings.interstitialAdsRatio;
-                if (showRewardedOnUnload && AdsManager.RewardedAdReady)
-                {
-                    AdsManager.ShowRewardedAd(
-                        OnBeforeAdShown, 
-                        _OnClosed: OnAdClosedOrFailedToShow,
-                        _OnFailedToShow: OnAdClosedOrFailedToShow);
-                }
-                else if (!showRewardedOnUnload && AdsManager.InterstitialAdReady)
-                {
-                    AdsManager.ShowInterstitialAd(
-                        OnBeforeAdShown, 
-                        _OnClosed: OnAdClosedOrFailedToShow,
-                        _OnFailedToShow: OnAdClosedOrFailedToShow);
-
-                }
-                if (showRewardedOnUnload && !AdsManager.RewardedAdReady
-                    || !showRewardedOnUnload && !AdsManager.InterstitialAdReady)
-                {
-                    _OnAdClosed?.Invoke();
-                }
+                AdsManager.ShowRewardedAd(
+                    OnBeforeAdShown, 
+                    _OnClosed: OnAdClosedOrFailedToShow,
+                    _OnFailedToShow: OnAdClosedOrFailedToShow);
             }
             else
             {

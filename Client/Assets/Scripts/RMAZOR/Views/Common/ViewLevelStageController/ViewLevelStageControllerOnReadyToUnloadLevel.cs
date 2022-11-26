@@ -53,7 +53,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         private void UnloadLevel(IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            Dbg.Log("Unload level (!!!)");
             CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(false);
             FullscreenTransitioner.DoTextureTransition(true, ViewSettings.betweenLevelTransitionTime);
             foreach (var mazeItem in _MazeItems)
