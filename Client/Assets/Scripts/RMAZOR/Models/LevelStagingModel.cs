@@ -165,6 +165,8 @@ namespace RMAZOR.Models
 
         private void InvokeLevelStageChanged(ELevelStage _Stage, Dictionary<string, object> _Args)
         {
+            if (_Stage == LevelStage)
+                return;
             if (_Args != null)
                 Arguments = _Args;
             PrevPrevPrevLevelStage = PrevPrevLevelStage;

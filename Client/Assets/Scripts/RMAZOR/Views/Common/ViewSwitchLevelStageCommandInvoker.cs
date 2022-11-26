@@ -175,7 +175,6 @@ namespace RMAZOR.Views.Common
         private void SwitchLevelStageStartUnloadingLevel(Dictionary<string, object> _Args)
         {
             string source = (string)_Args.GetSafe(KeySource, out _);
-            string currentLevelType = GetCurrentLevelType(_Args);
             _Args.SetSafe(KeyLoadFirstLevelInGroup, false);
             switch (source)
             {
@@ -183,11 +182,7 @@ namespace RMAZOR.Views.Common
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;
                 case ParameterFinishLevelGroupPanel:
-                    bool currentLevelIsBonus = currentLevelType == ParameterLevelTypeBonus;
-                    string nextLevelType = currentLevelIsBonus
-                        ? ParameterLevelTypeMain
-                        : ParameterLevelTypeBonus;
-                    _Args.SetSafe(KeyNextLevelType, nextLevelType);
+                    _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;
                 case ParameterPlayBonusLevelPanel:
                     int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
