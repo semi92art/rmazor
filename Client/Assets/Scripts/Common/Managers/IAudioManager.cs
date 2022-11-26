@@ -136,13 +136,11 @@ namespace Common.Managers
 
         public void MuteAudio(EAudioClipType _Type)
         {
-            Dbg.Log("Mute Audio, time:" + CommonTicker.Time);
             MuteAudio(true, _Type);
         }
 
         public void UnmuteAudio(EAudioClipType _Type)
         {
-            Dbg.Log("Unmute Audio, time:" + CommonTicker.Time);
             MuteAudio(false, _Type);
         }
 
