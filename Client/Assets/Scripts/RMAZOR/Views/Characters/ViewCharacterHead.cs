@@ -221,7 +221,7 @@ namespace RMAZOR.Views.Characters
                     m_Eye1Shape  .SetColor(_Color);
                     m_Eye2Shape  .SetColor(_Color);
                     m_MouthLine1 .SetColor(_Color);
-                    m_MouthLine1 .SetColor(_Color);
+                    m_MouthLine2 .SetColor(_Color);
                     break;
             }
         }

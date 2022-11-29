@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
 using RMAZOR.Models.ItemProceeders.Additional;
-using RMAZOR.Models.MazeInfos;
-using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views;
 
 namespace RMAZOR.Models.ItemProceeders
@@ -14,14 +11,12 @@ namespace RMAZOR.Models.ItemProceeders
     public interface IPathItemsProceeder :
         ICharacterMoveStarted, 
         ICharacterMoveContinued, 
-        ICharacterMoveFinished,
-        IGetAllProceedInfos
+        ICharacterMoveFinished
     {
+        event PathProceedHandler PathProceeded;
+        event PathProceedHandler PathCompleted;
         bool                     AllPathsProceeded { get; }
         Dictionary<V2Int, bool>  PathProceeds      { get; }
-        event PathProceedHandler PathProceedEvent;
-        event PathProceedHandler PathCompleted;
-        void ProceedPathItem(V2Int _PathItem);
     }
     
     public class PathItemsProceeder : IPathItemsProceeder, IOnLevelStageChanged
@@ -50,9 +45,8 @@ namespace RMAZOR.Models.ItemProceeders
 
         public bool                         AllPathsProceeded { get; private set; }
         public Dictionary<V2Int, bool>      PathProceeds      { get; private set; }
-        public event PathProceedHandler     PathProceedEvent;
+        public event PathProceedHandler     PathProceeded;
         public event PathProceedHandler     PathCompleted;
-        public Func<IMazeItemProceedInfo[]> GetAllProceedInfos { get; set; }
         
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs _Args)
         {
@@ -87,7 +81,11 @@ namespace RMAZOR.Models.ItemProceeders
                 CollectPathProceeds();
         }
 
-        public void ProceedPathItem(V2Int _PathItem)
+        #endregion
+        
+        #region nonpublic methods
+        
+        private void ProceedPathItem(V2Int _PathItem)
         {
             if (!Character.Alive)
                 return;
@@ -98,7 +96,7 @@ namespace RMAZOR.Models.ItemProceeders
             if (PathProceeds[_PathItem])
                 return;
             PathProceeds[_PathItem] = true;
-            PathProceedEvent?.Invoke(_PathItem);
+            PathProceeded?.Invoke(_PathItem);
             if (!m_AllPathItemsNotInPathProceeded)
                 return;
             for (int i = 0; i < m_CurrentFullPath.Length; i++)
@@ -109,10 +107,6 @@ namespace RMAZOR.Models.ItemProceeders
             AllPathsProceeded = true;
             PathCompleted?.Invoke(_PathItem);
         }
-        
-        #endregion
-        
-        #region nonpublic methods
 
         private void CollectPathProceeds()
         {
@@ -122,13 +116,6 @@ namespace RMAZOR.Models.ItemProceeders
                 .ToDictionary(
                     _P => _P, 
                     _P => false);
-                    // _P => Data.Info.MazeItems.Any(_Item =>
-                    // {
-                    //     if (_Item.Position != _P)
-                    //         return false;
-                    //     var types = new[] {EMazeItemType.Portal, EMazeItemType.ShredingerBlock};
-                    //     return types.Contains(_Item.Type);
-                    // }));
             Data.Info.PathItems
                 .Where(_PI => _PI.Blank)
                 .ToList()

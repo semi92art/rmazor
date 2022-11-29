@@ -57,10 +57,11 @@ namespace RMAZOR.Helpers
         public override MazeInfo GetLevelInfo(int _GameId, long _Index, Dictionary<string, object> _Args)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
-            MazeInfo Deserialize(string[] _Levels)
+            MazeInfo Deserialize(IReadOnlyList<string> _Levels)
             {
-                return _Index < _Levels.Length ? 
-                    JsonConvert.DeserializeObject<MazeInfo>(_Levels[_Index]) : null;
+                string level = _Levels[(int)_Index];
+                return _Index < _Levels.Count ? 
+                    JsonConvert.DeserializeObject<MazeInfo>(level) : null;
             }
             bool isBonusLevel = IsNextLevelBonus(_Args);
             var dicRemote  = isBonusLevel ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
@@ -158,7 +159,7 @@ namespace RMAZOR.Helpers
 
         private static bool IsNextLevelBonus(Dictionary<string, object> _Args)
         {
-            string nextLevelType = (string)_Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            string nextLevelType = (string)_Args?.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
             return nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
         }
 

@@ -205,7 +205,7 @@ namespace RMAZOR
                     }
                 }
             }
-            if (_From.Y == _To.Y)
+            else if (_From.Y == _To.Y)
             {
                 min = Math.Min(_From.X, _To.X);
                 max = Math.Max(_From.X, _To.X);
@@ -225,7 +225,25 @@ namespace RMAZOR
                     }
                 }
             }
-            return res ?? new V2Int[0];
+            else
+            {
+                var dir = ((Vector2) (_To - _From));
+                var dirNormalized = dir.normalized;
+                float dirLength = dir.sqrMagnitude;
+                Vector2 pointOnPath = _From;
+                var res1 = new List<V2Int>{_From};
+                for (float i = 0; i < dirLength; i += 1f)
+                {
+                    pointOnPath += dirNormalized;
+                    res1.Add(new V2Int(Mathf.FloorToInt(pointOnPath.x), Mathf.FloorToInt(pointOnPath.y)));
+                    res1.Add(new V2Int(Mathf.FloorToInt(pointOnPath.x), Mathf.CeilToInt(pointOnPath.y)));
+                    res1.Add(new V2Int(Mathf.CeilToInt(pointOnPath.x),  Mathf.FloorToInt(pointOnPath.y)));
+                    res1.Add(new V2Int(Mathf.CeilToInt(pointOnPath.x),  Mathf.CeilToInt(pointOnPath.y)));
+                }
+                res1.Add(_To);
+                res = res1.Distinct().ToArray();
+            }
+            return res;
         }
 
         /// <summary>

@@ -117,6 +117,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             MoneyCounter.Init();
             TouchProceeder.Tap += OnTapScreenAction;
             CameraProvider.Init();
+            StageControllerOnLevelReadyToStart.Init();
             Cor.Run(Cor.WaitNextFrame(CameraEffectsCustomAnimator.Init));
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);

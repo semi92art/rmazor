@@ -147,8 +147,8 @@ namespace RMAZOR.Views.Common
                     nextLevelIndex = currentLevelIndex - levelIndexInGroup;
                     break;
                 case ParameterLevelTypeBonus:
-                    int nextLevelGroupIndex = (int) currentLevelIndex + 1;
-                    nextLevelIndex = RmazorUtils.GetFirstLevelInGroup(nextLevelGroupIndex);
+                    long firstLevelInNextGroup = RmazorUtils.GetFirstLevelInGroup((int) currentLevelIndex + 1 + 1);
+                    nextLevelIndex = firstLevelInNextGroup;
                     break;
             }
             _Args.SetSafe(KeyLevelIndex, nextLevelIndex);

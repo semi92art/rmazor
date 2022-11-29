@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Entities;
@@ -137,7 +138,7 @@ namespace RMAZOR.Views.MazeItems
             if (m_Rotate)
                 DoRotation();
             CheckForCharacterDeath();
-            HighlightTrap();
+            // HighlightTrap();
         }
         
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
@@ -183,6 +184,23 @@ namespace RMAZOR.Views.MazeItems
         #endregion
         
         #region nonpublic methods
+        
+        protected override void OnColorChanged(int _ColorId, Color _Color)
+        {
+            switch (_ColorId)
+            {
+                case ColorIds.MazeItem1:
+                {
+                    m_OuterDisc.Color = _Color;
+                    foreach (var cone in m_Cones)
+                        cone.Color = _Color;
+                    break;
+                }
+                case ColorIds.Main:
+                    m_InnerDisc.Color = _Color;
+                    break;
+            }
+        }
         
         protected override void InitShape()
         {
@@ -295,21 +313,17 @@ namespace RMAZOR.Views.MazeItems
             base.OnAppearFinish(_Appear);
         }
 
-        protected override void OnColorChanged(int _ColorId, Color _Color)
+        protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            switch (_ColorId)
+            var colMazeItem1 = ColorProvider.GetColor(ColorIds.MazeItem1);
+            var colMain = ColorProvider.GetColor(ColorIds.Main);
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
-                case ColorIds.MazeItem1:
-                {
-                    m_OuterDisc.Color = _Color;
-                    foreach (var cone in m_Cones)
-                        cone.Color = _Color;
-                    break;
-                }
-                case ColorIds.Background1:
-                    m_InnerDisc.Color = _Color;
-                    break;
-            }
+                {m_Cones, () => colMazeItem1},
+                {new[] {m_OuterDisc}, () => colMazeItem1},
+                {new [] {m_InnerDisc}, () => colMain}
+            };
+            return sets;
         }
 
         #endregion

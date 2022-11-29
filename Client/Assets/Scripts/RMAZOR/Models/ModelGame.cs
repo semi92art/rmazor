@@ -198,7 +198,7 @@ namespace RMAZOR.Models
         
         private void SetProceedersActions()
         {
-            Character.GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
+            ((IGetStartPosition)Character).GetStartPosition = () => PathItemsProceeder.PathProceeds.First().Key;
             foreach (var item in GetInterfaceOfProceeders<IGetAllProceedInfos>()
                 .Where(_P => _P != null))
             {

@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using RMAZOR.Controllers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
+using RMAZOR.Models;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -280,24 +281,30 @@ namespace RMAZOR
                                        Money = 100
                                    };
                                    ScoreManager.SaveGameProgress(savedGame, true);
-                                   LoadLevelByIndex(controller, 0);
+                                   LoadLevelByIndex(controller, 0, null);
                                    return;
                                }
-                               LoadLevelByIndex(controller, sgCache.Level);
+                               LoadLevelByIndex(controller, sgCache.Level, sgCache.Args);
                            },
                            _Seconds: 1f));
                        return;
                    }
-                   LoadLevelByIndex(controller, sgRemote.Level);
+                   LoadLevelByIndex(controller, sgRemote.Level, sgRemote.Args);
                }, _Seconds: 1f));
             };
             controller.Init();
         }
 
-        private void LoadLevelByIndex(IGameController _Controller, long _LevelIndex)
+        private void LoadLevelByIndex(
+            IGameController            _Controller,
+            long                       _LevelIndex,
+            Dictionary<string, object> _Args)
         {
-            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex, null);
-            _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
+            string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            long newLevelIndex = !isBonusLevel ? _LevelIndex : RmazorUtils.GetFirstLevelInGroup((int)_LevelIndex + 1 + 1);
+            var info = LevelsLoader.GetLevelInfo(1, newLevelIndex, null);
+            _Controller.Model.LevelStaging.LoadLevel(info, newLevelIndex);
         }
         
         private void OnScoreManagerInitialize()

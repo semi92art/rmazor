@@ -47,10 +47,10 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 0
+        enableBloom: 1
         diffusion: 0.6
-        color: {r: 1, g: 0, b: 0, a: 1}
-        amount: 500
+        color: {r: 1, g: 0, b: 0.7466488, a: 1}
+        amount: 200
         threshold: 10
         softness: 1
       additionalInfo:
@@ -93,10 +93,10 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 0
+        enableBloom: 1
         diffusion: 0.6
         color: {r: 0, g: 0.5568628, b: 1, a: 1}
-        amount: 500
+        amount: 300
         threshold: 10
         softness: 1
       additionalInfo:
@@ -139,10 +139,10 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 0
+        enableBloom: 1
         diffusion: 0.6
         color: {r: 1, g: 0, b: 0.72156864, a: 1}
-        amount: 500
+        amount: 300
         threshold: 10
         softness: 1
       additionalInfo:
@@ -175,19 +175,19 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: gradient
         additionalBackgroundName: additional_background_texture_1
-    - main: {r: 1, g: 0.5568182, b: 0, a: 1}
-      bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.6981132, g: 0.45733777, b: 0.15477037, a: 1}
+    - main: {r: 0.22957455, g: 0.41534433, b: 0.6320754, a: 1}
+      bacground1: {r: 0.7372549, g: 0.58893687, b: 0.36470586, a: 1}
+      bacground2: {r: 0.19446424, g: 0.3096658, b: 0.4339623, a: 1}
       inUse: 1
-      pathItemFillType: 0
+      pathItemFillType: 2
       pathBackgroundFillType: 1
       pathFillFillType: 2
-      characterBorderFillType: 1
+      characterBorderFillType: 0
       uiBackgroundFillType: 1
       bloom:
         enableBloom: 0
         diffusion: 0.6
-        color: {r: 1, g: 0.5568628, b: 0, a: 1}
+        color: {r: 1, g: 0, b: 0.01845169, a: 1}
         amount: 500
         threshold: 10
         softness: 1

@@ -67,41 +67,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         public void OnLevelLoaded(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems)
         {
-            var savedGameEntity = ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}, " +
-                                       $"castSuccess: {castSuccess}, " +
-                                       $"_Value: {savedGameEntity.Value}");
-                        return;
-                    }
-                    var args = _Args.Args ?? savedGame.Args;
-                    long levelIndex = _Args.LevelIndex;
-                    string nextLevelType = (string) args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
-                    bool nextLevelTypeIsBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-                    if (nextLevelTypeIsBonus)
-                    {
-                        long bonusLevelIndex = Model.LevelStaging.LevelIndex;
-                        levelIndex = RmazorUtils.GetFirstLevelInGroup((int) bonusLevelIndex + 1 + 1);
-                    }
-                    
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = CommonData.SavedGameFileName,
-                        Money = savedGame.Money,
-                        Level = levelIndex,
-                        Args = _Args.Args
-                    };
-                    ScoreManager.SaveGameProgress(
-                        newSavedGame, false);
-                }));
+            SaveGame(_Args);
             if (m_StartLogoShowing)
             {
                 CompanyLogo.HideLogo();
@@ -119,7 +85,40 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             FullscreenTransitioner.DoTextureTransition(false, ViewSettings.betweenLevelTransitionTime);
             CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(true);
         }
+        
+        #endregion
 
+        #region nonpublic methods
+
+        private void SaveGame(LevelStageArgs _Args)
+        {
+            var savedGameEntity = ScoreManager.GetSavedGameProgress(
+                CommonData.SavedGameFileName, true);
+            Cor.Run(Cor.WaitWhile(
+                () => savedGameEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
+                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
+                    {
+                        Dbg.LogWarning("Failed to load saved game: " +
+                                       $"_Result: {savedGameEntity.Result}, " +
+                                       $"castSuccess: {castSuccess}, " +
+                                       $"_Value: {savedGameEntity.Value}");
+                        return;
+                    }
+                    var newSavedGame = new SavedGame
+                    {
+                        FileName = CommonData.SavedGameFileName,
+                        Money = savedGame.Money,
+                        Level = _Args.LevelIndex,
+                        Args = _Args.Args
+                    };
+                    ScoreManager.SaveGameProgress(
+                        newSavedGame, false);
+                }));
+        }
+        
         #endregion
     }
 }

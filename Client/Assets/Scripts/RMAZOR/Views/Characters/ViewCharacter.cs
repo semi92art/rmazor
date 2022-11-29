@@ -183,7 +183,7 @@ namespace RMAZOR.Views.Characters
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
-                    SetDefaultPosition();
+                    SetStartOrRevivePosition();
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
@@ -192,7 +192,7 @@ namespace RMAZOR.Views.Characters
                     if (_Args.PreviousStage == ELevelStage.Paused 
                         && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
                     {
-                        SetDefaultPosition();
+                        SetStartOrRevivePosition();
                     }
                     m_EnableMoving = true;
                     break;
@@ -234,9 +234,9 @@ namespace RMAZOR.Views.Characters
             m_EnableMoving = false;
         }
         
-        private void SetDefaultPosition()
+        private void SetStartOrRevivePosition()
         {
-            SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Data.Info.PathItems[0].Position));
+            SetPosition(CoordinateConverter.ToLocalCharacterPosition(Model.Character.Position));
         }
 
         private static AudioClipArgs GetCharacterDeadAudioClipArgs()
