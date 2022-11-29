@@ -199,8 +199,8 @@ namespace Mono_Installers
                 .AsSingle();
             
             Container.Bind<IAssetBundleManager>()
-                // .To<AssetBundleManager>()
-                .To<AssetBundleManagerFake>()
+                .To<AssetBundleManager>()
+                // .To<AssetBundleManagerFake>()
                 .AsSingle();
             
 #if UNITY_ANDROID
