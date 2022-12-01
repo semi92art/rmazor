@@ -35,7 +35,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: blue_purple_plaid
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 1, g: 0.07954545, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
@@ -58,7 +58,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: rave_squares
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
@@ -81,7 +81,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: skyline
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0, g: 0.5397725, b: 1, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
@@ -104,7 +104,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.1981132, g: 0, b: 0, a: 1}
       bacground1: {r: 0.9056604, g: 0.62153167, b: 0, a: 1}
@@ -127,7 +127,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: white_fire
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 1, g: 0, b: 0.721591, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
@@ -150,7 +150,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: toon_rain
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
       bacground1: {r: 0.6603774, g: 0.5875572, b: 0.4765931, a: 1}
@@ -173,7 +173,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: fibrous_rings
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.22957455, g: 0.41534433, b: 0.6320754, a: 1}
       bacground1: {r: 0.7372549, g: 0.58893687, b: 0.36470586, a: 1}
@@ -196,5 +196,5 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: gradient
+        backgroundName: lambmeow_sin_squares
         additionalBackgroundName: additional_background_texture_1

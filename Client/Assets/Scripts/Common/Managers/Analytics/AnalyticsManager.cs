@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Common.Constants;
 using Common.Helpers;
 using Common.Utils;
@@ -61,6 +62,22 @@ namespace Common.Managers.Analytics
 
     public class AnalyticsManagerFake : InitBase, IAnalyticsManager
     {
-        public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null) { }
+        private IMyOwnAnalyticsProvider MyOwnAnalyticsProvider { get; }
+
+        public AnalyticsManagerFake(IMyOwnAnalyticsProvider _MyOwnAnalyticsProvider)
+        {
+            MyOwnAnalyticsProvider = _MyOwnAnalyticsProvider;
+        }
+
+        public override void Init()
+        {
+            MyOwnAnalyticsProvider.Init();
+            base.Init();
+        }
+
+        public void SendAnalytic(string _AnalyticId, IDictionary<string, object> _EventData = null)
+        {
+            MyOwnAnalyticsProvider.SendAnalytic(_AnalyticId);
+        }
     }
 }

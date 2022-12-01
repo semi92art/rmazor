@@ -9,6 +9,7 @@ using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.PlatformGameServices;
 using Common.Network;
@@ -46,6 +47,7 @@ namespace RMAZOR
         private ISRDebuggerInitializer     SrDebuggerInitializer     { get; set; }
         private IAchievementsSet           AchievementsSet           { get; set; }
         private ILeaderboardsSet           LeaderboardsSet           { get; set; }
+        private IAnalyticsManager          AnalyticsManager           { get; set; }
         private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
         private CompanyLogo                CompanyLogo               { get; set; }
         
@@ -72,6 +74,7 @@ namespace RMAZOR
             IAchievementsSet           _AchievementsSet,
             ILeaderboardsSet           _LeaderboardsSet,
             IApplicationVersionUpdater _ApplicationVersionUpdater,
+            IAnalyticsManager          _AnalyticsManager,
             CompanyLogo                _CompanyLogo)
         {
             GlobalGameSettings        = _GameSettings;
@@ -90,6 +93,7 @@ namespace RMAZOR
             AchievementsSet           = _AchievementsSet;
             LeaderboardsSet           = _LeaderboardsSet;
             ApplicationVersionUpdater = _ApplicationVersionUpdater;
+            AnalyticsManager          = _AnalyticsManager;
             CompanyLogo               = _CompanyLogo;
         }
         
@@ -184,6 +188,7 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
+            AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic("session_start");
             InitRemoteConfigManager();
             InitAssetBundleManager();
             InitShopManager();

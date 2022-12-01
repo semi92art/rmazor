@@ -11,6 +11,8 @@ namespace Common.Managers.Analytics
     {
         protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (_AnalyticId == "session_start")
+                return;
             if (_EventData == null)
             {
                 Appodeal.LogEvent(_AnalyticId);

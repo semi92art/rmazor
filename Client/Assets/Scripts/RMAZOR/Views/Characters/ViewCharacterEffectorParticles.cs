@@ -21,17 +21,17 @@ namespace RMAZOR.Views.Characters
     {
         #region nonpublic members
 
-        private bool                m_Initialized;
-        private bool                m_Activated;
+        private bool        m_Initialized;
+        private bool        m_Activated;
         private EDirection? m_MoveDirection;
-        private Vector2?            m_FromPos;
-        private Vector2?            m_DeathPos;
+        private Vector2?    m_FromPos;
+        private Vector2?    m_DeathPos;
 
         #endregion
         
         #region inject
         
-        private ICoordinateConverter  CoordinateConverter { get; }
+        private ICoordinateConverter        CoordinateConverter { get; }
         private IContainersGetter           ContainersGetter    { get; }
         private IModelGame                  Model               { get; }
         private IColorProvider              ColorProvider       { get; }
@@ -39,7 +39,7 @@ namespace RMAZOR.Views.Characters
         private IViewParticlesThrower       ParticlesThrower    { get; }
 
         private ViewCharacterEffectorParticles(
-            ICoordinateConverter  _CoordinateConverter,
+            ICoordinateConverter        _CoordinateConverter,
             IContainersGetter           _ContainersGetter,
             IModelGame                  _Model,
             IColorProvider              _ColorProvider,
@@ -70,9 +70,9 @@ namespace RMAZOR.Views.Characters
                         ColorProvider.ColorChanged += OnColorChanged;
                         CommandsProceeder.Command += OnCommand;
                         ParticlesThrower.ParticleType = EParticleType.Bubbles;
-                        ParticlesThrower.SetPoolSize(300);
+                        ParticlesThrower.SetPoolSize(500);
                         ParticlesThrower.Init();
-                        ParticlesThrower.SetSortingOrder(SortingOrders.Character + 2);
+                        ParticlesThrower.SetSortingOrder(SortingOrders.Character - 2);
                         m_Initialized = true;
                     }
                 }
@@ -107,6 +107,11 @@ namespace RMAZOR.Views.Characters
         {
             m_FromPos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             m_MoveDirection = _Args.Direction;
+        }
+        
+        public void OnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
+        {
+            // ThrowParticlesOnCharacterMoveContinued(_Args);
         }
 
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
@@ -155,6 +160,26 @@ namespace RMAZOR.Views.Characters
                 }
             }
         }
+
+        // private void ThrowParticlesOnCharacterMoveContinued(CharacterMovingContinuedEventArgs _Args)
+        // {
+        //     if (_Args.From == _Args.To)
+        //         return;
+        //     for (int i = 0; i < 10; i++)
+        //     {
+        //         var throwDir = 1f * RmazorUtils.GetDirectionVector(
+        //             _Args.Direction, Model.MazeRotation.Orientation);
+        //         var throwPosition = CoordinateConverter.ToLocalCharacterPosition(
+        //             _Args.PrecisePosition - throwDir * 0.5f);
+        //         float RandomValueAlt() => CoordinateConverter.Scale * (Random.value - 0.5f);
+        //         throwPosition += Vector2.right * RandomValueAlt() + Vector2.up * RandomValueAlt() * 0.3f;
+        //         var throwDirOrth = new Vector2(throwDir.y, throwDir.x);
+        //         throwDir *= RandomValueAlt();
+        //         throwDir += throwDirOrth * RandomValueAlt();
+        //         float scale = 0.5F + 1f * Random.value;
+        //         ParticlesThrower.ThrowParticle(throwPosition, throwDir, scale, 0.8f);
+        //     }
+        // }
 
         private void ThrowParticlesOnCharacterDisappear(bool _Death, V2Int _LastPos = default)
         {

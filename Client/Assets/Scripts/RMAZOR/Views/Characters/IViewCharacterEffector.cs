@@ -8,6 +8,7 @@ namespace RMAZOR.Views.Characters
         IActivated,
         IOnLevelStageChanged,
         ICharacterMoveStarted,
+        ICharacterMoveContinued,
         ICharacterMoveFinished,
         IOnPathCompleted { }
 }

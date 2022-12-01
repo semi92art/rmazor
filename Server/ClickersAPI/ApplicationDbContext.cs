@@ -7,9 +7,10 @@ namespace ClickersAPI
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Account>          Accounts          { get; set; }
         public DbSet<AccountDataField> AccountDataFields { get; }
-        public DbSet<GameDataField> GameDataFields { get; }
+        public DbSet<GameDataField>    GameDataFields    { get; }
+        public DbSet<BotClient>        BotClients    { get; }
 
         public ApplicationDbContext([NotNull] DbContextOptions _Options) : base(_Options)
         { }

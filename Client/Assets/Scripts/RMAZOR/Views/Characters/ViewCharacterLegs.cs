@@ -238,10 +238,10 @@ namespace RMAZOR.Views.Characters
         {
             float scale = CoordinateConverter.Scale;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
-            var a = dir * 0.5f;
+            var a = dir * 0.55f;
             var dirOrth = new Vector2(dir.y, dir.x);
-            var b = a + dirOrth * 0.2f;
-            var c = a - dirOrth * 0.2f;
+            var b = a + dirOrth * 0.3f;
+            var c = a - dirOrth * 0.3f;
             m_Leg1Body.transform.localPosition = b * scale - dir * m_Leg1Body.Height * 2f;
             m_Leg2Body.transform.localPosition = c * scale - dir * m_Leg1Body.Height * 2f;
             var orientationForAngle = _ByLastOrientation ? m_LastMazeOrientation : Model.MazeRotation.Orientation;

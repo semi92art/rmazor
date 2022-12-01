@@ -13,6 +13,8 @@ namespace Common.Managers.Analytics
         
         protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (_AnalyticId == "session_start")
+                return;
             if (UnityServices.State != ServicesInitializationState.Initialized)
                 return;
             _EventData ??= new Dictionary<string, object>();
@@ -38,5 +40,26 @@ namespace Common.Managers.Analytics
         }
 
         #endregion
+    }
+    
+    public class Country
+    {
+
+        public string businessName;
+        public string businessWebsite;
+        public string city;
+        public string continent;
+        public string country;
+        public string countryCode;
+        public string ipName;
+        public string ipType;
+        public string isp;
+        public string lat;
+        public string lon;
+        public string org;
+        public string query;
+        public string region;
+        public string status;
+
     }
 }

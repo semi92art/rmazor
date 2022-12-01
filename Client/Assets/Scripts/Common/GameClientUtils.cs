@@ -40,7 +40,6 @@ namespace Common
             return 1;
         }
 
-        public static string ServerApiUrl => !Application.isEditor ? 
-            "http://77.37.152.15:7000" : SaveUtilsInEditor.GetValue(SaveKeysCommon.ServerUrl);
+        public static string ServerApiUrl => "http://77.37.152.15:7000";
     }
 }

@@ -20,9 +20,9 @@ namespace ClickersAPI.Controllers
         private const int AllGameIdsKey = -1;
 
         public GameDataFieldsController(
-            ApplicationDbContext _Context, 
-            IMapper _Mapper,
-            IServiceProvider _Provider)
+            ApplicationDbContext _Context,
+            IMapper              _Mapper,
+            IServiceProvider     _Provider)
             : base(_Context, _Mapper, _Provider) { }
 
         [HttpPost("get_list")]

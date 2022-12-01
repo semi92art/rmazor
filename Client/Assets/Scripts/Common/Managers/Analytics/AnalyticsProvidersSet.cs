@@ -10,6 +10,7 @@ namespace Common.Managers.Analytics
     public class AnalyticsProvidersSet : IAnalyticsProvidersSet
     {
         [Zenject.Inject] IUnityAnalyticsProvider UnityAnalyticsProvider { get; }
+        [Zenject.Inject] IMyOwnAnalyticsProvider MyOwnAnalyticsProvider { get; }
 #if FIREBASE
         [Zenject.Inject] private IFirebaseAnalyticsProvider FirebaseAnalyticsProvider { get; }
 #endif
@@ -19,7 +20,7 @@ namespace Common.Managers.Analytics
         
         public List<IAnalyticsProvider> GetProviders()
         {
-            var providers = new List<IAnalyticsProvider> {UnityAnalyticsProvider};
+            var providers = new List<IAnalyticsProvider> {UnityAnalyticsProvider, MyOwnAnalyticsProvider};
 #if FIREBASE
             providers.Add(FirebaseAnalyticsProvider);
 #endif
