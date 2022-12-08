@@ -59,7 +59,7 @@ namespace Common.UI.DialogViewers
 
         #region api
 
-        public IDialogPanel CurrentPanel => !PanelsStack.Any() ? null : PanelsStack.Peek();
+        public IDialogPanel CurrentPanel  => !PanelsStack.Any() ? null : PanelsStack.Peek();
 
         public abstract RectTransform Container                 { get; }
         public          Func<bool>    OtherDialogViewersShowing { get; set; }

@@ -192,12 +192,22 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
                 return;
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
-            var cp = dv.CurrentPanel;
-            if (cp is IFinishLevelGroupDialogPanel)
-                return;
-            if (cp is IPlayBonusLevelDialogPanel)
-                return;
+            var dialogViewerTypes = new[]
+            {
+                EDialogViewerType.Fullscreen,
+                EDialogViewerType.Medium1,
+                EDialogViewerType.Medium2
+            };
+            foreach (var dialogViewerType in dialogViewerTypes)
+            {
+                var dv = DialogViewersController.GetViewer(dialogViewerType);
+                if (dv.CurrentPanel is IFinishLevelGroupDialogPanel)
+                    return;
+                if (dv.CurrentPanel is IPlayBonusLevelDialogPanel)
+                    return;
+                if (dv.CurrentPanel is IRateGameDialogPanel)
+                    return;
+            }
             InvokeStartUnloadingLevel(CommonInputCommandArg.ParameterScreenTap);
         }
         

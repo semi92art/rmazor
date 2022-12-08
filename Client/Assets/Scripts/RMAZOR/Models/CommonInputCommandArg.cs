@@ -17,6 +17,7 @@
 
         public const string ParameterScreenTap             = "screen_tap";
         public const string ParameterFinishLevelGroupPanel = "finish_levels_group_panel";
+        public const string ParameterLevelsPanel           = "levels_panel";
         public const string ParameterPlayBonusLevelPanel   = "play_bonus_level_panel";
         public const string ParameterCharacterDiedPanel    = "character_died_panel";
         public const string ParameterLevelSkipper          = "level_skipper";

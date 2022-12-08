@@ -13,41 +13,21 @@ namespace RMAZOR
     {
         private static Dictionary<EMazeItemType, SaveKey<bool>> _mazeItemsTutorialsFinished;
 
-        private static SaveKey<bool>       _allLevelsPassed;
-        private static SaveKey<bool>       _movementTutorialFinished;
-        private static SaveKey<bool>       _sgFromRemoteLoadedOnce;
-        private static SaveKey<int>        _ratePanelShowsCount;
-        private static SaveKey<long>       _currentLevelGroupMoney;
-        private static SaveKey<List<long>> _levelsFinishedOnce;
+        private static SaveKey<bool>                      _allLevelsPassed;
+        private static SaveKey<bool>                      _movementTutorialFinished;
+        private static SaveKey<bool>                      _sgFromRemoteLoadedOnce;
+        private static SaveKey<int>                       _ratePanelShowsCount;
+        private static SaveKey<long>                      _currentLevelGroupMoney;
+        private static SaveKey<List<long>>                _levelsFinishedOnce;
+        private static SaveKey<Dictionary<DateTime, int>> _sessionsCountByDays;
+        private static SaveKey<Dictionary<long, float>>   _mainLevelTimeRecordsDict;
+        private static SaveKey<Dictionary<long, float>>   _bonusLevelTimeRecordsDict;
 
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
         {
-            if (Application.isEditor)
-            {
-                _mazeItemsTutorialsFinished = null;
-                _allLevelsPassed            = null;
-                _movementTutorialFinished   = null;
-                _sgFromRemoteLoadedOnce     = null;
-                _ratePanelShowsCount        = null;
-                _currentLevelGroupMoney     = null;
-                _levelsFinishedOnce         = null;
-            }
-
-            const bool onlyCache = true;
-            SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          onlyCache);
-            SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), onlyCache);
-            SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      onlyCache);
-            SaveUtils.PutValue(SgFromRemoteLoadedOnce,   SaveUtils.GetValue(SgFromRemoteLoadedOnce),   onlyCache);
-            SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney),   onlyCache);
-            SaveUtils.PutValue(LevelsFinishedOnce,       SaveUtils.GetValue(LevelsFinishedOnce),       onlyCache);
-            
-            var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
-            foreach (var mazeItemType in mazeItemTypes)
-            {
-                var saveKey = GetMazeItemTutorialFinished(mazeItemType);
-                SaveUtils.PutValue(saveKey, SaveUtils.GetValue(saveKey), true);
-            }
+            SetAllToNull();
+            CacheFromDisc();
         }
  
         public static SaveKey<bool>  AllLevelsPassed          =>
@@ -62,6 +42,12 @@ namespace RMAZOR
             _currentLevelGroupMoney ??= new SaveKey<long>(nameof(CurrentLevelGroupMoney));
         public static SaveKey<List<long>> LevelsFinishedOnce  =>
             _levelsFinishedOnce ??= new SaveKey<List<long>>(nameof(LevelsFinishedOnce));
+        public static SaveKey<Dictionary<DateTime, int>> SessionCountByDays =>
+            _sessionsCountByDays ??= new SaveKey<Dictionary<DateTime, int>>(nameof(SessionCountByDays));
+        public static SaveKey<Dictionary<long, float>> MainLevelTimeRecordsDict =>
+            _mainLevelTimeRecordsDict ??= new SaveKey<Dictionary<long, float>>(nameof(MainLevelTimeRecordsDict));
+        public static SaveKey<Dictionary<long, float>> BonusLevelTimeRecordsDict =>
+            _bonusLevelTimeRecordsDict ??= new SaveKey<Dictionary<long, float>>(nameof(BonusLevelTimeRecordsDict));
 
         public static SaveKey<bool> GetMazeItemTutorialFinished(EMazeItemType _Type)
         {
@@ -72,6 +58,40 @@ namespace RMAZOR
             saveKey = new SaveKey<bool>($"MazeItemTutorialFinished_{_Type}");
             _mazeItemsTutorialsFinished.SetSafe(_Type, saveKey);
             return saveKey;
+        }
+
+        private static void SetAllToNull()
+        {
+            _mazeItemsTutorialsFinished = null;
+            _allLevelsPassed            = null;
+            _movementTutorialFinished   = null;
+            _sgFromRemoteLoadedOnce     = null;
+            _ratePanelShowsCount        = null;
+            _currentLevelGroupMoney     = null;
+            _levelsFinishedOnce         = null;
+            _sessionsCountByDays        = null;
+            _mainLevelTimeRecordsDict   = null;
+            _bonusLevelTimeRecordsDict  = null;
+        }
+
+        private static void CacheFromDisc()
+        {
+            const bool onlyCache = true;
+            SaveUtils.PutValue(AllLevelsPassed,          SaveUtils.GetValue(AllLevelsPassed),          onlyCache);
+            SaveUtils.PutValue(MovementTutorialFinished, SaveUtils.GetValue(MovementTutorialFinished), onlyCache);
+            SaveUtils.PutValue(RatePanelShowsCount,      SaveUtils.GetValue(RatePanelShowsCount),      onlyCache);
+            SaveUtils.PutValue(SgFromRemoteLoadedOnce,   SaveUtils.GetValue(SgFromRemoteLoadedOnce),   onlyCache);
+            SaveUtils.PutValue(CurrentLevelGroupMoney,   SaveUtils.GetValue(CurrentLevelGroupMoney),   onlyCache);
+            SaveUtils.PutValue(LevelsFinishedOnce,       SaveUtils.GetValue(LevelsFinishedOnce),       onlyCache);
+            // SaveUtils.PutValue(SessionCountByDays,       SaveUtils.GetValue(SessionCountByDays),       onlyCache);
+            // SaveUtils.PutValue(LevelTimeRecordsDict,     SaveUtils.GetValue(LevelTimeRecordsDict),     onlyCache);
+           
+            var mazeItemTypes = Enum.GetValues(typeof(EMazeItemType)).Cast<EMazeItemType>().ToArray();
+            foreach (var mazeItemType in mazeItemTypes)
+            {
+                var saveKey = GetMazeItemTutorialFinished(mazeItemType);
+                SaveUtils.PutValue(saveKey, SaveUtils.GetValue(saveKey), onlyCache);
+            }
         }
     }
 }

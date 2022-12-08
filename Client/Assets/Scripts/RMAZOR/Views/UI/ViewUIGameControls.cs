@@ -43,6 +43,7 @@ namespace RMAZOR.Views.UI
         private IViewUITopButtons           TopButtons         { get; }
         private IViewUITutorial             Tutorial           { get; }
         private IViewUILevelSkipper         LevelSkipper       { get; }
+        private IViewUIStarsAndTimePanel    StarsAndTimePanel  { get; }
 
         public ViewUIGameControls(
             IModelGame                  _Model,
@@ -56,7 +57,8 @@ namespace RMAZOR.Views.UI
             IViewUIRotationControls     _RotationControls,
             IViewUITopButtons           _TopButtons,
             IViewUITutorial             _Tutorial,
-            IViewUILevelSkipper         _LevelSkipper)
+            IViewUILevelSkipper         _LevelSkipper,
+            IViewUIStarsAndTimePanel    _StarsAndTimePanel)
             : base(_Model, _CommandsProceeder)
         {
             AppearTransitioner   = _AppearTransitioner;
@@ -69,6 +71,7 @@ namespace RMAZOR.Views.UI
             TopButtons               = _TopButtons;
             Tutorial                 = _Tutorial;
             LevelSkipper             = _LevelSkipper;
+            StarsAndTimePanel        = _StarsAndTimePanel;
         }
 
         #endregion
@@ -84,6 +87,7 @@ namespace RMAZOR.Views.UI
                 RotationControls,
                 Prompt,
                 TopButtons,
+                StarsAndTimePanel,
                 LevelsPanel,
                 Tutorial,
                 LevelSkipper
@@ -152,7 +156,8 @@ namespace RMAZOR.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    .Concat(TopButtons.GetRenderers());
+                    .Concat(TopButtons.GetRenderers())
+                    .Concat(StarsAndTimePanel.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
                 switch (rendComp)
@@ -166,8 +171,9 @@ namespace RMAZOR.Views.UI
         
         private void ShowControls(bool _Show, bool _Instantly)
         {
-            LevelsPanel.ShowControls(_Show, _Instantly);
-            TopButtons.ShowControls(_Show, _Instantly);
+            LevelsPanel      .ShowControls(_Show, _Instantly);
+            TopButtons       .ShowControls(_Show, _Instantly);
+            StarsAndTimePanel.ShowControls(_Show, _Instantly);
             if (_Instantly)
                 return;
             var allRenderers = GetInterfaceOfProceeders<IViewUIGetRenderers>()
@@ -191,21 +197,37 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
+                {
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.StartUnloadingLevel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.UnloadLevel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.UnPauseLevel, group);
+                    var commandsToUnlock = new[]
+                    {
+                        EInputCommand.ShopPanel,
+                        EInputCommand.SettingsPanel,
+                        EInputCommand.DailyGiftPanel,
+                        EInputCommand.LevelsPanel,
+                        EInputCommand.StartUnloadingLevel,
+                        EInputCommand.UnloadLevel,
+                        EInputCommand.PauseLevel,
+                        EInputCommand.UnPauseLevel,
+                    };
+                    CommandsProceeder.UnlockCommands(commandsToUnlock, group);
+                }
                     break;
                 case ELevelStage.Finished:
+                {
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.ShopPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.SettingsPanel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.StartUnloadingLevel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.PauseLevel, group);
-                    CommandsProceeder.UnlockCommand(EInputCommand.UnPauseLevel, group);
+                    var commandsToUnlock = new[]
+                    {
+                        EInputCommand.ShopPanel,
+                        EInputCommand.SettingsPanel,
+                        EInputCommand.DailyGiftPanel,
+                        EInputCommand.LevelsPanel,
+                        EInputCommand.StartUnloadingLevel,
+                        EInputCommand.PauseLevel,
+                        EInputCommand.UnPauseLevel,
+                    };
+                    CommandsProceeder.UnlockCommands(commandsToUnlock, group);
+                }
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:

@@ -70,7 +70,7 @@ MonoBehaviour:
       characterBorderFillType: 0
       uiBackgroundFillType: 0
       bloom:
-        enableBloom: 0
+        enableBloom: 1
         diffusion: 0.3
         color: {r: 1, g: 0, b: 0.5571456, a: 1}
         amount: 10
@@ -80,7 +80,7 @@ MonoBehaviour:
         dark: 0
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
+        wormHoleColorCoefficient1: 3.37
         backgroundName: skyline
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0, g: 0.5397725, b: 1, a: 1}
@@ -175,9 +175,9 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: fibrous_rings
         additionalBackgroundName: additional_background_texture_1
-    - main: {r: 0.22957455, g: 0.41534433, b: 0.6320754, a: 1}
+    - main: {r: 0.31132078, g: 0.108872235, b: 0.08957814, a: 1}
       bacground1: {r: 0.7372549, g: 0.58893687, b: 0.36470586, a: 1}
-      bacground2: {r: 0.19446424, g: 0.3096658, b: 0.4339623, a: 1}
+      bacground2: {r: 0.19607845, g: 0.43529412, b: 0.25506365, a: 1}
       inUse: 1
       pathItemFillType: 2
       pathBackgroundFillType: 1

@@ -107,7 +107,7 @@ namespace Common.UI.DialogViewers
 
         public override void Back(UnityAction _OnFinish = null)
         {
-            var panel = PanelsStack.Pop();
+            var panel = PanelsStack.Peek();
             Cor.Run(DoTransparentTransition(
                 panel,
                 m_Alphas,
@@ -127,6 +127,7 @@ namespace Common.UI.DialogViewers
                     {
                         canvas.enabled = false;
                     }
+                    PanelsStack.Pop();
                 },
                 false));
             panel.AppearingState = EAppearingState.Dissapearing;

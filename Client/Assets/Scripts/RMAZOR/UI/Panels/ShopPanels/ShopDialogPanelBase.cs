@@ -11,8 +11,9 @@ using Common.Ticker;
 using Common.UI;
 using Common.Utils;
 using RMAZOR.Managers;
-using RMAZOR.UI.PanelItems.Shop_Items;
+using RMAZOR.UI.PanelItems.Shop_Panel_Items;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -54,17 +55,19 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
 
         protected ShopDialogPanelBase(
-            IManagersGetter _Managers,
-            IUITicker       _Ticker,
-            ICameraProvider _CameraProvider,
-            IColorProvider  _ColorProvider,
-            IViewTimePauser _TimePauser) 
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IViewInputCommandsProceeder _CommandsProceeder) 
             : base(
                 _Managers,
                 _Ticker,
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser) { }
+                _TimePauser,
+                _CommandsProceeder) { }
 
         #endregion
 

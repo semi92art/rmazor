@@ -49,6 +49,14 @@ namespace RMAZOR.Helpers
             throw new System.NotSupportedException();
         }
 
+        public override string GetLevelInfoRaw(
+            int                        _GameId,
+            long                       _Index,
+            Dictionary<string, object> _Args)
+        {
+            throw new System.NotSupportedException();
+        }
+
         #endregion
 
         #region nonpublic methods

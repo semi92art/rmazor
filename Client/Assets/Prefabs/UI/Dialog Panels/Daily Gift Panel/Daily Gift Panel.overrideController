@@ -1,0 +1,13 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Daily Gift Panel
+  m_Controller: {fileID: 9100000, guid: 8c7a828887e54e14ca380076e7353a0a, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 9d5cf8268b15fbb409bd5d6303f2f6c3, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e7fe4bdd8988b614b9bb479906de51bd, type: 2}

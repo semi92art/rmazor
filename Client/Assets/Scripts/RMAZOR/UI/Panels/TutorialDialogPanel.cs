@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+﻿using System.Globalization;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
@@ -63,7 +61,6 @@ namespace RMAZOR.UI.Panels
         #region inject
         
         private IContainersGetter                   ContainersGetter               { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         public TutorialDialogPanel(
@@ -80,10 +77,10 @@ namespace RMAZOR.UI.Panels
                 _Ticker,
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             ContainersGetter               = _ContainersGetter;
-            CommandsProceeder              = _CommandsProceeder;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
@@ -143,18 +140,12 @@ namespace RMAZOR.UI.Panels
                 _T => _T.ToUpper(CultureInfo.CurrentUICulture));
             Managers.LocalizationManager.RemoveTextObject(locInfoDescription);
             Managers.LocalizationManager.AddTextObject(locInfoDescription);
-            CommandsProceeder.LockCommands(
-                GetCommandsToLock(), 
-                nameof(ITutorialDialogPanel));
             base.OnDialogStartAppearing();
         }
 
         public override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
-            CommandsProceeder.UnlockCommands(
-                GetCommandsToLock(), 
-                nameof(ITutorialDialogPanel));
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
@@ -179,16 +170,6 @@ namespace RMAZOR.UI.Panels
             vpGo.transform.SetLocalPosXY(Vector2.left * 1e3f);
             m_VideoPlayer = vpGo.GetCompItem<VideoPlayer>("video_player");
             m_VideoPlayer.audioOutputMode = VideoAudioOutputMode.None;
-        }
-        
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return new[]
-                {
-                    EInputCommand.ShopPanel,
-                    EInputCommand.SettingsPanel
-                }
-                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
 
         #endregion

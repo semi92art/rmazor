@@ -57,7 +57,7 @@ namespace RMAZOR.Helpers
         public override MazeInfo GetLevelInfo(int _GameId, long _Index, Dictionary<string, object> _Args)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
-            MazeInfo Deserialize(IReadOnlyList<string> _Levels)
+            MazeInfo GetInfo(IReadOnlyList<string> _Levels)
             {
                 string level = _Levels[(int)_Index];
                 return _Index < _Levels.Count ? 
@@ -66,12 +66,12 @@ namespace RMAZOR.Helpers
             bool isBonusLevel = IsNextLevelBonus(_Args);
             var dicRemote  = isBonusLevel ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
             var dictCached = isBonusLevel ? m_SerializedBonusLevelsFromCache  : SerializedLevelsFromCache;
-            var mazeInfo = Deserialize(dicRemote);
+            var mazeInfo = GetInfo(dicRemote);
             bool valid = MazeInfoValidator.Validate(mazeInfo, out string error);
             if (!valid)
             {
                 Dbg.LogError("Remote maze info is not valid: " + error);
-                mazeInfo = Deserialize(dictCached);
+                mazeInfo = GetInfo(dictCached);
             }
             valid = MazeInfoValidator.Validate(mazeInfo, out error);
             if (valid)
@@ -85,7 +85,32 @@ namespace RMAZOR.Helpers
             sb.AppendLine("Local levels list count: " + dictCached.Length);
             throw new Exception(sb.ToString());
         }
-        
+
+        public override string GetLevelInfoRaw(int _GameId, long _Index, Dictionary<string, object> _Args)
+        {
+            bool isBonusLevel = IsNextLevelBonus(_Args);
+            var dicRemote  = isBonusLevel ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
+            var dictCached = isBonusLevel ? m_SerializedBonusLevelsFromCache  : SerializedLevelsFromCache;
+            string GetInfo(IReadOnlyList<string> _Levels) => _Levels[(int)_Index];
+            string mazeInfoRaw = GetInfo(dicRemote);
+            bool valid = MazeInfoValidator.ValidateRaw(mazeInfoRaw, out string error);
+            if (!valid)
+            {
+                Dbg.LogError("Remote maze info is not valid: " + error);
+                mazeInfoRaw = GetInfo(dictCached);
+            }
+            if (valid)
+                return mazeInfoRaw;
+            var sb = new StringBuilder();
+            sb.AppendLine("Local maze info is not valid: " + error);
+            sb.AppendLine("Game Id: " + _GameId);
+            sb.AppendLine("Level index: " + _Index);
+            sb.AppendLine("Is bonus level: " + isBonusLevel);
+            sb.AppendLine("Remote levels list count: " + dicRemote.Length);
+            sb.AppendLine("Local levels list count: " + dictCached.Length);
+            throw new Exception(sb.ToString());
+        }
+
         public override int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);

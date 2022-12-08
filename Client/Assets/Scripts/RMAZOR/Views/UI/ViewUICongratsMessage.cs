@@ -41,20 +41,17 @@ namespace RMAZOR.Views.UI
 
         #region inject
 
-        private ViewSettings      ViewSettings     { get; }
         private IModelGame        Model            { get; }
         private ICameraProvider   CameraProvider   { get; }
         private IManagersGetter   Managers         { get; }
         private IColorProvider    ColorProvider    { get; }
 
         private ViewUICongratsMessage(
-            ViewSettings      _ViewSettings,
             IModelGame        _Model,
             ICameraProvider   _CameraProvider,
             IManagersGetter   _Managers,
             IColorProvider    _ColorProvider)
         {
-            ViewSettings     = _ViewSettings;
             Model            = _Model;
             CameraProvider   = _CameraProvider;
             Managers         = _Managers;
@@ -128,22 +125,28 @@ namespace RMAZOR.Views.UI
                 m_CompletedText, 
                 ETextType.GameUI,
                 "completed"));
-            float levelTime = Model.LevelStaging.LevelTime;
-            int diesCount = Model.LevelStaging.DiesCount;
-            int pathesCount = Model.PathItemsProceeder.PathProceeds.Count;
-            float coeff = (float) pathesCount / (diesCount + 1);
-            string congradsKey;
-            if (levelTime < coeff * ViewSettings.FinishTimeExcellent)
-                congradsKey = "awesome";
-            else if (levelTime < coeff * ViewSettings.FinishTimeGood)
-                congradsKey = "good_job";
-            else
-                congradsKey = "not_bad";
+            string congradsKey = GetCongratulationsMessageLocalizationKey();
             Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
                 m_CongratsText, 
                 ETextType.GameUI,
                 congradsKey,
                 _Text => _Text.ToUpperInvariant()));
+        }
+
+        private string GetCongratulationsMessageLocalizationKey()
+        {
+            float levelTime = Model.LevelStaging.LevelTime;
+            var mazeAdditionalInfo = Model.Data.Info.AdditionalInfo;
+            string key;
+            if (levelTime < mazeAdditionalInfo.Time3Stars)
+                key = "awesome";
+            else if (levelTime < mazeAdditionalInfo.Time2Stars)
+                key = "good_job";
+            else if (levelTime < mazeAdditionalInfo.Time1Star)
+                key = "not_bad";
+            else 
+                key = "could_be_better";
+            return key;
         }
 
         private void ConsiderCongratsPanelWhileAppearing(bool _Consider)

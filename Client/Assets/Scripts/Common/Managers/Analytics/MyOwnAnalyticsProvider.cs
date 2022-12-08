@@ -22,9 +22,10 @@ namespace Common.Managers.Analytics
         
         protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
         {
+            if (Application.isEditor)
+                return;
             if (_AnalyticId == null)
                 return;
-            Dbg.Log(_AnalyticId);
             var packet = CreatePacket(_AnalyticId);
             GameClient.Send(packet);
         }

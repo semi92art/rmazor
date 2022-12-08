@@ -101,6 +101,7 @@ namespace RMAZOR
                 false)
             {
                 headerHeight = LineHeight * 2f + LineHeight * filters.Count * 0.5f,
+                elementHeight = LineHeight * 2.1f,
                 drawElementBackgroundCallback = OnDrawElementBackgroundCallback,
                 drawHeaderCallback = OnDrawHeaderCallback,
                 onSelectCallback = _List =>
@@ -186,8 +187,11 @@ namespace RMAZOR
         public void Save(MazeInfo _Info, int _Index)
         {
             var lvls = levelsCached;
-            _Info.AdditionalInfo.Arguments = lvls[_Index]?.AdditionalInfo.Arguments;
-            _Info.AdditionalInfo.Comment = lvls[_Index]?.AdditionalInfo.Comment;
+            _Info.AdditionalInfo.Arguments = lvls[_Index].AdditionalInfo.Arguments;
+            _Info.AdditionalInfo.Comment   = lvls[_Index].AdditionalInfo.Comment;
+            _Info.AdditionalInfo.Time3Stars     = lvls[_Index].AdditionalInfo.Time3Stars;
+            _Info.AdditionalInfo.Time2Stars     = lvls[_Index].AdditionalInfo.Time2Stars;
+            _Info.AdditionalInfo.Time1Star     = lvls[_Index].AdditionalInfo.Time1Star;
             lvls[_Index] = _Info;
             ReloadList();
             Save();
@@ -341,6 +345,20 @@ namespace RMAZOR
                 }
                 k++;
             }
+            const float w2 = 25f;
+            float w3 = (_Rect.width - 3f * w2 - 25f) * 0.3333f;
+            (x, y, w) = (25f, _Rect.y + LineHeight * 1.1f, w2);
+            GUI.Label(GetRect(), "T1");
+            (x, w) = (x + w2, w3);
+            info.AdditionalInfo.Time3Stars = EditorGUI.FloatField(GetRect(), info.AdditionalInfo.Time3Stars);
+            (x, w) = (x + w3, w2);
+            GUI.Label(GetRect(), "T2");
+            (x, w) = (x + w2, w3);
+            info.AdditionalInfo.Time2Stars = EditorGUI.FloatField(GetRect(), info.AdditionalInfo.Time2Stars);
+            (x, w) = (x + w3, w2);
+            GUI.Label(GetRect(), "T3");
+            (x, w) = (x + w2, w3);
+            info.AdditionalInfo.Time1Star = EditorGUI.FloatField(GetRect(), info.AdditionalInfo.Time1Star);
         }
 
         private static Color GetContentColor(int _Index)

@@ -118,12 +118,18 @@ MonoBehaviour:
     - name: character_died_panel_background_5
       item: {fileID: 21300000, guid: 95b47228ba5478f44832e46b93611e4c, type: 3}
       bundle: 0
-    - name: character_tail_sprite_1
-      item: {fileID: 21300000, guid: 19d541d757b51f24a97c894ab0131567, type: 3}
+    - name: level_stage_item_enabled_sprite
+      item: {fileID: 21300000, guid: 6bbcba4e267be464998897741b81d508, type: 3}
       bundle: 0
-    - name: character_tail_sprite_2
-      item: {fileID: 21300000, guid: 79e1bbafc7bf63d4a932ad334e76aab8, type: 3}
+    - name: level_stage_item_disabled_sprite
+      item: {fileID: 21300000, guid: f87d9d25262734d879c2da72faf95bf2, type: 3}
       bundle: 0
-    - name: character_tail_sprite_3
-      item: {fileID: 21300000, guid: bb565c8206228d04a8296cf1ffdd4e99, type: 3}
+    - name: level_stage_item_selected_sprite
+      item: {fileID: 21300000, guid: 2bc701b63b63f40e0893a9fabeaa0a78, type: 3}
+      bundle: 0
+    - name: level_stage_item_star_enabled_sprite
+      item: {fileID: 21300000, guid: 88986e6ccaec2b742bbd64a1c9a89dda, type: 3}
+      bundle: 0
+    - name: level_stage_item_star_disabled_sprite
+      item: {fileID: 21300000, guid: 345b73f2332d74049804a1dfbe958093, type: 3}
       bundle: 0

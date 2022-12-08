@@ -2382,6 +2382,26 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 855299387668488906, guid: edd5dd4272675244db884c80250a096d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.69068
+      objectReference: {fileID: 0}
+    - target: {fileID: 855299387668488906, guid: edd5dd4272675244db884c80250a096d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.69068
+      objectReference: {fileID: 0}
+    - target: {fileID: 855299387668488906, guid: edd5dd4272675244db884c80250a096d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.69068
+      objectReference: {fileID: 0}
+    - target: {fileID: 855299387668488907, guid: edd5dd4272675244db884c80250a096d,
+        type: 3}
+      propertyPath: m_Color.a
+      value: 0.15686275
+      objectReference: {fileID: 0}
     - target: {fileID: 3658075898576258794, guid: edd5dd4272675244db884c80250a096d,
         type: 3}
       propertyPath: m_Sprite

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -86,7 +85,6 @@ namespace RMAZOR.UI.Panels
 
         private ViewSettings                        ViewSettings                   { get; }
         private IViewUIPrompt                       Prompt                         { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IModelGame                          Model                          { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
@@ -108,11 +106,11 @@ namespace RMAZOR.UI.Panels
                 _Ticker,
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             ViewSettings                   = _ViewSettings;
             Prompt                         = _Prompt;
-            CommandsProceeder              = _CommandsProceeder;
             Model                          = _Model;
             MoneyCounter                   = _MoneyCounter;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
@@ -178,7 +176,6 @@ namespace RMAZOR.UI.Panels
             m_WatchVideoToTheEndText.enabled = false;
             m_RewardGot = false;
             m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
-            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             Cor.Run(StartIndicatingAdLoadingCoroutine());
             m_WheelPanelView.ResetWheel();
             base.OnDialogStartAppearing();
@@ -197,7 +194,6 @@ namespace RMAZOR.UI.Panels
             TimePauser.UnpauseTimeInGame();
             Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             Prompt.ShowPrompt(EPromptType.TapToNext);
-            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IFinishLevelGroupDialogPanel));
             base.OnDialogDisappeared();
         }
 
@@ -415,7 +411,8 @@ namespace RMAZOR.UI.Panels
                 {
                     FileName = CommonData.SavedGameFileName,
                     Money = savedGame.Money + reward,
-                    Level = Model.LevelStaging.LevelIndex
+                    Level = Model.LevelStaging.LevelIndex,
+                    Args = Model.LevelStaging.Arguments
                 };
                 Managers.ScoreManager.SaveGameProgress(newSavedGame, false);
             }
@@ -437,16 +434,6 @@ namespace RMAZOR.UI.Panels
                 {
                     IndicateAdsLoading(false);
                 });
-        }
-
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return new[]
-                {
-                    EInputCommand.ShopPanel,
-                    EInputCommand.SettingsPanel
-                }
-                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
 
         #endregion

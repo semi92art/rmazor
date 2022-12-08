@@ -35,9 +35,6 @@ MonoBehaviour:
     - name: background_solid
       item: {fileID: 2100000, guid: 7e18e8abb64a68647bfe7251cff7fde9, type: 2}
       bundle: 0
-    - name: solid_background
-      item: {fileID: 2100000, guid: 257d6236a55738249aded0c5e51e3814, type: 2}
-      bundle: 0
     - name: single_circle_background
       item: {fileID: 2100000, guid: c0a423367bef21246963430fe0e63562, type: 2}
       bundle: 0

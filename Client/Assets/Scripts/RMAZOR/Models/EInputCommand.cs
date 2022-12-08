@@ -24,6 +24,8 @@
         // ui commands
         ShopPanel,
         SettingsPanel,
+        DailyGiftPanel,
+        LevelsPanel,
         RateGamePanel,
         FinishLevelGroupPanel,
         PlayBonusLevelPanel,

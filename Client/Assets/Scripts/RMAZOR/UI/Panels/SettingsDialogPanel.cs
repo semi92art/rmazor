@@ -21,6 +21,7 @@ using RMAZOR.Models;
 using RMAZOR.Settings;
 using RMAZOR.UI.PanelItems.Setting_Panel_Items;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -76,13 +77,15 @@ namespace RMAZOR.UI.Panels
             IColorProvider                      _ColorProvider,
             IViewTimePauser                     _TimePauser,
             IDialogViewersController            _DialogViewersController,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IViewInputCommandsProceeder         _CommandsProceeder)
             : base(
                 _Managers,
                 _UITicker,
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             LanguagePanel                  = _LanguagePanel;
             SettingsGetter                 = _SettingsGetter;

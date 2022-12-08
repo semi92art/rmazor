@@ -14,8 +14,9 @@ namespace RMAZOR.Helpers
 {
     public interface ILevelsLoader : IInit
     {
-        MazeInfo GetLevelInfo(int   _GameId, long            _Index, Dictionary<string, object> _Args);
-        int      GetLevelsCount(int _GameId, Dictionary<string, object> _Args);
+        string   GetLevelInfoRaw(int _GameId, long _Index, Dictionary<string, object> _Args);
+        MazeInfo GetLevelInfo(int    _GameId, long            _Index, Dictionary<string, object> _Args);
+        int      GetLevelsCount(int  _GameId, Dictionary<string, object> _Args);
     }
     
     public abstract class LevelsLoader : InitBase, ILevelsLoader
@@ -55,8 +56,9 @@ namespace RMAZOR.Helpers
                 () => !CachedLevelsLoaded || !RemoteLevelsLoaded,
                 () => base.Init()));
         }
-
-        public abstract MazeInfo GetLevelInfo(int _GameId, long _Index, Dictionary<string, object> _Args);
+        
+        public abstract MazeInfo GetLevelInfo(int    _GameId, long _Index, Dictionary<string, object> _Args);
+        public abstract string GetLevelInfoRaw(int _GameId, long _Index, Dictionary<string, object> _Args);
 
         public virtual int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
         {

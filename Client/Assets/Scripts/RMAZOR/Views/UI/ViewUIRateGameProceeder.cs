@@ -86,8 +86,10 @@ namespace RMAZOR.Views.UI
         {
             string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
             bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            bool isThisLevelLastInGroup = RmazorUtils.GetIndexInGroup(_Args.LevelIndex) == 2;
             return !isThisLevelBonus 
                    && !m_RatePanelShownThisSession
+                   && !isThisLevelLastInGroup
                    && !RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
                    && m_CanShowPanelThisSession
                    && _Args.LevelIndex >= ViewSettings.firstLevelToRateGame

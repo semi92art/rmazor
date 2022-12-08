@@ -44,3 +44,11 @@ MonoBehaviour:
       item: {fileID: 8219298684319459333, guid: 00503adf490e32e4c9d7da31db708ec1,
         type: 3}
       bundle: 0
+    - name: daily_gift_panel
+      item: {fileID: 8219298684319459333, guid: 6552ecaa2fabfd94ead0b007314b2254,
+        type: 3}
+      bundle: 0
+    - name: levels_panel
+      item: {fileID: 8219298684319459333, guid: df4827ff9bec9c94ab4a2777f96f600d,
+        type: 3}
+      bundle: 0

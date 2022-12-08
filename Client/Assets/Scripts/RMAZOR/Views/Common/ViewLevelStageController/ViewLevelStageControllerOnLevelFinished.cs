@@ -48,12 +48,12 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewUILevelSkipper                 _LevelSkipper,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
         {
-            ViewSettings      = _ViewSettings;
-            Model             = _Model;
-            Managers          = _Managers;
-            CommandsProceeder = _CommandsProceeder;
-            LevelsLoader      = _LevelsLoader;
-            LevelSkipper      = _LevelSkipper;
+            ViewSettings                   = _ViewSettings;
+            Model                          = _Model;
+            Managers                       = _Managers;
+            CommandsProceeder              = _CommandsProceeder;
+            LevelsLoader                   = _LevelsLoader;
+            LevelSkipper                   = _LevelSkipper;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
 
@@ -65,25 +65,39 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
+            SetLevelTimeRecord(_Args);
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
             CheckForAllLevelsPassed(_Args);
             CheckForLevelGroupOrBonusLevelFinished(_Args);
             ProceedSounds(_Args);
             SendAnalyticsEvent(_Args);
-            if (MustStartUnloadingLevel(_Args))
+            if (!MustStartUnloadingLevel(_Args)) 
+                return;
+            var args = new Dictionary<string, object>
             {
-                Dbg.Log("!!! 2");
-                var args = new Dictionary<string, object>
-                {
-                    {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterLevelSkipper}
-                };
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
-            }
+                {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterLevelSkipper}
+            };
+            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
         
         #endregion
 
         #region nonpublic methods
+
+        private static void SetLevelTimeRecord(LevelStageArgs _Args)
+        {
+            long levelIndex = _Args.LevelIndex;
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            var saveKey = isThisLevelBonus
+                ? SaveKeysRmazor.BonusLevelTimeRecordsDict
+                : SaveKeysRmazor.MainLevelTimeRecordsDict;
+            var levelTimeRecordsDict = SaveUtils.GetValue(saveKey) ?? new Dictionary<long, float>();
+            float timeRecord = levelTimeRecordsDict.GetSafe(levelIndex, out bool containsKey);
+            if (!containsKey || _Args.LevelTime < timeRecord)
+                levelTimeRecordsDict.SetSafe(levelIndex, _Args.LevelTime);
+            SaveUtils.PutValue(saveKey, levelTimeRecordsDict);
+        }
         
         private bool MustStartUnloadingLevel(LevelStageArgs _Args)
         {
@@ -211,7 +225,5 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         }
 
         #endregion
-        
-
     }
 }

@@ -100,6 +100,22 @@ namespace RMAZOR.Views.UI
                     }
                 }
                     break;
+                case EInputCommand.DailyGiftPanel:
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                    var dailyGiftPanel = DialogPanelsSet.GetPanel<IDailyGiftPanel>();
+                    var dv = DialogViewersController.GetViewer(dailyGiftPanel.DialogViewerType);
+                    dv.Show(dailyGiftPanel);
+                }
+                    break;
+                case EInputCommand.LevelsPanel:
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                    var levelsDialogPanel = DialogPanelsSet.GetPanel<ILevelsDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(levelsDialogPanel.DialogViewerType);
+                    dv.Show(levelsDialogPanel);
+                }
+                    break;
                 case EInputCommand.PlayBonusLevelPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);

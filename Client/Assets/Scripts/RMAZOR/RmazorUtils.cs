@@ -34,6 +34,18 @@ namespace RMAZOR
             return new Tuple<float, float>(leftScreenOffset, rightScreenOffset);
         }
         
+        public static IEnumerable<EInputCommand> GetCommandsToLockInUiMenues()
+        {
+            return new[]
+                {
+                    EInputCommand.ShopPanel,
+                    EInputCommand.SettingsPanel,
+                    EInputCommand.DailyGiftPanel,
+                    EInputCommand.LevelsPanel
+                }
+                .Concat(MoveAndRotateCommands);
+        }
+        
         public static readonly EInputCommand[] MoveCommands =
         {
             EInputCommand.MoveLeft,
@@ -305,7 +317,7 @@ namespace RMAZOR
             return (int)(_LevelIndex - levelsCount);
         }
 
-        public static long GetFirstLevelInGroup(int _GroupIndex)
+        public static long GetFirstLevelInGroupIndex(int _GroupIndex)
         {
             int groupIndexInList = 0;
             int index = 0;

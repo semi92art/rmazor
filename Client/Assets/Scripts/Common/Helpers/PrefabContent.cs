@@ -11,8 +11,8 @@ namespace Common.Helpers
         [Serializable]
         public class ContentItem
         {
-            public GameObject item;
             public string     name;
+            public GameObject item;
         }
     
         [Serializable]

@@ -88,8 +88,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             switch (_Args.LevelStage)
             {
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
-                    if (!GameLogo.WasShown)
-                        WaitUntilGameLogoWillBeShown();
+                    WaitUntilGameLogoWillBeShown();
                     AudioManager.UnmuteAudio(EAudioClipType.GameSound);
                     break;
                 case ELevelStage.ReadyToStart:

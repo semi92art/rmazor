@@ -51,8 +51,8 @@ namespace Mono_Installers
             base.InstallBindings();
             BindModel();
             BindView();
-            BindOther();
             BindCamera();
+            BindOther();
         }
 
         private void BindModel()
@@ -261,11 +261,12 @@ namespace Mono_Installers
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoDyeBall>()         .AsSingle();
                 Container.Bind<IViewUILevelsPanel>()     .To<ViewUILevelsPanel>()             .AsSingle();
                 Container.Bind<IViewUITopButtons>()      .To<ViewUITopButtons>()              .AsSingle();
+                Container.Bind<IViewUIStarsAndTimePanel>().To<ViewUIStarsAndTimePanel>()      .AsSingle();
                 Container.Bind<IViewUITutorial>()        .To<ViewUITutorial>()                .AsSingle();
                 
                 Container.Bind<IViewUILevelSkipper>()
-                    .To<ViewUILevelSkipperButton>()
-                    // .To<ViewUILevelSkipperFake>()
+                    // .To<ViewUILevelSkipperButton>()
+                    .To<ViewUILevelSkipperFake>()
                     .AsSingle();
                 
                 Container.Bind<IViewUIRotationControls>()
@@ -287,6 +288,8 @@ namespace Mono_Installers
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanelFake>().AsSingle();
                 Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanelFake>()  .AsSingle();
+                Container.Bind<IDailyGiftPanel>()             .To<DailyGiftPanelFake>()             .AsSingle();
+                Container.Bind<ILevelsDialogPanel>()          .To<LevelsDialogPanelFake>()          .AsSingle();
             }
             else
             {
@@ -304,6 +307,8 @@ namespace Mono_Installers
                 Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
                 Container.Bind<IFinishLevelGroupDialogPanel>().To<FinishLevelGroupDialogPanel>()    .AsSingle();
                 Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanel>()      .AsSingle();
+                Container.Bind<IDailyGiftPanel>()             .To<DailyGiftPanel>()                 .AsSingle();
+                Container.Bind<ILevelsDialogPanel>()          .To<LevelsDialogPanel>()              .AsSingle();
             }
         }
 
@@ -335,20 +340,6 @@ namespace Mono_Installers
                 .AsSingle();
         }
 
-        private void BindOther()
-        {
-            Container.Bind<IGameController>()          .To<GameControllerMVC>()       .AsSingle();
-            Container.Bind<IDebugManager>()            .To<DebugManager>()            .AsSingle();
-            Container.Bind<IManagersGetter>()          .To<ManagersGetter>()          .AsSingle();
-            Container.Bind<IViewBetweenLevelAdShower>().To<ViewBetweenLevelAdShower>().AsSingle();
-            Container.Bind<IMoneyCounter>()            .To<MoneyCounter>()            .AsSingle();
-            Container.Bind<IViewTimePauser>()          .To<ViewTimePauser>()          .AsSingle();
-
-            Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
-                .To<AudioManagerRmazor>()
-                .AsSingle();
-        }
-        
         private void BindCamera()
         {
             Container.Bind<IStaticCameraProvider>() .To<StaticCameraProvider>() .AsSingle();
@@ -363,6 +354,21 @@ namespace Mono_Installers
                     Container.Bind<ICameraProvider>().To<CameraProviderZmazor>().AsSingle();
                     break;
             }
+        }
+        
+        private void BindOther()
+        {
+            Container.Bind<IRawLevelInfoGetter>()      .To<RawLevelInfoGetter>()      .AsSingle();
+            Container.Bind<IGameController>()          .To<GameControllerMVC>()       .AsSingle();
+            Container.Bind<IDebugManager>()            .To<DebugManager>()            .AsSingle();
+            Container.Bind<IManagersGetter>()          .To<ManagersGetter>()          .AsSingle();
+            Container.Bind<IViewBetweenLevelAdShower>().To<ViewBetweenLevelAdShower>().AsSingle();
+            Container.Bind<IMoneyCounter>()            .To<MoneyCounter>()            .AsSingle();
+            Container.Bind<IViewTimePauser>()          .To<ViewTimePauser>()          .AsSingle();
+
+            Container.Bind(typeof(IAudioManagerRmazor), typeof(IAudioManager))
+                .To<AudioManagerRmazor>()
+                .AsSingle();
         }
     }
 }

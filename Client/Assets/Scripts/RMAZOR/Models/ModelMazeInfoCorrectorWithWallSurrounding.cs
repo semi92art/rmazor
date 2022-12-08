@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
+using Common.Utils;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Models
@@ -16,6 +17,7 @@ namespace RMAZOR.Models
         {
             var info = AddMissingPathItems(_Info);
             info = SurroundWithAdditionalWallsIfItNeeds(info);
+            info = SetValidTimeThresholds(info);
             return info;
         }
 
@@ -117,6 +119,19 @@ namespace RMAZOR.Models
             return _Info.MazeItems.Any(_Item => _Item.Position == _Point 
                                                 && _Item.Type != EMazeItemType.Block)
                    || _Info.PathItems.Any(_Item => _Item.Position == _Point);
+        }
+
+        private static MazeInfo SetValidTimeThresholds(MazeInfo _Info)
+        {
+            var additionalInfo = _Info.AdditionalInfo;
+            if (additionalInfo.Time3Stars < MathUtils.Epsilon)
+                additionalInfo.Time3Stars = 10f;
+            if (additionalInfo.Time2Stars < MathUtils.Epsilon)
+                additionalInfo.Time2Stars = 20f;
+            if (additionalInfo.Time1Star < MathUtils.Epsilon)
+                additionalInfo.Time1Star = 30f;
+            _Info.AdditionalInfo = additionalInfo;
+            return _Info;
         }
     }
 }

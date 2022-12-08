@@ -224,13 +224,12 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void LockGameplayAndUiCommands(bool _Lock)
         {
-            var commands = RmazorUtils.MoveAndRotateCommands
-                .Concat(new[] {EInputCommand.ShopPanel, EInputCommand.SettingsPanel});
+            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
             const string lockGroup = nameof(IViewUIGameLogo); 
             if (_Lock)
-                CommandsProceeder.LockCommands(commands, lockGroup);
+                CommandsProceeder.LockCommands(commandsToLock, lockGroup);
             else
-                CommandsProceeder.UnlockCommands(commands, lockGroup);
+                CommandsProceeder.UnlockCommands(commandsToLock, lockGroup);
         }
         
         private void ShowGameLogo(float _Time)

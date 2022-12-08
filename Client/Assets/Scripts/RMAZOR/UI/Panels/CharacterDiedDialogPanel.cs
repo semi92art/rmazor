@@ -74,7 +74,6 @@ namespace RMAZOR.UI.Panels
         private GlobalGameSettings                  GlobalGameSettings             { get; }
         private ViewSettings                        ViewSettings                   { get; }
         private IModelGame                          Model                          { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
@@ -95,12 +94,12 @@ namespace RMAZOR.UI.Panels
                 _UITicker, 
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             GlobalGameSettings             = _GlobalGameSettings;
             ViewSettings                   = _ViewSettings;
             Model                          = _Model;
-            CommandsProceeder              = _CommandsProceeder;
             BetweenLevelAdShower           = _BetweenLevelAdShower;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
@@ -204,20 +203,14 @@ namespace RMAZOR.UI.Panels
                     m_MoneyInBankText.text = m_MoneyCount.ToString();
                     SetBankIsLoaded();
                 }));
-            CommandsProceeder.LockCommands(
-                GetCommandsToLock(),
-                nameof(ICharacterDiedDialogPanel));
             base.OnDialogStartAppearing();
         }
 
         public override void OnDialogDisappeared()
         {
             m_PanelShowing = false;
-            CommandsProceeder.UnlockCommands(
-                GetCommandsToLock(),
-                nameof(ICharacterDiedDialogPanel));
-            CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, "all");
             base.OnDialogDisappeared();
+            CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, "all");
         }
         
         #endregion
@@ -379,16 +372,6 @@ namespace RMAZOR.UI.Panels
                 EInputCommand.ReadyToStartLevel,
                 Model.LevelStaging.Arguments, 
                 true);
-        }
-        
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return new[]
-                {
-                    EInputCommand.ShopPanel,
-                    EInputCommand.SettingsPanel
-                }
-                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
 
         #endregion

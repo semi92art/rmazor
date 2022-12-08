@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.Extensions;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -113,6 +112,12 @@ namespace RMAZOR.Views.Common
                 SwitchLevelStageLoadFirstLevelFromCurrentGroup(_Args);
                 return;
             }
+            string source = (string) _Args.GetSafe(KeySource, out keyExist);
+            if (source == ParameterLevelsPanel)
+            {
+                SwitchLevelStageLoadLevelByIndex(_Args);
+                return;
+            }
             string currentLevelType = GetCurrentLevelType(_Args);
             string nextLevelType = GetNextLevelType(_Args);
             switch (currentLevelType)
@@ -147,7 +152,7 @@ namespace RMAZOR.Views.Common
                     nextLevelIndex = currentLevelIndex - levelIndexInGroup;
                     break;
                 case ParameterLevelTypeBonus:
-                    long firstLevelInNextGroup = RmazorUtils.GetFirstLevelInGroup((int) currentLevelIndex + 1 + 1);
+                    long firstLevelInNextGroup = RmazorUtils.GetFirstLevelInGroupIndex((int) currentLevelIndex + 1 + 1);
                     nextLevelIndex = firstLevelInNextGroup;
                     break;
             }
@@ -157,6 +162,12 @@ namespace RMAZOR.Views.Common
 
         private void SwitchLevelStageLoadLevelByIndex(Dictionary<string, object> _Args)
         {
+            string source = (string) _Args.GetSafe(KeySource, out _);
+            if (source == ParameterLevelsPanel)
+            {
+                CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, _Args, true);
+                return;
+            }
             long currentLevelIndex = Model.LevelStaging.LevelIndex;
             string nextLevelType = GetNextLevelType(_Args);
             long nextLevelIndex = nextLevelType switch
@@ -164,7 +175,7 @@ namespace RMAZOR.Views.Common
                 ParameterLevelTypeBonus => 
                     RmazorUtils.GetLevelsGroupIndex(currentLevelIndex) - 1,
                 ParameterLevelTypeMain =>
-                    RmazorUtils.GetFirstLevelInGroup((int) currentLevelIndex + 1) +
+                    RmazorUtils.GetFirstLevelInGroupIndex((int) currentLevelIndex + 1) +
                     RmazorUtils.GetLevelsInGroup((int) currentLevelIndex + 1),
                 _ => currentLevelIndex
             };
@@ -179,9 +190,8 @@ namespace RMAZOR.Views.Common
             switch (source)
             {
                 case ParameterScreenTap:
-                    _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
-                    break;
                 case ParameterFinishLevelGroupPanel:
+                case ParameterLevelSkipper:
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;
                 case ParameterPlayBonusLevelPanel:
@@ -194,9 +204,7 @@ namespace RMAZOR.Views.Common
                     _Args.SetSafe(KeyLoadFirstLevelInGroup, true);
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;
-                case ParameterLevelSkipper:
-                    Dbg.Log("!!! 3");
-                    _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
+                case ParameterLevelsPanel:
                     break;
             }
             CommandsProceeder.RaiseCommand(EInputCommand.StartUnloadingLevel, _Args, true);

@@ -44,7 +44,6 @@ namespace RMAZOR.UI.Panels
 
         #region inject
         
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
 
         public RateGameDialogPanel(
             IManagersGetter             _Managers,
@@ -58,10 +57,8 @@ namespace RMAZOR.UI.Panels
                 _Ticker, 
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
-        {
-            CommandsProceeder = _CommandsProceeder;
-        }
+                _TimePauser,
+                _CommandsProceeder) { }
 
         #endregion
 
@@ -130,7 +127,6 @@ namespace RMAZOR.UI.Panels
                     m_ButtonNever.interactable = true;
                 }));
             m_StarsAnimator.SetTrigger(AnimKeys.Anim);
-            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogStartAppearing();
         }
 
@@ -138,7 +134,6 @@ namespace RMAZOR.UI.Panels
         {
             TimePauser.UnpauseTimeInGame();
             m_Disappeared = true;
-            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IRateGameDialogPanel));
             base.OnDialogDisappeared();
         }
 
@@ -163,14 +158,6 @@ namespace RMAZOR.UI.Panels
         {
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
             OnClose(null);
-        }
-
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return RmazorUtils.MoveAndRotateCommands.Concat(new []
-            {
-                EInputCommand.ShopPanel, EInputCommand.SettingsPanel
-            });
         }
 
         #endregion

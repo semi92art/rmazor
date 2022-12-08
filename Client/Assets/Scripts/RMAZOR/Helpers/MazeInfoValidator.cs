@@ -8,6 +8,7 @@ namespace RMAZOR.Helpers
     public interface IMazeInfoValidator
     {
         bool Validate(MazeInfo _Info, out string _Error);
+        bool ValidateRaw(string _InfoRaw, out string _Error);
     }
     
     public class MazeInfoValidator : IMazeInfoValidator
@@ -52,6 +53,17 @@ namespace RMAZOR.Helpers
                          string.Join(',', impossibleMazeItemTypesInt);
             }
             return success;
+        }
+
+        public bool ValidateRaw(string _InfoRaw, out string _Error)
+        {
+            _Error = null;
+            if (string.IsNullOrEmpty(_InfoRaw))
+            {
+                _Error = "Maze info is null.";
+                return false;
+            }
+            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Common;
@@ -103,6 +104,7 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
+            UpdateTodaySessionsCount();
             ApplicationVersionUpdater.UpdateToCurrentVersion();
 #if UNITY_ANDROID
             InitAndroidPerformanceClient();
@@ -165,6 +167,17 @@ namespace RMAZOR
         #endregion
     
         #region nonpublic methods
+
+        private void UpdateTodaySessionsCount()
+        {
+            var today = DateTime.Now.Date;
+            var dict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays) 
+                       ?? new Dictionary<DateTime, int>();
+            int sessionsCount = dict.GetSafe(today, out _);
+            sessionsCount++;
+            dict.SetSafe(today, sessionsCount);
+            SaveUtils.PutValue(SaveKeysRmazor.SessionCountByDays, dict);
+        }
         
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
@@ -307,7 +320,7 @@ namespace RMAZOR
         {
             string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
             bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            long newLevelIndex = !isBonusLevel ? _LevelIndex : RmazorUtils.GetFirstLevelInGroup((int)_LevelIndex + 1 + 1);
+            long newLevelIndex = !isBonusLevel ? _LevelIndex : RmazorUtils.GetFirstLevelInGroupIndex((int)_LevelIndex + 1 + 1);
             var info = LevelsLoader.GetLevelInfo(1, newLevelIndex, null);
             _Controller.Model.LevelStaging.LoadLevel(info, newLevelIndex);
         }

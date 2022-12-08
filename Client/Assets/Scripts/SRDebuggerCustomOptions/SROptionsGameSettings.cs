@@ -87,12 +87,11 @@ namespace SRDebuggerCustomOptions
 
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
-            var commands = new[] {EInputCommand.ShopPanel, EInputCommand.SettingsPanel}
-                .Concat(RmazorUtils.MoveAndRotateCommands);
+            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
             if (_Visible)
-                _commandsProceeder.LockCommands(commands, nameof(SROptions));
+                _commandsProceeder.LockCommands(commandsToLock, nameof(SROptions));
             else
-                _commandsProceeder.UnlockCommands(commands, nameof(SROptions));
+                _commandsProceeder.UnlockCommands(commandsToLock, nameof(SROptions));
         }
 
         #region model settings
@@ -811,6 +810,7 @@ namespace SRDebuggerCustomOptions
                         ELevelStage.Unloaded,
                         ELevelStage.ReadyToUnloadLevel,
                         ELevelStage.Finished,
+                        float.PositiveInfinity,
                         args);
                     return fakeArgs;
                 }
@@ -1005,7 +1005,9 @@ namespace SRDebuggerCustomOptions
             get => false;
             set
             {
-                void PrintChannelInfo(AN_NotificationChannel channel)
+                if (!value)
+                    return;
+                static void PrintChannelInfo(AN_NotificationChannel channel)
                 {
                     Debug.Log("channel.Id: " + channel.Id);
                     Debug.Log("channel.Name: " + channel.Name);

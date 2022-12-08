@@ -53,7 +53,6 @@ namespace RMAZOR.UI.Panels
         private IModelGame                          Model                          { get; }
         private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
-        private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private PlayBonusLevelDialogPanel(
@@ -72,12 +71,12 @@ namespace RMAZOR.UI.Panels
                 _Ticker, 
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             Model                          = _Model;
             BetweenLevelAdShower           = _BetweenLevelAdShower;
             MoneyCounter                   = _MoneyCounter;
-            CommandsProceeder              = _CommandsProceeder;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
         
@@ -106,14 +105,12 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
-            CommandsProceeder.LockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogStartAppearing();
         }
 
         public override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
-            CommandsProceeder.UnlockCommands(GetCommandsToLock(), nameof(IPlayBonusLevelDialogPanel));
             base.OnDialogDisappeared();
         }
 
@@ -180,16 +177,6 @@ namespace RMAZOR.UI.Panels
                 EInputCommand.FinishLevelGroupPanel, 
                 null, 
                 true);
-        }
-        
-        private static IEnumerable<EInputCommand> GetCommandsToLock()
-        {
-            return new[]
-                {
-                    EInputCommand.ShopPanel,
-                    EInputCommand.SettingsPanel
-                }
-                .Concat(RmazorUtils.MoveAndRotateCommands);
         }
 
         #endregion

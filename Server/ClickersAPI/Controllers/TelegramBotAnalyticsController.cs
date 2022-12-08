@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using ClickersAPI.DTO;
-using ClickersAPI.Entities;
-using ClickersAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -21,7 +18,7 @@ namespace ClickersAPI.Controllers
     [Route("api/bot")]
     public class TelegramBotAnalyticsController : ControllerBaseImpl
     {
-        private static TelegramBotClient m_TelegramBotClient;
+        private static TelegramBotClient _telegramBotClient;
         
         public TelegramBotAnalyticsController(
             ApplicationDbContext _Context,
@@ -32,29 +29,22 @@ namespace ClickersAPI.Controllers
         [HttpPost("init_bot")]
         public async Task<ActionResult<string>> InitBot()
         {
-            m_TelegramBotClient = new TelegramBotClient("5780426437:AAGsGdYfhOeEaLNcgMDpYT1Ev92w9SRSd7s");
-
+            _telegramBotClient = new TelegramBotClient("5780426437:AAGsGdYfhOeEaLNcgMDpYT1Ev92w9SRSd7s");
             using var cts = new CancellationTokenSource();
-
-            // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
             var receiverOptions = new ReceiverOptions
             {
                 AllowedUpdates = Array.Empty<UpdateType>() // receive all update types
             };
-            m_TelegramBotClient.StartReceiving(
-                updateHandler: HandleUpdateAsync,
-                pollingErrorHandler: HandlePollingErrorAsync,
-                receiverOptions: receiverOptions,
-                cancellationToken: cts.Token
+            _telegramBotClient.StartReceiving(
+                HandleUpdateAsync,
+                HandlePollingErrorAsync,
+                receiverOptions,
+                cts.Token
             );
-
-            var me = await m_TelegramBotClient.GetMeAsync();
+            var me = await _telegramBotClient.GetMeAsync(cts.Token);
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
-
-            // Send cancellation request to stop bot
             cts.Cancel();
-
             return Mapper.Map<string>("bot_initialized");
         }
 
@@ -68,7 +58,7 @@ namespace ClickersAPI.Controllers
             sb.AppendLine("Platform: " + _GameUserDto.Platform);
             sb.AppendLine("App Version: " + _GameUserDto.AppVersion);
             string messageText = sb.ToString();
-            await m_TelegramBotClient.SendTextMessageAsync(
+            await _telegramBotClient.SendTextMessageAsync(
                 266767924,
                 messageText,
                 disableNotification: true,
@@ -79,39 +69,40 @@ namespace ClickersAPI.Controllers
             return Mapper.Map<string>("message sent");
         }
         
-        async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        private static async Task HandleUpdateAsync(
+            ITelegramBotClient _BotClient,
+            Update             _Update,
+            CancellationToken  _CancellationToken)
         {
             // Only process Message updates: https://core.telegram.org/bots/api#message
-            var message = update.Message;
+            var message = _Update.Message;
             if (message == null)
                 return;
-            var messageText = message.Text;
+            string messageText = message.Text;
             // Only process text messages
             if (messageText == null)
                 return;
-
-            var chatId = message.Chat.Id;
-
+            long chatId = message.Chat.Id;
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
-
             // Echo received message text
-            Message sentMessage = await botClient.SendTextMessageAsync(
-                chatId: chatId,
-                text: "You said:\n" + messageText,
-                cancellationToken: cancellationToken);
+            await _BotClient.SendTextMessageAsync(
+                chatId,
+                "You said:\n" + messageText,
+                cancellationToken: _CancellationToken);
         }
 
-        Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception,
-                                     CancellationToken  cancellationToken)
+        private static Task HandlePollingErrorAsync(
+            ITelegramBotClient _BotClient,
+            Exception          _Exception,
+            CancellationToken  _CancellationToken)
         {
-            var ErrorMessage = exception switch
+            string errorMessage = _Exception switch
             {
                 ApiRequestException apiRequestException
                     => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-                _ => exception.ToString()
+                _ => _Exception.ToString()
             };
-
-            Console.WriteLine(ErrorMessage);
+            Console.WriteLine(errorMessage);
             return Task.CompletedTask;
         }
     }

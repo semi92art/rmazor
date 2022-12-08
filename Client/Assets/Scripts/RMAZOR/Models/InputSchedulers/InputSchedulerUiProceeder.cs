@@ -101,7 +101,7 @@ namespace RMAZOR.Models.InputSchedulers
                 case EInputCommand.LoadFirstLevelFromRandomGroup:
                     int randLevelIdx = Mathf.RoundToInt(Random.value * LevelsLoader.GetLevelsCount(gameId, null));
                     int randGroup = RmazorUtils.GetLevelsGroupIndex(randLevelIdx);
-                    levelIndex = RmazorUtils.GetFirstLevelInGroup(randGroup);
+                    levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(randGroup);
                     info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;

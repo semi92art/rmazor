@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Common;
 using Common.Helpers;
 using Common.UI;
@@ -26,6 +25,8 @@ namespace RMAZOR.UI.Panels
         private ITutorialDialogPanel         TutorialDialogPanel         { get; }
         private IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel { get; }
         private IPlayBonusLevelDialogPanel   PlayBonusLevelDialogPanel   { get; }
+        private IDailyGiftPanel              DailyGiftPanel              { get; }
+        private ILevelsDialogPanel           LevelsDialogPanel           { get; }
 
 
         public DialogPanelsSet(
@@ -37,7 +38,9 @@ namespace RMAZOR.UI.Panels
             IRateGameDialogPanel         _RateGameDialogPanel,
             ITutorialDialogPanel         _TutorialDialogPanel,
             IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel,
-            IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel)
+            IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel,
+            IDailyGiftPanel              _DailyGiftPanel, 
+            ILevelsDialogPanel           _LevelsDialogPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -48,6 +51,8 @@ namespace RMAZOR.UI.Panels
             TutorialDialogPanel         = _TutorialDialogPanel;
             FinishLevelGroupDialogPanel = _FinishLevelGroupDialogPanel;
             PlayBonusLevelDialogPanel   = _PlayBonusLevelDialogPanel;
+            DailyGiftPanel              = _DailyGiftPanel;
+            LevelsDialogPanel           = _LevelsDialogPanel;
         }
 
         #endregion
@@ -72,7 +77,9 @@ namespace RMAZOR.UI.Panels
                 RateGameDialogPanel,
                 TutorialDialogPanel,
                 FinishLevelGroupDialogPanel,
-                PlayBonusLevelDialogPanel
+                PlayBonusLevelDialogPanel,
+                DailyGiftPanel,
+                LevelsDialogPanel
             };
             var result = panels.FirstOrDefault(_Panel => _Panel is T);
             return (T)result;
@@ -93,7 +100,9 @@ namespace RMAZOR.UI.Panels
                 RateGameDialogPanel,
                 // TutorialDialogPanel,
                 FinishLevelGroupDialogPanel,
-                PlayBonusLevelDialogPanel
+                PlayBonusLevelDialogPanel,
+                DailyGiftPanel,
+                LevelsDialogPanel
             };
             foreach (var panel in panelsToLoad)
             {

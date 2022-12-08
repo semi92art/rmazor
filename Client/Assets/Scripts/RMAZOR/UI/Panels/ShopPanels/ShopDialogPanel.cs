@@ -17,8 +17,9 @@ using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.UI.PanelItems.Shop_Items;
+using RMAZOR.UI.PanelItems.Shop_Panel_Items;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,18 +57,20 @@ namespace RMAZOR.UI.Panels.ShopPanels
         private IModelGame Model { get; }
 
         private ShopDialogPanel(
-            IModelGame      _Model,
-            IManagersGetter _Managers,
-            IUITicker       _UITicker,
-            ICameraProvider _CameraProvider,
-            IColorProvider  _ColorProvider,
-            IViewTimePauser _TimePauser)
+            IModelGame                  _Model,
+            IManagersGetter             _Managers,
+            IUITicker                   _UITicker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IViewInputCommandsProceeder _CommandsProceeder)
             : base(
                 _Managers, 
                 _UITicker,
                 _CameraProvider,
                 _ColorProvider,
-                _TimePauser)
+                _TimePauser,
+                _CommandsProceeder)
         {
             Model = _Model;
         }

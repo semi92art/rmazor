@@ -206,7 +206,7 @@ namespace RMAZOR.Views.Common
         {
             ActivateConcreteBackgroundTexture(_LevelIndex, out var provider);
             int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
-            long firstLevInGroup = RmazorUtils.GetFirstLevelInGroup(group);
+            long firstLevInGroup = RmazorUtils.GetFirstLevelInGroupIndex(group);
             bool predicate = _LevelIndex == firstLevInGroup || m_IsFirstLoad;
             var colFrom1 = predicate ? BackCol1Current : BackCol1Prev;
             var colFrom2 = predicate ? BackCol2Current : BackCol2Prev;

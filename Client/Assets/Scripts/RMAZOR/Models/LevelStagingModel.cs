@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.Helpers;
 using Common.Ticker;
 using RMAZOR.Models.MazeInfos;
@@ -25,6 +24,7 @@ namespace RMAZOR.Models
         public ELevelStage                PreviousStage       { get; }
         public ELevelStage                PrePreviousStage    { get; }
         public ELevelStage                PrePrePreviousStage { get; }
+        public float                      LevelTime           { get; }
         public Dictionary<string, object> Args                { get; }
 
         public LevelStageArgs(
@@ -33,6 +33,7 @@ namespace RMAZOR.Models
             ELevelStage                _PreviousStage,
             ELevelStage                _PrePreviousStage,
             ELevelStage                _PrePrePreviousStage,
+            float                      _LevelTime,
             Dictionary<string, object> _Args)
         {
             LevelIndex          = _LevelIndex;
@@ -40,6 +41,7 @@ namespace RMAZOR.Models
             PreviousStage       = _PreviousStage;
             PrePreviousStage    = _PrePreviousStage;
             PrePrePreviousStage = _PrePrePreviousStage;
+            LevelTime = _LevelTime;
             Args                = _Args ?? new Dictionary<string, object>();
         }
     }
@@ -174,12 +176,18 @@ namespace RMAZOR.Models
             PrevPrevLevelStage     = PrevLevelStage;
             PrevLevelStage         = LevelStage;
             m_DoUpdateLevelTime = _Stage == ELevelStage.StartedOrContinued;
-            if (_Stage == ELevelStage.ReadyToStart && PrevLevelStage != ELevelStage.Paused)
-                LevelTime = 0f;
-            if (_Stage == ELevelStage.CharacterKilled)
-                DiesCount++;
-            else if (_Stage == ELevelStage.Loaded)
-                DiesCount = 0;
+            switch (_Stage)
+            {
+                case ELevelStage.ReadyToStart when PrevLevelStage != ELevelStage.Paused:
+                    LevelTime = 0f;
+                    break;
+                case ELevelStage.CharacterKilled:
+                    DiesCount++;
+                    break;
+                case ELevelStage.Loaded:
+                    DiesCount = 0;
+                    break;
+            }
             LevelStage = _Stage;
             var args = new LevelStageArgs(
                 LevelIndex,
@@ -187,6 +195,7 @@ namespace RMAZOR.Models
                 PrevLevelStage,
                 PrevPrevLevelStage,
                 PrevPrevPrevLevelStage,
+                LevelTime,
                 Arguments);
             LevelStageChanged?.Invoke(args);
         }

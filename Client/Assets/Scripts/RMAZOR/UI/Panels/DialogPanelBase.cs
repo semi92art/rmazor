@@ -7,6 +7,7 @@ using Common.UI;
 using Common.UI.DialogViewers;
 using RMAZOR.Managers;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -25,24 +26,27 @@ namespace RMAZOR.UI.Panels
         
         #region inject
 
-        protected IManagersGetter Managers       { get; }
-        protected IUITicker       Ticker         { get; }
-        protected ICameraProvider CameraProvider { get; }
-        protected IColorProvider  ColorProvider  { get; }
-        protected IViewTimePauser TimePauser     { get; }
+        protected IManagersGetter             Managers          { get; }
+        protected IUITicker                   Ticker            { get; }
+        protected ICameraProvider             CameraProvider    { get; }
+        protected IColorProvider              ColorProvider     { get; }
+        protected IViewTimePauser             TimePauser        { get; }
+        protected IViewInputCommandsProceeder CommandsProceeder { get; }
 
         protected DialogPanelBase(
-            IManagersGetter _Managers,
-            IUITicker       _Ticker,
-            ICameraProvider _CameraProvider,
-            IColorProvider  _ColorProvider, 
-            IViewTimePauser _TimePauser)
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
-            Managers       = _Managers;
-            Ticker         = _Ticker;
-            CameraProvider = _CameraProvider;
-            ColorProvider  = _ColorProvider;
-            TimePauser     = _TimePauser;
+            Managers          = _Managers;
+            Ticker            = _Ticker;
+            CameraProvider    = _CameraProvider;
+            ColorProvider     = _ColorProvider;
+            TimePauser        = _TimePauser;
+            CommandsProceeder = _CommandsProceeder;
         }
 
         #endregion
@@ -79,11 +83,19 @@ namespace RMAZOR.UI.Panels
             m_OnClose = _OnClose;
         }
 
-        
-        public virtual void OnDialogStartAppearing()   { }
+
+        public virtual void OnDialogStartAppearing()
+        {
+            CommandsProceeder.LockCommands(RmazorUtils.GetCommandsToLockInUiMenues(), GetType().Name);
+        }
         public virtual void OnDialogAppeared()     { }
+
         public virtual void OnDialogDisappearing() { }
-        public virtual void OnDialogDisappeared()  { }
+
+        public virtual void OnDialogDisappeared()
+        {
+            CommandsProceeder.UnlockCommands(RmazorUtils.GetCommandsToLockInUiMenues(), GetType().Name);
+        }
 
         #endregion
 
