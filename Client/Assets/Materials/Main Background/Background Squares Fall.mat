@@ -80,10 +80,10 @@ Material:
     - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _Scale: 1
+    - _Scale: 3.96
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 3.97
+    - _Speed: 5.8
     - _SrcBlend: 5
     - _Tiling: 18
     - _TimeA: 0

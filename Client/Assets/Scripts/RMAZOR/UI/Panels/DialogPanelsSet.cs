@@ -27,6 +27,7 @@ namespace RMAZOR.UI.Panels
         private IPlayBonusLevelDialogPanel   PlayBonusLevelDialogPanel   { get; }
         private IDailyGiftPanel              DailyGiftPanel              { get; }
         private ILevelsDialogPanel           LevelsDialogPanel           { get; }
+        private IConfirmLoadLevelDialogPanel ConfirmLoadLevelDialogPanel { get; }
 
 
         public DialogPanelsSet(
@@ -40,7 +41,8 @@ namespace RMAZOR.UI.Panels
             IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel,
             IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel,
             IDailyGiftPanel              _DailyGiftPanel, 
-            ILevelsDialogPanel           _LevelsDialogPanel)
+            ILevelsDialogPanel           _LevelsDialogPanel,
+            IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -53,6 +55,7 @@ namespace RMAZOR.UI.Panels
             PlayBonusLevelDialogPanel   = _PlayBonusLevelDialogPanel;
             DailyGiftPanel              = _DailyGiftPanel;
             LevelsDialogPanel           = _LevelsDialogPanel;
+            ConfirmLoadLevelDialogPanel = _ConfirmLoadLevelDialogPanel;
         }
 
         #endregion
@@ -79,7 +82,8 @@ namespace RMAZOR.UI.Panels
                 FinishLevelGroupDialogPanel,
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
-                LevelsDialogPanel
+                LevelsDialogPanel,
+                ConfirmLoadLevelDialogPanel
             };
             var result = panels.FirstOrDefault(_Panel => _Panel is T);
             return (T)result;
@@ -102,7 +106,8 @@ namespace RMAZOR.UI.Panels
                 FinishLevelGroupDialogPanel,
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
-                LevelsDialogPanel
+                LevelsDialogPanel,
+                ConfirmLoadLevelDialogPanel
             };
             foreach (var panel in panelsToLoad)
             {

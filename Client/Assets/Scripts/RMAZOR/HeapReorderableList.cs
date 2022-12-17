@@ -45,8 +45,8 @@ namespace RMAZOR
         [SerializeField] private int  selectedIndexCheck   = -1;
         [SerializeField] private int  loadedLevelIndex     = -1;
         [SerializeField] private int  loadedLevelHeapIndex = -1;
-        [SerializeField] private bool fastMode;
         [SerializeField] private int  page = 1;
+        [SerializeField] private bool showTimes;
 
         #endregion
 
@@ -101,7 +101,7 @@ namespace RMAZOR
                 false)
             {
                 headerHeight = LineHeight * 2f + LineHeight * filters.Count * 0.5f,
-                elementHeight = LineHeight * 2.1f,
+                elementHeight = showTimes ? LineHeight * 2.1f : LineHeight,
                 drawElementBackgroundCallback = OnDrawElementBackgroundCallback,
                 drawHeaderCallback = OnDrawHeaderCallback,
                 onSelectCallback = _List =>
@@ -243,7 +243,7 @@ namespace RMAZOR
             var lvls = levelsCached;
             EditorGUI.LabelField(UpdateRect(), $"Levels in heap: {lvls.Count}");
             x = _Rect.width * 0.5f;
-            fastMode = EditorGUI.Toggle(UpdateRect(), "Fast mode", fastMode);
+            showTimes = EditorGUI.Toggle(UpdateRect(), "Show times", showTimes);
             var filterKeys = Enum.GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
                 .Except(new[] {EMazeItemType.Block})
@@ -314,8 +314,6 @@ namespace RMAZOR
             (x, w) = (x + w, 60f);
             var info = (MazeInfo)List.list[_Index];
             EditorGUI.LabelField(GetRect(), $"S: {info.Size.X}x{info.Size.Y}");
-            if (fastMode)
-                return;
             (x, w) = (x + w, 30f);
             EditorGUI.LabelField(GetRect(), "Args:");
             (x, w) = (x + w, _Rect.width * 0.5f - 2f * 40f - 30f);
@@ -345,6 +343,8 @@ namespace RMAZOR
                 }
                 k++;
             }
+            if (!showTimes)
+                return;
             const float w2 = 25f;
             float w3 = (_Rect.width - 3f * w2 - 25f) * 0.3333f;
             (x, y, w) = (25f, _Rect.y + LineHeight * 1.1f, w2);
@@ -390,6 +390,7 @@ namespace RMAZOR
             {EMazeItemType.Hammer,           new Color(1f, 0.54f, 0.55f)},
             {EMazeItemType.Spear,            new Color(0.05f, 0.05f, 0.37f)},
             {EMazeItemType.Diode,            new Color(0.37f, 0.07f, 0.25f)},
+            {EMazeItemType.KeyLock,          new Color(0f, 0.81f, 0.53f)},
         };
         
         private static LevelsSaver GetLevelsSaver()

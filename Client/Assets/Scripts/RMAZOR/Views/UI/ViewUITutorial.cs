@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.CameraProviders;
 using Common.Constants;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -12,7 +11,6 @@ using Common.Ticker;
 using Common.UI.DialogViewers;
 using Common.Utils;
 using RMAZOR.Models;
-using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
@@ -33,7 +31,6 @@ namespace RMAZOR.Views.UI
     {
         event UnityAction<ETutorialType> TutorialStarted;
         event UnityAction<ETutorialType> TutorialFinished;
-        ETutorialType?                   IsCurrentLevelTutorial(out EMazeItemType? _MazeItemType);
     }
 
     public class ViewUITutorial : IViewUITutorial
@@ -110,7 +107,8 @@ namespace RMAZOR.Views.UI
         public void Init(Vector4 _Offsets)
         {
             m_Offsets = _Offsets;
-            m_MovementTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.MovementTutorialFinished);
+            var movementTutorialFinishedSaveKey = SaveKeysRmazor.IsTutorialFinished("movement");
+            m_MovementTutorialFinished = SaveUtils.GetValue(movementTutorialFinishedSaveKey);
             CommandsProceeder.Command += OnCommand;
         }
 
@@ -118,52 +116,22 @@ namespace RMAZOR.Views.UI
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            var tutType = IsCurrentLevelTutorial(out var mazeItemType);
-            if (!tutType.HasValue)
+            string tutorialName = CurrentLevelTutorialName();
+            if (string.IsNullOrEmpty(tutorialName))
                 return;
-            switch (tutType.Value)
+            switch (tutorialName)
             {
-                case ETutorialType.Movement:
-                    StartMovementTutorial();
+                case "movement":
+                    Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown
+                                                || Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart,
+                        StartMovementTutorial));
                     break;
-                case ETutorialType.MazeItem:
+                default:
                     Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown
                         || Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart,
-                        () => StartMazeItemTutorial(mazeItemType!.Value)));
+                        () => ShowTutorialPanel(tutorialName)));
                     break;
-                default: throw new SwitchCaseNotImplementedException(tutType.Value);
             }
-        }
-
-        public ETutorialType? IsCurrentLevelTutorial(out EMazeItemType? _MazeItemType)
-        {
-            _MazeItemType = null;
-            var args = Model.Data.Info.AdditionalInfo.Arguments.Split(';');
-            foreach (string arg in args)
-            {
-                if (!arg.Contains("tutorial"))
-                    continue;
-                string tutorialTypeRaw = arg.Split(':')[1];
-                ETutorialType? tutorialType = tutorialTypeRaw switch
-                {
-                    "movement" => ETutorialType.Movement,
-                    _          => ETutorialType.MazeItem
-                };
-                if (tutorialType != ETutorialType.MazeItem)
-                    return tutorialType;
-                var dict = GetMazeItemPrefabSubstringsDict();
-                _MazeItemType = dict.First(
-                    _Kvp => _Kvp.Value == tutorialTypeRaw).Key;
-                if (!ViewSettings.showFullTutorial 
-                    && _MazeItemType != EMazeItemType.GravityBlock 
-                    && _MazeItemType != EMazeItemType.GravityBlockFree 
-                    && _MazeItemType != EMazeItemType.GravityTrap)
-                {
-                    return null;
-                }
-                return tutorialType;
-            }
-            return null;
         }
 
         #endregion
@@ -186,6 +154,12 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.MoveDown: m_ReadyToFinishMovementTutorial = true; break;
             }
         }
+        
+        private string CurrentLevelTutorialName()
+        {
+            var args = Model.Data.Info.AdditionalInfo.Arguments.Split(';');
+            return (from arg in args where arg.Contains("tutorial") select arg.Split(':')[1]).FirstOrDefault();
+        }
 
         private void StartMovementTutorial()
         {
@@ -200,18 +174,18 @@ namespace RMAZOR.Views.UI
             m_Hsm.Init(Ticker, CameraProvider, CoordinateConverter, ColorProvider, m_Offsets);
             Cor.Run(MovementTutorialFirstStepCoroutine());
             m_MovementTutorialStarted = true;
+            ShowTutorialPanel("movement");
         }
 
-        private void StartMazeItemTutorial(EMazeItemType _MazeItemType)
+        private void ShowTutorialPanel(string _TutorialName)
         {
-            if (SaveUtils.GetValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType)))
+            if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished(_TutorialName)))
                 return;
-            var dict = GetMazeItemPrefabSubstringsDict();
-            string mazeItemAssetSubstring = dict[_MazeItemType];
             var info = new TutorialDialogPanelInfo(
-                "tut_title_" + mazeItemAssetSubstring,
-                "tut_descr_" + mazeItemAssetSubstring,
-                "tutorial_clip_" + mazeItemAssetSubstring
+                _TutorialName,
+                "tut_title_" + _TutorialName,
+                "tut_descr_" + _TutorialName,
+                "tutorial_clip_" + _TutorialName
             );
             TutorialDialogPanel.SetPanelInfo(info);
             TutorialDialogPanel.PrepareVideo();
@@ -229,7 +203,6 @@ namespace RMAZOR.Views.UI
                         EInputCommand.TutorialPanel, 
                         null, 
                         true);
-                    SaveUtils.PutValue(SaveKeysRmazor.GetMazeItemTutorialFinished(_MazeItemType), true);
                 }));
         }
 
@@ -278,34 +251,14 @@ namespace RMAZOR.Views.UI
             m_Hsm.HidePrompt();
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveCommands, GetGroupName());
             m_MovementTutorialFinished = true;
-            SaveUtils.PutValue(SaveKeysRmazor.MovementTutorialFinished, true);
+            var saveKeyMovementTutorialFinished = SaveKeysRmazor.IsTutorialFinished("movement");
+            SaveUtils.PutValue(saveKeyMovementTutorialFinished, true);
             TutorialFinished?.Invoke(ETutorialType.Movement);
         }
 
         private static string GetGroupName()
         {
             return nameof(IViewUITutorial);
-        }
-
-        private static Dictionary<EMazeItemType, string> GetMazeItemPrefabSubstringsDict()
-        {
-            return new Dictionary<EMazeItemType, string>
-            {
-                {EMazeItemType.Block,            null},
-                {EMazeItemType.GravityBlock,     "gravity_block"},
-                {EMazeItemType.ShredingerBlock,  "shredinger"},
-                {EMazeItemType.Portal,           "portal"},
-                {EMazeItemType.TrapReact,        "trap_react"},
-                {EMazeItemType.TrapIncreasing,   "trap_increasing"},
-                {EMazeItemType.TrapMoving,       "trap_moving"},
-                {EMazeItemType.GravityTrap,      "gravity_trap"},
-                {EMazeItemType.Turret,           "turret"},
-                {EMazeItemType.GravityBlockFree, "gravity_block_free"},
-                {EMazeItemType.Springboard,      "springboard"},
-                {EMazeItemType.Hammer,           "hammer"},
-                {EMazeItemType.Spear,            "spear"},
-                {EMazeItemType.Diode,            "diode"},
-            };
         }
 
         #endregion

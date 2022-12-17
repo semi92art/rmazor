@@ -11,6 +11,8 @@ using Common.Ticker;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
+using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -72,6 +74,7 @@ namespace RMAZOR.Views.UI
         private IPrefabSetManager       PrefabSetManager    { get; }
         private IViewUIRotationControls RotationControls    { get; }
         private IMoneyCounter           MoneyCounter        { get; }
+        private ICoordinateConverter    CoordinateConverter { get; }
 
         private ViewUIPrompt(
             IModelGame              _Model,
@@ -82,7 +85,8 @@ namespace RMAZOR.Views.UI
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager,
             IViewUIRotationControls _RotationControls,
-            IMoneyCounter           _MoneyCounter)
+            IMoneyCounter           _MoneyCounter,
+            ICoordinateConverter    _CoordinateConverter)
         {
             Model               = _Model;
             GameTicker          = _GameTicker;
@@ -93,6 +97,7 @@ namespace RMAZOR.Views.UI
             PrefabSetManager    = _PrefabSetManager;
             RotationControls    = _RotationControls;
             MoneyCounter        = _MoneyCounter;
+            CoordinateConverter = _CoordinateConverter;
         }
 
         #endregion
@@ -108,6 +113,7 @@ namespace RMAZOR.Views.UI
                 null, CommonPrefabSetNames.UiGame, "prompt");
             m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
             m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
+            m_PromptText.sortingOrder = SortingOrders.GameUI;
             m_PromptText.fontSize = 18f;
             m_PromptText.enabled = false;
         }
@@ -208,7 +214,7 @@ namespace RMAZOR.Views.UI
         {
             bool rotationButtonsShowing = RotationControls.HasButtons
                                           && RmazorUtils.MazeContainsGravityItems(Model.GetAllProceedInfos());
-            float addIndentY = m_BottomOffset + 4f + (rotationButtonsShowing ? 7f : 2f);
+            float addIndentY = m_BottomOffset + 4f + (rotationButtonsShowing ? 9f : 2f);
             var screenBounds = GraphicUtils.GetVisibleBounds();
             float xPos = screenBounds.center.x;
             float yPos = GraphicUtils.GetVisibleBounds(CameraProvider.Camera).min.y + addIndentY;
@@ -230,7 +236,7 @@ namespace RMAZOR.Views.UI
             m_PromptText.enabled = true;
             m_PromptText.color = ColorProvider.GetColor(ColorIds.UI).SetA(0f);
             var screenBounds = GraphicUtils.GetVisibleBounds();
-            m_PromptText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x);
+            m_PromptText.rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, screenBounds.size.x - 20f);
             m_CurrentPromptInfo = new PromptInfo
             {
                 Key        = _Key, 

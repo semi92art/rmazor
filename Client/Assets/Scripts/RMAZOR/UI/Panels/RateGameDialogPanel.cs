@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Constants;
@@ -28,6 +26,8 @@ namespace RMAZOR.UI.Panels
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
     {
+        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+
         #region nonpublic members
 
         private Button       
@@ -46,19 +46,23 @@ namespace RMAZOR.UI.Panels
         
 
         public RateGameDialogPanel(
-            IManagersGetter             _Managers,
-            IUITicker                   _Ticker,
-            ICameraProvider             _CameraProvider,
-            IColorProvider              _ColorProvider,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IViewTimePauser             _TimePauser)
+            IManagersGetter                     _Managers,
+            IUITicker                           _Ticker,
+            ICameraProvider                     _CameraProvider,
+            IColorProvider                      _ColorProvider,
+            IViewInputCommandsProceeder         _CommandsProceeder,
+            IViewTimePauser                     _TimePauser,
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers, 
                 _Ticker, 
                 _CameraProvider,
                 _ColorProvider,
                 _TimePauser,
-                _CommandsProceeder) { }
+                _CommandsProceeder)
+        {
+            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+        }
 
         #endregion
 
@@ -146,18 +150,26 @@ namespace RMAZOR.UI.Panels
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton2Pressed);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
-            OnClose(null);
+            OnClose(UnpauseLevel);
         }
 
         private void OnLaterButtonClick()
         {
-            OnClose(null);
+            OnClose(UnpauseLevel);
         }
 
         private void OnNeverButtonClick()
         {
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
-            OnClose(null);
+            OnClose(UnpauseLevel);
+        }
+
+        private void UnpauseLevel()
+        {
+            Cor.Run(Cor.WaitNextFrame(
+                () => SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel),
+                false,
+                3U));
         }
 
         #endregion

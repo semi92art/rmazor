@@ -42,7 +42,7 @@ namespace Common
             IPrefabSetManager _PrefabSetManager,
             IViewGameTicker _Ticker)
         {
-            PrefabSetManager    = _PrefabSetManager;
+            PrefabSetManager = _PrefabSetManager;
             Ticker = _Ticker;
         }
 
@@ -105,6 +105,11 @@ namespace Common
             circles2.material.SetColor(AuxOrbitColorId, startCol);
             circles2.material.SetColor(AuxColorId, startCol);
             circles2.material.SetColor(Color2Id, startCol);
+
+            background.enabled = true;
+            circles1.enabled = true;
+            circles2.enabled = true;
+            loadingText.enabled = true;
         }
         
         private static void ScaleTextureToViewport(Transform _Transform)

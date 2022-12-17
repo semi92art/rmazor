@@ -220,7 +220,7 @@ namespace RMAZOR.Views.Common
             {
                 int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
                 args.Add(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
-                int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, args);
+                int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, true);
                 EInputCommand inputCommand;
                 if (nextBonusLevelIndexToLoad < bonusLevelsCount)
                     inputCommand = EInputCommand.PlayBonusLevelPanel;

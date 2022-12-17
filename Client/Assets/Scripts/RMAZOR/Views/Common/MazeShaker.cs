@@ -19,7 +19,8 @@ namespace RMAZOR.Views.Common
     {
         bool        ShakeMaze { get; set; }
         IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args);
-        IEnumerator ShakeMazeCoroutine(float                          _Duration, float _Amplitude);
+        
+        IEnumerator ShakeMazeCoroutine(float _Duration, float _Amplitude);
         void OnCharacterDeathAnimation(
             Vector2                    _DeathPosition,
             IEnumerable<IViewMazeItem> _MazeItems,
@@ -38,14 +39,14 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private IContainersGetter          ContainersGetter    { get; }
+        private IContainersGetter    ContainersGetter    { get; }
         private ICoordinateConverter CoordinateConverter { get; }
-        private IViewGameTicker            GameTicker          { get; }
+        private IViewGameTicker      GameTicker          { get; }
 
         private MazeShaker(
-            IContainersGetter          _ContainersGetter,
+            IContainersGetter    _ContainersGetter,
             ICoordinateConverter _CoordinateConverter,
-            IViewGameTicker            _GameTicker)
+            IViewGameTicker      _GameTicker)
         {
             ContainersGetter    = _ContainersGetter;
             CoordinateConverter = _CoordinateConverter;
@@ -82,9 +83,9 @@ namespace RMAZOR.Views.Common
 
         public IEnumerator HitMazeCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
-            const float amplitude = 0.5f;
+            const float amplitude = 1f;
             var dir = RmazorUtils.GetDirectionVector(_Args.Direction, EMazeOrientation.North);
-            const float duration = 0.1f;
+            const float duration = 0.2f;
             yield return Cor.Lerp(
                 GameTicker,
                 duration,
@@ -106,7 +107,7 @@ namespace RMAZOR.Views.Common
                 0f,
                 _Progress =>
                 {
-                    float amplitude =_Amplitude * _Progress;
+                    float amplitude = _Amplitude * _Progress;
                     Vector2 res;
                     res.x = m_StartPosition.x + amplitude * Mathf.Sin(GameTicker.Time * 200f);
                     res.y = m_StartPosition.y + amplitude * Mathf.Cos(GameTicker.Time * 100f);
@@ -133,7 +134,7 @@ namespace RMAZOR.Views.Common
              IEnumerable<IViewMazeItem> _MazeItems,
              UnityAction                _OnFinish)
         {
-            const float scaleCoeff = 0.2f;
+            const float scaleCoeff = 0.4f;
             const float maxDistance = 10f;
             const float transitionTime = 0.5f;
             var shapes = _MazeItems
@@ -150,10 +151,12 @@ namespace RMAZOR.Views.Common
                     finished[shape] = true;
                     continue;
                 }
-
-                var startLocalScale = shape.transform.localScale;
+                var shapeTr = shape.transform;
+                var startLocalScale = shapeTr.localScale;
+                var startRotation = shapeTr.localRotation;
+                float angleSign = 1f;
                 Cor.Run(Cor.Delay(
-                Mathf.Max(0f, (dist - 1) * 0.005f),
+                Mathf.Max(0f, 2f * (dist - 1) * 0.01f),
                 GameTicker,
                 () =>
                 {
@@ -163,11 +166,15 @@ namespace RMAZOR.Views.Common
                     _OnProgress: _P =>
                     {
                         var scale = startLocalScale * (1f + _P * scaleCoeff);
-                        shape.transform.localScale = scale;
+                        angleSign = -angleSign;
+                        var angles = startRotation.eulerAngles + angleSign * Vector3.forward * _P * 10f;
+                        shapeTr.localScale = scale;
+                        shapeTr.localRotation = Quaternion.Euler(angles);
                     },
                     _OnFinish: () =>
                     {
-                        shape.transform.localScale = startLocalScale;
+                        shapeTr.localScale = startLocalScale;
+                        shapeTr.localRotation = startRotation;
                         finished[shape] = true;
                     },
                     _ProgressFormula: _P => _P < 0.5f ? 2f * _P : 2f * (1f - _P)));

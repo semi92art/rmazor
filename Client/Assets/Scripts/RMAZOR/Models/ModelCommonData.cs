@@ -15,5 +15,7 @@
         public const int GravityItemStageDrop         = 1;
         public const int SpearStageAppear             = 1;
         public const int SpearStageShoot              = 2;
+        public const int KeyLockStage1                = 0;
+        public const int KeyLockStage2                = 1;
     }
 }

@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: Mazing Labs
-  productName: Dye Ball Esc
+  productName: Blady Maze
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0, g: 0, b: 0, a: 1}
@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.10.5
+  bundleVersion: 1.11.2
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
@@ -310,7 +310,7 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 74
+  AndroidBundleVersionCode: 77
   AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
@@ -422,7 +422,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 9bd834e652453a34abf4884b980d4736, type: 3}
+      m_Icon: {fileID: 2800000, guid: 1292d71a2355cc24ea21917d413e12e2, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0

@@ -2,11 +2,11 @@
 
 namespace RMAZOR.Views.UI
 {
-    public class ViewUIProt : ViewUIBase
+    public class ViewUIFake : ViewUIBase
     {
         public override void OnLevelStageChanged(LevelStageArgs _Args) { }
 
-        public ViewUIProt(IViewUIGameControls _GameControls) 
+        public ViewUIFake(IViewUIGameControls _GameControls) 
             : base(_GameControls) { }
     }
 }

@@ -24,6 +24,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         private IViewMazeItemHammer           Hammer           { get; }
         private IViewMazeItemSpear            Spear            { get; }
         private IViewMazeItemDiode            Diode            { get; }
+        private IViewMazeItemKeyLock          KeyLock          { get; }
 
         #endregion
 
@@ -43,7 +44,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             IViewMazeItemGravityBlockFree _GravityBlockFree,
             IViewMazeItemHammer           _Hammer,
             IViewMazeItemSpear            _Spear,
-            IViewMazeItemDiode            _Diode)
+            IViewMazeItemDiode            _Diode,
+            IViewMazeItemKeyLock          _KeyLock) 
         {
             ItemPath         = _ItemPath;
             GravityBlock     = _GravityBlock;
@@ -59,6 +61,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             Hammer           = _Hammer;
             Spear            = _Spear;
             Diode            = _Diode;
+            KeyLock = _KeyLock;
         }
 
         #endregion
@@ -95,6 +98,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 EMazeItemType.Hammer           => Hammer,
                 EMazeItemType.Spear            => Spear,
                 EMazeItemType.Diode            => Diode,
+                EMazeItemType.KeyLock          => KeyLock,
                 EMazeItemType.Block            => null,
                 _                              => null
             };

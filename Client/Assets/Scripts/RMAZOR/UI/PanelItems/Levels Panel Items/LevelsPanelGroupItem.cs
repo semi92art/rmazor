@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using Common;
 using Common.Extensions;
 using Common.Managers;
@@ -9,6 +10,7 @@ using Common.UI;
 using Common.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -16,6 +18,8 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 {
     public class LevelsPanelGroupItem : SimpleUiItemBase
     {
+        [SerializeField] private TextMeshProUGUI titleText;
+        
         [SerializeField] private LevelPanelGroupItemLevelItem
             level1Item,
             level2Item,
@@ -26,6 +30,8 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             m_ButtonDisabledSprite,
             m_ButtonEnabledSprite,
             m_ButtonSelectedSprite;
+        
+        private readonly CultureInfo m_FloatValueCultureInfo = new CultureInfo("en-US");
 
         private ILevelsLoader       LevelsLoader       { get; set; }
         private IRawLevelInfoGetter RawLevelInfoGetter { get; set; }
@@ -62,7 +68,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         {
             bool canInteract = _Enabled.HasValue && _Enabled.Value;
             background.sprite = canInteract ? m_ButtonEnabledSprite : m_ButtonDisabledSprite;
-            SetLevelItemButtonsInteractable(_LevelGroupIndex, _CurrentLevelGroupIndex, canInteract);
+            SetLevelItemButtonsInteractable(_LevelGroupIndex, _CurrentLevelGroupIndex);
             ActivateLevelItems(true);
             SetButtonActions(_Action);
             SetLevelItemTitles(_LevelGroupIndex, !_Enabled.HasValue);
@@ -79,8 +85,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 
         private void SetLevelItemButtonsInteractable(
             int  _LevelGroupIndex,
-            int  _CurrentLevelGroupIndex,
-            bool _IsInteractableDefault)
+            int  _CurrentLevelGroupIndex)
         {
             if (_LevelGroupIndex < _CurrentLevelGroupIndex)
             {
@@ -96,7 +101,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                     CommonInputCommandArg.KeyCurrentLevelType, out _);
                 bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
                 long currentLevelIndex = Model.LevelStaging.LevelIndex;
-                bool levelGroupWasFinishedBefore = WasLevelGroupFinishedBefore(_LevelGroupIndex);
+                bool levelGroupWasFinishedBefore = RmazorUtils.WasLevelGroupFinishedBefore(_LevelGroupIndex);
                 SetLevelItemButtonInteractable(
                     level1Item, 
                     levelGroupWasFinishedBefore || currentLevelIndex >= firsLevelInCurrentGroupIdx || isCurrentLevelBonus, 
@@ -116,7 +121,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             }
             else
             {
-                if (WasLevelGroupFinishedBefore(_LevelGroupIndex))
+                if (RmazorUtils.WasLevelGroupFinishedBefore(_LevelGroupIndex))
                 {
                     SetLevelItemButtonInteractable(level1Item, true, false);
                     SetLevelItemButtonInteractable(level2Item, true, false);
@@ -125,7 +130,8 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                 }
                 else
                 {
-                    SetLevelItemButtonInteractable(level1Item, _IsInteractableDefault, false);
+                    bool firstLevelEnabled = RmazorUtils.WasLevelGroupFinishedBefore(_LevelGroupIndex - 1);
+                    SetLevelItemButtonInteractable(level1Item, firstLevelEnabled, false);
                     SetLevelItemButtonInteractable(level2Item, false, false);
                     SetLevelItemButtonInteractable(level3Item, false, false);
                     SetLevelItemButtonInteractable(levelBonusItem, false, false);
@@ -143,15 +149,6 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                 _Interactable ? m_ButtonEnabledSprite : m_ButtonDisabledSprite;
         }
         
-        private static bool WasLevelGroupFinishedBefore(int _LevelsGroupIndex)
-        {
-            long firsLevelInCurrentGroupIdx = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
-            int levelsInGroup = RmazorUtils.GetLevelsInGroup(_LevelsGroupIndex);
-            long lastLevelInGroup = firsLevelInCurrentGroupIdx + levelsInGroup - 1;
-            var levelsFinishedOnceIndicesList = SaveUtils.GetValue(SaveKeysRmazor.LevelsFinishedOnce);
-            return levelsFinishedOnceIndicesList.Max() >= lastLevelInGroup;
-        }
-
         private void ActivateLevelItems(bool _Active)
         {
             level1Item.gameObject    .SetActive(_Active);
@@ -166,67 +163,52 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                 SaveKeysRmazor.MainLevelTimeRecordsDict) ?? new Dictionary<long, float>();
             var bonusLevelsTimeRecordDict = SaveUtils.GetValue(
                 SaveKeysRmazor.BonusLevelTimeRecordsDict) ?? new Dictionary<long, float>();
-            SetStarsCountForLevel1(_LevelsGroupIndex, mainLevelsTimeRecordDict);
-            SetStarsCountForLevel2(_LevelsGroupIndex, mainLevelsTimeRecordDict);
-            SetStarsCountForLevel3(_LevelsGroupIndex, mainLevelsTimeRecordDict);
-            SetStarsCountForBonusLevel(_LevelsGroupIndex, bonusLevelsTimeRecordDict);
+            SetStarsCountAndBestTimeTextForLevelInGroup(_LevelsGroupIndex, 0, mainLevelsTimeRecordDict);
+            SetStarsCountAndBestTimeTextForLevelInGroup(_LevelsGroupIndex, 1, mainLevelsTimeRecordDict);
+            SetStarsCountAndBestTimeTextForLevelInGroup(_LevelsGroupIndex, 2, mainLevelsTimeRecordDict);
+            SetStarsCountAndBestTimeTextForLevelInGroup(_LevelsGroupIndex, -1, bonusLevelsTimeRecordDict);
         }
 
-        private void SetStarsCountForLevel1(int _LevelsGroupIndex, Dictionary<long, float> _TimeRecordsDict)
+        private void SetStarsCountAndBestTimeTextForLevelInGroup(
+            int                     _LevelsGroupIndex,
+            int                     _LevelIndexInGroup,
+            Dictionary<long, float> _TimeRecordsDict)
         {
             long firsLevelInCurrentGroupIdx = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
-            long level1Idx = firsLevelInCurrentGroupIdx;
-            float level1TimeRecord = _TimeRecordsDict.GetSafe(level1Idx, out bool containsKey);
+            long levelIdx = _LevelIndexInGroup == -1 ?
+                _LevelsGroupIndex - 1 : firsLevelInCurrentGroupIdx + _LevelIndexInGroup;
+            float bestTime = _TimeRecordsDict.GetSafe(levelIdx, out bool containsKey);
             if (!containsKey)
-                level1TimeRecord = float.PositiveInfinity;
-            int level1StarsCount = GetStarsCountForLevel(level1Idx, false, level1TimeRecord);
-            level1Item.SetStarsCount(level1StarsCount);
-        }
-        
-        private void SetStarsCountForLevel2(int _LevelsGroupIndex, Dictionary<long, float> _TimeRecordsDict)
-        {
-            long firsLevelInCurrentGroupIdx = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
-            long level2Idx = firsLevelInCurrentGroupIdx + 1;
-            float level2TimeRecord = _TimeRecordsDict.GetSafe(level2Idx, out bool containsKey);
-            if (!containsKey)
-                level2TimeRecord = float.PositiveInfinity;
-            int level2StarsCount = GetStarsCountForLevel(level2Idx, false, level2TimeRecord);
-            level2Item.SetStarsCount(level2StarsCount);
-        }
-        
-        private void SetStarsCountForLevel3(int _LevelsGroupIndex, Dictionary<long, float> _TimeRecordsDict)
-        {
-            long firsLevelInCurrentGroupIdx = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
-            long level3Idx = firsLevelInCurrentGroupIdx + 2;
-            float level3TimeRecord = _TimeRecordsDict.GetSafe(level3Idx, out bool containsKey);
-            if (!containsKey)
-                level3TimeRecord = float.PositiveInfinity;
-            int level3StarsCount = GetStarsCountForLevel(level3Idx, false, level3TimeRecord);
-            level3Item.SetStarsCount(level3StarsCount);
-        }
-        
-        private void SetStarsCountForBonusLevel(int _LevelsGroupIndex, Dictionary<long, float> _TimeRecordsDict)
-        {
-            long levelBonusIdx = _LevelsGroupIndex - 1;
-            float levelBonusTimeRecord = _TimeRecordsDict.GetSafe(levelBonusIdx, out bool containsKey);
-            if (!containsKey)
-                levelBonusTimeRecord = float.PositiveInfinity;
-            int levelBonusStarsCount = GetStarsCountForLevel(levelBonusIdx, true, levelBonusTimeRecord);
-            levelBonusItem.SetStarsCount(levelBonusStarsCount);
+                bestTime = float.PositiveInfinity;
+            int starsCount = GetStarsCountForLevel(levelIdx, false, bestTime);
+            var levelItem = _LevelIndexInGroup switch
+            {
+                0  => level1Item,
+                1  => level2Item,
+                2  => level3Item,
+                -1 => levelBonusItem,
+                _  => throw new SwitchExpressionException(_LevelIndexInGroup)
+            };
+            levelItem.SetStarsCount(starsCount);
+            levelItem.bestTimeText.text = float.IsInfinity(bestTime) ?
+                "-" : bestTime.ToString("F3", m_FloatValueCultureInfo) + "s";
         }
 
         private int GetStarsCountForLevel(long _LevelIndex, bool _IsBonus, float _TimeRecord)
         {
-            var args = new Dictionary<string, object>
+            int levelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, _IsBonus);
+            if (levelsCount <= _LevelIndex)
+                return 0;
+            string levelInfoRaw = null;
+            try
             {
-                {
-                    CommonInputCommandArg.KeyCurrentLevelType,
-                    _IsBonus
-                        ? CommonInputCommandArg.ParameterLevelTypeBonus
-                        : CommonInputCommandArg.ParameterLevelTypeMain
-                }
-            };
-            string levelInfoRaw = LevelsLoader.GetLevelInfoRaw(CommonData.GameId, _LevelIndex, args);
+                levelInfoRaw = LevelsLoader.GetLevelInfoRaw(CommonData.GameId, _LevelIndex, _IsBonus);
+            }
+            catch
+            {
+                Dbg.LogError(_LevelIndex + " " + _IsBonus);
+            }
+            
             (float time3Stars, float time2Stars, float time1Star) = RawLevelInfoGetter.GetStarTimeRecords(levelInfoRaw);
             if (_TimeRecord < time3Stars)
                 return 3;
@@ -239,10 +221,15 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 
         private void SetButtonActions(UnityAction<int> _LoadLevelByIndexAction)
         {
-            level1Item.button.onClick    .RemoveAllListeners();
-            level2Item.button.onClick    .RemoveAllListeners();
-            level3Item.button.onClick    .RemoveAllListeners();
-            levelBonusItem.button.onClick.RemoveAllListeners();
+            var onClickEvents = new[]
+            {
+                level1Item.button.onClick,
+                level2Item.button.onClick,
+                level3Item.button.onClick,
+                levelBonusItem.button.onClick
+            };
+            foreach (var onClickEvent in onClickEvents)
+                onClickEvent.RemoveAllListeners();
             level1Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(0));
             level2Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(1));
             level3Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(2));
@@ -253,17 +240,21 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         {
             if (_IsUnknown)
             {
-                level1Item.title.text = "???";
-                level2Item.title.text = "???";
-                level3Item.title.text = "???";
-                levelBonusItem.title.text = "???";
+                const string questionSigns = "???";
+                titleText.text            = questionSigns;
+                level1Item.title.text     = questionSigns;
+                level2Item.title.text     = questionSigns;
+                level3Item.title.text     = questionSigns;
+                levelBonusItem.title.text = questionSigns;
                 return;
             }
             long firstLevelInGroup = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
+            titleText.text = LocalizationManager.GetTranslation("stage").FirstCharToUpper(
+                CultureInfo.CurrentUICulture) + " " + _LevelsGroupIndex;
             level1Item.title.text     = (firstLevelInGroup + 1).ToString();
             level2Item.title.text     = (firstLevelInGroup + 2).ToString();
             level3Item.title.text     = (firstLevelInGroup + 3).ToString();
-            levelBonusItem.title.text = "B";
+            levelBonusItem.title.text = $"E{_LevelsGroupIndex}";
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common;
 using Common.Extensions;
 using Common.Helpers;
@@ -54,9 +53,6 @@ namespace RMAZOR.Models.InputSchedulers
             {
                 case EInputCommand.LoadCurrentLevel:
                 case EInputCommand.LoadNextLevel:
-                case EInputCommand.LoadFirstLevelFromRandomGroup:
-                case EInputCommand.LoadRandomLevel:
-                case EInputCommand.LoadRandomLevelWithRotation:
                 case EInputCommand.ReadyToStartLevel:
                 case EInputCommand.StartOrContinueLevel:
                 case EInputCommand.FinishLevel:
@@ -87,7 +83,7 @@ namespace RMAZOR.Models.InputSchedulers
                     break;
                 case EInputCommand.LoadNextLevel:
                     levelIndex = LevelStaging.LevelIndex + 1;
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null);
+                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, false);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadLevelByIndex:
@@ -95,36 +91,9 @@ namespace RMAZOR.Models.InputSchedulers
                     if (!keyExist)
                         Dbg.LogError("Level index does not exist in command arguments");
                     levelIndex = Convert.ToInt64(levelIndexArg);
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, _Args);
-                    LevelStaging.LoadLevel(info, levelIndex);
-                    break;
-                case EInputCommand.LoadFirstLevelFromRandomGroup:
-                    int randLevelIdx = Mathf.RoundToInt(Random.value * LevelsLoader.GetLevelsCount(gameId, null));
-                    int randGroup = RmazorUtils.GetLevelsGroupIndex(randLevelIdx);
-                    levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(randGroup);
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null);
-                    LevelStaging.LoadLevel(info, levelIndex);
-                    break;
-                case EInputCommand.LoadRandomLevel:
-                    levelIndex = Mathf.RoundToInt(
-                        Random.value *
-                        LevelsLoader.GetLevelsCount(gameId, null));
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null); 
-                    LevelStaging.LoadLevel(info, levelIndex);
-                    break;
-                case EInputCommand.LoadRandomLevelWithRotation:
-                    levelIndex = Mathf.RoundToInt(
-                        Random.value *
-                        LevelsLoader.GetLevelsCount(gameId, null));
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null);
-                    while (info.MazeItems.All(_Item =>
-                        _Item.Type != EMazeItemType.GravityBlock && _Item.Type != EMazeItemType.GravityTrap))
-                    {
-                        levelIndex = Mathf.RoundToInt(
-                            Random.value *
-                            LevelsLoader.GetLevelsCount(gameId, null));
-                        info = LevelsLoader.GetLevelInfo(gameId, levelIndex, null);
-                    }
+                    string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
+                    bool isBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, isBonus);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.ReadyToStartLevel:    LevelStaging.ReadyToStartLevel(_Args);    break;

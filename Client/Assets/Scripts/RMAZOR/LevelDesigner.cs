@@ -96,7 +96,6 @@ namespace RMAZOR
                 if (mazeItem.IsNotNull())
                     maze.Add(mazeItem);
             }
-
             var protItemStart = maze.FirstOrDefault(_Item => _Item.Props.IsStartNode);
             if (protItemStart == null)
                 Dbg.LogWarning("Maze must contain start item");
@@ -230,23 +229,5 @@ namespace RMAZOR
         #endregion
     }
 }
-        
-
-        
-
-
-
-
-
-
-
-        
-
-
-
-
-        
-        
-        
 
 #endif

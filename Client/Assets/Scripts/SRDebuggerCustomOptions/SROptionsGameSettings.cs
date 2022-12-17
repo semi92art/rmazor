@@ -218,30 +218,6 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryLevels)]
-        public bool Load_Random_Level
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                _commandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevel, null, true);
-            }
-        }
-
-        [Category(CategoryLevels)]
-        public bool Load_Random_Level_With_Rotation
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                _commandsProceeder.RaiseCommand(EInputCommand.LoadRandomLevelWithRotation, null, true);
-            }
-        }
-
-        [Category(CategoryLevels)]
         public bool Finish_Current_Level
         {
             get => false;

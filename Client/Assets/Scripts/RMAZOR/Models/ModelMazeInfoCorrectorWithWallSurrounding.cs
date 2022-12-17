@@ -33,7 +33,8 @@ namespace RMAZOR.Models
                     || _Item.Type == EMazeItemType.TrapMoving
                     || _Item.Type == EMazeItemType.GravityBlockFree
                     || _Item.Type == EMazeItemType.Spear
-                    || _Item.Type == EMazeItemType.Diode)
+                    || _Item.Type == EMazeItemType.Diode
+                    || _Item.Type == EMazeItemType.KeyLock)
                 .ToList();
             foreach (var item in itemsForAdditionalNodes
                 .Where(_Item => !_Info.PathItems.Select(_PI => _PI.Position).Contains(_Item.Position)))
@@ -125,11 +126,11 @@ namespace RMAZOR.Models
         {
             var additionalInfo = _Info.AdditionalInfo;
             if (additionalInfo.Time3Stars < MathUtils.Epsilon)
-                additionalInfo.Time3Stars = 10f;
+                additionalInfo.Time3Stars = 15f;
             if (additionalInfo.Time2Stars < MathUtils.Epsilon)
-                additionalInfo.Time2Stars = 20f;
+                additionalInfo.Time2Stars = 30f;
             if (additionalInfo.Time1Star < MathUtils.Epsilon)
-                additionalInfo.Time1Star = 30f;
+                additionalInfo.Time1Star = 40f;
             _Info.AdditionalInfo = additionalInfo;
             return _Info;
         }

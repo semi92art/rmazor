@@ -118,6 +118,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             TouchProceeder.Tap += OnTapScreenAction;
             CameraProvider.Init();
             StageControllerOnLevelReadyToStart.Init();
+            StageControllerOnReadyToUnload.Init();
             Cor.Run(Cor.WaitNextFrame(CameraEffectsCustomAnimator.Init));
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
             Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
@@ -192,22 +193,16 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 return;
             if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
                 return;
-            var dialogViewerTypes = new[]
-            {
-                EDialogViewerType.Fullscreen,
-                EDialogViewerType.Medium1,
-                EDialogViewerType.Medium2
-            };
-            foreach (var dialogViewerType in dialogViewerTypes)
-            {
-                var dv = DialogViewersController.GetViewer(dialogViewerType);
-                if (dv.CurrentPanel is IFinishLevelGroupDialogPanel)
-                    return;
-                if (dv.CurrentPanel is IPlayBonusLevelDialogPanel)
-                    return;
-                if (dv.CurrentPanel is IRateGameDialogPanel)
-                    return;
-            }
+            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
+            var cp = dv.CurrentPanel;
+            if (cp is IFinishLevelGroupDialogPanel)
+                return;
+            if (cp is IPlayBonusLevelDialogPanel)
+                return;
+            dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
+            cp = dv.CurrentPanel;
+            if (cp is IRateGameDialogPanel)
+                return;
             InvokeStartUnloadingLevel(CommonInputCommandArg.ParameterScreenTap);
         }
         

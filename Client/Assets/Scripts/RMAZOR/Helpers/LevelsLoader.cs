@@ -14,9 +14,9 @@ namespace RMAZOR.Helpers
 {
     public interface ILevelsLoader : IInit
     {
-        string   GetLevelInfoRaw(int _GameId, long _Index, Dictionary<string, object> _Args);
-        MazeInfo GetLevelInfo(int    _GameId, long            _Index, Dictionary<string, object> _Args);
-        int      GetLevelsCount(int  _GameId, Dictionary<string, object> _Args);
+        string   GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus);
+        MazeInfo GetLevelInfo(int    _GameId, long _Index, bool _IsBonus);
+        int      GetLevelsCount(int  _GameId, bool _IsBonus);
     }
     
     public abstract class LevelsLoader : InitBase, ILevelsLoader
@@ -57,10 +57,10 @@ namespace RMAZOR.Helpers
                 () => base.Init()));
         }
         
-        public abstract MazeInfo GetLevelInfo(int    _GameId, long _Index, Dictionary<string, object> _Args);
-        public abstract string GetLevelInfoRaw(int _GameId, long _Index, Dictionary<string, object> _Args);
+        public abstract MazeInfo GetLevelInfo(int    _GameId, long _Index, bool _IsBonus);
+        public abstract string   GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus);
 
-        public virtual int GetLevelsCount(int _GameId, Dictionary<string, object> _Args = null)
+        public virtual int GetLevelsCount(int _GameId, bool _IsBonus)
         {
             PreloadLevelsIfWereNotLoaded(_GameId);
             return SerializedLevelsFromRemote.Length > 0
@@ -78,7 +78,7 @@ namespace RMAZOR.Helpers
             if (heapIndex <= 0)
                 heapIndex = 1;
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(heapIndex), _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
+                LevelsAssetName(heapIndex, false), _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
             string[] serializedLevels;
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
@@ -109,7 +109,7 @@ namespace RMAZOR.Helpers
             return $"game_{_GameId}_levels";
         }
 
-        protected virtual string LevelsAssetName(int _HeapIndex, Dictionary<string, object> _Args = null)
+        protected virtual string LevelsAssetName(int _HeapIndex, bool _IsBonus)
         {
             string heapName = _HeapIndex <= 0 ? null : $"levels_{_HeapIndex}";
             return heapName ?? $"levels_{_HeapIndex}";

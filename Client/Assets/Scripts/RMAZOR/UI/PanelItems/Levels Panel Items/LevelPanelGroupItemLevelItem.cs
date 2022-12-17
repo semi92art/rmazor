@@ -8,6 +8,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
     public class LevelPanelGroupItemLevelItem : MonoBehInitBase
     {
         public                   TextMeshProUGUI title;
+        public                   TextMeshProUGUI bestTimeText;
         public                   Button          button;
         [SerializeField] private Image           star1, star2, star3;
 

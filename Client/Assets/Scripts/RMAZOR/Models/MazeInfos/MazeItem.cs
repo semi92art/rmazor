@@ -21,7 +21,8 @@ namespace RMAZOR.Models.MazeInfos
         Springboard,
         Hammer,
         Spear,
-        Diode
+        Diode,
+        KeyLock
     }
     
     [Serializable]

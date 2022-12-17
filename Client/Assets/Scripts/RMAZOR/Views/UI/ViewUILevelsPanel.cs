@@ -48,6 +48,7 @@ namespace RMAZOR.Views.UI
         private readonly Dictionary<Transform, float> m_LevelPanelItemsFinishPositionsY = 
             new Dictionary<Transform, float>();
 
+        private TextMeshPro m_StageText;
         private TextMeshPro m_LevelText;
         private float       m_TopOffset;
         private bool        m_FirstMoveOrRotateCommandInvoked;
@@ -123,13 +124,7 @@ namespace RMAZOR.Views.UI
         {
             if (!_Show)
                 return;
-            var locMan = Managers.LocalizationManager;
-            m_LevelText.font = FontProvider.GetFont(ETextType.GameUI, locMan.GetCurrentLanguage());
-            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyNextLevelType, out _);
-            m_LevelText.text = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus
-                ? string.Empty
-                : locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
+            SetStageAndLevelTexts();
         }
         
         public void UpdateTick()
@@ -147,13 +142,7 @@ namespace RMAZOR.Views.UI
         
         private void OnLanguageChanged(ELanguage _Language)
         {
-            var locMan = Managers.LocalizationManager;
-            m_LevelText.font = FontProvider.GetFont(ETextType.GameUI, locMan.GetCurrentLanguage());
-            string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out _);
-            m_LevelText.text = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus
-                ? string.Empty
-                : locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
+            SetStageAndLevelTexts();
         }
         
         private void OnActiveCameraChanged(Camera _Camera)
@@ -167,6 +156,7 @@ namespace RMAZOR.Views.UI
                     transform.SetParentEx(parent).SetLocalPosY(yPos).SetLocalPosZ(10f);
                 }
                 var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+                m_StageText.transform.SetLocalPosX(screenBounds.center.x);
                 m_LevelText.transform.SetLocalPosX(screenBounds.center.x);
             }
             UpdateCheckMarks(_Camera);
@@ -180,6 +170,24 @@ namespace RMAZOR.Views.UI
             AnimateLevelsPanelAfterFirstMove();
             m_FirstMoveOrRotateCommandInvoked = true;
         }
+
+        private void SetStageAndLevelTexts()
+        {
+            var locMan = Managers.LocalizationManager;
+            var font = FontProvider.GetFont(ETextType.GameUI, locMan.GetCurrentLanguage());
+            m_StageText.font = m_LevelText.font = font;
+            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyNextLevelType, out _);
+            bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            if (isNextLevelBonus)
+            {
+                m_StageText.text = m_LevelText.text = string.Empty;
+                return;
+            }
+            int levelsGroupIdx = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
+            m_StageText.text = locMan.GetTranslation("stage") + " " + levelsGroupIdx;
+            m_LevelText.text = locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
+        }
         
         private void InitLevelPanel()
         {
@@ -187,17 +195,27 @@ namespace RMAZOR.Views.UI
             var parent = CameraProvider.Camera.transform;
             var goLevelText = Managers.PrefabSetManager.InitPrefab(
                 parent, CommonPrefabSetNames.UiGame, "level_text");
-            m_LevelText = goLevelText.GetCompItem<TextMeshPro>("text");
+            goLevelText.transform.SetLocalPosXY(Vector2.zero).SetLocalScaleXY(Vector2.one);
+            m_StageText = goLevelText.GetCompItem<TextMeshPro>("stage_text");
+            m_LevelText = goLevelText.GetCompItem<TextMeshPro>("level_text");
+            m_StageText.sortingOrder = SortingOrders.GameUI;
             m_LevelText.sortingOrder = SortingOrders.GameUI;
-            m_Renderers.Add(m_LevelText);
+            m_Renderers.AddRange(new [] {m_StageText, m_LevelText});
+            m_StageText.rectTransform.SetSizeWithCurrentAnchors(
+                RectTransform.Axis.Horizontal, screenBounds.size.x * 0.5f);
             m_LevelText.rectTransform.SetSizeWithCurrentAnchors(
-                RectTransform.Axis.Horizontal, screenBounds.size.x);
-            float yPos = screenBounds.max.y - m_TopOffset + 1f;
-            m_LevelText.transform
+                RectTransform.Axis.Horizontal, screenBounds.size.x * 0.5f);
+            float yPos = screenBounds.max.y - 5f;
+            m_StageText.transform
                 .SetLocalPosX(screenBounds.center.x)
                 .SetLocalPosY(yPos + StartAnimOffset)
                 .SetLocalPosZ(10f);
-            m_LevelPanelItemsFinishPositionsY.Add(m_LevelText.transform, yPos);
+            m_LevelText.transform
+                .SetLocalPosX(screenBounds.center.x)
+                .SetLocalPosY(yPos - 2.5f + StartAnimOffset)
+                .SetLocalPosZ(10f);
+            m_LevelPanelItemsFinishPositionsY.Add(m_StageText.transform, yPos);
+            m_LevelPanelItemsFinishPositionsY.Add(m_LevelText.transform, yPos - 2.5f);
         }
         
         private void InitCheckMarks()
@@ -205,7 +223,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             var goLevelCheckMark = Managers.PrefabSetManager.GetPrefab(
                 CommonPrefabSetNames.UiGame, "level_check_mark");
-            float yPos = screenBounds.max.y - m_TopOffset - 3f;
+            float yPos = screenBounds.max.y - 8.5f;
             var parent = CameraProvider.Camera.transform;
             for (int i = 0; i < 10; i++)
             {
@@ -240,7 +258,7 @@ namespace RMAZOR.Views.UI
             bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             int checkMarksCount = isNextLevelBonus ?
                 0 :  RmazorUtils.GetLevelsInGroup(groupIndex);
-            float yPos = screenBounds.max.y - m_TopOffset - 3f;
+            float yPos = screenBounds.max.y - 8.5f;
             for (int i = 0; i < checkMarksCount; i++)
             {
                 var checkmark = m_CheckMarks[i];

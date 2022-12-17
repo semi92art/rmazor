@@ -156,8 +156,7 @@ namespace RMAZOR.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    .Concat(TopButtons.GetRenderers())
-                    .Concat(StarsAndTimePanel.GetRenderers());
+                    .Concat(TopButtons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
                 switch (rendComp)
@@ -231,7 +230,7 @@ namespace RMAZOR.Views.UI
                     break;
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
-                    CommandsProceeder.UnlockAllCommands(group);
+                    CommandsProceeder.UnlockCommands(CommandsProceeder.GetAllCommands(), group);
                     
                     if (MazeContainsGravityItems())
                         CommandsProceeder.UnlockCommands(RmazorUtils.RotateCommands, group);

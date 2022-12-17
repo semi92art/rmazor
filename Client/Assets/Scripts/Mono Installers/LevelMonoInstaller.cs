@@ -77,6 +77,7 @@ namespace Mono_Installers
             Container.Bind<IHammersProceeder>()           .To<HammersProceeder>()           .AsSingle();
             Container.Bind<ISpearsProceeder>()            .To<SpearsProceeder>()            .AsSingle();
             Container.Bind<IDiodesProceeder>()            .To<DiodesProceeder>()            .AsSingle();
+            Container.Bind<IKeyLockMazeItemsProceeder>()  .To<KeyLockMazeItemsProceeder>()  .AsSingle();
             Container.Bind<IModelItemsProceedersSet>()    .To<ModelItemsProceedersSet>()    .AsSingle();
             
             Container.Bind<IModelMazeInfoCorrector>()         
@@ -130,7 +131,10 @@ namespace Mono_Installers
                 .To<ViewMazeAdditionalBackground>()   
                 // .To<ViewMazeAdditionalBackgroundFake>()   
                 .AsSingle();
-            Container.Bind<IViewMazeBackgroundIdleItems>()       .To<ViewMazeBackgroundIdleItems>()       .AsSingle();
+            Container.Bind<IViewMazeBackgroundIdleItems>()      
+                // .To<ViewMazeBackgroundIdleItems>()    
+                .To<ViewMazeBackgroundIdleItemsFake>()    
+                .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
@@ -190,8 +194,8 @@ namespace Mono_Installers
                     Container.Bind<IViewMazeItemPath>().To<ViewMazeItemPathRmazor>().AsSingle();
                     break;
             }
-            Container.Bind<IViewMazeItemPathItem>()          .To<ViewMazeItemPathItem>()          .AsSingle();
-            Container.Bind<IViewMazeItemPathItemMoney>()     .To<ViewMazeItemPathItemMoneyDisc>() .AsSingle();
+            Container.Bind<IViewMazeItemPathItem>()          .To<ViewMazeItemPathItem>()            .AsSingle();
+            Container.Bind<IViewMazeItemPathItemMoney>()     .To<ViewMazeItemPathItemMoneyDisc>()   .AsSingle();
             Container.Bind<IViewMazeItemPathItemIdle>()      .To<ViewMazeItemPathItemIdleSquare>()  .AsSingle();
             
             Container.Bind<IViewMazeItemGravityBlock>()      .To<ViewMazeItemGravityBlock>()         .AsSingle();
@@ -207,6 +211,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemHammer>()            .To<ViewMazeItemHammer>()               .AsSingle();
             Container.Bind<IViewMazeItemSpear>()             .To<ViewMazeItemSpear>()                .AsSingle();
             Container.Bind<IViewMazeItemDiode>()             .To<ViewMazeItemDiode>()                .AsSingle();
+            Container.Bind<IViewMazeItemKeyLock>()           .To<ViewMazeItemKeyLock>()              .AsSingle();
             
             Container.Bind<IViewMazePathItemsGroup>()        .To<ViewMazePathItemsGroupRmazor>()     .AsSingle();
             Container.Bind<IViewMazeMovingItemsGroup>()      .To<ViewMazeMovingItemsGroup>()         .AsSingle();
@@ -220,6 +225,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeHammersGroup>()          .To<ViewMazeHammersGroup>()             .AsSingle();
             Container.Bind<IViewMazeSpearsGroup>()           .To<ViewMazeSpearsGroup>()              .AsSingle();
             Container.Bind<IViewMazeDiodesGroup>()           .To<ViewMazeDiodesGroup>()              .AsSingle();
+            Container.Bind<IViewMazeKeyLockGroup>()          .To<ViewMazeKeyLockGroup>()             .AsSingle();
             
             Container.Bind<IViewMazeItemsGroupSet>()         .To<ViewMazeItemsGroupSet>()            .AsSingle();
             
@@ -246,8 +252,8 @@ namespace Mono_Installers
             Container.Bind<IViewUICanvasGetter>()        .To<ViewUICanvasGetter>()            .AsSingle();
             if (!CommonData.Release)
             {
-                Container.Bind<IViewUI>()                .To<ViewUIProt>()                    .AsSingle();
-                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControlsProt>()        .AsSingle();
+                Container.Bind<IViewUI>()                .To<ViewUIFake>()                    .AsSingle();
+                Container.Bind<IViewUIGameControls>()    .To<ViewUIGameControlsFake>()        .AsSingle();
                 Container.Bind<IViewUIGameLogo>()        .To<ViewUIGameLogoFake>()            .AsSingle();
                 Container.Bind<IViewUILevelSkipper>()    .To<ViewUILevelSkipperFake>()        .AsSingle();
             }
@@ -283,6 +289,7 @@ namespace Mono_Installers
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersControllerFake>()    .AsSingle();
                 Container.Bind<IDialogViewerMedium1>()        .To<DialogViewerMedium1Fake>()        .AsSingle();
                 Container.Bind<IDialogViewerMedium2>()        .To<DialogViewerMedium2Fake>()        .AsSingle();
+                Container.Bind<IDialogViewerMedium3>()        .To<DialogViewerMedium3Fake>()        .AsSingle();
                 Container.Bind<IDialogViewerFullscreen>()     .To<DialogViewerFullscreenFake>()     .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSetFake>()            .AsSingle();
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanelFake>()        .AsSingle();
@@ -290,6 +297,7 @@ namespace Mono_Installers
                 Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanelFake>()  .AsSingle();
                 Container.Bind<IDailyGiftPanel>()             .To<DailyGiftPanelFake>()             .AsSingle();
                 Container.Bind<ILevelsDialogPanel>()          .To<LevelsDialogPanelFake>()          .AsSingle();
+                Container.Bind<IConfirmLoadLevelDialogPanel>().To<ConfirmLoadLevelDialogPanelFake>().AsSingle();
             }
             else
             {
@@ -297,6 +305,7 @@ namespace Mono_Installers
                 Container.Bind<IDialogViewerFullscreen>()     .To<DialogViewerFullscreen>()         .AsSingle();
                 Container.Bind<IDialogViewerMedium1>()        .To<DialogViewerMedium1>()            .AsSingle();
                 Container.Bind<IDialogViewerMedium2>()        .To<DialogViewerMedium2>()            .AsSingle();
+                Container.Bind<IDialogViewerMedium3>()        .To<DialogViewerMedium3>()            .AsSingle();
                 Container.Bind<IDialogPanelsSet>()            .To<DialogPanelsSet>()                .AsSingle();
                 
                 Container.Bind<IRateGameDialogPanel>()        .To<RateGameDialogPanel>()            .AsSingle();
@@ -309,6 +318,7 @@ namespace Mono_Installers
                 Container.Bind<IPlayBonusLevelDialogPanel>()  .To<PlayBonusLevelDialogPanel>()      .AsSingle();
                 Container.Bind<IDailyGiftPanel>()             .To<DailyGiftPanel>()                 .AsSingle();
                 Container.Bind<ILevelsDialogPanel>()          .To<LevelsDialogPanel>()              .AsSingle();
+                Container.Bind<IConfirmLoadLevelDialogPanel>().To<ConfirmLoadLevelDialogPanel>()    .AsSingle();
             }
         }
 

@@ -33,7 +33,7 @@ namespace Common.UI.DialogViewers
 
         private readonly Dictionary<IDialogPanel, DialogPanelTransitionInfo> m_PanelsTransitionInfoDict
             = new Dictionary<IDialogPanel, DialogPanelTransitionInfo>();
-
+        
         #endregion
 
         #region inject
@@ -59,7 +59,7 @@ namespace Common.UI.DialogViewers
 
         #region api
 
-        public IDialogPanel CurrentPanel  => !PanelsStack.Any() ? null : PanelsStack.Peek();
+        public IDialogPanel CurrentPanel  => PanelsStack.Any() ? PanelsStack.Peek() : null;
 
         public abstract RectTransform Container                 { get; }
         public          Func<bool>    OtherDialogViewersShowing { get; set; }
@@ -176,7 +176,7 @@ namespace Common.UI.DialogViewers
                 float timeCoeff = (currTime + _Time - Ticker.Time) / _Time;
                 var depthOfFieldProps = new FastDofProps
                 {
-                    BlurAmount = (1 - timeCoeff) * 0.3f
+                    BlurAmount = (1 - timeCoeff) * 0.2f
                 };
                 CameraProvider.SetEffectProps(ECameraEffect.DepthOfField, depthOfFieldProps);
                 var glitchProps = new FastGlitchProps

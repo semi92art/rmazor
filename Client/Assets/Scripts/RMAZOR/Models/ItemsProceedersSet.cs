@@ -27,6 +27,7 @@ namespace RMAZOR.Models
         IHammersProceeder          HammersProceeder          { get; }
         ISpearsProceeder           SpearsProceeder           { get; }
         IDiodesProceeder           DiodesProceeder           { get; }
+        IKeyLockMazeItemsProceeder KeyLockMazeItemsProceeder { get; }
         
         IItemsProceeder[] GetProceeders();
     }
@@ -52,7 +53,8 @@ namespace RMAZOR.Models
         public IHammersProceeder          HammersProceeder          { get; }
         public ISpearsProceeder           SpearsProceeder           { get; }
         public IDiodesProceeder           DiodesProceeder           { get; }
-        
+        public IKeyLockMazeItemsProceeder KeyLockMazeItemsProceeder { get; }
+
         private ModelItemsProceedersSet(
             ITrapsMovingProceeder      _TrapsMovingProceeder,
             IGravityItemsProceeder     _GravityItemsProceeder,
@@ -64,7 +66,8 @@ namespace RMAZOR.Models
             ISpringboardProceeder      _SpringboardProceeder,
             IHammersProceeder          _HammersProceeder,
             ISpearsProceeder           _SpearsProceeder,
-            IDiodesProceeder           _DiodesProceeder)
+            IDiodesProceeder           _DiodesProceeder, 
+            IKeyLockMazeItemsProceeder _KeyLockMazeItemsProceeder)
         {
             TrapsMovingProceeder      = _TrapsMovingProceeder;
             GravityItemsProceeder     = _GravityItemsProceeder;
@@ -77,6 +80,7 @@ namespace RMAZOR.Models
             HammersProceeder          = _HammersProceeder;
             SpearsProceeder           = _SpearsProceeder;
             DiodesProceeder           = _DiodesProceeder;
+            KeyLockMazeItemsProceeder = _KeyLockMazeItemsProceeder;
         }
 
         #endregion
@@ -119,6 +123,7 @@ namespace RMAZOR.Models
                 HammersProceeder,
                 SpearsProceeder,
                 DiodesProceeder,
+                KeyLockMazeItemsProceeder
             };
             return m_ProceedersCached;
         }

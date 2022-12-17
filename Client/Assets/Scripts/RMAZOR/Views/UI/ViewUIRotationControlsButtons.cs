@@ -144,7 +144,7 @@ namespace RMAZOR.Views.UI
         private void InitRotateButtons()
         {
             var screenBounds = GraphicUtils.GetVisibleBounds();
-            const float horOffset = 5f;
+            const float horOffset = 3f;
             const float localScale = 1.5f;
             var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
             var goRcB = Managers.PrefabSetManager.InitPrefab(

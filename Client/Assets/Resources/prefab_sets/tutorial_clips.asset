@@ -14,42 +14,51 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 32900000, guid: 4eca040877cc9c049bd81cf06f50f31e, type: 3}
-      name: tutorial_clip_trap_react
+    - name: tutorial_clip_trap_react
+      item: {fileID: 32900000, guid: 4eca040877cc9c049bd81cf06f50f31e, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 692fcaf0245924249880a8fd56c7e29f, type: 3}
-      name: tutorial_clip_trap_increasing
+    - name: tutorial_clip_trap_increasing
+      item: {fileID: 32900000, guid: 692fcaf0245924249880a8fd56c7e29f, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 4c4f1010a0a0efd40a4c2dcc438af982, type: 3}
-      name: tutorial_clip_shredinger
+    - name: tutorial_clip_shredinger
+      item: {fileID: 32900000, guid: 4c4f1010a0a0efd40a4c2dcc438af982, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 1855632cdae0546458489029c629eed4, type: 3}
-      name: tutorial_clip_portal
+    - name: tutorial_clip_portal
+      item: {fileID: 32900000, guid: 1855632cdae0546458489029c629eed4, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 71dcc8b3e29192b4cacffeff5894809f, type: 3}
-      name: tutorial_clip_trap_moving
+    - name: tutorial_clip_trap_moving
+      item: {fileID: 32900000, guid: 71dcc8b3e29192b4cacffeff5894809f, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 4c7814ae48d138748bf21a0261457f8b, type: 3}
-      name: tutorial_clip_gravity_trap
+    - name: tutorial_clip_gravity_trap
+      item: {fileID: 32900000, guid: 4c7814ae48d138748bf21a0261457f8b, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 63fdd22fc6f873546b609636460e99be, type: 3}
-      name: tutorial_clip_turret
+    - name: tutorial_clip_turret
+      item: {fileID: 32900000, guid: 63fdd22fc6f873546b609636460e99be, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: c4cda296e08b945418073c374176ebc5, type: 3}
-      name: tutorial_clip_gravity_block
+    - name: tutorial_clip_gravity_block
+      item: {fileID: 32900000, guid: c4cda296e08b945418073c374176ebc5, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 16fa61cf685a05942b3679afd92e4142, type: 3}
-      name: tutorial_clip_gravity_block_free
+    - name: tutorial_clip_gravity_block_free
+      item: {fileID: 32900000, guid: 16fa61cf685a05942b3679afd92e4142, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 7faeb92def3f1364b996127731e4d3a7, type: 3}
-      name: tutorial_clip_springboard
+    - name: tutorial_clip_springboard
+      item: {fileID: 32900000, guid: 7faeb92def3f1364b996127731e4d3a7, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 2bbf1a2e7cfc62240b88b18338e89318, type: 3}
-      name: tutorial_clip_hammer
+    - name: tutorial_clip_hammer
+      item: {fileID: 32900000, guid: 2bbf1a2e7cfc62240b88b18338e89318, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 98749057a0185ae4998cb8b62d868d9a, type: 3}
-      name: tutorial_clip_spear
+    - name: tutorial_clip_spear
+      item: {fileID: 32900000, guid: 98749057a0185ae4998cb8b62d868d9a, type: 3}
       bundle: 0
-    - item: {fileID: 32900000, guid: 5cdd9a1a02e1b29429d6df5678774ead, type: 3}
-      name: tutorial_clip_diode
+    - name: tutorial_clip_diode
+      item: {fileID: 32900000, guid: 5cdd9a1a02e1b29429d6df5678774ead, type: 3}
+      bundle: 0
+    - name: tutorial_clip_movement
+      item: {fileID: 32900000, guid: 8896622c04b232c4bbd374eac3f957fc, type: 3}
+      bundle: 0
+    - name: tutorial_clip_key_lock
+      item: {fileID: 32900000, guid: bab2876b67c2b1740ad77d81546759a2, type: 3}
+      bundle: 0
+    - name: tutorial_clip_timer
+      item: {fileID: 32900000, guid: 8f21122f8f9853d46bde79c56f5afaaf, type: 3}
       bundle: 0

@@ -1,4 +1,5 @@
-﻿using Common.Enums;
+﻿using System.Linq;
+using Common.Enums;
 using Common.Helpers;
 
 namespace Common.UI.DialogViewers
@@ -7,7 +8,8 @@ namespace Common.UI.DialogViewers
     {
         Fullscreen,
         Medium1,
-        Medium2
+        Medium2,
+        Medium3
     }
     
     public interface IDialogViewersController : IInit
@@ -31,17 +33,20 @@ namespace Common.UI.DialogViewers
         private IDialogViewerFullscreen DialogViewerFullscreen { get; }
         private IDialogViewerMedium1    DialogViewerMedium1    { get; }
         private IDialogViewerMedium2    DialogViewerMedium2    { get; }
+        private IDialogViewerMedium3    DialogViewerMedium3    { get; }
 
         public DialogViewersController(
             IViewUICanvasGetter     _CanvasGetter,
             IDialogViewerFullscreen _DialogViewerFullscreen,
-            IDialogViewerMedium1   _DialogViewerMedium1,
-            IDialogViewerMedium2 _DialogViewerMedium2)
+            IDialogViewerMedium1    _DialogViewerMedium1,
+            IDialogViewerMedium2    _DialogViewerMedium2,
+            IDialogViewerMedium3    _DialogViewerMedium3)
         {
             CanvasGetter           = _CanvasGetter;
             DialogViewerFullscreen = _DialogViewerFullscreen;
-            DialogViewerMedium1   = _DialogViewerMedium1;
-            DialogViewerMedium2 = _DialogViewerMedium2;
+            DialogViewerMedium1    = _DialogViewerMedium1;
+            DialogViewerMedium2    = _DialogViewerMedium2;
+            DialogViewerMedium3    = _DialogViewerMedium3;
         }
 
         #endregion
@@ -50,10 +55,11 @@ namespace Common.UI.DialogViewers
 
         public override void Init()
         {
-            CanvasGetter.Init();
+            CanvasGetter          .Init();
             DialogViewerFullscreen.Init();
-            DialogViewerMedium1.Init();
-            DialogViewerMedium2.Init();
+            DialogViewerMedium1   .Init();
+            DialogViewerMedium2   .Init();
+            DialogViewerMedium3   .Init();
             SetOtherDialogViewersShowingActions();
             base.Init();
         }
@@ -65,6 +71,7 @@ namespace Common.UI.DialogViewers
                 EDialogViewerType.Fullscreen  => DialogViewerFullscreen,
                 EDialogViewerType.Medium1     => DialogViewerMedium1,
                 EDialogViewerType.Medium2     => DialogViewerMedium2,
+                EDialogViewerType.Medium3     => DialogViewerMedium3,
                 _                             => null
             };
         }
@@ -77,30 +84,47 @@ namespace Common.UI.DialogViewers
         {
             DialogViewerFullscreen.OtherDialogViewersShowing = () =>
             {
-                var panel1 = DialogViewerMedium1.CurrentPanel;
-                var panel2 = DialogViewerMedium2.CurrentPanel;
-                return (panel1 != null && 
-                       panel1.AppearingState != EAppearingState.Dissapeared)
-                    || (panel2 != null && 
-                       panel2.AppearingState != EAppearingState.Dissapeared);
+                var panels = new[]
+                {
+                    DialogViewerMedium1.CurrentPanel,
+                    DialogViewerMedium2.CurrentPanel,
+                    DialogViewerMedium3.CurrentPanel
+                };
+                return panels.Any(_P => _P != null &&
+                                        _P.AppearingState != EAppearingState.Dissapeared);
             };
             DialogViewerMedium1.OtherDialogViewersShowing = () =>
             {
-                var panel1 = DialogViewerFullscreen.CurrentPanel;
-                var panel2 = DialogViewerMedium2.CurrentPanel;
-                return (panel1 != null && 
-                        panel1.AppearingState != EAppearingState.Dissapeared)
-                       || (panel2 != null && 
-                           panel2.AppearingState != EAppearingState.Dissapeared);
+                var panels = new[]
+                {
+                    DialogViewerFullscreen.CurrentPanel,
+                    DialogViewerMedium2   .CurrentPanel,
+                    DialogViewerMedium3   .CurrentPanel
+                };
+                return panels.Any(_P => _P != null &&
+                                        _P.AppearingState != EAppearingState.Dissapeared);
             };
             DialogViewerMedium2.OtherDialogViewersShowing = () =>
             {
-                var panel1 = DialogViewerFullscreen.CurrentPanel;
-                var panel2 = DialogViewerMedium1.CurrentPanel;
-                return (panel1 != null && 
-                        panel1.AppearingState != EAppearingState.Dissapeared)
-                       || (panel2 != null && 
-                           panel2.AppearingState != EAppearingState.Dissapeared);
+                var panels = new[]
+                {
+                    DialogViewerMedium1   .CurrentPanel,
+                    DialogViewerFullscreen.CurrentPanel,
+                    DialogViewerMedium3   .CurrentPanel
+                };
+                return panels.Any(_P => _P != null &&
+                                        _P.AppearingState != EAppearingState.Dissapeared);
+            };
+            DialogViewerMedium3.OtherDialogViewersShowing = () =>
+            {
+                var panels = new[]
+                {
+                    DialogViewerMedium1   .CurrentPanel,
+                    DialogViewerMedium2   .CurrentPanel,
+                    DialogViewerFullscreen.CurrentPanel
+                };
+                return panels.Any(_P => _P != null &&
+                                        _P.AppearingState != EAppearingState.Dissapeared);
             };
         }
 

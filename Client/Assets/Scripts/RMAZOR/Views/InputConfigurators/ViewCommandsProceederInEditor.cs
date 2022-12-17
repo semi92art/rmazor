@@ -90,11 +90,7 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (LeanInput.GetDown(KeyCode.Alpha1))
             {
-                if (LeanInput.GetPressed(KeyCode.LeftShift) && LeanInput.GetPressed(KeyCode.LeftAlt) && LeanInput.GetPressed(KeyCode.X))
-                    _CommandKey = EInputCommand.LoadRandomLevelWithRotation;
-                else if (LeanInput.GetPressed(KeyCode.LeftShift) && LeanInput.GetPressed(KeyCode.LeftAlt))
-                    _CommandKey = EInputCommand.LoadRandomLevel;
-                else if (LeanInput.GetPressed(KeyCode.LeftShift))
+                if (LeanInput.GetPressed(KeyCode.LeftShift))
                     _CommandKey = EInputCommand.LoadNextLevel;
                 else
                     _CommandKey = EInputCommand.LoadCurrentLevel;

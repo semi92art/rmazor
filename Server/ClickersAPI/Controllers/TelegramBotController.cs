@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,21 +12,37 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.ReplyMarkups;
+using static ClickersAPI.Helpers.AnalyticIds;
 
 namespace ClickersAPI.Controllers
 {
     [ApiController]
     [Route("api/bot")]
-    public class TelegramBotAnalyticsController : ControllerBaseImpl
+    public class TelegramBotController : ControllerBaseImpl
     {
-        private static TelegramBotClient _telegramBotClient;
+        #region constants
+
+        private const long AdminChatId = 266767924; 
+
+        #endregion
         
-        public TelegramBotAnalyticsController(
+        #region nonpublic members
+
+        private static TelegramBotClient _telegramBotClient;
+
+        #endregion
+
+        #region inject
+
+        public TelegramBotController(
             ApplicationDbContext _Context,
             IMapper              _Mapper,
             IServiceProvider     _Provider) 
             : base(_Context, _Mapper, _Provider) { }
+
+        #endregion
+
+        #region api
 
         [HttpPost("init_bot")]
         public async Task<ActionResult<string>> InitBot()
@@ -49,39 +67,41 @@ namespace ClickersAPI.Controllers
         }
 
         [HttpPost("send_message")]
-        public async Task<ActionResult<string>> SendMessage([FromBody] GameUserDto _GameUserDto)
+        public async Task<ActionResult<string>> SendAppEvent([FromBody] AppEventDto _AppEventDto)
         {
+            if (!GetValidAnalyticIds().Contains(_AppEventDto.Action))
+                return Mapper.Map<string>("invalid action");    
             var sb = new StringBuilder();
-            sb.AppendLine("Action: " + _GameUserDto.Action);
-            sb.AppendLine("Country: " + _GameUserDto.Country);
-            sb.AppendLine("Language: " + _GameUserDto.Language);
-            sb.AppendLine("Platform: " + _GameUserDto.Platform);
-            sb.AppendLine("App Version: " + _GameUserDto.AppVersion);
+            sb.AppendLine("Action: " + _AppEventDto.Action);
+            sb.AppendLine($"Country: {_AppEventDto.Country}, Language: {_AppEventDto.Language}");
+            sb.AppendLine($"Platform: {_AppEventDto.Platform}, App Ver.: {_AppEventDto.AppVersion}");
+            if (_AppEventDto.EventData != null)
+            {
+                foreach ((string key, var value) in _AppEventDto.EventData)
+                    sb.AppendLine(key + ": " + value);
+            }
             string messageText = sb.ToString();
-            await _telegramBotClient.SendTextMessageAsync(
-                266767924,
-                messageText,
-                disableNotification: true,
-                replyMarkup: new InlineKeyboardMarkup(
-                    InlineKeyboardButton.WithUrl(
-                        "Check sendMessage method",
-                        "https://core.telegram.org/bots/api#sendmessage")));
+            await _telegramBotClient.SendTextMessageAsync(AdminChatId, messageText);
             return Mapper.Map<string>("message sent");
         }
-        
+
+        #endregion
+
+        #region nonpublic methods
+
         private static async Task HandleUpdateAsync(
             ITelegramBotClient _BotClient,
             Update             _Update,
             CancellationToken  _CancellationToken)
         {
             // Only process Message updates: https://core.telegram.org/bots/api#message
-            var message = _Update.Message;
-            if (message == null)
+            if (_Update.Message == null)
                 return;
-            string messageText = message.Text;
             // Only process text messages
-            if (messageText == null)
+            if (string.IsNullOrEmpty(_Update.Message.Text))
                 return;
+            var message = _Update.Message;
+            string messageText = message.Text;
             long chatId = message.Chat.Id;
             Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
             // Echo received message text
@@ -105,5 +125,38 @@ namespace ClickersAPI.Controllers
             Console.WriteLine(errorMessage);
             return Task.CompletedTask;
         }
+
+        private static IEnumerable<string> GetValidAnalyticIds()
+        {
+            return new[]
+            {
+                SessionStart,
+                LevelReadyToStart,
+                LevelStarted,
+                LevelFinished,
+                ShopButtonPressed,
+                SettingsButtonPressed,
+                RateGameButton1Pressed,
+                RateGameButton2Pressed,
+                LeaderboardsButtonPressed,
+                EnableMusicButtonPressed,
+                DisableMusicButtonPressed,
+                EnableSoundButtonPressed,
+                DisableSoundButtonPressed,
+                EnableHapticsButtonPressed,
+                DisableHapticsButtonPressed,
+                WatchAdInCharacterDiedPanelPressed,
+                WatchAdInShopPanelPressed,
+                WatchAdInFinishGroupPanelPressed,
+                CharacterDied,
+                AdShown,
+                AdClicked,
+                AdReward,
+                AdClosed,
+                AdFailedToShow
+            };
+        }
+
+        #endregion
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using Common;
 using Common.Entities;
 using Common.Extensions;
+using Common.Utils;
 using RMAZOR.Models.MazeInfos;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMember.Local
@@ -251,6 +252,39 @@ namespace RMAZOR.Editor
                 int maxY = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.Y + 1) : 0;
                 maxY = System.Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
                 level.Size = new V2Int(maxX, maxY);
+            }
+            LevelsList.Levels = levels;
+            LevelsList.Save();
+        }
+        
+        [FixUtil(FixUtilColor.Blue)]
+        private void FixStarTimes()
+        {
+            var levels = LevelsList.Levels;
+            foreach (var level in levels)
+            {
+                var additionalInfo = level.AdditionalInfo;
+                if (additionalInfo.Time3Stars < MathUtils.Epsilon)
+                    additionalInfo.Time3Stars = 15f;
+                if (additionalInfo.Time2Stars < MathUtils.Epsilon)
+                    additionalInfo.Time2Stars = 30f;
+                if (additionalInfo.Time1Star < MathUtils.Epsilon)
+                    additionalInfo.Time1Star = 45f;
+            }
+            LevelsList.Levels = levels;
+            LevelsList.Save();
+        }
+        
+        [FixUtil(FixUtilColor.Blue)]
+        private void SetStarTimesForBonusLevels()
+        {
+            var levels = LevelsList.Levels;
+            foreach (var level in levels)
+            {
+                var additionalInfo = level.AdditionalInfo;
+                    additionalInfo.Time3Stars = 30f;
+                    additionalInfo.Time2Stars = 60f;
+                    additionalInfo.Time1Star  = 90f;
             }
             LevelsList.Levels = levels;
             LevelsList.Save();

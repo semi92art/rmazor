@@ -33,7 +33,7 @@ MonoBehaviour:
         type: 3}
       bundle: 0
     - name: tutorial_panel
-      item: {fileID: 8219298684319459333, guid: 68b1fe354cf0479498d1d94b5f781770,
+      item: {fileID: 8219298684319459333, guid: 7f39e87a4bf96fd4192ae245de65c2d1,
         type: 3}
       bundle: 0
     - name: finish_level_group_panel
@@ -50,5 +50,9 @@ MonoBehaviour:
       bundle: 0
     - name: levels_panel
       item: {fileID: 8219298684319459333, guid: df4827ff9bec9c94ab4a2777f96f600d,
+        type: 3}
+      bundle: 0
+    - name: confirm_load_level_panel
+      item: {fileID: 8219298684319459333, guid: 20799b2e4ea8fd84580943c3afc27892,
         type: 3}
       bundle: 0

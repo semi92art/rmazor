@@ -3,6 +3,7 @@ using System.Linq;
 using Common;
 using Common.Enums;
 using Common.Extensions;
+using Common.Helpers;
 using Common.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.Additional_Background;
@@ -10,12 +11,14 @@ using RMAZOR.Views.MazeItems;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
-    public interface IViewLevelStageControllerOnReadyToUnloadLevel
+    public interface IViewLevelStageControllerOnReadyToUnloadLevel : IInit
     {
         void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems);
     }
     
-    public class ViewLevelStageControllerOnReadyToUnloadLevel : IViewLevelStageControllerOnReadyToUnloadLevel
+    public class ViewLevelStageControllerOnReadyToUnloadLevel
+        : InitBase, 
+          IViewLevelStageControllerOnReadyToUnloadLevel
     {
         private ViewSettings                        ViewSettings                   { get; }
         private IViewCameraEffectsCustomAnimator    CameraEffectsCustomAnimator    { get; }
@@ -39,7 +42,13 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             AdditionalBackgroundDrawer     = _AdditionalBackgroundDrawer;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
         }
-        
+
+        public override void Init()
+        {
+            BetweenLevelAdShower.Init();
+            base.Init();
+        }
+
         public void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
             string currentLevelType = (string) _Args.Args.GetSafe(

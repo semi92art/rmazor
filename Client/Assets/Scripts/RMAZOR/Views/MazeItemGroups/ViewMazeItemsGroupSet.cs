@@ -23,6 +23,7 @@ namespace RMAZOR.Views.MazeItemGroups
         IViewMazeHammersGroup          HammersGroup          { get; }
         IViewMazeSpearsGroup           SpearsGroup           { get; }
         IViewMazeDiodesGroup           DiodesGroup           { get; }
+        IViewMazeKeyLockGroup          KeyLockGroup          { get; }
         
         
         IViewMazeItemGroup[] GetGroups();
@@ -49,6 +50,7 @@ namespace RMAZOR.Views.MazeItemGroups
         public IViewMazeHammersGroup          HammersGroup          { get; }
         public IViewMazeSpearsGroup           SpearsGroup           { get; }
         public IViewMazeDiodesGroup           DiodesGroup           { get; }
+        public IViewMazeKeyLockGroup          KeyLockGroup          { get; }
 
         private ViewMazeItemsGroupSet(
             IViewMazeMovingItemsGroup      _MovingItemsGroup,
@@ -61,7 +63,8 @@ namespace RMAZOR.Views.MazeItemGroups
             IViewMazeGravityItemsGroup     _GravityItemsGroup,
             IViewMazeHammersGroup          _HammersGroup,
             IViewMazeSpearsGroup           _SpearsGroup,
-            IViewMazeDiodesGroup           _DiodesGroup)
+            IViewMazeDiodesGroup           _DiodesGroup,
+            IViewMazeKeyLockGroup          _KeyLockGroup)
         {
             MovingItemsGroup      = _MovingItemsGroup;
             TrapsReactItemsGroup  = _TrapsReactItemsGroup;
@@ -74,6 +77,7 @@ namespace RMAZOR.Views.MazeItemGroups
             HammersGroup          = _HammersGroup;
             SpearsGroup           = _SpearsGroup;
             DiodesGroup           = _DiodesGroup;
+            KeyLockGroup          = _KeyLockGroup;
         }
 
         #endregion
@@ -97,6 +101,7 @@ namespace RMAZOR.Views.MazeItemGroups
                 HammersGroup,
                 SpearsGroup,
                 DiodesGroup,
+                KeyLockGroup
             };
             return m_GroupsCached;
         }

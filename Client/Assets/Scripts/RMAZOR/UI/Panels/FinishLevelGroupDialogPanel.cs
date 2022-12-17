@@ -43,8 +43,6 @@ namespace RMAZOR.UI.Panels
     {
         #region nonpublic members
         
-        private static AudioClipArgs AudioClipArgsMainTheme =>
-            new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
         private static AudioClipArgs AudioClipArgsPayoutReward =>
             new AudioClipArgs("payout_reward", EAudioClipType.UiSound);
 
@@ -88,6 +86,7 @@ namespace RMAZOR.UI.Panels
         private IModelGame                          Model                          { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IDialogViewersController            DialogViewersController        { get; }
 
         private FinishLevelGroupDialogPanel(
             ViewSettings                        _ViewSettings,
@@ -100,7 +99,8 @@ namespace RMAZOR.UI.Panels
             IViewInputCommandsProceeder         _CommandsProceeder,
             IModelGame                          _Model,
             IMoneyCounter                       _MoneyCounter,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IDialogViewersController _DialogViewersController)
             : base(
                 _Managers,
                 _Ticker,
@@ -114,6 +114,7 @@ namespace RMAZOR.UI.Panels
             Model                          = _Model;
             MoneyCounter                   = _MoneyCounter;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            DialogViewersController = _DialogViewersController;
         }
 
         #endregion
@@ -163,7 +164,6 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
-            Managers.AudioManager.PauseClip(AudioClipArgsMainTheme);
             m_MoneyIcon.sprite = m_SpriteMoney;
             m_MultiplyWord = Managers.LocalizationManager
                 .GetTranslation("multiply")
@@ -192,7 +192,6 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
-            Managers.AudioManager.UnpauseClip(AudioClipArgsMainTheme);
             Prompt.ShowPrompt(EPromptType.TapToNext);
             base.OnDialogDisappeared();
         }
@@ -365,24 +364,26 @@ namespace RMAZOR.UI.Panels
 
         private void OnSkipButtonPressed()
         {
-            m_WheelPanelView.StopWheel();
-            m_MultiplyCoefficient = 1;
-            Multiply();
-            OnClose(null);
-            InvokeStartUnloadingLevel();
+            Cor.Run(Cor.WaitNextFrame(() =>
+            {
+                m_WheelPanelView.StopWheel();
+                m_MultiplyCoefficient = 1;
+                Multiply();
+                OnClose(UnpauseLevel);
+            }, false, 3U));
         }
 
         private void OnContinueButtonPressed()
         {
-            OnClose(null);
-            InvokeStartUnloadingLevel();
+            OnClose(UnpauseLevel);
         }
 
-        private void InvokeStartUnloadingLevel()
+        private void UnpauseLevel()
         {
-            var args = new Dictionary<string, object>();
-            args.SetSafe(CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterFinishLevelGroupPanel);
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
+            Cor.Run(Cor.WaitNextFrame(
+                () => SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel),
+                false,
+                3U));
         }
 
         private void Multiply()

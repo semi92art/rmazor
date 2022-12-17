@@ -35,44 +35,8 @@ namespace Common
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
         {
-            if (Application.isEditor)
-            {
-                _gameWasRated                      = null;
-                _settingNotificationsOn            = null;
-                _settingHapticsOn                  = null;
-                _settingSoundOn                    = null;
-                _settingMusicOn                    = null;
-                _disableAds                        = null;
-                _lastDbConnectionSuccess           = null;
-                _notFirstLaunch                    = null;
-                _debugUtilsOn                      = null;
-                _accountId                         = null;
-                _login                             = null;
-                _passwordHash                      = null;
-                _previousAccountId                 = null;
-                _boughtPurchaseIds                 = null;
-                _debugConsoleCommandsHistory       = null;
-                _lowPerformanceDevice              = null;
-                _scheduleNotificationIds           = null;
-            }
-            const bool onlyCache = true;
-            SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               onlyCache);
-            SaveUtils.PutValue(SettingNotificationsOn,      SaveUtils.GetValue(SettingNotificationsOn),     onlyCache);
-            SaveUtils.PutValue(SettingHapticsOn,            SaveUtils.GetValue(SettingHapticsOn),           onlyCache);
-            SaveUtils.PutValue(SettingSoundOn,              SaveUtils.GetValue(SettingSoundOn),             onlyCache);
-            SaveUtils.PutValue(SettingMusicOn,              SaveUtils.GetValue(SettingMusicOn),             onlyCache);
-            SaveUtils.PutValue(DisableAds,                  SaveUtils.GetValue(DisableAds),                 onlyCache);
-            SaveUtils.PutValue(LastDbConnectionSuccess,     SaveUtils.GetValue(LastDbConnectionSuccess),    onlyCache);
-            SaveUtils.PutValue(NotFirstLaunch,              SaveUtils.GetValue(NotFirstLaunch),             onlyCache);
-            SaveUtils.PutValue(DebugUtilsOn,                SaveUtils.GetValue(DebugUtilsOn),               onlyCache);
-            SaveUtils.PutValue(AccountId,                   SaveUtils.GetValue(AccountId),                  onlyCache);
-            SaveUtils.PutValue(Login,                       SaveUtils.GetValue(Login),                      onlyCache);
-            SaveUtils.PutValue(PasswordHash,                SaveUtils.GetValue(PasswordHash),               onlyCache);
-            SaveUtils.PutValue(PreviousAccountId,           SaveUtils.GetValue(PreviousAccountId),          onlyCache);
-            SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          onlyCache);
-            SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory),onlyCache);
-            SaveUtils.PutValue(LowPerformanceDevice,        SaveUtils.GetValue(LowPerformanceDevice),       onlyCache);
-            SaveUtils.PutValue(AppVersion,                  SaveUtils.GetValue(AppVersion),                 onlyCache);
+            SetAllToNull();
+            CacheFromDisc();
         }
 
         public static SaveKey<GameDataField> GameDataFieldValue(int _AccountId, int _GameId, ushort _FieldId)
@@ -133,6 +97,50 @@ namespace Common
             var saveKey = new SaveKey<uint>($"bundle_version_{_BundleName}");
             BundleVersions.Add(_BundleName, saveKey);
             return saveKey;
-        } 
+        }
+
+        private static void SetAllToNull()
+        {
+            _gameWasRated                      = null;
+            _settingNotificationsOn            = null;
+            _settingHapticsOn                  = null;
+            _settingSoundOn                    = null;
+            _settingMusicOn                    = null;
+            _disableAds                        = null;
+            _lastDbConnectionSuccess           = null;
+            _notFirstLaunch                    = null;
+            _debugUtilsOn                      = null;
+            _accountId                         = null;
+            _login                             = null;
+            _passwordHash                      = null;
+            _previousAccountId                 = null;
+            _boughtPurchaseIds                 = null;
+            _debugConsoleCommandsHistory       = null;
+            _lowPerformanceDevice              = null;
+            _scheduleNotificationIds           = null;
+            _appVersion                        = null;
+        }
+
+        private static void CacheFromDisc()
+        {
+            const bool onlyCache = true;
+            SaveUtils.PutValue(GameWasRated,                SaveUtils.GetValue(GameWasRated),               onlyCache);
+            SaveUtils.PutValue(SettingNotificationsOn,      SaveUtils.GetValue(SettingNotificationsOn),     onlyCache);
+            SaveUtils.PutValue(SettingHapticsOn,            SaveUtils.GetValue(SettingHapticsOn),           onlyCache);
+            SaveUtils.PutValue(SettingSoundOn,              SaveUtils.GetValue(SettingSoundOn),             onlyCache);
+            SaveUtils.PutValue(SettingMusicOn,              SaveUtils.GetValue(SettingMusicOn),             onlyCache);
+            SaveUtils.PutValue(DisableAds,                  SaveUtils.GetValue(DisableAds),                 onlyCache);
+            SaveUtils.PutValue(LastDbConnectionSuccess,     SaveUtils.GetValue(LastDbConnectionSuccess),    onlyCache);
+            SaveUtils.PutValue(NotFirstLaunch,              SaveUtils.GetValue(NotFirstLaunch),             onlyCache);
+            SaveUtils.PutValue(DebugUtilsOn,                SaveUtils.GetValue(DebugUtilsOn),               onlyCache);
+            SaveUtils.PutValue(AccountId,                   SaveUtils.GetValue(AccountId),                  onlyCache);
+            SaveUtils.PutValue(Login,                       SaveUtils.GetValue(Login),                      onlyCache);
+            SaveUtils.PutValue(PasswordHash,                SaveUtils.GetValue(PasswordHash),               onlyCache);
+            SaveUtils.PutValue(PreviousAccountId,           SaveUtils.GetValue(PreviousAccountId),          onlyCache);
+            SaveUtils.PutValue(BoughtPurchaseIds,           SaveUtils.GetValue(BoughtPurchaseIds),          onlyCache);
+            SaveUtils.PutValue(DebugConsoleCommandsHistory, SaveUtils.GetValue(DebugConsoleCommandsHistory),onlyCache);
+            SaveUtils.PutValue(LowPerformanceDevice,        SaveUtils.GetValue(LowPerformanceDevice),       onlyCache);
+            SaveUtils.PutValue(AppVersion,                  SaveUtils.GetValue(AppVersion),                 onlyCache);
+        }
     }
 }

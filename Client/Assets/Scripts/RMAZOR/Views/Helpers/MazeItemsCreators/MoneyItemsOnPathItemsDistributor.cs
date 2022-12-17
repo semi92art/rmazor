@@ -49,6 +49,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                 var pathItem = pathItems[index];
                 if (IsPointOnMovingMazeItemPathLine(_Info, pathItem.Position))
                     continue;
+                if (IsPointOnKeyLock(_Info, pathItem.Position))
+                    continue;
                 points.Add(pathItem.Position);
             }
             return points;
@@ -58,7 +60,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
 
         #region nonpublic methods
 
-        private bool IsPointOnMovingMazeItemPathLine(MazeInfo _Info, V2Int _Point)
+        private static bool IsPointOnMovingMazeItemPathLine(MazeInfo _Info, V2Int _Point)
         {
             var movingItemTypes = new[] {EMazeItemType.TrapMoving, EMazeItemType.GravityBlock};
             foreach (var mazeItem in _Info.MazeItems.Where(_Item => movingItemTypes.Contains(_Item.Type)))
@@ -75,6 +77,13 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             }
 
             return false;
+        }
+
+        private static bool IsPointOnKeyLock(MazeInfo _Info, V2Int _Point)
+        {
+            return _Info.MazeItems.Any(
+                _Item => _Item.Type == EMazeItemType.KeyLock 
+                         && _Item.Position == _Point);
         }
 
         #endregion

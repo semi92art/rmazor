@@ -173,6 +173,7 @@ namespace RMAZOR.Views.MazeItems
                 EMazeItemType.Hammer           => "hammer",
                 EMazeItemType.Spear            => "spear",
                 EMazeItemType.Diode            => "diode",
+                EMazeItemType.KeyLock          => "key-lock",
                 _                              => throw new SwitchExpressionException(_Type)
             };
             if (string.IsNullOrEmpty(objectName)) 
@@ -210,6 +211,7 @@ namespace RMAZOR.Views.MazeItems
                 EMazeItemType.Hammer           => new Color(0.66f, 0.43f, 0.12f),
                 EMazeItemType.Spear            => new Color(0.7f, 0.67f, 1f),
                 EMazeItemType.Diode            => new Color(0.63f, 1f, 0.7f),
+                EMazeItemType.KeyLock          => new Color(1f, 0.67f, 0.96f),
                 _                              => throw new SwitchExpressionException(_Type)
             };
         }

@@ -39,6 +39,8 @@ namespace Common.Constants
         public const string AdReward       = "ad_reward";
         public const string AdClosed       = "ad_closed";
         public const string AdFailedToShow = "ad_failed_to_show";
+        
+        public const string SessionStart = "session_start";
 
         public static string GetLanguageChangedAnalyticId(ELanguage _Language)
         {

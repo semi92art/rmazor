@@ -19,20 +19,21 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         [Inject]
         private MazeItemsCreator(
             IMoneyItemsOnPathItemsDistributor _MoneyItemsOnPathItemsDistributor,
-            IViewMazeItemPath             _ItemPath,
-            IViewMazeItemGravityBlock     _GravityBlock,
-            IViewMazeItemMovingTrap       _MovingTrap,
-            IViewMazeItemShredingerBlock  _ShredingerBlock,
-            IViewMazeItemTurret           _Turret,
-            IViewMazeItemSpringboard      _Springboard,
-            IViewMazeItemPortal           _Portal,
-            IViewMazeItemGravityTrap      _GravityTrap,
-            IViewMazeItemTrapReact        _TrapReact,
-            IViewMazeItemTrapIncreasing   _TrapIncreasing,
-            IViewMazeItemGravityBlockFree _GravityBlockFree,
-            IViewMazeItemHammer           _Hammer,
-            IViewMazeItemSpear            _Spear,
-            IViewMazeItemDiode            _Diode) 
+            IViewMazeItemPath                 _ItemPath,
+            IViewMazeItemGravityBlock         _GravityBlock,
+            IViewMazeItemMovingTrap           _MovingTrap,
+            IViewMazeItemShredingerBlock      _ShredingerBlock,
+            IViewMazeItemTurret               _Turret,
+            IViewMazeItemSpringboard          _Springboard,
+            IViewMazeItemPortal               _Portal,
+            IViewMazeItemGravityTrap          _GravityTrap,
+            IViewMazeItemTrapReact            _TrapReact,
+            IViewMazeItemTrapIncreasing       _TrapIncreasing,
+            IViewMazeItemGravityBlockFree     _GravityBlockFree,
+            IViewMazeItemHammer               _Hammer,
+            IViewMazeItemSpear                _Spear,
+            IViewMazeItemDiode                _Diode,
+            IViewMazeItemKeyLock              _KeyLock) 
             : base(
             _ItemPath,
             _GravityBlock, 
@@ -47,7 +48,8 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             _GravityBlockFree,
             _Hammer,
             _Spear,
-            _Diode)
+            _Diode,
+            _KeyLock)
         {
             MoneyItemsOnPathItemsDistributor = _MoneyItemsOnPathItemsDistributor;
         }
@@ -91,14 +93,14 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             {
                 var props = new ViewMazeItemProps
                 {
-                    Type = mazeItem.Type,
-                    Position = mazeItem.Position,
-                    Path = mazeItem.Path,
-                    Directions = mazeItem.Directions,
-                    Pair = mazeItem.Pair,
-                    Blank = mazeItem.Blank,
-                    Args = mazeItem.Args,
-                    IsNode = false,
+                    Type        = mazeItem.Type,
+                    Position    = mazeItem.Position,
+                    Path        = mazeItem.Path,
+                    Directions  = mazeItem.Directions,
+                    Pair        = mazeItem.Pair,
+                    Blank       = mazeItem.Blank,
+                    Args        = mazeItem.Args,
+                    IsNode      = false,
                     IsStartNode = false
                 };
                 var blockItemInPool = _BlockPools[mazeItem.Type].FirstInactive;

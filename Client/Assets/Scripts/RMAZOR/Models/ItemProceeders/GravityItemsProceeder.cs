@@ -17,6 +17,7 @@ namespace RMAZOR.Models.ItemProceeders
     public interface IGravityItemsProceeder : IMovingItemsProceeder, ICharacterMoveStarted
     {
         void OnShredingerBlockEvent(ShredingerBlockArgs _Args);
+        void OnKeyLockBlockEvent(KeyLockEventArgs       _Args);
         void OnMazeOrientationChanged();
     }
     
@@ -66,6 +67,11 @@ namespace RMAZOR.Models.ItemProceeders
         }
 
         public void OnShredingerBlockEvent(ShredingerBlockArgs _Args)
+        {
+            MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
+        }
+
+        public void OnKeyLockBlockEvent(KeyLockEventArgs _Args)
         {
             MoveMazeItemsGravity(Rotation.Orientation, Character.Position);
         }
@@ -360,7 +366,20 @@ namespace RMAZOR.Models.ItemProceeders
                 if (_N.Type == EMazeItemType.ShredingerBlock
                     && _N.ProceedingStage == ModelCommonData.ShredingerStageClosed)
                     return true;
-                return _N.Type != EMazeItemType.ShredingerBlock;
+                if (_N.Type == EMazeItemType.Diode
+                    && _N.Direction == -RmazorUtils.GetDirectionVector(EDirection.Down, Rotation.Orientation))
+                {
+                    return true;
+                }
+                if (_N.Type == EMazeItemType.KeyLock 
+                    && _N.Direction == V2Int.Right 
+                    && _N.ProceedingStage == ModelCommonData.KeyLockStage1)
+                {
+                    return true;
+                }
+                return _N.Type != EMazeItemType.ShredingerBlock
+                       && _N.Type != EMazeItemType.KeyLock 
+                       && _N.Type != EMazeItemType.Diode;
             });
             _GravityBlockItemInfo = null;
             for (int i = 0; i < _Infos.Length; i++)
@@ -379,13 +398,18 @@ namespace RMAZOR.Models.ItemProceeders
         
         private static IEnumerable<IMazeItemProceedInfo> GetStaticBlockItems(IEnumerable<IMazeItemProceedInfo> _Items)
         {
-            return _Items.Where(_Item =>
-                _Item.Type == EMazeItemType.Block
-                || _Item.Type == EMazeItemType.Turret
-                || _Item.Type == EMazeItemType.TrapReact
-                || _Item.Type == EMazeItemType.TrapIncreasing
-                || _Item.Type == EMazeItemType.ShredingerBlock
-                || _Item.Type == EMazeItemType.Portal);
+            var types = new[]
+            {
+                EMazeItemType.Block,
+                EMazeItemType.Turret,
+                EMazeItemType.TrapReact,
+                EMazeItemType.TrapIncreasing,
+                EMazeItemType.ShredingerBlock,
+                EMazeItemType.Portal,
+                EMazeItemType.Diode,
+                EMazeItemType.KeyLock
+            };
+            return _Items.Where(_Item => types.Contains(_Item.Type));
         }
 
         #endregion

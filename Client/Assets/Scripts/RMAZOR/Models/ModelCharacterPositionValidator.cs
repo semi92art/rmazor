@@ -42,6 +42,13 @@ namespace RMAZOR.Models
                 bool nextPosIsInvalid = diode.Direction == -_NextPosition + _CurrentPosition;
                 return !nextPosIsInvalid;
             }
+            IMazeItemProceedInfo lockItem = LockItemOnPosition(_NextPosition, _ProceedInfos);
+            if (lockItem != null)
+            {
+                _BlockPositionWhoStopped = _NextPosition;
+                bool nextPosIsInvalid = lockItem.ProceedingStage == ModelCommonData.KeyLockStage1;
+                return !nextPosIsInvalid;
+            }
             if (IsOtherMazeItemOnPosition(_NextPosition, _ProceedInfos))
                 return false;
             if (IsBusyMazeItemOnPosition(_NextPosition, _ProceedInfos))
@@ -102,6 +109,26 @@ namespace RMAZOR.Models
                 break;
             }
             return diode;
+        }
+        
+        private static IMazeItemProceedInfo LockItemOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            IMazeItemProceedInfo lockItem = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.KeyLock)
+                    continue;
+                if (info.CurrentPosition != _Position)
+                    continue;
+                if (info.Direction != V2Int.Right)
+                    continue;
+                lockItem = info;
+                break;
+            }
+            return lockItem;
         }
 
         private static bool IsOtherMazeItemOnPosition(

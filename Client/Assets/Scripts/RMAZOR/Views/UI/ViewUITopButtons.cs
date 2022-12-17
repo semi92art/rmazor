@@ -38,8 +38,13 @@ namespace RMAZOR.Views.UI
         private float m_TopOffset;
         private bool  m_CanShowDailyGiftPanel;
 
-        private bool CanShowDailyGiftPanel => m_CanShowDailyGiftPanel && Model.LevelStaging.LevelIndex > 0;
-        private bool CanShowLevelsPanel    => !m_CanShowDailyGiftPanel;
+        private bool IsNextLevelBonus =>
+            (string) Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyNextLevelType, out _) ==
+            CommonInputCommandArg.ParameterLevelTypeBonus;
+        
+        private bool CanShowDailyGiftPanel => (m_CanShowDailyGiftPanel && Model.LevelStaging.LevelIndex > 0) || IsNextLevelBonus;
+        private bool CanShowLevelsPanel    => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
 
         #endregion
 
@@ -117,10 +122,10 @@ namespace RMAZOR.Views.UI
         private void CheckIfDailyGiftPanelCanBeOpenedToday()
         {
             var today = DateTime.Now.Date;
-            var dict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays) 
-                       ?? new Dictionary<DateTime, int>();
-            int sessionsCount = dict.GetSafe(today, out _);
-            m_CanShowDailyGiftPanel = sessionsCount == 1;
+            var dailyRewardGotDict = SaveUtils.GetValue(SaveKeysRmazor.DailyRewardGot)
+                                     ?? new Dictionary<DateTime, bool>();
+            bool dailyRewardGotToday = dailyRewardGotDict.GetSafe(today, out _);
+            m_CanShowDailyGiftPanel = !dailyRewardGotToday;
         }
         
         private void OnActiveCameraChanged(Camera _Camera)
@@ -146,7 +151,7 @@ namespace RMAZOR.Views.UI
             m_OpenDailyGiftPanelButton.transform
                     .SetParentEx(parent)
                     .SetLocalScaleXY(scaleVec)
-                    .SetLocalPosX(screenBounds.max.x - horizontalOffset - 8f)
+                    .SetLocalPosX(screenBounds.min.x + horizontalOffset + 5f)
                     .SetLocalPosY(yPos)
                     .SetLocalPosZ(10f);
             m_OpenLevelsPanelButton.transform
@@ -198,15 +203,17 @@ namespace RMAZOR.Views.UI
             DailyGiftPanel.OnClose = () =>
             {
                 m_OpenDailyGiftPanelButton.SetGoActive(false);
-                m_OpenLevelsPanelButton.SetGoActive(true);
                 m_CanShowDailyGiftPanel = false;
             };
             var cont = CameraProvider.Camera.transform;
             var goDailyGiftButton = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "daily_gift_button");
             var renderer = goDailyGiftButton.GetCompItem<SpriteRenderer>("button_sprite");
+            var renderer1 = goDailyGiftButton.GetCompItem<SpriteRenderer>("sprite_2");
             renderer.sortingOrder = SortingOrders.GameUI;
+            renderer1.sortingOrder = SortingOrders.GameUI;
             m_Renderers.Add(renderer);
+            m_Renderers.Add(renderer1);
             m_OpenDailyGiftPanelButton = goDailyGiftButton.GetCompItem<ButtonOnRaycast>("button");
             m_OpenDailyGiftPanelButton.Init(
                 OnOpenDailyGiftPanelButtonPressed, 

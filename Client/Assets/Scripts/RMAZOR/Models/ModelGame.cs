@@ -188,6 +188,8 @@ namespace RMAZOR.Models
             ModelItemsProceedersSet.SpringboardProceeder.SpringboardEvent += Character.OnSpringboard;
             ModelItemsProceedersSet.ShredingerBlocksProceeder.ShredingerBlockEvent += 
                 ModelItemsProceedersSet.GravityItemsProceeder.OnShredingerBlockEvent;
+            ModelItemsProceedersSet.KeyLockMazeItemsProceeder.KeyLockPairEventHandler +=
+                ModelItemsProceedersSet.GravityItemsProceeder.OnKeyLockBlockEvent;
         }
 
         private void InitProceeders()

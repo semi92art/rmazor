@@ -58,7 +58,6 @@ namespace RMAZOR.Managers
         private const string IdTrapIncreasingIncreasedTime          = "trap_increasing_increased_time";
         private const string IdMoneyItemsFillRate                   = "money_items_fill_rate";
         private const string IdFinishLevelGroupPanelGetMoneyTextVar = "fin_lev_g_pan_get_money_button_text_variant";
-        private const string IdFinishLevelGroupPanelBackgroundVar   = "fin_lev_g_pan_background_variant";
         private const string IdCharacterDiedPanelBackgroundVar      = "char_died_g_pan_background_variant";
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
@@ -188,9 +187,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFinishLevelGroupPanelGetMoneyTextVar,
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFinishLevelGroupPanelBackgroundVar,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.finishLevelGroupPanelBackgroundVariant = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterDiedPanelBackgroundVar,
                     _Value => Execute(
                         _Value, _V => ViewSettings.characterDiedPanelBackgroundVariant = ToInt(_V))),
@@ -327,7 +323,6 @@ namespace RMAZOR.Managers
                 IdTrapIncreasingIncreasedTime,
                 IdMoneyItemsFillRate,
                 IdFinishLevelGroupPanelGetMoneyTextVar,
-                IdFinishLevelGroupPanelBackgroundVar,
                 IdCharacterDiedPanelBackgroundVar,
                 IdBackgroundTextures,
                 IdAdditionalBackgroundType,

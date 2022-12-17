@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System.Collections;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
@@ -23,15 +26,18 @@ namespace RMAZOR.UI.Panels
 {
     public class TutorialDialogPanelInfo
     {
+        public string TutorialName               { get; }
         public string TitleLocalizationKey       { get; }
         public string DescriptionLocalizationKey { get; }
         public string VideoClipAssetKey          { get; }
         
         public TutorialDialogPanelInfo(
+            string _TutorialName,
             string _TitleLocalizationKey, 
             string _DescriptionLocalizationKey,
             string _VideoClipAssetKey)
         {
+            TutorialName               = _TutorialName;
             TitleLocalizationKey       = _TitleLocalizationKey;
             DescriptionLocalizationKey = _DescriptionLocalizationKey;
             VideoClipAssetKey          = _VideoClipAssetKey;
@@ -62,6 +68,7 @@ namespace RMAZOR.UI.Panels
         
         private IContainersGetter                   ContainersGetter               { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IFontProvider                       FontProvider                   { get; }
 
         public TutorialDialogPanel(
             IManagersGetter                     _Managers,
@@ -71,7 +78,8 @@ namespace RMAZOR.UI.Panels
             IViewTimePauser                     _TimePauser,
             IContainersGetter                   _ContainersGetter,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IFontProvider                       _FontProvider) 
             : base(
                 _Managers, 
                 _Ticker,
@@ -82,13 +90,14 @@ namespace RMAZOR.UI.Panels
         {
             ContainersGetter               = _ContainersGetter;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            FontProvider                   = _FontProvider;
         }
 
         #endregion
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium3;
         public override Animator          Animator         => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
@@ -129,22 +138,36 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            m_ButtonClose.SetGoActive(false);
             TimePauser.PauseTimeInGame();
-            var locInfoTitle = new LocalizableTextObjectInfo(
-                m_Title, ETextType.MenuUI, m_Info.TitleLocalizationKey,
-                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
-            Managers.LocalizationManager.RemoveTextObject(locInfoTitle);
-            Managers.LocalizationManager.AddTextObject(locInfoTitle);
-            var locInfoDescription = new LocalizableTextObjectInfo(
-                m_Description, ETextType.MenuUI, m_Info.DescriptionLocalizationKey,
-                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
-            Managers.LocalizationManager.RemoveTextObject(locInfoDescription);
-            Managers.LocalizationManager.AddTextObject(locInfoDescription);
+            var font =  FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
+            m_Title.font = m_Description.font = font;
+            m_Title.text = m_Description.text = string.Empty;
             base.OnDialogStartAppearing();
+        }
+
+        public override void OnDialogAppeared()
+        {
+            base.OnDialogAppeared();
+            var locMan = Managers.LocalizationManager;
+            string titleTextLocalized = locMan.GetTranslation(m_Info.TitleLocalizationKey)
+                .FirstCharToUpper(CultureInfo.CurrentUICulture);
+            string descriptionTextLocalized = locMan.GetTranslation(m_Info.DescriptionLocalizationKey)
+                .FirstCharToUpper(CultureInfo.CurrentUICulture);
+            string tutorialWordLocalized = locMan.GetTranslation("tutorial")
+                .FirstCharToUpper(CultureInfo.CurrentUICulture);
+            int currentTutorialNumber = GetNumberOfFinishedTutorials() + 1;
+            titleTextLocalized = $"{tutorialWordLocalized} #{currentTutorialNumber}: {titleTextLocalized}";
+            Cor.Run(PrintTutorialTextCoroutine(titleTextLocalized, descriptionTextLocalized));
         }
 
         public override void OnDialogDisappeared()
         {
+            if (m_Info.TutorialName != "movement")
+            {
+                var saveKeyCurrentTutorial = SaveKeysRmazor.IsTutorialFinished(m_Info.TutorialName);
+                SaveUtils.PutValue(saveKeyCurrentTutorial, true);
+            }
             TimePauser.UnpauseTimeInGame();
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
@@ -172,6 +195,40 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.audioOutputMode = VideoAudioOutputMode.None;
         }
 
+        private IEnumerator PrintTutorialTextCoroutine(string _Title, string _Description)
+        {
+            var titleCharArray = _Title.ToCharArray();
+            var sb = new StringBuilder(titleCharArray.Length);
+            float printTime = _Title.Length * 0.075f;
+            yield return Cor.Lerp(Ticker, printTime, _OnProgress: _P =>
+            {
+                sb.Clear();
+                int textLength = Mathf.RoundToInt(titleCharArray.Length * _P);
+                for (int i = 0; i < textLength; i++)
+                    sb.Append(titleCharArray[i]);
+                m_Title.text = sb.ToString();
+            });
+            var descriptionCharArray = _Description.ToCharArray();
+            printTime = _Description.Length * 0.075f;
+            yield return Cor.Lerp(Ticker, printTime, _OnProgress: _P =>
+            {
+                sb.Clear();
+                int textLength = Mathf.RoundToInt(descriptionCharArray.Length * _P);
+                for (int i = 0; i < textLength; i++)
+                    sb.Append(descriptionCharArray[i]);
+                m_Description.text = sb.ToString();
+            }, _OnFinish: () => m_ButtonClose.SetGoActive(true));
+        }
+
+        private static int GetNumberOfFinishedTutorials()
+        {
+            return SaveKeysRmazor.GetAllTutorialNames()
+                .Select(SaveKeysRmazor.IsTutorialFinished)
+                .Select(SaveUtils.GetValue)
+                .Count(_TutorialFinished => _TutorialFinished);
+        }
+        
+        
         #endregion
     }
 }

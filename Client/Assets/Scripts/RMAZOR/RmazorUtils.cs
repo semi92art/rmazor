@@ -338,6 +338,15 @@ namespace RMAZOR
             int indexInGroup = GetIndexInGroup(_LevelIndex);
             return levelsInGroup == indexInGroup + 1;
         }
+        
+        public static bool WasLevelGroupFinishedBefore(int _LevelsGroupIndex)
+        {
+            long firsLevelInCurrentGroupIdx = GetFirstLevelInGroupIndex(_LevelsGroupIndex);
+            int levelsInGroup = GetLevelsInGroup(_LevelsGroupIndex);
+            long lastLevelInGroup = firsLevelInCurrentGroupIdx + levelsInGroup - 1;
+            var levelsFinishedOnceIndicesList = SaveUtils.GetValue(SaveKeysRmazor.LevelsFinishedOnce);
+            return levelsFinishedOnceIndicesList.Max() >= lastLevelInGroup;
+        }
 
         #endregion
     }

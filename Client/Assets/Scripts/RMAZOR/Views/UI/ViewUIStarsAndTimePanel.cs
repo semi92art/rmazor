@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Common;
 using Common.CameraProviders;
 using Common.Enums;
@@ -38,8 +37,12 @@ namespace RMAZOR.Views.UI
         private TextMeshPro m_TimeText;
         private TextMeshPro m_TimeThresholdText;
         
-        private float       m_BottomOffset;
         private bool        m_DoUpdateTimeText;
+
+        private bool CanShowPanel => Model.LevelStaging.LevelIndex > 1
+                                     || (string) Model.LevelStaging.Arguments.GetSafe(
+                                         CommonInputCommandArg.KeyNextLevelType, out _) ==
+                                     CommonInputCommandArg.ParameterLevelTypeBonus; 
 
         private float 
             m_TimeThreshold3Stars, 
@@ -57,7 +60,6 @@ namespace RMAZOR.Views.UI
         #region inject
 
         private IModelGame           Model               { get; }
-        private IContainersGetter    ContainersGetter    { get; }
         private ICameraProvider      CameraProvider      { get; }
         private IPrefabSetManager    PrefabSetManager    { get; }
         private IViewGameTicker      ViewGameTicker      { get; }
@@ -67,7 +69,6 @@ namespace RMAZOR.Views.UI
 
         public ViewUIStarsAndTimePanel(
             IModelGame           _Model,
-            IContainersGetter    _ContainersGetter,
             ICameraProvider      _CameraProvider,
             IPrefabSetManager    _PrefabSetManager,
             IViewGameTicker      _ViewGameTicker,
@@ -76,7 +77,6 @@ namespace RMAZOR.Views.UI
             ILocalizationManager _LocalizationManager)
         {
             Model               = _Model;
-            ContainersGetter    = _ContainersGetter;
             CameraProvider      = _CameraProvider;
             PrefabSetManager    = _PrefabSetManager;
             ViewGameTicker      = _ViewGameTicker;
@@ -91,7 +91,6 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
-            m_BottomOffset = _Offsets.y;
             InitStarRenderers();
             InitTimeTexts();
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
@@ -102,7 +101,7 @@ namespace RMAZOR.Views.UI
 
         public IEnumerable<Component> GetRenderers()
         {
-            return new Component[] {m_TimeText, m_TimeThresholdText}.Concat(m_StarRenderers);
+            return new Component[0];
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -125,10 +124,10 @@ namespace RMAZOR.Views.UI
 
         public void ShowControls(bool _Show, bool _Instantly)
         {
-            m_TimeText.enabled = _Show;
-            m_TimeThresholdText.enabled = _Show;
+            m_TimeText.enabled = _Show && CanShowPanel;
+            m_TimeThresholdText.enabled = _Show && CanShowPanel;
             foreach (var starRenderer in m_StarRenderers)
-                starRenderer.enabled = _Show;
+                starRenderer.enabled = _Show && CanShowPanel;
         }
         
         public void UpdateTick()
@@ -157,7 +156,7 @@ namespace RMAZOR.Views.UI
             var parent = _Camera.transform;
             var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
             var scaleVec = Vector2.one * 1.5f;
-            float yPos = screenBounds.max.y - 11f; 
+            float yPos = screenBounds.min.y + 4f; 
             for (int i = 0; i < 3; i++)
             {
                 var iStarRend = m_StarRenderers[i];
@@ -172,13 +171,13 @@ namespace RMAZOR.Views.UI
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
                 .SetLocalPosX(screenBounds.min.x + 4f)
-                .SetLocalPosY(yPos - 2f)
+                .SetLocalPosY(yPos + 2f)
                 .SetLocalPosZ(10f);
             m_TimeText.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
                 .SetLocalPosX(screenBounds.min.x + 4f)
-                .SetLocalPosY(yPos - 4f)
+                .SetLocalPosY(yPos + 4f)
                 .SetLocalPosZ(10f);
         }
         
@@ -231,7 +230,9 @@ namespace RMAZOR.Views.UI
             m_Missed2Stars = false;
             m_Missed1Star  = false;
             m_CurrentTimeThreshold = m_TimeThreshold3Stars;
+            m_TimeText.text = 0.ToString("F2", m_FloatValueCultureInfo);
             OnStarsMissed(4);
+            ShowControls(true, true);
         }
 
         private void CheckForStarMissOnUpdateTick()
@@ -247,13 +248,9 @@ namespace RMAZOR.Views.UI
         
         private void OnStarsMissed(int _StarsCount)
         {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-            float yPos = screenBounds.max.y - 11f;
-            m_StarRenderers[0].enabled = _StarsCount > 1;
-            m_StarRenderers[1].enabled = _StarsCount > 2;
-            m_StarRenderers[2].enabled = _StarsCount > 3;
-            m_TimeText.transform.SetLocalPosY(yPos - 4f);
-
+            m_StarRenderers[0].enabled = _StarsCount > 1 && CanShowPanel;
+            m_StarRenderers[1].enabled = _StarsCount > 2 && CanShowPanel;
+            m_StarRenderers[2].enabled = _StarsCount > 3 && CanShowPanel;
             switch (_StarsCount)
             {
                 case 3:
@@ -267,7 +264,6 @@ namespace RMAZOR.Views.UI
                 case 1:
                     m_TimeThresholdText.text = string.Empty;
                     m_Missed1Star  = true;
-                    m_TimeText.transform.SetLocalPosY(yPos);
                     break;
             }
             if (_StarsCount > 1)

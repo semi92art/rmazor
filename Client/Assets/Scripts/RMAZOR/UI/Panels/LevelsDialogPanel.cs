@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Common;
 using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities.UI;
@@ -40,7 +41,7 @@ namespace RMAZOR.UI.Panels
     {
         #region constants
 
-        private const int LevelGroupItemsCount = 5;
+        private const int LevelGroupItemsCount = 4;
 
         #endregion
         
@@ -72,6 +73,8 @@ namespace RMAZOR.UI.Panels
         private IRawLevelInfoGetter                 RawLevelInfoGetter             { get; }
         private IModelGame                          Model                          { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IConfirmLoadLevelDialogPanel        ConfirmLoadLevelDialogPanel    { get; }
+        private IDialogViewersController            DialogViewersController        { get; }
 
         private LevelsDialogPanel(
             ILevelsLoader                       _LevelsLoader,
@@ -83,7 +86,9 @@ namespace RMAZOR.UI.Panels
             IViewTimePauser                     _TimePauser,
             IModelGame                          _Model,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IConfirmLoadLevelDialogPanel        _ConfirmLoadLevelDialogPanel,
+            IDialogViewersController            _DialogViewersController)
             : base(
                 _Managers,
                 _Ticker,
@@ -96,6 +101,8 @@ namespace RMAZOR.UI.Panels
             RawLevelInfoGetter             = _RawLevelInfoGetter;
             Model                          = _Model;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            ConfirmLoadLevelDialogPanel    = _ConfirmLoadLevelDialogPanel;
+            DialogViewersController        = _DialogViewersController;
         }
 
         #endregion
@@ -225,7 +232,7 @@ namespace RMAZOR.UI.Panels
             m_ButtonNextGroups.interactable = true;
             if (m_SelectedLevelGroupGroupIndex == 0)
                 m_ButtonPreviousGroups.interactable = false;
-            if (m_SelectedLevelGroupGroupIndex > GetCurrentLevelGroupGroupIndex())
+            if (m_SelectedLevelGroupGroupIndex > GetCurrentLevelGroupGroupIndex() + 1)
                 m_ButtonNextGroups.interactable = false;
         }
 
@@ -242,7 +249,7 @@ namespace RMAZOR.UI.Panels
                 : RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int currentLevelsGroupGroupIndex = GetCurrentLevelGroupGroupIndex();
             int startLevelGroupIndexInGroup = m_SelectedLevelGroupGroupIndex * LevelGroupItemsCount;
-            bool isUnknownStage = m_SelectedLevelGroupGroupIndex > currentLevelsGroupGroupIndex;
+            bool isUnknownStage = m_SelectedLevelGroupGroupIndex > currentLevelsGroupGroupIndex + 1;
             for (int i = 1; i <= LevelGroupItemsCount; i++)
             {
                 bool? stageEnabled = null;
@@ -253,15 +260,38 @@ namespace RMAZOR.UI.Panels
                     iLevelsGroup,
                     currentLevelGroupIdx,
                     stageEnabled, 
-                    _LevelInGroupIndex => LoadLevel(iLevelsGroup, _LevelInGroupIndex));
+                    _LevelInGroupIndex =>
+                    {
+                        long currentLevelIdxInGroup = RmazorUtils.GetIndexInGroup(Model.LevelStaging.LevelIndex);   
+                        if (RmazorUtils.WasLevelGroupFinishedBefore(currentLevelGroupIdx) || currentLevelIdxInGroup == 0 || isCurrentLevelBonus)
+                        {
+                            LoadLevel(iLevelsGroup, _LevelInGroupIndex);
+                        }
+                        else
+                        {
+                            ConfirmLoadLevelDialogPanel.SetLevelGroupAndIndex(iLevelsGroup, _LevelInGroupIndex);
+                            var dv = DialogViewersController.GetViewer(ConfirmLoadLevelDialogPanel.DialogViewerType);
+                            dv.Show(ConfirmLoadLevelDialogPanel);
+                        }
+                    });
             }
         }
 
         private void LoadLevel(int _LevelGroupIndex, int _LevelInGroupIndex)
         {
-            OnButtonCloseClick();
             Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
-            InvokeStartUnloadingLevel(_LevelGroupIndex, _LevelInGroupIndex);
+            long levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(_LevelGroupIndex) + _LevelInGroupIndex;
+            bool isLevelExist = levelIndex < LevelsLoader.GetLevelsCount(
+                CommonData.GameId, _LevelGroupIndex == -1);
+            if (isLevelExist)
+            {
+                OnButtonCloseClick();
+                InvokeStartUnloadingLevel(_LevelGroupIndex, _LevelInGroupIndex);
+            }
+            else
+            {
+                 CommonUtils.ShowAlertDialog("OOPS", "I didn't create this level yet. Try to load it some later.");   
+            }
         }
         
         private void InvokeStartUnloadingLevel(int _LevelGroupIndex, int _LevelInGroupIndex)

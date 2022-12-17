@@ -305,6 +305,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 415750425331080085}
+  circles1: {fileID: 0}
+  circles2: {fileID: 0}
+  loadingText: {fileID: 0}
 --- !u!1001 &516315699410719944
 PrefabInstance:
   m_ObjectHideFlags: 0

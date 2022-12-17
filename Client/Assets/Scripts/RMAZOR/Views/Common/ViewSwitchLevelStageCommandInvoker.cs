@@ -190,7 +190,7 @@ namespace RMAZOR.Views.Common
             switch (source)
             {
                 case ParameterScreenTap:
-                case ParameterFinishLevelGroupPanel:
+                // case ParameterFinishLevelGroupPanel:
                 case ParameterLevelSkipper:
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;

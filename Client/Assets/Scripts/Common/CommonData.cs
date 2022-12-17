@@ -33,7 +33,6 @@ namespace Common
 
         private static void SetDefaultGameIdIfNotSet()
         {
-            Dbg.Log("Game Id: " + GameId);
             var gameIds = new[] {GameIds.RMAZOR, GameIds.ZMAZOR};
             if (!gameIds.Contains(GameId))
                 GameId = GameIds.RMAZOR;

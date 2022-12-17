@@ -82,7 +82,8 @@ namespace Editor
                 {EMazeItemType.GravityTrap,      '\u2622'},
                 {EMazeItemType.Hammer,           '\u2692'},
                 {EMazeItemType.Spear,            '\u22c8'},
-                {EMazeItemType.Diode,            '\u22c9'}
+                {EMazeItemType.Diode,            '\u22c9'},
+                {EMazeItemType.KeyLock,          '\u22cf'}
             };
 
             var keys = itemSymbolsDict.Keys.ToList();
@@ -106,6 +107,7 @@ namespace Editor
                 case EMazeItemType.Diode:        DrawControlsDiode(_Items);         break;
                 case EMazeItemType.Springboard:  DrawControlsSpringboards(_Items);  break;
                 case EMazeItemType.Hammer:       DrawControlsHammers(_Items);       break;
+                case EMazeItemType.KeyLock:      DrawControlsKeyLock(_Items);       break;
                 case EMazeItemType.Spear:
                 case EMazeItemType.Block:
                 case EMazeItemType.ShredingerBlock:
@@ -199,10 +201,10 @@ namespace Editor
             else DrawControlsDirectedBlockMultiple(_PropsList);
         }
 
-        private static void DrawControlsSpringboards(ViewMazeItemProt[] _Items)
+        private static void DrawControlsSpringboards(IEnumerable<ViewMazeItemProt> _Items)
         {
-            var protsList = _Items.ToList();
-            var dirs = _Items.First().Props.Directions;
+            var items = _Items.ToList();
+            var dirs = items.First().Props.Directions;
             var possibleDirs = new[]
             {
                 V2Int.Up   + V2Int.Right,
@@ -210,7 +212,11 @@ namespace Editor
                 V2Int.Down + V2Int.Left,
                 V2Int.Up   + V2Int.Left
             };
-            void SetDirs(V2Int _Dir) => protsList.ForEach(_P => _P.SetDirection(_Dir));
+            void SetDirs(V2Int _Dir)
+            {
+                foreach (var item in items)
+                    item.SetDirection(_Dir);
+            }
             if (!dirs.Any() || !possibleDirs.Contains(dirs.First()))
             {
                 EditorUtilsEx.SceneDirtyAction(() => SetDirs(V2Int.Up + V2Int.Left));
@@ -231,7 +237,7 @@ namespace Editor
 
         private static void DrawControlsHammers(IReadOnlyCollection<ViewMazeItemProt> _ProtsCollection)
         {
-            if (_ProtsCollection.Count != 1)
+            if (_ProtsCollection.Count < 1)
                 return;
             var protsList = _ProtsCollection.ToList();
             var firstProps = protsList.First().Props;
@@ -305,6 +311,39 @@ namespace Editor
                     EditorUtilsEx.GuiButtonAction("counter", () => SetClockwiseDirty(false));
                 });
             });
+        }
+
+        private static void DrawControlsKeyLock(IEnumerable<ViewMazeItemProt> _Items)
+        {
+            var propsList = _Items.Select(_Item => _Item.Props).ToList();
+            if (propsList.Count < 1)
+                return;
+            var firstProps = propsList.First();
+            if (!firstProps.Directions.Any() || firstProps.Directions.First() == default)
+            {
+                firstProps.Directions.Clear();
+                firstProps.Directions.Add(V2Int.Left);
+            }
+            var dir = firstProps.Directions.First();
+            bool isLock = dir == V2Int.Right;
+            void SetAsLock(bool _IsLock)
+            {
+                foreach (var props in propsList)
+                    props.Directions[0] = _IsLock ? V2Int.Right : V2Int.Left;
+            }
+            void SetAsLockDirty(bool _Clockwise) => EditorUtilsEx.SceneDirtyAction(() => SetAsLock(_Clockwise));
+            static Color GetCol(bool _Predicate) => _Predicate ? Color.green : Color.white;
+            EditorUtilsEx.GUIColorZone(GetCol(!isLock), () =>
+            {
+                EditorUtilsEx.GuiButtonAction("key", () => SetAsLockDirty(false));
+            });
+            EditorUtilsEx.GUIColorZone(GetCol(isLock), () =>
+            {
+                EditorUtilsEx.GuiButtonAction("lock", () => SetAsLockDirty(true));
+            });
+            if (propsList.Count != 2)
+                return;
+            EditorUtilsEx.GuiButtonAction(LinkKeyAndLock, propsList[0], propsList[1]);
         }
 
         private static void DrawControlsDirectedBlockSingle(IReadOnlyCollection<ViewMazeItemProps> _PropsList)
@@ -381,6 +420,17 @@ namespace Editor
             {
                 _Props1.Pair = _Props2.Position;
                 _Props2.Pair = _Props1.Position;    
+            });
+        }
+        
+        private static void LinkKeyAndLock(ViewMazeItemProps _Props1, ViewMazeItemProps _Props2)
+        {
+            EditorUtilsEx.SceneDirtyAction(() =>
+            {
+                if (!_Props1.Path.Contains(_Props2.Position))
+                    _Props1.Path.Add(_Props2.Position);
+                if (!_Props2.Path.Contains(_Props1.Position))
+                    _Props2.Path.Add(_Props1.Position);
             });
         }
     }

@@ -67,7 +67,6 @@ namespace Common.Managers.PlatformGameServices.SavedGames
             try
             {
                 string ser = JsonConvert.SerializeObject(_Data);
-                Dbg.Log(ser);
                 fileNameData = JsonConvert.DeserializeObject<FileNameArgs>(ser);
             }
             catch (InvalidCastException)
@@ -90,7 +89,6 @@ namespace Common.Managers.PlatformGameServices.SavedGames
                 }
                 else
                 {
-                    Dbg.Log($"Successfully save game with file name {fileNameData.FileName} to cache.");
                     field.SetValue(_Data).Save(true);
                     GameSaved?.Invoke(new SavedGameEventArgs(_Data));
                 }

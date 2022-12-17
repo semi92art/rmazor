@@ -9,6 +9,7 @@ using Common.Providers;
 using Common.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Utils;
 using Shapes;
 using TMPro;
 using UnityEngine;
@@ -117,6 +118,9 @@ namespace RMAZOR.Views.UI
             m_CongratsText  = m_CongratsGo.GetCompItem<TextMeshPro>("text_congrats");
             m_CongratsLine  = m_CongratsGo.GetCompItem<Line>("line");
             m_CongratsAnim  = m_CongratsGo.GetCompItem<Animator>("animator");
+
+            m_CompletedText.sortingOrder = SortingOrders.GameUI;
+            m_CongratsText.sortingOrder  = SortingOrders.GameUI;
         }
         
         private void SetCongratsString()

@@ -109,7 +109,6 @@ namespace RMAZOR
 #if UNITY_ANDROID
             InitAndroidPerformanceClient();
 #endif
-            CompanyLogo.Init();
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
@@ -181,6 +180,7 @@ namespace RMAZOR
         
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
+            CompanyLogo.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;
             if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
                 return;
@@ -321,7 +321,7 @@ namespace RMAZOR
             string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
             bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             long newLevelIndex = !isBonusLevel ? _LevelIndex : RmazorUtils.GetFirstLevelInGroupIndex((int)_LevelIndex + 1 + 1);
-            var info = LevelsLoader.GetLevelInfo(1, newLevelIndex, null);
+            var info = LevelsLoader.GetLevelInfo(1, newLevelIndex, false);
             _Controller.Model.LevelStaging.LoadLevel(info, newLevelIndex);
         }
         
@@ -356,7 +356,6 @@ namespace RMAZOR
         {
             if (SaveUtils.GetValue(SaveKeysCommon.NotFirstLaunch))
                 return;
-            Dbg.Log(nameof(InitDefaultData));
             SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn,         true);
             SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn,         true);
             SaveUtils.PutValue(SaveKeysCommon.SettingNotificationsOn, true);
@@ -375,6 +374,11 @@ namespace RMAZOR
 
         private void SetDefaultLanguage()
         {
+            if (Application.isEditor)
+            {
+                LocalizationManager.SetLanguage(ELanguage.English);
+                return;
+            }
             ELanguage lang = Application.systemLanguage switch
             {
                 SystemLanguage.Russian    => ELanguage.Russian,

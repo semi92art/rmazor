@@ -41,18 +41,12 @@ namespace RMAZOR.Helpers
             AssetDatabase.SaveAssets();
         }
         
-        public override MazeInfo GetLevelInfo(
-            int _GameId,
-            long _Index,
-            Dictionary<string, object> _Args)
+        public override MazeInfo GetLevelInfo(int _GameId, long _Index, bool _IsBonus)
         {
             throw new System.NotSupportedException();
         }
 
-        public override string GetLevelInfoRaw(
-            int                        _GameId,
-            long                       _Index,
-            Dictionary<string, object> _Args)
+        public override string GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus)
         {
             throw new System.NotSupportedException();
         }
@@ -80,14 +74,14 @@ namespace RMAZOR.Helpers
             string setName = PrefabSetName(_GameId);
             if (!ResLoader.PrefabSetExist(setName))
                 ResLoader.CreatePrefabSetIfNotExist(setName);
-            PrefabSetManager.SetPrefab(setName, LevelsAssetName(0), asset);
+            PrefabSetManager.SetPrefab(setName, LevelsAssetName(0, false), asset);
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
             AssetDatabase.SaveAssets();
         }
 
         private string LevelsAssetPath(int _GameId, int _HeapIndex)
         {
-            return $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex)}.json";
+            return $"Assets/Prefabs/Levels/Game_{_GameId}/{LevelsAssetName(_HeapIndex, false)}.json";
         }
         
         #endregion

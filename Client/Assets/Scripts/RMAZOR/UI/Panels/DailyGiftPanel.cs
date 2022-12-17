@@ -124,6 +124,7 @@ namespace RMAZOR.UI.Panels
             PanelRectTransform = go.RTransform();
             PanelRectTransform.SetGoActive(false);
             GetPrefabContentObjects(go);
+            GetTodayAndTomorrowGiftMoneyCount();
             LocalizeTexts();
             var psm = Managers.PrefabSetManager;
             m_SpriteMoney = psm.GetObject<Sprite>(
@@ -133,7 +134,6 @@ namespace RMAZOR.UI.Panels
                 "icons", 
                 "icon_coin_ui_multiplied");
 
-            GetTodayAndTomorrowGiftMoneyCount();
             m_TodayGiftMoneyCountText.text = m_TodayGiftMoneyCount.ToString();
             m_GetButton.onClick.AddListener(OnGetButtonClick);
             m_MultiplyButton.onClick .AddListener(OnMultiplyButtonClick);
@@ -225,6 +225,11 @@ namespace RMAZOR.UI.Panels
         {
             m_MultiplyCoefficient = 1;
             Multiply();
+            var today = DateTime.Now.Date;
+            var dailyRewardGotDict = SaveUtils.GetValue(SaveKeysRmazor.DailyRewardGot)
+                                     ?? new Dictionary<DateTime, bool>();
+            dailyRewardGotDict.SetSafe(today, true);
+            SaveUtils.PutValue(SaveKeysRmazor.DailyRewardGot, dailyRewardGotDict);
             base.OnClose(() =>
             {
                 SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);

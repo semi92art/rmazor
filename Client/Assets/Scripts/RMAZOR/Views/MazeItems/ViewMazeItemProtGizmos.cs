@@ -63,6 +63,9 @@ namespace RMAZOR.Views.MazeItems
                 case EMazeItemType.Hammer:
                     DrawGizmosHammer();
                     break;
+                case EMazeItemType.KeyLock:
+                    DrawGizmosKeyLock();
+                    break;
                 default: throw new SwitchCaseNotImplementedException(props.Type);
             }
         }
@@ -226,6 +229,36 @@ namespace RMAZOR.Views.MazeItems
                 Gizmos.DrawLine(pos, dir270);
                 Gizmos.DrawSphere(dir270, 0.15f * GetScale());
             }
+        }
+
+        private void DrawGizmosKeyLock()
+        {
+#if UNITY_EDITOR
+            var pos = ToWorldPosition(props.Position);
+            if (!props.Directions.Any())
+                return;
+            var dir = props.Directions.First();
+            bool isLock = dir == V2Int.Right;
+            if (isLock)
+            {
+                Gizmos.DrawSphere(pos, GetScale());
+                return;
+            }
+            if (!props.Path.Any()) 
+                return;
+            var pairItems = props.Path.Select(_P =>
+                LevelDesigner.Instance.maze.FirstOrDefault(_Item => _Item.props.Position == _P));
+            foreach (var pairItem in pairItems)
+            {
+                if (pairItem == null)
+                    continue;
+                if (pairItem != null && (pairItem.props.Type != EMazeItemType.KeyLock || pairItem.props.IsNode))
+                    continue;
+                var pairPos = ToWorldPosition(pairItem.props.Position);
+                Gizmos.DrawLine(pos, pairPos);
+            }
+            Gizmos.DrawSphere(pos, 0.5f * GetScale());
+#endif
         }
 
         private Vector2 ToWorldPosition(Vector2 _Point)

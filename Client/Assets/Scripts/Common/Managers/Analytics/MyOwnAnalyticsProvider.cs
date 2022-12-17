@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Common.Entities;
 using Common.Network;
 using Common.Network.Packets;
-using Lean.Localization;
-using Newtonsoft.Json;
+using Common.Utils;
 using UnityEngine.Device;
-using UnityEngine.Networking;
 
 namespace Common.Managers.Analytics
 {
@@ -13,6 +11,8 @@ namespace Common.Managers.Analytics
     
     public class MyOwnAnalyticsProvider : AnalyticsProviderBase, IMyOwnAnalyticsProvider
     {
+        private string m_IdfaCached;
+        
         private IGameClient GameClient { get; }
 
         public MyOwnAnalyticsProvider(IGameClient _GameClient)
@@ -20,39 +20,54 @@ namespace Common.Managers.Analytics
             GameClient = _GameClient;
         }
         
-        protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
+        protected override void SendAnalyticCore(
+            string                      _AnalyticId,
+            IDictionary<string, object> _EventData = null)
         {
             if (Application.isEditor)
                 return;
             if (_AnalyticId == null)
                 return;
-            var packet = CreatePacket(_AnalyticId);
-            GameClient.Send(packet);
+            var packetEntity = CreatePacketEntity(_AnalyticId, _EventData);
+            Cor.Run(Cor.WaitWhile(
+                () => packetEntity.Result == EEntityResult.Pending,
+                () => GameClient.Send(packetEntity.Value)));
         }
 
         protected override string GetRealAnalyticId(string _AnalyticId)
         {
-            if (_AnalyticId != "session_start")
-                return null;
             return _AnalyticId;
         }
 
         protected override string GetRealParameterId(string _ParameterId)
         {
-            return null;
+            return _ParameterId;
         }
         
-        private static GameUserEventPacket CreatePacket(string _AnalyticId)
+        private static Entity<GameUserEventPacket> CreatePacketEntity(
+            string _AnalyticId,
+            IDictionary<string, object> _EventData = null)
         {
-            var gameUserDto = new GameUserDto
-            {
-                Action = _AnalyticId,
-                Country = PreciseLocale.GetRegion(),
-                Language = PreciseLocale.GetLanguage(),
-                AppVersion = Application.version,
-                Platform = Application.platform.ToString()
-            };
-            return new GameUserEventPacket(gameUserDto);
+            var result = new Entity<GameUserEventPacket>();
+            var idfaEntity = CommonUtils.GetIdfa();
+            Cor.Run(Cor.WaitWhile(
+                () => idfaEntity.Result == EEntityResult.Pending,
+                () =>
+                {
+                    var gameUserDto = new GameUserDto
+                    {
+                        Idfa       = idfaEntity.Value,
+                        Action     = _AnalyticId,
+                        Country    = PreciseLocale.GetRegion(),
+                        Language   = PreciseLocale.GetLanguage(),
+                        AppVersion = Application.version,
+                        Platform   = Application.platform.ToString(),
+                        EventData  = _EventData
+                    };
+                    result.Value = new GameUserEventPacket(gameUserDto);
+                    result.Result = EEntityResult.Success;
+                }));
+            return result;
         }
     }
 }

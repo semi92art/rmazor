@@ -46,9 +46,7 @@ namespace RMAZOR.Views.UI
         #region nonpublic members
 
         protected IUnityTicker         Ticker;
-        private   ICameraProvider      m_CameraProvider;
         private   ICoordinateConverter m_CoordinateConverter;
-        private   Vector4              m_Offsets;
         protected bool                 ReadyToAnimate;
         protected EDirection?  Direction;
         private   IEnumerator          m_LastTraceAnimCoroutine;
@@ -71,9 +69,7 @@ namespace RMAZOR.Views.UI
         {
             _Ticker.Register(this);
             Ticker = _Ticker;
-            m_CameraProvider = _CameraProvider;
             m_CoordinateConverter = _CoordinateConverter;
-            m_Offsets = _Offsets;
             _ColorProvider.ColorChanged += OnColorChanged;
         }
 
@@ -121,35 +117,29 @@ namespace RMAZOR.Views.UI
         {
             get
             {
-                var mazeCenter = m_CoordinateConverter.GetMazeBounds().center;
-                var screeenBds = GetScreenBounds();
+                var mazeBounds = m_CoordinateConverter.GetMazeBounds();
                 return new Dictionary<EDirection, Func<Vector2>>
                 {
                     {
                         EDirection.Left,
-                        () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
+                        () => new Vector2(mazeBounds.center.x, mazeBounds.min.y + 4f)
                     },
                     {
                         EDirection.Right,
-                        () => new Vector2(mazeCenter.x, screeenBds.min.y + m_Offsets.z + 10f)
+                        () => new Vector2(mazeBounds.center.y, mazeBounds.min.y + 4f)
                     },
                     {
                         EDirection.Down,
-                        () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
+                        () => new Vector2(mazeBounds.max.x - 4f, mazeBounds.center.y)
                     },
                     {
                         EDirection.Up,
-                        () => new Vector2(screeenBds.max.x - m_Offsets.y - 5f, mazeCenter.y)
+                        () => new Vector2(mazeBounds.max.x - 4f, mazeBounds.center.y)
                     },
                 };
             }
         }
 
-        private Bounds GetScreenBounds()
-        {
-            return GraphicUtils.GetVisibleBounds(m_CameraProvider.Camera);
-        }
-        
         protected IEnumerator AnimateHandPositionCoroutine(
             EDirection _Direction,
             HandSpriteTraceParamsBase _Params)

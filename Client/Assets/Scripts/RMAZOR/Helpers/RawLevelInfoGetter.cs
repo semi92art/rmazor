@@ -13,39 +13,43 @@ namespace RMAZOR.Helpers
     
     public class RawLevelInfoGetter : IRawLevelInfoGetter
     {
-        private readonly StringBuilder m_StringBuilder = new StringBuilder();
+        private readonly StringBuilder m_StringBuilder         = new StringBuilder();
+        private readonly CultureInfo   m_FloatValueCultureInfo = new CultureInfo("en-US");
         
         public Tuple<float, float, float> GetStarTimeRecords(string _LevelInfoRaw)
         {
-            int i1 = _LevelInfoRaw.IndexOf("T1", StringComparison.InvariantCulture);
-            int i2 = _LevelInfoRaw.IndexOf("T2", StringComparison.InvariantCulture);
-            int i3 = _LevelInfoRaw.IndexOf("T3", StringComparison.InvariantCulture);
-            float v1 = GetFloatValue(_LevelInfoRaw, i1);
-            float v2 = GetFloatValue(_LevelInfoRaw, i2);
-            float v3 = GetFloatValue(_LevelInfoRaw, i3);
+            float v1 = GetFloatValue(_LevelInfoRaw, "T1");
+            float v2 = GetFloatValue(_LevelInfoRaw, "T2");
+            float v3 = GetFloatValue(_LevelInfoRaw, "T3");
             return new Tuple<float, float, float>(v1, v2, v3);
         }
 
-        private float GetFloatValue(string _LevelInfoRaw, int _StartIdx)
+        private float GetFloatValue(string _LevelInfoRaw, string _Key)
         {
-            if (_StartIdx == -1)
+            int startIdx = _LevelInfoRaw.IndexOf(_Key, StringComparison.InvariantCulture);
+            if (startIdx == -1)
                 return default;
-            int idx = _StartIdx;
-            do
+            int idx = startIdx + _Key.Length;
+            while (!char.IsDigit(_LevelInfoRaw[idx]))
             {
                 idx++;
             }
-            while (!char.IsDigit(_LevelInfoRaw[idx]));
-            
+            m_StringBuilder.Clear();
             while(char.IsDigit(_LevelInfoRaw[idx]))
             {
-                idx++;
                 m_StringBuilder.Append(_LevelInfoRaw[idx]);
+                idx++;
+            }
+            idx++;
+            m_StringBuilder.Append('.');
+            while(char.IsDigit(_LevelInfoRaw[idx]))
+            {
+                m_StringBuilder.Append(_LevelInfoRaw[idx]);
+                idx++;
             }
             IEnumerable<char> arr = m_StringBuilder.ToString().ToCharArray();
-            arr = arr.Reverse();
-            string valS = arr.ToString();
-            float val = float.Parse(valS, NumberStyles.Float);
+            string valS = new string(arr.ToArray());
+            float.TryParse(valS, NumberStyles.Float, m_FloatValueCultureInfo, out float val);
             return val;
         }
     }

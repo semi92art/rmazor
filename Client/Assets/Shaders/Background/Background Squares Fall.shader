@@ -23,7 +23,7 @@ Shader "RMAZOR/Background/Squares Fall"
         Pass
         {
             CGPROGRAM
-            #define T (_Time.x * _Speed)
+            #define T (_Time.x * _Speed * 0.1)
             #define RAND1(p) frac(sin(p* 78.233)* 43758.5453)
 
             #pragma vertex vert
@@ -45,7 +45,7 @@ Shader "RMAZOR/Background/Squares Fall"
             fixed4 frag(v2f f_i) : SV_Target
             {
                 float2 fragCoord = f_i.uv * _ScreenParams.xy;
-                float2 ouv = (fragCoord - _ScreenParams.xy * .5) / _ScreenParams.y;
+                float2 ouv = (fragCoord - _ScreenParams.xy * .5) / _ScreenParams.y / _Scale;
 
                 float sf = .05 + abs(ouv.y);
 
@@ -93,7 +93,7 @@ Shader "RMAZOR/Background/Squares Fall"
                 }
                 m*=2;
                 m = clamp(m,0,1);
-                return lerp(_Color1, _Color2, m);
+                return lerp(_Color1, _Color2, m*.8);
             }
             ENDCG
         }

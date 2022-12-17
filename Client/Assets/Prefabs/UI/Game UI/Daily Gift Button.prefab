@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8578527747273511935}
   - component: {fileID: 6530925539031832706}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Alert
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,10 +165,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 5943621020961091322}
-      name: button
-    - item: {fileID: 8880601949708589782}
-      name: button_sprite
+    - name: button
+      item: {fileID: 5943621020961091322}
+    - name: button_sprite
+      item: {fileID: 8880601949708589782}
+    - name: sprite_2
+      item: {fileID: 1640431154814366070}
 --- !u!95 &1055342813661919124
 Animator:
   serializedVersion: 4

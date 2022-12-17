@@ -59,7 +59,6 @@ namespace Common.UI.DialogViewers
         
         private RectTransform m_DialogContainer;
         
-        private readonly Stack<IDialogPanel> m_PanelStack = new Stack<IDialogPanel>();
         private readonly Dictionary<int, GraphicAlphas> m_GraphicsAlphas = 
             new Dictionary<int, GraphicAlphas>();
 
@@ -100,7 +99,6 @@ namespace Common.UI.DialogViewers
         public override void Show(IDialogPanel _Panel, float _AnimationSpeed = 1f, bool _HidePrevious = true)
         {
             CameraProvider.EnableEffect(ECameraEffect.DepthOfField, true);
-            base.Show(_Panel, _AnimationSpeed, _HidePrevious);
             ShowCore(_Panel, _AnimationSpeed, _HidePrevious);
         }
         
@@ -130,7 +128,7 @@ namespace Common.UI.DialogViewers
             bool         _HidePrevious = false,
             bool         _GoBack = false)
         {
-            var panelFrom = !m_PanelStack.Any() ? null : m_PanelStack.Peek();
+            var panelFrom = !PanelsStack.Any() ? null : PanelsStack.Peek();
             if (panelFrom == null && _PanelTo == FakePanel)
                 return;
             var panelFromObj = panelFrom?.PanelRectTransform;
@@ -192,32 +190,32 @@ namespace Common.UI.DialogViewers
         {
             ClearGraphicsAlphas();
             if (_PanelTo.IsNull())
-                m_PanelStack.Clear();
+                PanelsStack.Clear();
             else
             {
-                if (!m_PanelStack.Any())
-                    m_PanelStack.Push(_ItemFrom);
-                if (m_PanelStack.Any() && _GoBack)
-                    m_PanelStack.Pop();
+                if (!PanelsStack.Any())
+                    PanelsStack.Push(_ItemFrom);
+                if (PanelsStack.Any() && _GoBack)
+                    PanelsStack.Pop();
                 if (!_GoBack)
-                    m_PanelStack.Push(_ItemTo);
+                    PanelsStack.Push(_ItemTo);
             }
         }
         
         private void CloseAll()
         {
-            if (!m_PanelStack.Any())
+            if (!PanelsStack.Any())
                 return;
-            var lastPanel = m_PanelStack.Pop();
+            var lastPanel = PanelsStack.Pop();
             var panelsToDeactivate = new List<IDialogPanel>();
-            while (m_PanelStack.Count > 0)
-                panelsToDeactivate.Add(m_PanelStack.Pop());
+            while (PanelsStack.Count > 0)
+                panelsToDeactivate.Add(PanelsStack.Pop());
             foreach (var pan in panelsToDeactivate
                 .Where(_Panel => _Panel != null))
             {
-                Object.Destroy(pan.PanelRectTransform.SetGoActive(false));
+                Object.Destroy(pan.PanelRectTransform.gameObject);
             }
-            m_PanelStack.Push(lastPanel);
+            PanelsStack.Push(lastPanel);
             ShowCore(FakePanel, _HidePrevious: true, _GoBack: true);
         }
         

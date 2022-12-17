@@ -35,8 +35,5 @@
         DisableDebug,
         // debug load level commands
         LoadCurrentLevel,
-        LoadRandomLevel,
-        LoadRandomLevelWithRotation,
-        LoadFirstLevelFromRandomGroup,
     }
 }

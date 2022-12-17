@@ -1,5 +1,4 @@
-﻿using Common.Exceptions;
-using RMAZOR.Models.MazeInfos;
+﻿using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Views.Utils
 {
@@ -38,6 +37,7 @@ namespace RMAZOR.Views.Utils
                 case EMazeItemType.TrapMoving:
                 case EMazeItemType.GravityBlockFree:
                 case EMazeItemType.ShredingerBlock:
+                case EMazeItemType.KeyLock:
                     return Path + 154;
                 case EMazeItemType.Turret:
                     return Path + 155;
