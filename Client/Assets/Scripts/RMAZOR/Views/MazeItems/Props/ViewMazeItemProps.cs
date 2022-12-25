@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Entities;
+using mazing.common.Runtime.Entities;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 // ReSharper disable InconsistentNaming

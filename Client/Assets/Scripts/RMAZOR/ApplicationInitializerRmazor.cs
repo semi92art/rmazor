@@ -5,7 +5,6 @@ using System.Text;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
@@ -13,9 +12,18 @@ using Common.Managers.Advertising;
 using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.PlatformGameServices;
-using Common.Network;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.IAP;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Controllers;
 using RMAZOR.Helpers;
@@ -189,7 +197,7 @@ namespace RMAZOR
 
         private IEnumerator InitGameControllerCoroutine()
         {
-            const float waitingTime = 3f;
+            const float waitingTime = 1.5f;
             yield return Cor.WaitWhile(
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
@@ -260,7 +268,7 @@ namespace RMAZOR
             {
                 _Action?.Invoke();
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
                 Dbg.LogError(ex);
             }
@@ -271,7 +279,7 @@ namespace RMAZOR
             var controller = GameControllerMVC.CreateInstance();
             controller.Initialize += () =>
             {
-                const string fName = CommonData.SavedGameFileName;
+                const string fName = MazorCommonData.SavedGameFileName;
                 var sgEntityRemote = ScoreManager.GetSavedGameProgress(fName, false);
                 var sgEntityCache = ScoreManager.GetSavedGameProgress(fName, true);
                 Cor.Run(Cor.WaitWhile(
@@ -328,7 +336,7 @@ namespace RMAZOR
         private void OnScoreManagerInitialize()
         {
             var savedGameServerEntity = ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, 
+                MazorCommonData.SavedGameFileName, 
                 false);
             Cor.Run(Cor.WaitWhile(
                 () => savedGameServerEntity.Result == EEntityResult.Pending,
@@ -343,7 +351,7 @@ namespace RMAZOR
                     Dbg.Log("getting saved game from server");
                     var newSavedGame = new SavedGame
                     {
-                        FileName = CommonData.SavedGameFileName,
+                        FileName = MazorCommonData.SavedGameFileName,
                         Money = savedGameServer.Money,
                         Level = savedGameServer.Level
                     };
@@ -354,20 +362,20 @@ namespace RMAZOR
 
         private void InitDefaultData()
         {
-            if (SaveUtils.GetValue(SaveKeysCommon.NotFirstLaunch))
+            if (SaveUtils.GetValue(SaveKeysMazor.NotFirstLaunch))
                 return;
             SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn,         true);
             SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn,         true);
             SaveUtils.PutValue(SaveKeysCommon.SettingNotificationsOn, true);
             SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn,       true);
-            SaveUtils.PutValue(SaveKeysCommon.NotFirstLaunch,         true);
+            SaveUtils.PutValue(SaveKeysMazor.NotFirstLaunch,         true);
             SetDefaultLanguage();
         }
 
         private void InitStartData()
         {
-            CommonData.Release = true;
-            SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
+            MazorCommonData.Release = true;
+            SaveUtils.PutValue(SaveKeysMazor.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             Dbg.LogLevel = GlobalGameSettings.logLevel;
         }

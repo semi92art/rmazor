@@ -4,6 +4,10 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Managers.PlatformGameServices;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.MazeItemGroups;
@@ -93,7 +97,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private void SaveGame(LevelStageArgs _Args)
         {
             var savedGameEntity = ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName, true);
+                MazorCommonData.SavedGameFileName, true);
             Cor.Run(Cor.WaitWhile(
                 () => savedGameEntity.Result == EEntityResult.Pending,
                 () =>
@@ -109,7 +113,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                     }
                     var newSavedGame = new SavedGame
                     {
-                        FileName = CommonData.SavedGameFileName,
+                        FileName = MazorCommonData.SavedGameFileName,
                         Money = savedGame.Money,
                         Level = _Args.LevelIndex,
                         Args = _Args.Args

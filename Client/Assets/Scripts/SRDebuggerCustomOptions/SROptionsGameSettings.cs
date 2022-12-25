@@ -10,15 +10,21 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.Advertising;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR;
 using RMAZOR.Controllers;
 using RMAZOR.Managers;
@@ -140,7 +146,7 @@ namespace SRDebuggerCustomOptions
                     return;
                 var savedGame = new SavedGame
                 {
-                    FileName = CommonData.SavedGameFileName,
+                    FileName = MazorCommonData.SavedGameFileName,
                     Money = Money,
                     Level = _levelStaging.LevelIndex
                 };
@@ -487,7 +493,7 @@ namespace SRDebuggerCustomOptions
                     return;
                 var savedData = new SavedGame
                 {
-                    FileName = CommonData.SavedGameFileName,
+                    FileName = MazorCommonData.SavedGameFileName,
                     Money = 10000,
                     Level = _levelStaging.LevelIndex
                 };
@@ -503,7 +509,7 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                var idfaEntity = CommonUtils.GetIdfa();
+                var idfaEntity = MazorCommonUtils.GetIdfa();
                 Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
                     () => Dbg.Log(idfaEntity.Value)));
             }
@@ -517,7 +523,7 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                _managers.ScoreManager.DeleteSavedGame(CommonData.SavedGameFileName);
+                _managers.ScoreManager.DeleteSavedGame(MazorCommonData.SavedGameFileName);
             }
         }
 
@@ -534,7 +540,7 @@ namespace SRDebuggerCustomOptions
                 {
                     string str = _FromCache ? "server" : "cache";
                     var entity =
-                        _managers.ScoreManager.GetSavedGameProgress(CommonData.SavedGameFileName, _FromCache);
+                        _managers.ScoreManager.GetSavedGameProgress(MazorCommonData.SavedGameFileName, _FromCache);
                     Cor.Run(Cor.WaitWhile(
                         () => entity.Result == EEntityResult.Pending,
                         () =>

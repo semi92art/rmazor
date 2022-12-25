@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Common;
+using mazing.common.Runtime;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;

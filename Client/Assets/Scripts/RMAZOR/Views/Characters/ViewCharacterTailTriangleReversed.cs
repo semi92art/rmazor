@@ -5,9 +5,13 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
@@ -168,7 +172,7 @@ namespace RMAZOR.Views.Characters
         
         private void InitShape()
         {
-            var cont = ContainersGetter.GetContainer(ContainerNames.Character);
+            var cont = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
             m_Tail = cont
                 .AddComponentOnNewChild<Triangle>("Character Tail", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.PathFill))

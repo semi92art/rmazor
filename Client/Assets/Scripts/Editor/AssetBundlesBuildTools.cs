@@ -2,11 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Common;
-using Common.Entities;
-using Common.Exceptions;
-using Common.Managers;
-using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;

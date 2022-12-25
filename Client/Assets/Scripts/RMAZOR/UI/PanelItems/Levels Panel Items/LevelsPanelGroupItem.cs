@@ -5,9 +5,15 @@ using System.Runtime.CompilerServices;
 using Common;
 using Common.Extensions;
 using Common.Managers;
-using Common.Ticker;
 using Common.UI;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
 using TMPro;
@@ -18,6 +24,8 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 {
     public class LevelsPanelGroupItem : SimpleUiItemBase
     {
+        #region serialized fields
+        
         [SerializeField] private TextMeshProUGUI titleText;
         
         [SerializeField] private LevelPanelGroupItemLevelItem
@@ -26,6 +34,10 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             level3Item,
             levelBonusItem;
 
+        #endregion
+
+        #region nonpublic members
+        
         private Sprite
             m_ButtonDisabledSprite,
             m_ButtonEnabledSprite,
@@ -36,14 +48,20 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         private ILevelsLoader       LevelsLoader       { get; set; }
         private IRawLevelInfoGetter RawLevelInfoGetter { get; set; }
         private IModelGame          Model              { get; set; }
+        private IFontProvider       FontProvider       { get; set; }
 
+        #endregion
+
+        #region api
+        
         public void Init(
             ILevelsLoader        _LevelsLoader,
-            IRawLevelInfoGetter _RawLevelInfoGetter,
+            IRawLevelInfoGetter  _RawLevelInfoGetter,
             IModelGame           _Model,
             IUITicker            _UiTicker,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
+            IFontProvider        _FontProvider,
             Sprite               _ButtonEnabledSprite,
             Sprite               _ButtonDisabledSprite,
             Sprite               _ButtonSelectedSprite,
@@ -53,6 +71,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             LevelsLoader       = _LevelsLoader;
             RawLevelInfoGetter = _RawLevelInfoGetter;
             Model              = _Model;
+            FontProvider       = _FontProvider;
             InitLevelItems(_StarEnabledSprite, _StarDisabledSprite);
             base.Init(_UiTicker, _AudioManager, _LocalizationManager);
             m_ButtonEnabledSprite  = _ButtonEnabledSprite;
@@ -75,6 +94,10 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             SetLevelItemStars(_LevelGroupIndex);
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         private void InitLevelItems(Sprite _StarEnabledSprite, Sprite _StarDisabledSprite)
         {
             level1Item    .Init(_StarEnabledSprite, _StarDisabledSprite);
@@ -190,6 +213,8 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                 _  => throw new SwitchExpressionException(_LevelIndexInGroup)
             };
             levelItem.SetStarsCount(starsCount);
+            levelItem.bestTimeText.font =
+                FontProvider.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
             levelItem.bestTimeText.text = float.IsInfinity(bestTime) ?
                 "-" : bestTime.ToString("F3", m_FloatValueCultureInfo) + "s";
         }
@@ -238,6 +263,12 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         
         private void SetLevelItemTitles(int _LevelsGroupIndex, bool _IsUnknown)
         {
+            var font = FontProvider.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
+            level1Item.title.font     = font;
+            level2Item.title.font     = font;
+            level3Item.title.font     = font;
+            levelBonusItem.title.font = font;
+            titleText.font = font;
             if (_IsUnknown)
             {
                 const string questionSigns = "???";
@@ -251,10 +282,14 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             long firstLevelInGroup = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
             titleText.text = LocalizationManager.GetTranslation("stage").FirstCharToUpper(
                 CultureInfo.CurrentUICulture) + " " + _LevelsGroupIndex;
-            level1Item.title.text     = (firstLevelInGroup + 1).ToString();
-            level2Item.title.text     = (firstLevelInGroup + 2).ToString();
-            level3Item.title.text     = (firstLevelInGroup + 3).ToString();
-            levelBonusItem.title.text = $"E{_LevelsGroupIndex}";
+            string levelText = LocalizationManager.GetTranslation("level").FirstCharToUpper(
+                CultureInfo.CurrentUICulture);
+            level1Item.title.text     = levelText + " " + (firstLevelInGroup + 1);
+            level2Item.title.text     = levelText + " " + (firstLevelInGroup + 2);
+            level3Item.title.text     = levelText + " " + (firstLevelInGroup + 3);
+            levelBonusItem.title.text = levelText + " " + $"E{_LevelsGroupIndex}";
         }
+
+        #endregion
     }
 }

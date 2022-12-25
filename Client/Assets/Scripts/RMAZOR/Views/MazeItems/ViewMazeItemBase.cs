@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -134,7 +137,7 @@ namespace RMAZOR.Views.MazeItems
         {
             Props = _Props;
             Init();
-            Object.SetParent(ContainersGetter.GetContainer(ContainerNames.MazeItems).gameObject);
+            Object.SetParent(ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems).gameObject);
             Object.transform.SetLocalPosXY(CoordinateConverter.ToLocalMazeItemPosition(Props.Position));
             UpdateShape();
         }

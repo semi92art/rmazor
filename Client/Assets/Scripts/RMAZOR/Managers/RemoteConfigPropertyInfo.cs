@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
-using Common.Network.DataFieldFilters;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Network.DataFieldFilters;
 using Newtonsoft.Json;
 using UnityEngine.Events;
 
@@ -82,7 +83,7 @@ namespace RMAZOR.Managers
         
         private static GameDataField GetField(IEnumerable<GameDataField> _Fields, string _FieldName)
         {
-            ushort id = (ushort)CommonUtils.StringToHash(_FieldName);
+            ushort id = (ushort)MazorCommonUtils.StringToHash(_FieldName);
             return _Fields.FirstOrDefault(_F => _F.FieldId == id);
         }
 

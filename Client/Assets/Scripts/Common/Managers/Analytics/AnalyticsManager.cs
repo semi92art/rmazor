@@ -3,10 +3,14 @@ using System.Linq;
 using Common.Constants;
 using Common.Helpers;
 using Common.Utils;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 
 namespace Common.Managers.Analytics
 {
-    public interface IAnalyticsManager : IAnalyticsProvider { }
+    
     
     public class AnalyticsManager : InitBase, IAnalyticsManager
     {

@@ -1,15 +1,22 @@
 using System.Globalization;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Entities.UI;
+using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Entities.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -68,7 +75,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Fullscreen;
+        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium3;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {

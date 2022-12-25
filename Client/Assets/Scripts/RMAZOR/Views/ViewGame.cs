@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Enums;
-using Common.Exceptions;
-using Common.Helpers;
 using Common.Managers.Advertising.AdsProviders;
-using Common.Managers.Notifications;
-using Common.Providers;
-using Common.Ticker;
-using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers.Notifications;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
+using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
@@ -47,13 +49,13 @@ namespace RMAZOR.Views
         IViewBackground               Background           { get; }
         IViewMazeAdditionalBackground AdditionalBackground { get; }
         ICameraProvider               CameraProvider       { get; }
+        ILevelsLoader                 LevelsLoader         { get; }
     }
     
     public class ViewGame : InitBase, IViewGame, IApplicationPause, IUpdateTick
     {
         #region nonpublic members
 
-        // private bool     m_ShowAdOnLongTimeWithoutCommandsEnabled;
         private float    m_SecondsInLevelWithoutInputActions;
         private float    m_LastPauseTime;
         private object[] m_ProceedersCached;
@@ -78,6 +80,7 @@ namespace RMAZOR.Views
         public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
         private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
         public  ICameraProvider               CameraProvider         { get; }
+        public  ILevelsLoader                 LevelsLoader           { get; }
 
         private IViewMazeCommon             Common                 { get; }
         private IViewMazeForeground         Foreground             { get; }
@@ -116,7 +119,8 @@ namespace RMAZOR.Views
             IModelGame                    _Model,
             ICommonTicker                 _CommonTicker,
             ISystemTicker                 _SystemTicker,
-            ViewSettings                  _ViewSettings)
+            ViewSettings                  _ViewSettings,
+            ILevelsLoader                 _LevelsLoader)
         {
             RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
@@ -144,6 +148,7 @@ namespace RMAZOR.Views
             CommonTicker                 = _CommonTicker;
             SystemTicker                 = _SystemTicker;
             ViewSettings                 = _ViewSettings;
+            LevelsLoader                 = _LevelsLoader;
         }
         
         #endregion
@@ -325,7 +330,7 @@ namespace RMAZOR.Views
                 initObj?.Init();
             LevelStageController.Init();
             TouchProceeder.ProceedRotation = Application.isEditor;
-            CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNames.Character);
+            CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
         }
 
         private T[] GetInterfaceOfProceeders<T>(object[] _Proceeders = null) where T : class
@@ -335,7 +340,7 @@ namespace RMAZOR.Views
 
         private void SendNotificationsOnInit()
         {
-            if (!CommonData.Release)
+            if (!MazorCommonData.Release)
                 return;
             if (RemotePropertiesRmazor.Notifications == null)
                 return;

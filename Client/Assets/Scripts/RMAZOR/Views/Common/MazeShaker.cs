@@ -5,8 +5,12 @@ using Common;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems;
@@ -70,7 +74,7 @@ namespace RMAZOR.Views.Common
 
         public override void Init()
         {
-            m_MazeContainer = ContainersGetter.GetContainer(ContainerNames.Maze);
+            m_MazeContainer = ContainersGetter.GetContainer(ContainerNamesMazor.Maze);
             GameTicker.Register(this);
             base.Init();
         }

@@ -23,6 +23,7 @@
         KillCharacter,
         // ui commands
         ShopPanel,
+        DisableAdsPanel,
         SettingsPanel,
         DailyGiftPanel,
         LevelsPanel,

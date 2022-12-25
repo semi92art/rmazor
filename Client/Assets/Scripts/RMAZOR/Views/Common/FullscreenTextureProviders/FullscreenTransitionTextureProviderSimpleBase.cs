@@ -1,8 +1,10 @@
 ﻿using Common;
-using Common.CameraProviders;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
@@ -41,7 +43,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         public override void Activate(bool _Active)
         {
             Renderer.enabled = _Active;
-            Material.SetColor(Color1Id, CommonData.CompanyLogoBackgroundColor);
+            Material.SetColor(Color1Id, MazorCommonData.CompanyLogoBackgroundColor);
         }
 
         #endregion

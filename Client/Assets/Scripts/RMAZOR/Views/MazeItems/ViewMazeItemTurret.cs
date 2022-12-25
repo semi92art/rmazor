@@ -5,12 +5,17 @@ using System.Globalization;
 using System.Linq;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
@@ -238,7 +243,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
-            var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var projParent = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems);
             static void SetProjectileMaskProperties(Rectangle _Mask)
             {
                 _Mask.SetBlendMode(ShapesBlendMode.Subtractive)
@@ -253,7 +258,7 @@ namespace RMAZOR.Views.MazeItems
             }
             m_ProjectileMask = projParent.AddComponentOnNewChild<Rectangle>(
                 "Turret Projectile Mask", out _);
-            int maskHash = CommonUtils.StringToHash(UnityEngine.Random.value.ToString(CultureInfo.InvariantCulture));
+            int maskHash = MazorCommonUtils.StringToHash(UnityEngine.Random.value.ToString(CultureInfo.InvariantCulture));
             string maskName = "Turret Projectile Mask Collider " + maskHash;
             m_ProjectileMaskCollider = m_ProjectileMask.transform.AddComponentOnNewChild<BoxCollider2D>(
                 "Turret Projectile Mask Collider " + maskName, out _);

@@ -7,6 +7,11 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using UnityEngine.Events;
 
@@ -144,7 +149,7 @@ namespace RMAZOR.Managers
                         m_FetchCompletedActionDone = true;
                         return;
                     }
-                    var idfaEntity = CommonUtils.GetIdfa();
+                    var idfaEntity = MazorCommonUtils.GetIdfa();
                     Cor.Run(Cor.WaitWhile(() => idfaEntity.Result == EEntityResult.Pending,
                         () =>
                         {

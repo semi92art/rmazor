@@ -1,20 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
-using Common.Entities.UI;
-using Common.Enums;
 using Common.Extensions;
 using Common.Managers;
 using Common.Managers.IAP;
-using Common.Providers;
 using Common.ScriptableObjects;
-using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Entities.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers.IAP;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Panel_Items;
@@ -117,11 +123,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 if (itemInSet.watchingAds)
                     continue;
                 Managers.ShopManager.AddPurchaseAction(
-                    itemInSet.purchaseKey, 
-                    1,
+                    itemInSet.purchaseKey,
                     () => OnPaid(itemInSet.purchaseKey, itemInSet.reward));
             }
-            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, 1, BuyHideAdsItem);
+            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
         }
 
         private void LoadItemInfos()
@@ -162,41 +167,31 @@ namespace RMAZOR.UI.Panels.ShopPanels
         {
             LoadItemInfos();
             m_Items.Clear();
-            var showAdsEntity = Managers.AdsManager.ShowAds;
-            Cor.Run(Cor.WaitWhile(
-                () => showAdsEntity.Result == EEntityResult.Pending,
-                () =>
+            bool showAds = Managers.AdsManager.ShowAds;
+            var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
+                PrefabSetName, ItemSetName).set;
+            foreach (var itemInSet in set)
+            {
+                var args = m_ShopItemArgsDict[itemInSet.purchaseKey];
+                var background = itemInSet.watchingAds
+                    ? Managers.PrefabSetManager.GetObject<Sprite>(
+                        CommonPrefabSetNames.Views, "shop_item_for_ad_background")
+                    : null;
+                var info = new ViewShopItemInfo
                 {
-                    if (showAdsEntity.Result == EEntityResult.Fail)
-                    {
-                        Dbg.LogError("showAdsEntity.Result Fail");
-                        return;
-                    }
-                    var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
-                        PrefabSetName, ItemSetName).set;
-                    foreach (var itemInSet in set)
-                    {
-                        var args = m_ShopItemArgsDict[itemInSet.purchaseKey];
-                        var background = itemInSet.watchingAds
-                            ? Managers.PrefabSetManager.GetObject<Sprite>(
-                                CommonPrefabSetNames.Views, "shop_item_for_ad_background")
-                            : null;
-                        var info = new ViewShopItemInfo
-                        {
-                            PurchaseKey = itemInSet.purchaseKey,
-                            BuyForWatchingAd = itemInSet.watchingAds,
-                            Reward = itemInSet.reward,
-                            Icon = itemInSet.icon,
-                            Background = background
-                        };
-                        var item = InitItem(args, info);
-                        if (info.BuyForWatchingAd)
-                            item.Highlighted = true;
-                        m_Items.Add(info.PurchaseKey, item);
-                    }
-                    if (showAdsEntity.Value)
-                        InitBuyNoAdsItem();
-                }));
+                    PurchaseKey = itemInSet.purchaseKey,
+                    BuyForWatchingAd = itemInSet.watchingAds,
+                    Reward = itemInSet.reward,
+                    Icon = itemInSet.icon,
+                    Background = background
+                };
+                var item = InitItem(args, info);
+                if (info.BuyForWatchingAd)
+                    item.Highlighted = true;
+                m_Items.Add(info.PurchaseKey, item);
+            }
+            if (showAds)
+                InitBuyNoAdsItem();
         }
 
         private void InitBuyNoAdsItem()
@@ -219,7 +214,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 "no_ads"));
         }
 
-        private ShopMoneyItem InitItem(ShopItemArgs _Args, ViewShopItemInfo _Info, UnityAction _OnPaid = null)
+        private ShopMoneyItem InitItem(
+            ShopItemArgs     _Args,
+            ViewShopItemInfo _Info,
+            UnityAction      _OnPaid = null)
         {
             void OnPaidReal()
             {
@@ -297,21 +295,17 @@ namespace RMAZOR.UI.Panels.ShopPanels
             Managers.AnalyticsManager.SendAnalytic(
                 AnalyticIds.Purchase,
         new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, "no_ads"}});
-            Managers.AdsManager.ShowAds = new Entity<bool>
-            {
-                Result = EEntityResult.Success,
-                Value = false
-            };
+            Managers.AdsManager.ShowAds = false;
             string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
             string dialogText = Managers.LocalizationManager.GetTranslation("mandatory_ads_disabled");
-            CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+            MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
             RemoveItem(PurchaseKeys.NoAds);
         }
 
         private void OnPaid(int _PurchaseKey, long _Reward)
         {
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName,
+                MazorCommonData.SavedGameFileName,
                 true);
             Cor.Run(Cor.WaitWhile(
                 () => savedGameEntity.Result == EEntityResult.Pending,
@@ -325,7 +319,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     }
                     var newSavedGame = new SavedGame
                     {
-                        FileName = CommonData.SavedGameFileName,
+                        FileName = MazorCommonData.SavedGameFileName,
                         Money = savedGame.Money + _Reward,
                         Level = Model.LevelStaging.LevelIndex
                     };
@@ -335,7 +329,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                                         Managers.LocalizationManager
                                             .GetTranslation("coins_alt")
                                             .ToLowerInvariant();
-                    CommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+                    MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
                     if (_PurchaseKey == -1)
                         return;
                     string productId = _PurchaseKey switch

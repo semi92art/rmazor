@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Helpers;
-using Common.SpawnPools;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;

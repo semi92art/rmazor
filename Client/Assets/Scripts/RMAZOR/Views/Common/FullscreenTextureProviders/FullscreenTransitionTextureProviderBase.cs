@@ -1,10 +1,15 @@
 ﻿using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
@@ -59,7 +64,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         #region nonpublic methods
         private void InitTexture()
         {
-            var parent = ContainersGetter.GetContainer(ContainerNames.Background);
+            var parent = ContainersGetter.GetContainer(ContainerNamesCommon.Background);
             var go = PrefabSetManager.InitPrefab(
                 parent, "background", "background_texture");
             Renderer = go.GetCompItem<MeshRenderer>("renderer");

@@ -1,7 +1,8 @@
 ﻿#if UNITY_ANDROID
-using Common.Ticker;
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Ticker;
 using UnityEngine.Events;
 
 namespace Common.Managers.PlatformGameServices.GameServiceAuth

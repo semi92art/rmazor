@@ -1,7 +1,8 @@
 ﻿#if NICE_VIBRATIONS_3_9
-using Common.Exceptions;
 using Common.Helpers;
-using Common.Settings;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Settings;
 using MoreMountains.NiceVibrations;
 using Zenject;
 

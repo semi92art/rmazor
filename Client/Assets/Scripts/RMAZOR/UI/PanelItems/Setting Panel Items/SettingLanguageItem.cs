@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Enums;
 using Common.Managers;
-using Common.Ticker;
 using Common.UI;
 using Common.Utils;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;

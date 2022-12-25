@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.SpawnPools;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
@@ -109,7 +114,7 @@ namespace RMAZOR.Views.Characters
                     UpdatePrefab();
             }
         }
-        public EAppearingState         AppearingState      { get; private set; }
+        public EAppearingState  AppearingState { get; private set; }
         
         public void OnRotationFinished(MazeRotationEventArgs _Args)
         {
@@ -158,13 +163,13 @@ namespace RMAZOR.Views.Characters
                 case ELevelStage.CharacterKilled:
                     ActivateShapes(false);
                     break;
-                case ELevelStage.Finished:
-                    ActivateShapes(false);
-                    break;
             }
         }
-        
-        public void OnPathCompleted(V2Int _LastPath) { }
+
+        public void OnPathCompleted(V2Int _LastPath)
+        {
+            ActivateShapes(false);
+        }
         
         public void Appear(bool _Appear)
         {
@@ -195,14 +200,14 @@ namespace RMAZOR.Views.Characters
                 return;
             switch (_ColorId)
             {
-                case ColorIds.Character: m_Leg1Body.Color = m_Leg2Body.Color = _Color; break;
+                case ColorIds.Character:  m_Leg1Body.Color   = m_Leg2Body.Color   = _Color; break;
                 case ColorIds.Character2: m_Leg1Border.Color = m_Leg2Border.Color = _Color; break;
             }
         }
         
         private void InitPrefab()
         {
-            var contGo = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
+            var contGo = ContainersGetter.GetContainer(ContainerNamesMazor.Character).gameObject;
             var go = PrefabSetManager.InitPrefab(
                 contGo.transform, 
                 CommonPrefabSetNames.Views,
@@ -238,12 +243,12 @@ namespace RMAZOR.Views.Characters
         {
             float scale = CoordinateConverter.Scale;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
-            var a = dir * 0.55f;
+            var a = dir * 0.45f;
             var dirOrth = new Vector2(dir.y, dir.x);
-            var b = a + dirOrth * 0.3f;
-            var c = a - dirOrth * 0.3f;
-            m_Leg1Body.transform.localPosition = b * scale - dir * m_Leg1Body.Height * 2f;
-            m_Leg2Body.transform.localPosition = c * scale - dir * m_Leg1Body.Height * 2f;
+            var b = a + dirOrth * 0.25f;
+            var c = a - dirOrth * 0.25f;
+            m_Leg1Body.transform.localPosition = b * scale;
+            m_Leg2Body.transform.localPosition = c * scale;
             var orientationForAngle = _ByLastOrientation ? m_LastMazeOrientation : Model.MazeRotation.Orientation;
             bool orth = (orientationForAngle == EMazeOrientation.East || orientationForAngle == EMazeOrientation.West) 
                         && _ByLastOrientation;

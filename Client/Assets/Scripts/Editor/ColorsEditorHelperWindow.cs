@@ -4,15 +4,20 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
 using RMAZOR.Views.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using MathUtils = Common.Utils.MathUtils;
+using MathUtils = mazing.common.Runtime.Utils.MathUtils;
 
 namespace Editor
 {

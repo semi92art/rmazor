@@ -1,4 +1,4 @@
-﻿using Common.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using RMAZOR;
 using RMAZOR.Views.Coordinate_Converters;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common.Helpers;
-using Common.Providers;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Coordinate_Converters;
 
 namespace RMAZOR.Views.Common.Additional_Background

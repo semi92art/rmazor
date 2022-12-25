@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Common.Ticker;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;

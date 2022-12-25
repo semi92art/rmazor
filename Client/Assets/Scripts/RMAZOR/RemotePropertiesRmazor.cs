@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Entities;
 using Common.Helpers;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Helpers;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 
 namespace RMAZOR

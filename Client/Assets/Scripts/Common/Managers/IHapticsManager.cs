@@ -1,4 +1,6 @@
-﻿namespace Common.Managers
+﻿using mazing.common.Runtime;
+
+namespace Common.Managers
 {
     public enum EHapticsPresetType
     {

@@ -2,6 +2,8 @@
 using System.IO;
 using Common;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Utils;
 using UnityEngine;
 
 namespace RMAZOR
@@ -15,7 +17,7 @@ namespace RMAZOR
     {
         public void UpdateToCurrentVersion()
         {
-            string prevAppVersion = SaveUtils.GetValue(SaveKeysCommon.AppVersion);
+            string prevAppVersion = SaveUtils.GetValue(SaveKeysMazor.AppVersion);
             if (prevAppVersion == null)
             {
                 try
@@ -28,7 +30,7 @@ namespace RMAZOR
                     Dbg.LogError(ex);                    
                 }
             }
-            SaveUtils.PutValue(SaveKeysCommon.AppVersion, Application.version);
+            SaveUtils.PutValue(SaveKeysMazor.AppVersion, Application.version);
         }
     }
 }

@@ -56,3 +56,7 @@ MonoBehaviour:
       item: {fileID: 8219298684319459333, guid: 20799b2e4ea8fd84580943c3afc27892,
         type: 3}
       bundle: 0
+    - name: disable_ads_panel
+      item: {fileID: 8219298684319459333, guid: 21e8371bbde43814eb36d3acdd05bd10,
+        type: 3}
+      bundle: 0

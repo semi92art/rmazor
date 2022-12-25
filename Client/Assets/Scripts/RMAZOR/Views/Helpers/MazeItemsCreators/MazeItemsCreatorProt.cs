@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
 using Common.Entities;
-using Common.SpawnPools;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Props;
@@ -78,9 +79,9 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props) 
         {
             var tr = new GameObject("Path Item").transform;
-            var go = GameObject.Find(ContainerNames.MazeItems);
+            var go = GameObject.Find(ContainerNamesMazor.MazeItems);
             if (go == null)
-                go = new GameObject(ContainerNames.MazeItems);
+                go = new GameObject(ContainerNamesMazor.MazeItems);
             tr.SetParent(go.transform);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
             item.MazeSize = _MazeSize; 
@@ -104,9 +105,9 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             ViewMazeItemProps _Props)
         {
             var tr = new GameObject("Maze Item").transform;
-            var go = GameObject.Find(ContainerNames.MazeItems);
+            var go = GameObject.Find(ContainerNamesMazor.MazeItems);
             if (go == null)
-                go = new GameObject(ContainerNames.MazeItems);
+                go = new GameObject(ContainerNamesMazor.MazeItems);
             tr.SetParent(go.transform);
             var item = tr.gameObject.AddComponent<ViewMazeItemProt>();
 

@@ -1,9 +1,13 @@
-﻿using Common.CameraProviders;
-using Common.Entities;
+﻿using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using UnityEngine;

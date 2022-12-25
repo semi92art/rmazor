@@ -1,13 +1,11 @@
 ﻿#if ADMOB_API
 
-using System.Collections.Generic;
-using System.Linq;
-using Common.Helpers;
-using Common.Utils;
 using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Events;
 using Common.Managers.Advertising.AdBlocks;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
 
 namespace Common.Managers.Advertising.AdsProviders
 {
@@ -15,61 +13,22 @@ namespace Common.Managers.Advertising.AdsProviders
     
     public class AdMobAdsProvider : AdsProviderCommonBase, IAdMobAdsProvider
     {
-        #region nonpublic members
-
-        protected override string InterstitialUnitId
-        {
-            get
-            {
-                string testId = CommonUtils.Platform == RuntimePlatform.Android
-                    ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
-                    : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
-                return TestMode ? testId : base.InterstitialUnitId;
-            }
-        }
-
-        protected override string RewardedUnitId
-        {
-            get
-            {
-                string testId = CommonUtils.Platform == RuntimePlatform.Android
-                    ? "ca-app-pub-3940256099942544/5224354917"  // https://developers.google.com/admob/android/test-ads
-                    : "ca-app-pub-3940256099942544/1712485313"; // https://developers.google.com/admob/ios/test-ads
-                return TestMode ? testId : base.RewardedUnitId;
-            }
-        }
-
-        #endregion
-        
         #region inject
-
-        private GlobalGameSettings      GlobalGameSettings { get; }
-        private IRemotePropertiesCommon RemoteProperties   { get; }
-
+        
         private AdMobAdsProvider(
-            GlobalGameSettings      _GlobalGameSettings,
-            IRemotePropertiesCommon _RemoteProperties,
             IAdMobInterstitialAd    _InterstitialAd,
             IAdMobRewardedAd        _RewardedAd) 
             : base(
                 _InterstitialAd,
-                _RewardedAd)
-        {
-            GlobalGameSettings = _GlobalGameSettings;
-            RemoteProperties   = _RemoteProperties;
-        }
+                _RewardedAd) { }
 
         #endregion
 
         #region api
 
-        public override bool RewardedAdReady => Application.isEditor ? 
-            GlobalGameSettings.rewardedAdReadyForTest 
-            : base.RewardedAdReady;
+        public override bool RewardedAdReady => Application.isEditor || base.RewardedAdReady;
 
-        public override bool InterstitialAdReady => Application.isEditor
-            ? GlobalGameSettings.interstitialAdReadyForTest
-            : base.InterstitialAdReady;
+        public override bool InterstitialAdReady => Application.isEditor || base.InterstitialAdReady;
 
         public override string Source => AdvertisingNetworks.Admob;
 
@@ -79,9 +38,7 @@ namespace Common.Managers.Advertising.AdsProviders
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
-            var reqConfig = new RequestConfiguration.Builder()
-                .SetTestDeviceIds(GetTestDeviceIds())
-                .build();
+            var reqConfig = new RequestConfiguration.Builder().build();
             MobileAds.SetiOSAppPauseOnBackground(true);
             MobileAds.DisableMediationInitialization();
             MobileAds.SetRequestConfiguration(reqConfig);
@@ -95,12 +52,6 @@ namespace Common.Managers.Advertising.AdsProviders
                 }
                 _OnSuccess?.Invoke();
             });
-        }
-
-        private List<string> GetTestDeviceIds()
-        {
-            return RemoteProperties.TestDeviceIdsForAdmob ??
-                   AdsData.Elements("test_device").Select(_El => _El.Value).ToList();
         }
 
         #endregion

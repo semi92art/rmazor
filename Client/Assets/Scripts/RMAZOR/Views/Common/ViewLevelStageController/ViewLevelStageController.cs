@@ -1,21 +1,17 @@
-﻿// ReSharper disable ClassNeverInstantiated.Global
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
-using Common.Entities;
-using Common.Enums;
-using Common.Exceptions;
-using Common.Helpers;
-using Common.UI.DialogViewers;
-using Common.Utils;
-using Lean.Touch;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.UI.Panels;
 using RMAZOR.Views.Coordinate_Converters;
-using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
 
@@ -51,12 +47,10 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         private IModelGame                                    Model                              { get; }
         private IManagersGetter                               Managers                           { get; }
-        private IDialogViewersController                      DialogViewersController            { get; }
         private IViewMazeItemsGroupSet                        MazeItemsGroupSet                  { get; }
         private IViewMazePathItemsGroup                       PathItemsGroup                     { get; }
         private IViewFullscreenTransitioner                   FullscreenTransitioner             { get; }
         private IViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator        { get; }
-        private IViewInputTouchProceeder                      TouchProceeder                     { get; }
         private IMoneyCounter                                 MoneyCounter                       { get; }
         private ICameraProvider                               CameraProvider                     { get; }
         private ICoordinateConverter                          CoordinateConverter                { get; }
@@ -71,12 +65,10 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private ViewLevelStageController(
             IModelGame                                    _Model,
             IManagersGetter                               _Managers,
-            IDialogViewersController                      _DialogViewersController,
             IViewMazeItemsGroupSet                        _MazeItemsGroupSet,
             IViewMazePathItemsGroup                       _PathItemsGroup,
             IViewFullscreenTransitioner                   _FullscreenTransitioner,
             IViewCameraEffectsCustomAnimator              _CameraEffectsCustomAnimator,
-            IViewInputTouchProceeder                      _TouchProceeder,
             IMoneyCounter                                 _MoneyCounter,
             ICameraProvider                               _CameraProvider,
             ICoordinateConverter                          _CoordinateConverter,
@@ -90,7 +82,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             Model                            = _Model;
             Managers                         = _Managers;
-            DialogViewersController          = _DialogViewersController;
             MazeItemsGroupSet                = _MazeItemsGroupSet;
             PathItemsGroup                   = _PathItemsGroup;
             FullscreenTransitioner           = _FullscreenTransitioner;
@@ -104,7 +95,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             StageControllerOnLevelLoaded     = _StageControllerOnLevelLoaded;
             StageControllerOnReadyToUnload   = _StageControllerOnReadyToUnload;
             StageControllerOnLevelReadyToStart = _StageControllerOnLevelReadyToStart;
-            TouchProceeder                   = _TouchProceeder;
             MoneyCounter                     = _MoneyCounter;
         }
 
@@ -115,7 +105,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         public override void Init()
         {
             MoneyCounter.Init();
-            TouchProceeder.Tap += OnTapScreenAction;
+            // TouchProceeder.Tap += OnTapScreenAction;
             CameraProvider.Init();
             StageControllerOnLevelReadyToStart.Init();
             StageControllerOnReadyToUnload.Init();
@@ -138,7 +128,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnPathCompleted(V2Int _LastPath)
         {
-            if (!CommonData.Release)
+            if (!MazorCommonData.Release)
                 return;
             Model.LevelStaging.FinishLevel(Model.LevelStaging.Arguments);
         }
@@ -150,8 +140,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             ProceedProceedersToExecuteBeforeMazeItemGroups(_Args);
             MazeItemsGroupSet.OnLevelStageChanged(_Args);
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
-
-
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
@@ -186,31 +174,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         #endregion
 
         #region nonpublic methods
-
-        private void OnTapScreenAction(LeanFinger _Finger)
-        {
-            if (_Finger.LastScreenPosition.y / GraphicUtils.ScreenSize.y > 0.9f)
-                return;
-            if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
-                return;
-            var dv = DialogViewersController.GetViewer(EDialogViewerType.Medium1);
-            var cp = dv.CurrentPanel;
-            if (cp is IFinishLevelGroupDialogPanel)
-                return;
-            if (cp is IPlayBonusLevelDialogPanel)
-                return;
-            dv = DialogViewersController.GetViewer(EDialogViewerType.Fullscreen);
-            cp = dv.CurrentPanel;
-            if (cp is IRateGameDialogPanel)
-                return;
-            InvokeStartUnloadingLevel(CommonInputCommandArg.ParameterScreenTap);
-        }
-        
-        private void InvokeStartUnloadingLevel(string _Source)
-        {
-            var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySource, _Source}};
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
-        }
         
         private void OnBetweenLevelTransitionFinished(bool _Appear)
         {

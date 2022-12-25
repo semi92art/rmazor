@@ -1,6 +1,4 @@
 ﻿using Common;
-using Common.CameraProviders;
-using Common.Debugging;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -15,9 +13,15 @@ using Common.Managers.PlatformGameServices.GameServiceAuth;
 using Common.Managers.PlatformGameServices.Leaderboards;
 using Common.Managers.PlatformGameServices.SavedGames;
 using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
-using Common.Network;
-using Common.Settings;
-using Common.Ticker;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Debugging;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.IAP;
+using mazing.common.Runtime.Managers.Notifications;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Settings;
+using mazing.common.Runtime.Ticker;
 using RMAZOR;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
@@ -173,7 +177,7 @@ namespace Mono_Installers
             Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()                .AsSingle();
             Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()              .AsSingle();
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()               .AsSingle();
-            Container.Bind<IFontProvider>()                .To<DefaultFontProvider>()             .AsSingle();
+            Container.Bind<IFontProvider>()                .To<FontProviderMazor>()             .AsSingle();
             Container.Bind<ISRDebuggerInitializer>()       .To<SRDebuggerInitializer>()           .AsSingle();
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()    .AsSingle();
             

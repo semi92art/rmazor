@@ -136,7 +136,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.11.2
+  bundleVersion: 1.11.0
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
@@ -310,7 +310,7 @@ PlayerSettings:
     iPhone: 1
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 77
+  AndroidBundleVersionCode: 80
   AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 31
   AndroidPreferredInstallLocation: 1
@@ -397,7 +397,7 @@ PlayerSettings:
   AndroidTargetArchitectures: 2
   AndroidTargetDevices: 1
   AndroidSplashScreenScale: 0
-  androidSplashScreen: {fileID: 2800000, guid: fb92cd60d89f3d24fb299cc740469c67, type: 3}
+  androidSplashScreen: {fileID: 2800000, guid: fb9f3cd15f3f91f4bb5378fce61b4107, type: 3}
   AndroidKeystoreName: '{inproject}: mgc1.keystore'
   AndroidKeyaliasName: mgc1
   AndroidBuildApkPerCpuArchitecture: 0
@@ -422,7 +422,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 2800000, guid: 1292d71a2355cc24ea21917d413e12e2, type: 3}
+      m_Icon: {fileID: 2800000, guid: 9bd834e652453a34abf4884b980d4736, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -627,6 +627,7 @@ PlayerSettings:
   - m_BuildTarget: Android
     m_StaticBatching: 1
     m_DynamicBatching: 1
+  m_BuildTargetShaderSettings: []
   m_BuildTargetGraphicsJobs:
   - m_BuildTarget: MacStandaloneSupport
     m_GraphicsJobs: 0
@@ -667,6 +668,8 @@ PlayerSettings:
     m_APIs: 10000000
     m_Automatic: 1
   m_BuildTargetVRSettings: []
+  m_DefaultShaderChunkSizeInMB: 16
+  m_DefaultShaderChunkCount: 0
   openGLRequireES31: 0
   openGLRequireES31AEP: 0
   openGLRequireES32: 1
@@ -827,6 +830,7 @@ PlayerSettings:
   switchNetworkInterfaceManagerInitializeEnabled: 1
   switchPlayerConnectionEnabled: 1
   switchUseNewStyleFilepaths: 0
+  switchUseLegacyFmodPriorities: 1
   switchUseMicroSleepForYield: 1
   switchEnableRamDiskSupport: 0
   switchMicroSleepForYieldTime: 25
@@ -926,8 +930,9 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
+  webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Android: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;FIREBASE;NICE_VIBRATIONS_3_9;MOREMOUNTAINS_NICEVIBRATIONS;MOREMOUNTAINS_NICEVIBRATIONS_RUMBLE;ANDROID_PERFORMANCE_TUNER_UTILITIES;APPODEAL_3
+    Android: UNITY_POST_PROCESSING_STACK_V2;LETAI_TRUESHADOW;GAME_1;MTAssets_IonicZip_Available;FIREBASE;NICE_VIBRATIONS_3_9;MOREMOUNTAINS_NICEVIBRATIONS;MOREMOUNTAINS_NICEVIBRATIONS_RUMBLE;ANDROID_PERFORMANCE_TUNER_UTILITIES;ADMOB_API
     CloudRendering: UNITY_POST_PROCESSING_STACK_V2
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
     GameCoreXboxOne: UNITY_POST_PROCESSING_STACK_V2
@@ -955,6 +960,7 @@ PlayerSettings:
   allowUnsafeCode: 0
   useDeterministicCompilation: 1
   enableRoslynAnalyzers: 1
+  selectedPlatform: 2
   additionalIl2CppArgs: 
   scriptingRuntimeVersion: 1
   gcIncremental: 1
@@ -1043,6 +1049,7 @@ PlayerSettings:
     m_VersionName: 
   apiCompatibilityLevel: 6
   activeInputHandler: 1
+  windowsGamepadBackendHint: 0
   cloudProjectId: abcef6a4-92c3-4c35-894e-21fc8a854301
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []

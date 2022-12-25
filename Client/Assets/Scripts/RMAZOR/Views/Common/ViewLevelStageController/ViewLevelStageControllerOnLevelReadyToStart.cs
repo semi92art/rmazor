@@ -2,11 +2,19 @@
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
+using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Analytics;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.UI.Game_Logo;
 
@@ -55,7 +63,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         public override void Init()
         {
-            GameLogo.Shown += GameLogoOnShown;
+            GameLogo.Shown += OnShownGameLogo;
             base.Init();
         }
         
@@ -68,17 +76,20 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         #region nonpublic methods
         
-        private void GameLogoOnShown()
+        private void OnShownGameLogo()
         {
             AudioManager.PlayClip(AudioClipArgsMainTheme);
-            SendAnalyticFirstLevelReadyToStart();
         }
         
-        private void SendAnalyticFirstLevelReadyToStart()
+        private void SendAnalyticLevelReadyToStart()
         {
+            string levelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             var args = new Dictionary<string, object>
             {
-                {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex + 1}
+                {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex},
+                {AnalyticIds.ParameterLevelType, isThisLevelBonus ? 2 : 1}
             };
             AnalyticsManager.SendAnalytic(AnalyticIds.LevelReadyToStart, args);
         }
@@ -101,7 +112,11 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             Cor.Run(Cor.WaitWhile(
                 () => !GameLogo.WasShown,
-                () => AudioManager.PlayClip(AudioClipArgsLevelStart)));
+                () =>
+                {
+                    SendAnalyticLevelReadyToStart();
+                    AudioManager.PlayClip(AudioClipArgsLevelStart);
+                }));
         }
         
         #endregion

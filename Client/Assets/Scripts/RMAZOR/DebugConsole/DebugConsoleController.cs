@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
-using Common.Debugging;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.Analytics;
 using Common.Managers.PlatformGameServices;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Debugging;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 
@@ -201,13 +204,13 @@ namespace RMAZOR.DebugConsole
         private void SaveCommandToHistory(string _Command)
         {
             CommandHistory.Add(_Command);
-            SaveUtils.PutValue(SaveKeysCommon.DebugConsoleCommandsHistory, CommandHistory);
+            SaveUtils.PutValue(SaveKeysMazor.DebugConsoleCommandsHistory, CommandHistory);
             
         }
 
         private void LoadCommandsHistory()
         {
-            CommandHistory = SaveUtils.GetValue(SaveKeysCommon.DebugConsoleCommandsHistory) ?? new List<string>();
+            CommandHistory = SaveUtils.GetValue(SaveKeysMazor.DebugConsoleCommandsHistory) ?? new List<string>();
         }
 
         #endregion

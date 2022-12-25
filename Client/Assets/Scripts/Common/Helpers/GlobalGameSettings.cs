@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using mazing.common.Runtime;
+using UnityEngine;
 
 namespace Common.Helpers
 {
@@ -9,14 +10,11 @@ namespace Common.Helpers
         public bool      debugAnyway;
         public bool      testAds;
         public ELogLevel logLevel;
-        public int       showAdsEveryLevel;
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;
         public int       moneyItemCoast;
-        public bool      apkForAppodeal;
-        public bool      rewardedAdReadyForTest;
-        public bool      interstitialAdReadyForTest;
         public float     interstitialAdsRatio;
         public float     moneyItemsRate;
+        public float     betweenLevelAdShowIntervalInSeconds;
     }
 }

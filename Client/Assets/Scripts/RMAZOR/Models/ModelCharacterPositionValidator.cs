@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common.Entities;
+using mazing.common.Runtime.Entities;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 
@@ -38,6 +39,12 @@ namespace RMAZOR.Models
             IMazeItemProceedInfo diode = DiodeOnPosition(_NextPosition, _ProceedInfos);
             if (diode != null)
             {
+                IMazeItemProceedInfo gravityBlock     = GravityBlockOnPosition(_NextPosition, _ProceedInfos);
+                if (gravityBlock != null)
+                    return false;
+                IMazeItemProceedInfo gravityBlockFree = GravityBlockFreeOnPosition(_NextPosition, _ProceedInfos);
+                if (gravityBlockFree != null)
+                    return false;
                 _BlockPositionWhoStopped = _NextPosition;
                 bool nextPosIsInvalid = diode.Direction == -_NextPosition + _CurrentPosition;
                 return !nextPosIsInvalid;
@@ -110,7 +117,43 @@ namespace RMAZOR.Models
             }
             return diode;
         }
+
+        private static IMazeItemProceedInfo GravityBlockOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            IMazeItemProceedInfo gravityBlock = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.GravityBlock)
+                    continue;
+                if (info.CurrentPosition != _Position)
+                    continue;
+                gravityBlock = info;
+                break;
+            }
+            return gravityBlock;
+        }
         
+        private static IMazeItemProceedInfo GravityBlockFreeOnPosition(
+            V2Int                               _Position,
+            IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)
+        {
+            IMazeItemProceedInfo gravityBlockFree = null;
+            for (int i = 0; i < _ProceedInfos.Count; i++)
+            {
+                var info = _ProceedInfos[i];
+                if (info.Type != EMazeItemType.GravityBlockFree)
+                    continue;
+                if (info.CurrentPosition != _Position)
+                    continue;
+                gravityBlockFree = info;
+                break;
+            }
+            return gravityBlockFree;
+        }
+
         private static IMazeItemProceedInfo LockItemOnPosition(
             V2Int                               _Position,
             IReadOnlyList<IMazeItemProceedInfo> _ProceedInfos)

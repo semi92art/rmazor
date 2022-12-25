@@ -1,10 +1,13 @@
 ﻿using System;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
@@ -95,7 +98,7 @@ namespace RMAZOR.Views.Coordinate_Converters
             if (IsDebug)
                 return;
             mazeItemFake = CommonUtils.FindOrCreateGameObject("Maze Item Fake", out _).transform;
-            var container = GetContainer(ContainerNames.MazeItems);
+            var container = GetContainer(ContainerNamesMazor.MazeItems);
             mazeItemFake.SetParent(container);
         }
 
@@ -124,7 +127,7 @@ namespace RMAZOR.Views.Coordinate_Converters
         
         protected abstract Vector2 ToLocalMazePosition(Vector2 _Point);
         
-        protected void SetScale()
+        protected virtual void SetScale()
         {
             var bounds = GraphicUtils.GetVisibleBounds(CameraProvider?.Camera);
             float sizeX = bounds.size.x - LeftOffset - RightOffset;

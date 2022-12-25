@@ -1,4 +1,5 @@
 ﻿using Common.Entities;
+using mazing.common.Runtime.Entities;
 
 namespace Common
 {

@@ -7,6 +7,12 @@ using Common.Managers.Analytics;
 using Common.Managers.IAP;
 using Common.Managers.Notifications;
 using Common.Managers.PlatformGameServices;
+using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.IAP;
+using mazing.common.Runtime.Managers.Notifications;
 using RMAZOR.Models;
 using RMAZOR.Views;
 
@@ -81,6 +87,7 @@ namespace RMAZOR.Managers
 
         public override void Init()
         {
+            ShopManager.ShowAlertDialogAction = MazorCommonUtils.ShowAlertDialog;
             m_ProceedersCached = new object[]
             {
                 AudioManager,

@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using Common;
-using Common.CameraProviders;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using UnityEngine;
 using UnityEngine.Events;

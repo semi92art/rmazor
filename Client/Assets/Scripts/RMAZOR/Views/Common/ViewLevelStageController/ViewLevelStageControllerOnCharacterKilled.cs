@@ -4,7 +4,10 @@ using Common;
 using Common.Constants;
 using Common.Helpers;
 using Common.Managers.Analytics;
-using Common.UI.DialogViewers;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.UI.DialogViewers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
@@ -55,11 +58,11 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             SendLevelAnalyticEvent(_Args);
             MazeShaker.OnCharacterDeathAnimation(
-                ContainersGetter.GetContainer(ContainerNames.Character).transform.position,
+                ContainersGetter.GetContainer(ContainerNamesMazor.Character).transform.position,
                 _MazeItems,
                 () =>
                 {
-                    if (!CommonData.Release)
+                    if (!MazorCommonData.Release)
                         return;
                     var gravityTraps = Model.GetAllProceedInfos()
                         .Where(_Info => _Info.Type == EMazeItemType.GravityTrap);

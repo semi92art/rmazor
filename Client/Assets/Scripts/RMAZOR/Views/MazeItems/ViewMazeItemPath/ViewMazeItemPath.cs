@@ -4,13 +4,17 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -374,7 +378,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 .SetDashSpace(DashSpace.FixedCount);
             (border.Start, border.End, _) = 
                 GetBorderPointsAndDashed(_Side, false, false);
-            border.transform.position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            border.transform.position = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems).transform.position;
             border.enabled = false;
             switch (_Side)
             {
@@ -418,7 +422,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             bool isCornerNearTrapIncreasing = positions.Any(
                 _P => Informer.GetItemInfoByPositionAndType(
                     _P, EMazeItemType.TrapIncreasing) != null);
-            var pos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            var pos = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems).transform.position;
             var scale = CoordinateConverter.Scale;
             corner.SetType(DiscType.Arc)
                 .SetArcEndCaps(isConerNearTurret || isCornerNearTrapIncreasing ? ArcEndCap.Round : ArcEndCap.None)

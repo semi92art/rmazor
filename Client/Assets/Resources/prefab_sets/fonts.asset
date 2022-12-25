@@ -14,9 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - name: efour_pro
-      item: {fileID: 11400000, guid: 44bf167b6710be2419ccb450cafb73d3, type: 2}
-      bundle: 0
     - name: montserrat_ace_regular
       item: {fileID: 11400000, guid: e05d4a14b3eb9414ba9296440455b47c, type: 2}
       bundle: 0
@@ -35,6 +32,6 @@ MonoBehaviour:
     - name: lilita_one_54_regular
       item: {fileID: 11400000, guid: 605433b68313d491a8ab88bc03a41651, type: 2}
       bundle: 0
-    - name: segoe_ui
-      item: {fileID: 11400000, guid: 0f159f8240858864181345655c609f0b, type: 2}
+    - name: multiround_pro
+      item: {fileID: 11400000, guid: 39dd0d0fec7520c469a364996c8fdd4a, type: 2}
       bundle: 0

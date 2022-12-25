@@ -1,6 +1,7 @@
 ﻿using System;
 using Common.Entities;
-using Common.Ticker;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.ProceedInfos;
 
 namespace RMAZOR.Models.ItemProceeders

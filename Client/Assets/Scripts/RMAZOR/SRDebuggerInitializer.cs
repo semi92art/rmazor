@@ -2,6 +2,8 @@
 
 using Common;
 using Common.Helpers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
 
 namespace RMAZOR
 {
@@ -22,8 +24,7 @@ namespace RMAZOR
 
         public override void Init()
         {
-            SRDebug.Instance.IsTriggerEnabled = GlobalGameSettings.apkForAppodeal ||
-                                                RemoteProperties.DebugEnabled;
+            SRDebug.Instance.IsTriggerEnabled = RemoteProperties.DebugEnabled;
             base.Init();
         }
     }

@@ -6,9 +6,14 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Controllers;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
@@ -88,7 +93,7 @@ namespace RMAZOR
 
         public MazeInfo GetLevelInfoFromScene()
         {
-            mazeObject = GameObject.Find(ContainerNames.MazeItems);
+            mazeObject = GameObject.Find(ContainerNamesMazor.MazeItems);
             maze = new List<ViewMazeItemProt>();
             foreach (Transform mazeObj in mazeObject.transform)
             {
@@ -170,7 +175,7 @@ namespace RMAZOR
                     break;
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
-                    CommonData.Release = false;
+                    MazorCommonData.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
                     Cor.Run(LoadSceneLevel());

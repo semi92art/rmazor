@@ -1,14 +1,23 @@
 ﻿using System.Collections;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Exceptions;
+using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
@@ -111,7 +120,7 @@ namespace RMAZOR.Views.UI
             m_BottomOffset = _Offsets.z;
             m_PromptObject = PrefabSetManager.InitPrefab(
                 null, CommonPrefabSetNames.UiGame, "prompt");
-            m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNames.GameUI));
+            m_PromptObject.SetParent(ContainersGetter.GetContainer(ContainerNamesCommon.GameUI));
             m_PromptText = m_PromptObject.GetCompItem<TextMeshPro>("label");
             m_PromptText.sortingOrder = SortingOrders.GameUI;
             m_PromptText.fontSize = 18f;
@@ -137,7 +146,7 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.Finished 
                     when _Args.PreviousStage != ELevelStage.Paused:
                 {
-                    ShopPromptTapToNext();
+                    // ShopPromptTapToNext();
                 }
                     break;
                 case ELevelStage.ReadyToUnloadLevel 
@@ -157,6 +166,7 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Paused:
                 case ELevelStage.CharacterKilled:
+                    HidePrompt(true);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.LevelStage);

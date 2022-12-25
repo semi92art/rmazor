@@ -14,7 +14,6 @@ Material:
   - ETC1_EXTERNAL_ALPHA
   - _AUXPRESENT_ON
   - _AUXROTATING_ON
-  - _AUXROTCOUNTERCLOCK_ON
   - _AUXROTMODE_VARIANT
   - _ROTATING_ON
   - _ROTMODE_VARIANT
@@ -39,12 +38,12 @@ Material:
     - _AuxOrbitWidth: 0.002
     - _AuxPresent: 1
     - _AuxRadius: 0.027
-    - _AuxRotCounterClock: 1
+    - _AuxRotCounterClock: 0
     - _AuxRotMode: 4
     - _AuxRotModifier1: 1.68
     - _AuxRotModifier2: 0
     - _AuxRotModifier3: 3
-    - _AuxRotSpeed: 1.269
+    - _AuxRotSpeed: 1.29
     - _AuxRotating: 1
     - _AuxSharpness: 400
     - _CenterX: 0.5

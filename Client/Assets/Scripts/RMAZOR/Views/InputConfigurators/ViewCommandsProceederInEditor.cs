@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common;
-using Common.Ticker;
 using Lean.Common;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         public override void Init()
         {
-            if (!CommonData.Release)
+            if (!MazorCommonData.Release)
                 m_DoProceed = true;
             Ticker.Register(this);
             base.Init();

@@ -1,6 +1,7 @@
 ﻿using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;

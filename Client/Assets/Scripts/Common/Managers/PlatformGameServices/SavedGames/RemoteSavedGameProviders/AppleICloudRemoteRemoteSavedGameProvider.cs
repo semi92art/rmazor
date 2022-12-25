@@ -3,6 +3,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Common.Entities;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
 using SA.iOS.GameKit;
 
 namespace Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders

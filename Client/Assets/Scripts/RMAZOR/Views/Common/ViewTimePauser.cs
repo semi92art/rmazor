@@ -1,4 +1,4 @@
-﻿using Common.Ticker;
+﻿using mazing.common.Runtime.Ticker;
 
 namespace RMAZOR.Views.Common
 {

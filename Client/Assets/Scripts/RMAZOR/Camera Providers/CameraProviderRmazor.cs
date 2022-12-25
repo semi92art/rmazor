@@ -1,9 +1,11 @@
 ﻿using System;
-using Common.CameraProviders;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Ticker;
 using Lean.Common;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using UnityEngine;

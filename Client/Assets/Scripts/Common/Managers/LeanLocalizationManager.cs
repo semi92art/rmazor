@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Enums;
+using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Settings;
 using Lean.Localization;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Settings;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -13,44 +18,6 @@ using Object = UnityEngine.Object;
 
 namespace Common.Managers
 {
-    public class LocalizableTextObjectInfo : ICloneable
-    {
-        public Component            TextObject      { get; }
-        public string               LocalizationKey { get; set; }
-        public ETextType            TextType        { get; set; }
-        public Func<string, string> TextFormula     { get; set; }
-        public bool                 AutoFont        { get; }
-
-        public LocalizableTextObjectInfo(
-            Component            _TextObject,
-            ETextType            _TextType,
-            string               _LocalizationKey = null,
-            Func<string, string> _TextFormula = null,
-            bool                 _AutoFont = true)
-        {
-            TextObject      = _TextObject;
-            TextType        = _TextType;
-            LocalizationKey = _LocalizationKey;
-            TextFormula     = _TextFormula;
-            AutoFont        = _AutoFont;
-        }
-
-        public object Clone()
-        {
-            return new LocalizableTextObjectInfo(TextObject, TextType, LocalizationKey, TextFormula);
-        }
-    }
-    
-    public interface ILocalizationManager : IInit, IFontProvider
-    {
-        event UnityAction<ELanguage> LanguageChanged;
-        string                       GetTranslation(string _Key);
-        void                         SetLanguage(ELanguage _Language);
-        ELanguage                    GetCurrentLanguage();
-        void                         AddTextObject(LocalizableTextObjectInfo    _Info);
-        void                         RemoveTextObject(LocalizableTextObjectInfo _Info);
-    }
-
     public class LeanLocalizationManager : InitBase, ILocalizationManager
     {
         #region constants
@@ -118,7 +85,7 @@ namespace Common.Managers
                 leanCsv.Language = key.ToString();    
             }
             m_Localization.DefaultLanguage = "English";
-            LeanLocalization.OnLocalizationChanged += () => LanguageChanged?.Invoke(GetCurrentLanguage());
+            LeanLocalization.OnLocalizationChanged += InvokeLanguageChangedEvent;
             base.Init();
         }
         
@@ -205,6 +172,16 @@ namespace Common.Managers
             }
             if (_Info.AutoFont)
                 tmpText.font = GetFont(_Info.TextType, GetCurrentLanguage());
+        }
+
+        private void InvokeLanguageChangedEvent()
+        {
+            LanguageChanged?.Invoke(GetCurrentLanguage());
+        }
+
+        ~LeanLocalizationManager()
+        {
+            LeanLocalization.OnLocalizationChanged -= InvokeLanguageChangedEvent;
         }
 
         #endregion

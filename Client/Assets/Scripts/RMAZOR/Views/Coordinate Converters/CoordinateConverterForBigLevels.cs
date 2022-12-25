@@ -1,4 +1,4 @@
-﻿using Common.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 
@@ -39,6 +39,11 @@ namespace RMAZOR.Views.Coordinate_Converters
         protected override void SetCenterPoint()
         {
             Center = Vector2.zero;
+        }
+        
+        protected override void SetScale()
+        {
+            ScaleValue = 3f;
         }
 
         #endregion

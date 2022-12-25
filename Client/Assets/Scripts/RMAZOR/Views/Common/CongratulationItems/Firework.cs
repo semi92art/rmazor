@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using Common.Extensions;
-using Common.Providers;
-using Common.SpawnPools;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;

@@ -4,9 +4,15 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers.PlatformGameServices.GameServiceAuth;
-using Common.Network;
-using Common.Network.DataFieldFilters;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Network.DataFieldFilters;
+using mazing.common.Runtime.Utils;
 
 namespace Common.Managers.PlatformGameServices.Leaderboards
 {
@@ -74,14 +80,14 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
             {
                 string noIntConnText = LocalizationManager.GetTranslation("no_internet_connection");
                 Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {noIntConnText}");
-                CommonUtils.ShowAlertDialog(oopsText, noIntConnText);
+                MazorCommonUtils.ShowAlertDialog(oopsText, noIntConnText);
                 return false;
             }
             if (Authenticator.IsAuthenticated) 
                 return true;
             string failedToLoadLeadText = LocalizationManager.GetTranslation("failed_to_load_lead");
             Dbg.LogWarning($"{nameof(ShowLeaderboard)}: {failedToLoadLeadText}");
-            CommonUtils.ShowAlertDialog(oopsText, failedToLoadLeadText);
+            MazorCommonUtils.ShowAlertDialog(oopsText, failedToLoadLeadText);
             return false;
         }
         

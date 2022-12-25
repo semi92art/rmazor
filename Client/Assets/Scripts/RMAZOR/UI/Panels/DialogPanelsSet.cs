@@ -2,7 +2,10 @@
 using Common;
 using Common.Helpers;
 using Common.UI;
-using Common.UI.DialogViewers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.UI.DialogViewers;
 using RMAZOR.UI.Panels.ShopPanels;
 
 namespace RMAZOR.UI.Panels
@@ -28,6 +31,7 @@ namespace RMAZOR.UI.Panels
         private IDailyGiftPanel              DailyGiftPanel              { get; }
         private ILevelsDialogPanel           LevelsDialogPanel           { get; }
         private IConfirmLoadLevelDialogPanel ConfirmLoadLevelDialogPanel { get; }
+        private IDisableAdsDialogPanel       DisableAdsDialogPanel       { get; }
 
 
         public DialogPanelsSet(
@@ -40,9 +44,10 @@ namespace RMAZOR.UI.Panels
             ITutorialDialogPanel         _TutorialDialogPanel,
             IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel,
             IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel,
-            IDailyGiftPanel              _DailyGiftPanel, 
+            IDailyGiftPanel              _DailyGiftPanel,
             ILevelsDialogPanel           _LevelsDialogPanel,
-            IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel)
+            IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel,
+            IDisableAdsDialogPanel       _DisableAdsDialogPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -56,6 +61,7 @@ namespace RMAZOR.UI.Panels
             DailyGiftPanel              = _DailyGiftPanel;
             LevelsDialogPanel           = _LevelsDialogPanel;
             ConfirmLoadLevelDialogPanel = _ConfirmLoadLevelDialogPanel;
+            DisableAdsDialogPanel       = _DisableAdsDialogPanel;
         }
 
         #endregion
@@ -83,7 +89,8 @@ namespace RMAZOR.UI.Panels
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
                 LevelsDialogPanel,
-                ConfirmLoadLevelDialogPanel
+                ConfirmLoadLevelDialogPanel,
+                DisableAdsDialogPanel
             };
             var result = panels.FirstOrDefault(_Panel => _Panel is T);
             return (T)result;
@@ -107,7 +114,8 @@ namespace RMAZOR.UI.Panels
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
                 LevelsDialogPanel,
-                ConfirmLoadLevelDialogPanel
+                ConfirmLoadLevelDialogPanel,
+                DisableAdsDialogPanel
             };
             foreach (var panel in panelsToLoad)
             {

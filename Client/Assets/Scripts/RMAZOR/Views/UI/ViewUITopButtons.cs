@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.CameraProviders;
+using Common;
 using Common.Constants;
-using Common.Enums;
 using Common.Extensions;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -31,10 +34,12 @@ namespace RMAZOR.Views.UI
         
         private readonly List<Component> m_Renderers = new List<Component>();
         private ButtonOnRaycast 
+            m_DisableAdsButton,
             m_OpenShopPanelButton, 
             m_OpenSettingsPanelButton, 
             m_OpenDailyGiftPanelButton,
-            m_OpenLevelsPanelButton;
+            m_OpenLevelsPanelButton,
+            m_RateGameButton;
         private float m_TopOffset;
         private bool  m_CanShowDailyGiftPanel;
 
@@ -42,9 +47,32 @@ namespace RMAZOR.Views.UI
             (string) Model.LevelStaging.Arguments.GetSafe(
                 CommonInputCommandArg.KeyNextLevelType, out _) ==
             CommonInputCommandArg.ParameterLevelTypeBonus;
-        
-        private bool CanShowDailyGiftPanel => (m_CanShowDailyGiftPanel && Model.LevelStaging.LevelIndex > 0) || IsNextLevelBonus;
-        private bool CanShowLevelsPanel    => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
+
+        private bool CanShowDisableAdsButton
+        {
+            get
+            {
+                var saveKeyValue = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
+                return !saveKeyValue.HasValue || !saveKeyValue.Value;
+            }
+        }
+
+        private bool CanShowShopButton
+        {
+            get
+            {
+                var saveKeyValue = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
+                return saveKeyValue.HasValue && saveKeyValue.Value;
+            }
+        }
+        private bool CanShowDailyGiftButton => m_CanShowDailyGiftPanel 
+                                               && (Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus);
+        private bool CanShowLevelsButton    => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
+        private bool CanShowRateGameButton =>
+            !m_CanShowDailyGiftPanel
+            && ((Model.LevelStaging.LevelIndex > 8 && !IsNextLevelBonus)
+                || (Model.LevelStaging.LevelIndex > 2 && IsNextLevelBonus));
+
 
         #endregion
 
@@ -53,7 +81,6 @@ namespace RMAZOR.Views.UI
         private IModelGame                  Model                   { get; }
         private ICameraProvider             CameraProvider          { get; }
         private IManagersGetter             Managers                { get; }
-        private IDialogViewerFullscreen     DialogViewerFullscreen  { get; }
         private IViewInputCommandsProceeder CommandsProceeder       { get; }
         private IViewInputTouchProceeder    ViewInputTouchProceeder { get; }
         private IDailyGiftPanel             DailyGiftPanel          { get; }
@@ -62,7 +89,6 @@ namespace RMAZOR.Views.UI
             IModelGame                  _Model,
             ICameraProvider             _CameraProvider,
             IManagersGetter             _Managers,
-            IDialogViewerFullscreen     _DialogViewerFullscreen,
             IViewInputCommandsProceeder _CommandsProceeder,
             IViewInputTouchProceeder    _ViewInputTouchProceeder,
             IDailyGiftPanel             _DailyGiftPanel)
@@ -70,7 +96,6 @@ namespace RMAZOR.Views.UI
             Model                   = _Model;
             CameraProvider          = _CameraProvider;
             Managers                = _Managers;
-            DialogViewerFullscreen  = _DialogViewerFullscreen;
             CommandsProceeder       = _CommandsProceeder;
             ViewInputTouchProceeder = _ViewInputTouchProceeder;
             DailyGiftPanel          = _DailyGiftPanel;
@@ -84,30 +109,49 @@ namespace RMAZOR.Views.UI
         {
             m_TopOffset = _Offsets.w;
             CheckIfDailyGiftPanelCanBeOpenedToday();
+            InitDisableAdsButton();
             InitOpenShopPanelButton();
             InitOpenSettingsPanelButton();
             InitOpenDailyGiftPanelButton();
             InitOpenLevelsPanelButton();
+            InitRateGameButton();
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
+            Managers.ShopManager.AddPurchaseAction(
+                PurchaseKeys.NoAds,
+                () =>
+                {
+                    m_DisableAdsButton.SetGoActive(false);
+                    m_OpenShopPanelButton.SetGoActive(true);
+                });
         }
         
         public void ShowControls(bool _Show, bool _Instantly)
         {
             if (_Show || _Instantly)
             {
-                m_OpenShopPanelButton .SetGoActive(_Show);
                 m_OpenSettingsPanelButton .SetGoActive(_Show);
-                if (CanShowDailyGiftPanel)
+                if (CanShowDisableAdsButton)
+                    m_DisableAdsButton.SetGoActive(_Show);
+                if (CanShowShopButton)
+                    m_OpenShopPanelButton .SetGoActive(_Show);
+                if (CanShowDailyGiftButton)
                     m_OpenDailyGiftPanelButton.SetGoActive(_Show);
-                if (CanShowLevelsPanel)
+                if (CanShowLevelsButton)
                     m_OpenLevelsPanelButton.SetGoActive(_Show);
+                if (CanShowRateGameButton)
+                    m_RateGameButton.SetGoActive(_Show);
             }
-            m_OpenShopPanelButton.enabled = _Show;
             m_OpenSettingsPanelButton.enabled = _Show;
-            if (CanShowDailyGiftPanel)
+            if (CanShowDisableAdsButton)
+                m_DisableAdsButton.enabled = _Show;
+            if (CanShowShopButton)
+                m_OpenShopPanelButton.enabled = _Show;
+            if (CanShowDailyGiftButton)
                 m_OpenDailyGiftPanelButton.enabled = _Show;
-            if (CanShowLevelsPanel)
+            if (CanShowLevelsButton)
                 m_OpenLevelsPanelButton.enabled = _Show;
+            if (CanShowRateGameButton)
+                m_RateGameButton.enabled = _Show;
         }
 
         public IEnumerable<Component> GetRenderers()
@@ -136,6 +180,12 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
             var scaleVec = Vector2.one * GraphicUtils.AspectRatio * 3f;
             float yPos = screenBounds.max.y - m_TopOffset - additionalVerticalOffset;
+            m_DisableAdsButton.transform
+                .SetParentEx(parent)
+                .SetLocalScaleXY(scaleVec)
+                .SetLocalPosX(screenBounds.min.x + horizontalOffset)
+                .SetLocalPosY(yPos)
+                .SetLocalPosZ(10f);
             m_OpenShopPanelButton.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
@@ -154,6 +204,12 @@ namespace RMAZOR.Views.UI
                     .SetLocalPosX(screenBounds.min.x + horizontalOffset + 5f)
                     .SetLocalPosY(yPos)
                     .SetLocalPosZ(10f);
+            m_RateGameButton.transform
+                .SetParentEx(parent)
+                .SetLocalScaleXY(scaleVec)
+                .SetLocalPosX(screenBounds.min.x + horizontalOffset + 5f)
+                .SetLocalPosY(yPos)
+                .SetLocalPosZ(10f);
             m_OpenLevelsPanelButton.transform
                     .SetParentEx(parent)
                     .SetLocalScaleXY(scaleVec)
@@ -162,40 +218,58 @@ namespace RMAZOR.Views.UI
                     .SetLocalPosZ(10f);
         }
 
+        private void InitDisableAdsButton()
+        {
+            var cont = CameraProvider.Camera.transform;
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
+                cont, CommonPrefabSetNames.UiGame, "disable_ads_button");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button_sprite");
+            renderer.sortingOrder = SortingOrders.GameUI;
+            m_Renderers.Add(renderer);
+            m_DisableAdsButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
+            m_DisableAdsButton.Init(
+                OnDisableAdsButtonPressed, 
+                () => Model.LevelStaging.LevelStage, 
+                CameraProvider,
+                Managers.HapticsManager,
+                ViewInputTouchProceeder);
+            buttonGo.SetActive(false);
+        }
+
         private void InitOpenShopPanelButton()
         {
             var cont = CameraProvider.Camera.transform;
-            var goShopButton = Managers.PrefabSetManager.InitPrefab(
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "shop_button");
-            var renderer = goShopButton.GetCompItem<SpriteRenderer>("button");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button");
             renderer.sortingOrder = SortingOrders.GameUI;
-            m_Renderers.Add( renderer);
-            m_OpenShopPanelButton = goShopButton.GetCompItem<ButtonOnRaycast>("button");
+            m_Renderers.Add(renderer);
+            m_OpenShopPanelButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
             m_OpenShopPanelButton.Init(
                 OnOpenShopPanelButtonPressed, 
                 () => Model.LevelStaging.LevelStage, 
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
-            goShopButton.SetActive(false);
+            buttonGo.SetActive(false);
         }
 
         private void InitOpenSettingsPanelButton()
         {
             var cont = CameraProvider.Camera.transform;
-            var goSettingsButton = Managers.PrefabSetManager.InitPrefab(
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "settings_button");
-            var renderer = goSettingsButton.GetCompItem<SpriteRenderer>("button");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button");
             renderer.sortingOrder = SortingOrders.GameUI;
-            m_Renderers.Add( renderer);
-            m_OpenSettingsPanelButton = goSettingsButton.GetCompItem<ButtonOnRaycast>("button");
+            m_Renderers.Add(renderer);
+            m_OpenSettingsPanelButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
             m_OpenSettingsPanelButton.Init(
                 OnOpenSettingsPanelButtonPressed, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
-            goSettingsButton.SetActive(false);
+            buttonGo.SetActive(false);
         }
 
         private void InitOpenDailyGiftPanelButton()
@@ -204,42 +278,66 @@ namespace RMAZOR.Views.UI
             {
                 m_OpenDailyGiftPanelButton.SetGoActive(false);
                 m_CanShowDailyGiftPanel = false;
+                m_RateGameButton.SetGoActive(CanShowRateGameButton);
             };
             var cont = CameraProvider.Camera.transform;
-            var goDailyGiftButton = Managers.PrefabSetManager.InitPrefab(
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "daily_gift_button");
-            var renderer = goDailyGiftButton.GetCompItem<SpriteRenderer>("button_sprite");
-            var renderer1 = goDailyGiftButton.GetCompItem<SpriteRenderer>("sprite_2");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button_sprite");
+            var renderer1 = buttonGo.GetCompItem<SpriteRenderer>("sprite_2");
             renderer.sortingOrder = SortingOrders.GameUI;
             renderer1.sortingOrder = SortingOrders.GameUI;
             m_Renderers.Add(renderer);
             m_Renderers.Add(renderer1);
-            m_OpenDailyGiftPanelButton = goDailyGiftButton.GetCompItem<ButtonOnRaycast>("button");
+            m_OpenDailyGiftPanelButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
             m_OpenDailyGiftPanelButton.Init(
                 OnOpenDailyGiftPanelButtonPressed, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
-            goDailyGiftButton.SetActive(false);
+            buttonGo.SetActive(false);
         }
 
         private void InitOpenLevelsPanelButton()
         {
             var cont = CameraProvider.Camera.transform;
-            var goLevelsButton = Managers.PrefabSetManager.InitPrefab(
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "levels_button");
-            var renderer = goLevelsButton.GetCompItem<SpriteRenderer>("button_sprite");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button_sprite");
             renderer.sortingOrder = SortingOrders.GameUI;
             m_Renderers.Add(renderer);
-            m_OpenLevelsPanelButton = goLevelsButton.GetCompItem<ButtonOnRaycast>("button");
+            m_OpenLevelsPanelButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
             m_OpenLevelsPanelButton.Init(
                 OnOpenLevelsPanelButtonPressed, 
                 () => Model.LevelStaging.LevelStage,
                 CameraProvider,
                 Managers.HapticsManager,
                 ViewInputTouchProceeder);
-            goLevelsButton.SetActive(false);
+            buttonGo.SetActive(false);
+        }
+        
+        private void InitRateGameButton()
+        {
+            var cont = CameraProvider.Camera.transform;
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
+                cont, CommonPrefabSetNames.UiGame, "rate_game_button");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button_sprite");
+            renderer.sortingOrder = SortingOrders.GameUI;
+            m_Renderers.Add(renderer);
+            m_RateGameButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
+            m_RateGameButton.Init(
+                OnRateGameButtonPressed, 
+                () => Model.LevelStaging.LevelStage,
+                CameraProvider,
+                Managers.HapticsManager,
+                ViewInputTouchProceeder);
+            buttonGo.SetActive(false);
+        }
+        
+        private void OnDisableAdsButtonPressed()
+        {   
+            CallCommand(EInputCommand.DisableAdsPanel);
         }
 
         private void OnOpenShopPanelButtonPressed()
@@ -262,11 +360,15 @@ namespace RMAZOR.Views.UI
             CallCommand(EInputCommand.LevelsPanel);
         }
 
+        private void OnRateGameButtonPressed()
+        {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton3Pressed);
+            Managers.ShopManager.RateGame();
+            SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
+        }
+
         private void CallCommand(EInputCommand _Command)
         {
-            if (DialogViewerFullscreen.CurrentPanel != null
-                && DialogViewerFullscreen.CurrentPanel.AppearingState != EAppearingState.Dissapeared)
-                return;
             CommandsProceeder.RaiseCommand(_Command, null);
         }
 

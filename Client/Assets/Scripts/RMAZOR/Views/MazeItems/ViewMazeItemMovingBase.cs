@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
@@ -127,7 +130,7 @@ namespace RMAZOR.Views.MazeItems
             var points = Props.Path
                 .Select(_P => CoordinateConverter.ToLocalMazeItemPosition(_P))
                 .ToList();
-            var containier = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var containier = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems);
             for (int i = 0; i < points.Count; i++)
             {
                 m_PathJoints.Add( CreateJoint(points[i], containier));

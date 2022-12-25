@@ -1,6 +1,7 @@
-﻿using Common.CameraProviders;
-using Common.Managers;
-using Common.Ticker;
+﻿using Common.Managers;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
 using UnityEngine;
 
 namespace RMAZOR.Camera_Providers

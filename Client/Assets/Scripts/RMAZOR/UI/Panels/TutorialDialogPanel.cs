@@ -1,18 +1,24 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Entities.UI;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -53,6 +59,12 @@ namespace RMAZOR.UI.Panels
     
     public class TutorialDialogPanel : DialogPanelBase, ITutorialDialogPanel
     {
+        #region constants
+
+        private const int CharacterSpritesCount = 5;
+
+        #endregion
+        
         #region nonpublic members
 
         private TutorialDialogPanelInfo m_Info;
@@ -61,6 +73,8 @@ namespace RMAZOR.UI.Panels
         private VideoPlayer             m_VideoPlayer;
         private Button                  m_ButtonClose;
         private Animator                m_Animator;
+        private Image                   m_CharacterIcon;
+        private readonly List<Sprite>   m_CharacterSprites = new List<Sprite>();
 
         #endregion
 
@@ -129,11 +143,18 @@ namespace RMAZOR.UI.Panels
             PanelRectTransform = go.RTransform();
             var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
             panel.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
-            m_Title = go.GetCompItem<TextMeshProUGUI>("title");
-            m_Description = go.GetCompItem<TextMeshProUGUI>("description");
-            m_ButtonClose = go.GetCompItem<Button>("button_close");
-            m_Animator    = go.GetCompItem<Animator>("animator");
+            m_Title         = go.GetCompItem<TextMeshProUGUI>("title");
+            m_Description   = go.GetCompItem<TextMeshProUGUI>("description");
+            m_ButtonClose   = go.GetCompItem<Button>("button_close");
+            m_Animator      = go.GetCompItem<Animator>("animator");
+            m_CharacterIcon = go.GetCompItem<Image>("character_icon");
             m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
+            for (int i = 1; i <= CharacterSpritesCount; i++)
+            {
+                var charSprite = Managers.PrefabSetManager.GetObject<Sprite>(
+                    "views", $"tutorial_character_sprite_{i}");
+                m_CharacterSprites.Add(charSprite);
+            }
         }
 
         public override void OnDialogStartAppearing()
@@ -143,6 +164,8 @@ namespace RMAZOR.UI.Panels
             var font =  FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
             m_Title.font = m_Description.font = font;
             m_Title.text = m_Description.text = string.Empty;
+            int currentTutorialNumber = GetNumberOfFinishedTutorials() + 1;
+            m_CharacterIcon.sprite = m_CharacterSprites[currentTutorialNumber % CharacterSpritesCount];
             base.OnDialogStartAppearing();
         }
 
@@ -187,7 +210,7 @@ namespace RMAZOR.UI.Panels
 
         private void InitVideoPlayer()
         {
-            var vpParent = ContainersGetter.GetContainer(ContainerNames.Common);
+            var vpParent = ContainersGetter.GetContainer(ContainerNamesCommon.Common);
             var vpGo = Managers.PrefabSetManager.InitPrefab(
                 vpParent, "tutorials", "tutorial_video_player");
             vpGo.transform.SetLocalPosXY(Vector2.left * 1e3f);
@@ -199,7 +222,7 @@ namespace RMAZOR.UI.Panels
         {
             var titleCharArray = _Title.ToCharArray();
             var sb = new StringBuilder(titleCharArray.Length);
-            float printTime = _Title.Length * 0.075f;
+            float printTime = _Title.Length * 0.05f;
             yield return Cor.Lerp(Ticker, printTime, _OnProgress: _P =>
             {
                 sb.Clear();
@@ -209,7 +232,7 @@ namespace RMAZOR.UI.Panels
                 m_Title.text = sb.ToString();
             });
             var descriptionCharArray = _Description.ToCharArray();
-            printTime = _Description.Length * 0.075f;
+            printTime = _Description.Length * 0.05f;
             yield return Cor.Lerp(Ticker, printTime, _OnProgress: _P =>
             {
                 sb.Clear();

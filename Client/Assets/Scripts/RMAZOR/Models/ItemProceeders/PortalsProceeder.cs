@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
-using Common.Ticker;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;

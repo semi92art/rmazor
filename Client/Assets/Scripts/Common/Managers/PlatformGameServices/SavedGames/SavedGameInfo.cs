@@ -1,5 +1,6 @@
 ﻿using Common.Entities;
 using GooglePlayGames.BasicApi.SavedGame;
+using mazing.common.Runtime.Entities;
 
 namespace Common.Managers.PlatformGameServices.SavedGames
 {

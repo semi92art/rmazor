@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common.Entities;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views;
@@ -144,9 +146,7 @@ namespace RMAZOR.Models
         #region nonpublic methods
 
         private void MoveCore(EDirection _Direction, bool _FromPortal)
-        {           
-            if (!Data.ProceedingControls)
-                return;
+        {
             if (!Alive)
                 return;
             if (LevelStaging.LevelStage == ELevelStage.ReadyToStart)

@@ -1,8 +1,11 @@
 ﻿using Common.Entities;
 using Common.Helpers;
 using Common.Managers;
-using Common.Settings;
-using Common.Ticker;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Settings;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using RMAZOR.Views;
 
@@ -26,16 +29,14 @@ namespace RMAZOR.Managers
             IUITicker         _UIUiTicker,
             IMusicSetting     _MusicSetting,
             ISoundSetting     _SoundSetting,
-            IPrefabSetManager _PrefabSetManager,
-            ICommonTicker     _CommonTicker)
+            IPrefabSetManager _PrefabSetManager)
             : base(
                 _ContainersGetter,
                 _GameTicker,
                 _UIUiTicker,
                 _MusicSetting,
                 _SoundSetting,
-                _PrefabSetManager,
-                _CommonTicker) { }
+                _PrefabSetManager) { }
 
         #endregion
 

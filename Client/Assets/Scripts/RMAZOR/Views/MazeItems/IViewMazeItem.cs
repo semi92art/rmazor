@@ -1,6 +1,6 @@
 ﻿using System;
 using Common;
-using Common.SpawnPools;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;

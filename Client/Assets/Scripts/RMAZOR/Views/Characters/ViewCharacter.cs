@@ -2,11 +2,14 @@
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Helpers;
 using Common.Managers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
@@ -188,7 +191,7 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
-                    if (!CommonData.Release)
+                    if (!MazorCommonData.Release)
                         CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
                     if (_Args.PreviousStage == ELevelStage.Paused 
                         && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
@@ -252,7 +255,7 @@ namespace RMAZOR.Views.Characters
         
         private void SetPosition(Vector2 _Position)
         {
-            ContainersGetter.GetContainer(ContainerNames.Character).localPosition = _Position;
+            ContainersGetter.GetContainer(ContainerNamesMazor.Character).localPosition = _Position;
         }
 
         #endregion

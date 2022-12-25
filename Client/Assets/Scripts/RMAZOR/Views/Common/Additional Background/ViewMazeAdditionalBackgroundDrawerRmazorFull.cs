@@ -4,14 +4,19 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.SpawnPools;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
@@ -375,7 +380,7 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         private void DrawBorder(V2Int _Position, EDirection _Side, bool _StartLimit, bool _EndLimit)
         {
-            var borderPos = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            var borderPos = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems).transform.position;
             var border = m_Borders.FirstInactive;
             border.SetThickness(ViewSettings.LineThickness * BorderScaleCoefficient * CoordinateConverter.Scale)
                 .transform.SetPosXY(borderPos)
@@ -399,7 +404,7 @@ namespace RMAZOR.Views.Common.Additional_Background
             bool _Inner)
         {
             var angles = Mathf.Deg2Rad * GetCornerAngles(_Right, _Up, _Inner);
-            var position = ContainersGetter.GetContainer(ContainerNames.MazeItems).transform.position;
+            var position = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems).transform.position;
             float radius = ViewSettings.LineThickness * BorderScaleCoefficient
                                                      * CoordinateConverter.Scale;
             var corner = m_Corners.FirstInactive;

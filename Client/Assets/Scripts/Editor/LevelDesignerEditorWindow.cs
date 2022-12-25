@@ -3,11 +3,16 @@ using System.Reflection;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Managers;
 using Common.Utils;
 using Editor;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using ModestTree;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.ContainerGetters;
@@ -66,7 +71,7 @@ namespace RMAZOR.Editor
         [MenuItem("Tools/Level Designer _%&l", false, 101)]
         public static void ShowWindow()
         {
-            var window = GetWindow<LevelDesignerEditorWindow>(nameof(LevelDesignerEditorWindow).WithSpaces());
+            var window = GetWindow<LevelDesignerEditorWindow>("Level Designer");
             window.minSize = new Vector2(300, 200);
         }
 
@@ -463,7 +468,7 @@ namespace RMAZOR.Editor
         {
             EditorUtilsEx.SceneDirtyAction(() =>
             {
-                var container = CommonUtils.FindOrCreateGameObject(ContainerNames.MazeHolder, out _).transform;
+                var container = CommonUtils.FindOrCreateGameObject(ContainerNamesMazor.MazeHolder, out _).transform;
                 container.gameObject.DestroyChildrenSafe();
                 m_CoordinateConverter.SetMazeSize(_Info.Size);
                 Des.maze = m_MazeItemsCreator.CreateMazeItems(_Info)

@@ -1,8 +1,12 @@
 ﻿using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -92,7 +96,7 @@ namespace Common
             background.enabled = true;
             background.material = PrefabSetManager.InitObject<Material>(
                 "materials", "background_solid");
-            background.sharedMaterial.SetColor(Color1Id, CommonData.CompanyLogoBackgroundColor);
+            background.sharedMaterial.SetColor(Color1Id, MazorCommonData.CompanyLogoBackgroundColor);
             ScaleTextureToViewport(background.transform);
 
             var startCol = Color.white;

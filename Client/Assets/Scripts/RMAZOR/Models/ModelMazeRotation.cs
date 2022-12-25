@@ -1,7 +1,10 @@
 ﻿using Common;
-using Common.Exceptions;
 using Common.Helpers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Views;
 
 namespace RMAZOR.Models
@@ -41,13 +44,6 @@ namespace RMAZOR.Models
     
     public class ModelMazeRotation : InitBase, IModelMazeRotation 
     {
-        private IModelData Data { get; }
-
-        public ModelMazeRotation(IModelData _Data)
-        {
-            Data = _Data;
-        }
-
         public EMazeOrientation              Orientation { get; set; }
         public event MazeOrientationHandler RotationStarted;
         public event MazeOrientationHandler RotationFinished;
@@ -56,8 +52,6 @@ namespace RMAZOR.Models
             EMazeRotateDirection _Direction,
             EMazeOrientation?     _NextOrientation = null)
         {
-            if (!Data.ProceedingControls)
-                return;
             var currOrientation = Orientation;
             Orientation = _NextOrientation ?? GetNextOrientation(_Direction, currOrientation);
             var args = new MazeRotationEventArgs(

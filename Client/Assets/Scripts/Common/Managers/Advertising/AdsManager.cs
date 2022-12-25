@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
-using Common.Entities;
-using Common.Exceptions;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Managers.Advertising.AdsProviders;
-using Common.Managers.Analytics;
-using Common.Ticker;
-using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using Random = UnityEngine.Random;
@@ -19,10 +19,10 @@ namespace Common.Managers.Advertising
 {
     public interface IAdsManager : IInit
     {
-        bool         RewardedAdReady             { get; }
-        bool         RewardedAdNonSkippableReady { get; }
-        bool         InterstitialAdReady         { get; }
-        Entity<bool> ShowAds                     { get; set; }
+        bool RewardedAdReady             { get; }
+        bool RewardedAdNonSkippableReady { get; }
+        bool InterstitialAdReady         { get; }
+        bool ShowAds                     { get; set; }
 
         void ShowRewardedAd(
             UnityAction _OnBeforeShown  = null,
@@ -55,33 +55,27 @@ namespace Common.Managers.Advertising
         #region inject
 
         private GlobalGameSettings      GameGameSettings { get; }
-        private IRemotePropertiesCommon RemoteProperties { get; }
         private IAdsProvidersSet        AdsProvidersSet  { get; }
         private IAnalyticsManager       AnalyticsManager { get; }
-        private ICommonTicker           CommonTicker     { get; }
 
         private AdsManager(
             GlobalGameSettings      _GameGameSettings,
-            IRemotePropertiesCommon _RemoteProperties,
             IAdsProvidersSet        _AdsProvidersSet,
-            IAnalyticsManager       _AnalyticsManager,
-            ICommonTicker           _CommonTicker)
+            IAnalyticsManager       _AnalyticsManager)
         {
             GameGameSettings = _GameGameSettings;
-            RemoteProperties = _RemoteProperties;
             AdsProvidersSet  = _AdsProvidersSet;
             AnalyticsManager = _AnalyticsManager;
-            CommonTicker     = _CommonTicker;
         }
 
         #endregion
 
         #region api
 
-        public Entity<bool> ShowAds
+        public bool ShowAds
         {
             get => GetShowAdsCached();
-            set => SaveUtils.PutValue(SaveKeysCommon.DisableAds, !value.Value);
+            set => SaveUtils.PutValue(SaveKeysMazor.DisableAds, !value);
         }
 
         public bool RewardedAdReady             => m_Providers.Values.Any(_P => _P.RewardedAdReady);
@@ -136,7 +130,7 @@ namespace Common.Managers.Advertising
                 _OnReward,
                 _OnClosed,
                 _OnFailedToShow,
-                AdvertisingType.Rewarded,
+                EAdvertisingType.Rewarded,
                 _Forced));
 
         }
@@ -179,7 +173,7 @@ namespace Common.Managers.Advertising
                 null,
                 _OnClosed,
                 _OnFailedToShow,
-                AdvertisingType.Interstitial,
+                EAdvertisingType.Interstitial,
                 _Forced));
         }
 
@@ -189,22 +183,11 @@ namespace Common.Managers.Advertising
 
         private void InitProviders()
         {
-            bool testMode = GameGameSettings.testAds || GameGameSettings.apkForAppodeal;
+            bool testMode = GameGameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
-            var adsProviders = RemoteProperties.AdsProviders?
-                .Where(_P => _P.Platform == Application.platform).ToList();
             foreach (var adsProvider in AdsProvidersSet.GetProviders())
             {
-                var info = adsProviders?.FirstOrDefault(_P =>
-                    _P.Source.EqualsIgnoreCase(adsProvider.Source)) ?? new AdProviderInfo
-                {
-                    Source = adsProvider.Source,
-                    Enabled = Application.isEditor,
-                    ShowRate = 1f
-                };
-                if (!info.Enabled)
-                    continue;
-                adsProvider.Init(testMode, info.ShowRate, adsConfig);
+                adsProvider.Init(testMode, 100f, adsConfig);
                 m_Providers.Add(adsProvider.Source, adsProvider);
             }
         }
@@ -217,7 +200,7 @@ namespace Common.Managers.Advertising
             UnityAction                       _OnReward,
             UnityAction                       _OnClosed,
             UnityAction                       _OnFailedToShow,
-            AdvertisingType                   _Type,
+            EAdvertisingType                   _Type,
             bool                              _Forced)
         {
             _OnBeforeShown?.Invoke();
@@ -252,7 +235,7 @@ namespace Common.Managers.Advertising
             var eventData = new Dictionary<string, object>
             {
                 {AnalyticIds.ParameterAdSource, selectedProvider.Source},
-                {AnalyticIds.ParameterAdType, Enum.GetName(typeof(AdvertisingType), _Type)}
+                {AnalyticIds.ParameterAdType, Enum.GetName(typeof(EAdvertisingType), _Type)}
             };
             void OnShownExtended()
             {
@@ -281,7 +264,7 @@ namespace Common.Managers.Advertising
             }
             switch (_Type)
             {
-                case AdvertisingType.Interstitial:
+                case EAdvertisingType.Interstitial:
                     selectedProvider.ShowInterstitialAd(
                         OnShownExtended, 
                         OnClicked, 
@@ -290,7 +273,7 @@ namespace Common.Managers.Advertising
                         ShowAds, 
                         _Forced);
                     break;
-                case AdvertisingType.Rewarded:
+                case EAdvertisingType.Rewarded:
                     selectedProvider.ShowRewardedAd(
                         OnShownExtended, 
                         OnClicked, 
@@ -305,19 +288,10 @@ namespace Common.Managers.Advertising
             }
         }
 
-        private static Entity<bool> GetShowAdsCached()
+        private static bool GetShowAdsCached()
         {
-            var val = SaveUtils.GetValue(SaveKeysCommon.DisableAds);
-            var result = new Entity<bool> {Result = EEntityResult.Success};
-            if (val.HasValue)
-            {
-                result.Value = !val.Value;
-                return result;
-            }
-
-            SaveUtils.PutValue(SaveKeysCommon.DisableAds, false);
-            result.Value = true;
-            return result;
+            var val = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
+            return !val.HasValue || !val.Value;
         }
 
         #endregion

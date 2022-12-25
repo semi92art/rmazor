@@ -9,7 +9,9 @@ namespace Common.Managers.Analytics
     
     public class AppodealAnalyticsProvider : AnalyticsProviderBase, IAppodealAnalyticsProvider
     {
-        protected override void SendAnalyticCore(string _AnalyticId, IDictionary<string, object> _EventData = null)
+        protected override void SendAnalyticCore(
+            string                      _AnalyticId,
+            IDictionary<string, object> _EventData = null)
         {
             if (_AnalyticId == "session_start")
                 return;

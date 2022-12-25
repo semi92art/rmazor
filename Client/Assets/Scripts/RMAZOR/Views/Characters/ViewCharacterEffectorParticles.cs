@@ -6,8 +6,12 @@ using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Coordinate_Converters;
@@ -185,7 +189,7 @@ namespace RMAZOR.Views.Characters
         {
             Vector3 center;
             if (m_MoveDirection.HasValue && _Death)
-                center = ContainersGetter.GetContainer(ContainerNames.Character).position;
+                center = ContainersGetter.GetContainer(ContainerNamesMazor.Character).position;
             else
                 center = CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
             Activated = true;
@@ -256,7 +260,7 @@ namespace RMAZOR.Views.Characters
                     GetOrthogonalSpeedAddict(moveDir.y, orthDirCoeff));
                 throwSpeed = -throwSpeed;
                 throwSpeed *= 2f;
-                var cont = ContainersGetter.GetContainer(ContainerNames.Character);
+                var cont = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
                 var orthDir = 0.5f * new Vector2(moveDir.y, moveDir.x) * orthDirCoeff;
                 float orthDirCoeff2 = _MoveDirection switch
                 {

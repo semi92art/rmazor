@@ -1,5 +1,7 @@
 ﻿#if FIREBASE
 using Common.Helpers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
 
 namespace Common.Managers.Crash_Reporting
 {

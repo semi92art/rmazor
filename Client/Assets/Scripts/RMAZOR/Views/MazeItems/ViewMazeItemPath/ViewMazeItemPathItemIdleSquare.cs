@@ -1,7 +1,8 @@
 ﻿using System;
 using Common;
 using Common.Extensions;
-using Common.Providers;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItems.Props;
 using RMAZOR.Views.Utils;

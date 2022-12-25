@@ -48,14 +48,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 5378831699507002486}
-      name: leg_1_body
-    - item: {fileID: 1875868520238304698}
-      name: leg_1_border
-    - item: {fileID: 6996836500666915282}
-      name: leg_2_body
-    - item: {fileID: 6512126055484384455}
-      name: leg_2_border
+    - name: leg_1_body
+      item: {fileID: 5378831699507002486}
+    - name: leg_1_border
+      item: {fileID: 1875868520238304698}
+    - name: leg_2_body
+      item: {fileID: 6996836500666915282}
+    - name: leg_2_border
+      item: {fileID: 6512126055484384455}
 --- !u!114 &2893026543006202796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,8 +128,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 0.37821847
-  height: 0.18
+  width: 0.5
+  height: 0.27
   type: 3
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
@@ -266,8 +266,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 0.35
-  height: 0.15
+  width: 0.45
+  height: 0.25
   type: 1
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
@@ -403,8 +403,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 0.37821847
-  height: 0.18
+  width: 0.5
+  height: 0.27
   type: 3
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}
@@ -541,8 +541,8 @@ MonoBehaviour:
   stencilReadMask: 255
   stencilWriteMask: 255
   pivot: 1
-  width: 0.35
-  height: 0.15
+  width: 0.45
+  height: 0.25
   type: 1
   cornerRadiusMode: 0
   cornerRadii: {x: 0.25, y: 0.25, z: 0.25, w: 0.25}

@@ -1,5 +1,6 @@
 ﻿using System;
 using Common.Entities;
+using mazing.common.Runtime.Entities;
 using Newtonsoft.Json;
 using UnityEngine;
 

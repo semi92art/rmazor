@@ -2192,42 +2192,42 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 8219298684319459333}
-      name: panel_view
-    - item: {fileID: 2896433840449391131}
-      name: wheel_panel_view
-    - item: {fileID: 8219298684319459333}
-      name: panel_animator
-    - item: {fileID: 3792270379249236316}
-      name: multiply_money_button
-    - item: {fileID: 5419341537423262743}
-      name: skip_button
-    - item: {fileID: 2470959762916954507}
-      name: money_count_text
-    - item: {fileID: 2904467016837748887}
-      name: title_text
-    - item: {fileID: 3792270378520316374}
-      name: multiply_button_text
-    - item: {fileID: 5419341537544985509}
-      name: skip_button_text
-    - item: {fileID: 5034141667683155495}
-      name: money_icon
-    - item: {fileID: 8219298684319459333}
-      name: triggerer
-    - item: {fileID: 6748010899164098522}
-      name: continue_button
-    - item: {fileID: 6748010901101362482}
-      name: continue_button_text
-    - item: {fileID: 2887260714823469634}
-      name: watch_ads_icon
-    - item: {fileID: 7477759800489951490}
-      name: loading_ads_anim
-    - item: {fileID: 8193252025052603082}
-      name: background
-    - item: {fileID: 2558391057873212362}
-      name: reward_text
-    - item: {fileID: 1508080200680270711}
-      name: watch_video_to_the_end_text
+    - name: panel_view
+      item: {fileID: 8219298684319459333}
+    - name: wheel_panel_view
+      item: {fileID: 2896433840449391131}
+    - name: panel_animator
+      item: {fileID: 8219298684319459333}
+    - name: multiply_money_button
+      item: {fileID: 3792270379249236316}
+    - name: skip_button
+      item: {fileID: 5419341537423262743}
+    - name: money_count_text
+      item: {fileID: 2470959762916954507}
+    - name: title_text
+      item: {fileID: 2904467016837748887}
+    - name: multiply_button_text
+      item: {fileID: 3792270378520316374}
+    - name: skip_button_text
+      item: {fileID: 5419341537544985509}
+    - name: money_icon
+      item: {fileID: 5034141667683155495}
+    - name: triggerer
+      item: {fileID: 8219298684319459333}
+    - name: continue_button
+      item: {fileID: 6748010899164098522}
+    - name: continue_button_text
+      item: {fileID: 6748010901101362482}
+    - name: watch_ads_icon
+      item: {fileID: 2887260714823469634}
+    - name: loading_ads_anim
+      item: {fileID: 7477759800489951490}
+    - name: background
+      item: {fileID: 8193252025052603082}
+    - name: reward_text
+      item: {fileID: 2558391057873212362}
+    - name: watch_video_to_the_end_text
+      item: {fileID: 1508080200680270711}
 --- !u!95 &5063241499148990229
 Animator:
   serializedVersion: 4
@@ -2794,6 +2794,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 246835211539035367}
     m_Modifications:
+    - target: {fileID: 5228607574150564192, guid: ac19fde94f4b1e54c8fda56d038c1ae4,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 673.7415
+      objectReference: {fileID: 0}
     - target: {fileID: 5228607574150564192, guid: ac19fde94f4b1e54c8fda56d038c1ae4,
         type: 3}
       propertyPath: m_SizeDelta.y

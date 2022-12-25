@@ -1,9 +1,13 @@
-﻿using Common.CameraProviders;
-using Common.Extensions;
+﻿using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders

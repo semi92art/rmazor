@@ -1,4 +1,4 @@
-﻿using Common.Exceptions;
+﻿using mazing.common.Runtime.Exceptions;
 
 namespace Common.Constants
 {

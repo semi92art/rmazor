@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using Common.Helpers;
-using Common.Helpers.Attributes;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Helpers.Attributes;
 using UnityEngine;
 
 namespace Common.ScriptableObjects

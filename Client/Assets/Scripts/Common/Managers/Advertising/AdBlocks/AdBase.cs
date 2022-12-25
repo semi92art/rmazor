@@ -1,5 +1,6 @@
 ﻿using Common.Helpers;
-using Common.Ticker;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Ticker;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdBlocks

@@ -3,9 +3,13 @@ using System.Linq;
 using Common.Entities;
 using Common.Helpers;
 using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
-using Common.Network;
-using Common.Network.DataFieldFilters;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Network.DataFieldFilters;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using UnityEngine.Events;
 
@@ -78,7 +82,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
                 GameClient, 
                 GameClientUtils.AccountId, 
                 CommonData.GameId,
-                (ushort)CommonUtils.StringToHash(fileNameData!.FileName)) 
+                (ushort)MazorCommonUtils.StringToHash(fileNameData!.FileName)) 
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {
@@ -102,7 +106,7 @@ namespace Common.Managers.PlatformGameServices.SavedGames
                 GameClient,
                 GameClientUtils.AccountId, 
                 CommonData.GameId,
-                (ushort)CommonUtils.StringToHash(_FileName))
+                (ushort)MazorCommonUtils.StringToHash(_FileName))
                 {OnlyLocal = true};
             gdff.Filter(_Fields =>
             {

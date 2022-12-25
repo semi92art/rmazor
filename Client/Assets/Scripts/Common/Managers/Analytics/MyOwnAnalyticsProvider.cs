@@ -1,8 +1,13 @@
 ﻿using System.Collections.Generic;
 using Common.Entities;
-using Common.Network;
-using Common.Network.Packets;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.Analytics;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Network.Packets;
+using mazing.common.Runtime.PreciseLocale;
+using mazing.common.Runtime.Utils;
 using UnityEngine.Device;
 
 namespace Common.Managers.Analytics
@@ -49,7 +54,7 @@ namespace Common.Managers.Analytics
             IDictionary<string, object> _EventData = null)
         {
             var result = new Entity<GameUserEventPacket>();
-            var idfaEntity = CommonUtils.GetIdfa();
+            var idfaEntity = MazorCommonUtils.GetIdfa();
             Cor.Run(Cor.WaitWhile(
                 () => idfaEntity.Result == EEntityResult.Pending,
                 () =>

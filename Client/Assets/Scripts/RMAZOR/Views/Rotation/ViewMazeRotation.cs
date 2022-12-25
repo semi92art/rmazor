@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using Common.Constants;
 using Common.Helpers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Characters;
 using UnityEngine;
@@ -46,7 +48,7 @@ namespace RMAZOR.Views.Rotation
 
         public override void Init()
         {
-            var cont = ContainersGetter.GetContainer(ContainerNames.MazeHolder);
+            var cont = ContainersGetter.GetContainer(ContainerNamesMazor.MazeHolder);
             m_Rb = cont.gameObject.AddComponent<Rigidbody2D>();
             m_Rb.gravityScale = 0;
             m_Rb.constraints = RigidbodyConstraints2D.FreezeAll;

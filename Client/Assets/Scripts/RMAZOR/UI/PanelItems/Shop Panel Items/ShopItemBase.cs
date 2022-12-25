@@ -1,10 +1,17 @@
 ﻿using System;
 using System.Collections;
+using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
-using Common.Ticker;
 using Common.UI;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -56,7 +63,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             m_Info = _Info;
             LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(title, ETextType.MenuUI));
-            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(price, ETextType.Currency));
+            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(price, ETextType.MenuUI));
             watchAdImage.SetGoActive(true);
             loadingAnim.SetGoActive(true);
             name = "Shop Item";
@@ -115,10 +122,9 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             if (m_Info.BuyForWatchingAd) 
                 return;
             price.text = $"{m_Info.Price}";
-            if (!string.IsNullOrEmpty(price.text) && !string.IsNullOrWhiteSpace(price.text))
+            if (!string.IsNullOrEmpty(price.text))
                 return;
             price.text = LocalizationManager.GetTranslation("buy");
-            price.font = LocalizationManager.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
         }
 
         private void OnDestroy()

@@ -4,6 +4,10 @@ using System.Linq;
 using Common.Constants;
 using Firebase;
 using Firebase.Analytics;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.Analytics;
 using UnityEngine;
 
 namespace Common.Managers.Analytics
@@ -28,7 +32,7 @@ namespace Common.Managers.Analytics
         {
             // if (Application.isEditor)
             //     return;
-            if (CommonData.FirebaseApp != null)
+            if (MazorCommonData.FirebaseApp != null)
             {
                 InitializeAnalytics();
                 Dbg.Log("Firebase initialized successfully");
@@ -38,7 +42,7 @@ namespace Common.Managers.Analytics
             {
                 if (_Task.Result == DependencyStatus.Available)
                 {
-                    CommonData.FirebaseApp = FirebaseApp.DefaultInstance;
+                    MazorCommonData.FirebaseApp = FirebaseApp.DefaultInstance;
                     InitializeAnalytics();
                     Dbg.Log("Firebase initialized successfully");
                 } 
@@ -61,7 +65,7 @@ namespace Common.Managers.Analytics
         {
             if (_AnalyticId == "session_start")
                 return;
-            if (CommonData.FirebaseApp == null)
+            if (MazorCommonData.FirebaseApp == null)
                 return;
             Parameter[] @params = _EventData?.Select(_Kvp =>
             {

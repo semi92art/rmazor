@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Common;
 using Common.Utils;
+using mazing.common.Runtime.Utils;
 using RMAZOR;
 using UnityEditor;
 using UnityEngine;
@@ -35,7 +36,7 @@ namespace Editor
             EditorUtilsEx.GuiButtonAction("Reload Saves File", () =>
             {
                 SaveKeysRmazor.ResetState();
-                SaveKeysCommon.ResetState();
+                SaveKeysMazor.ResetState();
                 SaveUtils.ReloadSaves();
             });
             EditorUtilsEx.GuiButtonAction("Delete Saves File", () =>

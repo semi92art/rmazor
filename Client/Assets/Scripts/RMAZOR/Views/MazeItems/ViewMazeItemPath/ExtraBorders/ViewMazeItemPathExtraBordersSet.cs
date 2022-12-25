@@ -4,6 +4,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Common;
 using Common.Helpers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
 
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath.ExtraBorders
 {

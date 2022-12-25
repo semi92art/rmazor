@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Common;
 using Common.Helpers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
 using StansAssets.Foundation.Extensions;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -38,7 +41,7 @@ public class ServerConnectionTests
     {
         //Arrange
         InitGameObjects();
-        CommonData.Testing = true;
+        MazorCommonData.Testing = true;
         string url = $"{GameClientUtils.ServerApiUrl}/timetest";
         var request = new UnityWebRequest(url, "GET")
         {

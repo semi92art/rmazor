@@ -1,4 +1,4 @@
-﻿using Common.Enums;
+﻿using mazing.common.Runtime.Enums;
 
 namespace RMAZOR.Views.Common
 {

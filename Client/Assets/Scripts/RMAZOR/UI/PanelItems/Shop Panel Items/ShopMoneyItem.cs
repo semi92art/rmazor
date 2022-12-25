@@ -1,5 +1,5 @@
-﻿using Common.Managers;
-using Common.Ticker;
+﻿using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
 using UnityEngine.Events;
 
 namespace RMAZOR.UI.PanelItems.Shop_Panel_Items

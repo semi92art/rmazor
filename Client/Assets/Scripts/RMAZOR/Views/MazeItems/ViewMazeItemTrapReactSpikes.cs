@@ -5,13 +5,17 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
@@ -208,7 +212,7 @@ namespace RMAZOR.Views.MazeItems
             var mask = GetMask();
             if (mask.IsNull())
             {
-                mask = ContainersGetter.GetContainer(ContainerNames.MazeItems)
+                mask = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems)
                     .AddComponentOnNewChild<Rectangle>("Trap React Mask", out GameObject _)
                     .SetBlendMode(ShapesBlendMode.Subtractive)
                     .SetRenderQueue(-1)

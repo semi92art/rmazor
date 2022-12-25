@@ -1,4 +1,4 @@
-﻿using Common.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;

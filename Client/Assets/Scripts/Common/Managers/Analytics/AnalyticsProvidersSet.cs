@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using mazing.common.Runtime.Managers;
 
 namespace Common.Managers.Analytics
 {

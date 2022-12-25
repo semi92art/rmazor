@@ -1,7 +1,9 @@
-﻿using Common.CameraProviders;
-using Common.Helpers;
+﻿using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Utils;
 using UnityEngine;
 

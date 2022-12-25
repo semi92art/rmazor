@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.SpawnPools;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.Props;

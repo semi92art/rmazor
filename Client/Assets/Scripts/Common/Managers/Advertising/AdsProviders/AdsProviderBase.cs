@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using System.Xml.Linq;
-using Common.Entities;
 using Common.Extensions;
 using Common.Utils;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdsProviders
@@ -24,20 +25,21 @@ namespace Common.Managers.Advertising.AdsProviders
         void              LoadInterstitialAd();
 
         void ShowRewardedAd(
-            UnityAction  _OnShown,
-            UnityAction  _OnClicked,
-            UnityAction  _OnReward,
-            UnityAction  _OnClosed,
-            UnityAction  _OnFailedToShow,
-            Entity<bool> _ShowAds,
-            bool         _Forced);
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnReward,
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow,
+            bool        _ShowAds,
+            bool        _Forced);
+
         void ShowInterstitialAd(
-            UnityAction  _OnShown,
-            UnityAction  _OnClicked,
-            UnityAction  _OnClosed,
-            UnityAction  _OnFailedToShow,
-            Entity<bool> _ShowAds,
-            bool         _Forced);
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow,
+            bool        _ShowAds,
+            bool        _Forced);
     }
     
     public abstract class AdsProviderBase : IAdsProvider
@@ -47,10 +49,9 @@ namespace Common.Managers.Advertising.AdsProviders
         protected virtual string AppId                      => GetAdsNodeValue(Source, "app_id");
         protected virtual string InterstitialUnitId         => GetAdsNodeValue(Source, "interstitial");
         protected virtual string RewardedUnitId             => GetAdsNodeValue(Source, "reward");
-        protected virtual string RewardedNonSkippableUnitId => GetAdsNodeValue(Source, "reward_ns");
 
-        protected bool        TestMode;
-        protected XElement    AdsData;
+        protected bool     TestMode;
+        protected XElement AdsData;
 
         #endregion
         
@@ -59,7 +60,6 @@ namespace Common.Managers.Advertising.AdsProviders
         public abstract string Source { get; }
 
         public abstract bool              RewardedAdReady             { get; }
-        public abstract bool              RewardedNonSkippableAdReady { get; }
         public abstract bool              InterstitialAdReady         { get; }
         public          float             ShowRate                    { get; private set; }
         public          UnityAction<bool> MuteAudio                   { get; set; }
@@ -82,54 +82,40 @@ namespace Common.Managers.Advertising.AdsProviders
         public abstract void LoadInterstitialAd();
 
         public void ShowRewardedAd(
-            UnityAction  _OnShown,
-            UnityAction  _OnClicked,
-            UnityAction  _OnReward,
-            UnityAction  _OnClosed,
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnReward,
+            UnityAction _OnClosed,
             UnityAction _OnFailedToShow,
-            Entity<bool> _ShowAds,
-            bool         _Forced)
+            bool        _ShowAds,
+            bool        _Forced)
         {
+            if (!_ShowAds)
+                return;
             if (_Forced)
             {
                 ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
                 return;
             }
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
-                }));
+            ShowRewardedAdCore(_OnShown, _OnClicked, _OnReward, _OnClosed, _OnFailedToShow);
         }
 
         public void ShowInterstitialAd(
-            UnityAction  _OnShown,
-            UnityAction  _OnClicked,
-            UnityAction  _OnClosed,
-            UnityAction  _OnFailedToShow,
-            Entity<bool> _ShowAds,
-            bool         _Forced)
+            UnityAction _OnShown,
+            UnityAction _OnClicked,
+            UnityAction _OnClosed,
+            UnityAction _OnFailedToShow,
+            bool        _ShowAds,
+            bool        _Forced)
         {
+            if (!_ShowAds)
+                return;
             if (_Forced)
             {
                 ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
                 return;
             }
-            Cor.Run(Cor.WaitWhile(
-                () => _ShowAds.Result == EEntityResult.Pending,
-                () =>
-                {
-                    if (_ShowAds.Result != EEntityResult.Success)
-                        return;
-                    if (!_ShowAds.Value)
-                        return;
-                    ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
-                }));
+            ShowInterstitialAdCore(_OnShown, _OnClicked, _OnClosed, _OnFailedToShow);
         }
 
         #endregion

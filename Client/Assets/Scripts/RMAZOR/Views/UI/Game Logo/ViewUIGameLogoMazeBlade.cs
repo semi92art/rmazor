@@ -3,14 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.InputConfigurators;
@@ -145,7 +150,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             const string prefabName = "start_logo_maze_blade_3";
             var go = PrefabSetManager.InitPrefab(
-                ContainersGetter.GetContainer(ContainerNames.GameUI),
+                ContainersGetter.GetContainer(ContainerNamesCommon.GameUI),
                 CommonPrefabSetNames.UiGame,
                 prefabName);
             go.GetCompItem<AnimationTriggerer>("triggerer").Trigger1 = () => go.SetActive(false);
@@ -251,7 +256,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetStartGameLogoTransform(out Vector2 position, out float scale);
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
-            LogoTextureProvider.SetColor(CommonData.CompanyLogoBackgroundColor);
+            LogoTextureProvider.SetColor(MazorCommonData.CompanyLogoBackgroundColor);
             LogoTextureProvider.SetTransitionValue(1f, true);
             yield return Cor.Delay(0.5f, GameTicker);
             SetColors(ColorProvider.GetColor(ColorIds.UI));

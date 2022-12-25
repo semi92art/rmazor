@@ -1,4 +1,4 @@
-﻿using Common.Ticker;
+﻿using mazing.common.Runtime.Ticker;
 using UnityEngine;
 
 namespace RMAZOR.Views.UI.Game_Logo

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.Ticker;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using System.Linq;
 using Common.Entities;
 using Common.Extensions;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Ticker;
 
 namespace RMAZOR.Models.ItemProceeders
 {
@@ -82,6 +84,8 @@ namespace RMAZOR.Models.ItemProceeders
                         keysAndLocksDict[keyItemInfo].Add(lockItem);
                 }
             }
+            if (!keysAndLocksDict.Any())
+                return;
             foreach (var (key, locks) in keysAndLocksDict)
             {
                 key.ProceedingStage = key.ProceedingStage == ModelCommonData.KeyLockStage1

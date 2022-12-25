@@ -1,6 +1,7 @@
 ﻿using System;
 using Common.Helpers;
-using Common.Helpers.Attributes;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Helpers.Attributes;
 using UnityEngine;
 
 namespace Common.Entities

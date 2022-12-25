@@ -1,11 +1,14 @@
 ﻿using System;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Exceptions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
@@ -18,7 +21,7 @@ namespace RMAZOR.Views.Common
         #region nonpublic members
 
         protected virtual int PoolSize => 100;
-        protected          Transform Container => ContainersGetter.GetContainer(ContainerNames.Background);
+        protected          Transform Container => ContainersGetter.GetContainer(ContainerNamesCommon.Background);
         protected readonly Random    RandomGen = new Random();
         private            Bounds    m_ScreenBounds;
         

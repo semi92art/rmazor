@@ -39,7 +39,6 @@ namespace RMAZOR
         public float  cameraSpeed;
         public float  pathItemCharMoveHighlightTime;
         public bool   highlightPathItem;
-        public bool   showFullTutorial;
         public string levelsInGroup;
         public int    finishLevelGroupPanelGetMoneyButtonTextVariant;
         public int    finishLevelGroupPanelBackgroundVariant;
@@ -48,7 +47,7 @@ namespace RMAZOR
         public string backgroundTextures;
         public int    additionalBackgroundType;
         public bool   showPathItems;
-        
+
 
         public float LineThickness
         {

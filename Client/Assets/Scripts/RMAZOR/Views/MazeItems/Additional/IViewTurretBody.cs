@@ -1,5 +1,5 @@
 ﻿using System;
-using Common.SpawnPools;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;
 using UnityEngine;

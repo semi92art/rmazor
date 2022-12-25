@@ -3,15 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Common;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Constants;
 using Common.Entities;
-using Common.Exceptions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.Notifications;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.Notifications;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
@@ -357,9 +363,9 @@ namespace Editor
         private void UpdateTestUrl(bool _Forced = false)
         {
             if (string.IsNullOrEmpty(m_DebugServerUrl))
-                m_DebugServerUrl = SaveUtilsInEditor.GetValue(SaveKeysCommon.ServerUrl);
+                m_DebugServerUrl = SaveUtilsInEditor.GetValue(SaveKeysMazor.ServerUrl);
             if (m_DebugServerUrl != m_TestUrlCheck || _Forced)
-                SaveUtilsInEditor.PutValue(SaveKeysCommon.ServerUrl, m_DebugServerUrl);
+                SaveUtilsInEditor.PutValue(SaveKeysMazor.ServerUrl, m_DebugServerUrl);
             m_TestUrlCheck = m_DebugServerUrl;
         }
         
@@ -376,8 +382,8 @@ namespace Editor
             return new Dictionary<string, string>
             {
                 {"Last connection succeeded", SaveUtils.GetValue(SaveKeysCommon.LastDbConnectionSuccess).ToString()},
-                {"Login", SaveUtils.GetValue(SaveKeysCommon.Login) ?? "not exist"},
-                {"Password hash", SaveUtils.GetValue(SaveKeysCommon.PasswordHash) ?? "not exist"},
+                {"Login", SaveUtils.GetValue(SaveKeysMazor.Login) ?? "not exist"},
+                {"Password hash", SaveUtils.GetValue(SaveKeysMazor.PasswordHash) ?? "not exist"},
                 {"Account id", GameClientUtils.AccountId.ToString()},
             };
         }

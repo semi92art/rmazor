@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.SpawnPools;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems.Props;
 using StansAssets.Foundation.Extensions;
@@ -199,7 +205,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         
         private void InitShape(bool _Fake)
         {
-            var projParent = ContainersGetter.GetContainer(ContainerNames.MazeItems);
+            var projParent = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems);
             m_ProjectileObj =  PrefabSetManager.InitPrefab(
                 projParent, "views", "turret_projectile");
             m_ProjectileObj.name  = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);

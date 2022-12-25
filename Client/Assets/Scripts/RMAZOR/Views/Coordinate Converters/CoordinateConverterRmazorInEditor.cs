@@ -1,6 +1,7 @@
 ﻿using System;
-using Common.CameraProviders;
 using Common.Entities;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Entities;
 using UnityEngine;
 
 namespace RMAZOR.Views.Coordinate_Converters

@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Ticker;
 using Common.Utils;
 using Lean.Common;
 using Lean.Touch;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using UnityEngine;
 using UnityEngine.Events;
@@ -121,7 +127,7 @@ namespace RMAZOR.Views.InputConfigurators
             lt.TapThreshold = 0.5f;
             lt.SwipeThreshold = 50f;
             lt.ReferenceDpi = 200;
-            lt.GuiLayers = LayerMask.GetMask(LayerNames.Touchable);
+            lt.GuiLayers = LayerMask.GetMask(LayerNamesCommon.Touchable);
             lt.RecordFingers = true;
             lt.RecordThreshold = 5f;
             lt.RecordLimit = 0f;
@@ -269,7 +275,7 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (Application.isEditor)
                 return LeanInput.GetMousePosition();
-            CommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
+            MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
             return pos;
         }
 
@@ -324,7 +330,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         private Transform GetContainer()
         {
-            return ContainersGetter.GetContainer(ContainerNames.TouchInput);
+            return ContainersGetter.GetContainer(ContainerNamesCommon.TouchInput);
         }
 
         private void Move(EDirection _Direction)

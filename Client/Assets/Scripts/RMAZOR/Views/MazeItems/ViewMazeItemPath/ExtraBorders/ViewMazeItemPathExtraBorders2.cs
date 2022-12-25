@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;

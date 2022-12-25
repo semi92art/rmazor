@@ -1,5 +1,5 @@
 ﻿using Common;
-using Common.SpawnPools;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models.ItemProceeders.Additional;
 
 namespace RMAZOR.Views.Characters

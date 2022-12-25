@@ -1,10 +1,10 @@
-﻿using Common.CameraProviders;
-using Common.Enums;
-using Common.Exceptions;
-using Common.Providers;
-using Common.Ticker;
-using Common.UI;
-using Common.UI.DialogViewers;
+﻿using Common.UI;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
 using RMAZOR.Managers;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;

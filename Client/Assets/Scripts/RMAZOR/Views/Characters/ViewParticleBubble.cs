@@ -2,7 +2,10 @@
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Ticker;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
@@ -57,7 +60,7 @@ namespace RMAZOR.Views.Characters
 
         protected override void InitShape()
         {
-            var cont = ContainersGetter.GetContainer(ContainerNames.Background);
+            var cont = ContainersGetter.GetContainer(ContainerNamesCommon.Background);
             var obj = new GameObject("Bubble Particle");
             obj.SetParent(cont);
             float scale = CoordinateConverter.Scale;

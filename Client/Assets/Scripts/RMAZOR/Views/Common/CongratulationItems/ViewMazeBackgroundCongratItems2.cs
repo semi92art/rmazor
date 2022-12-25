@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.SpawnPools;
-using Common.Ticker;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using Shapes;
 using UnityEngine;
@@ -93,7 +98,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
             for (int i = 0; i < PoolSize; i++)
             {
                 var newGo = Object.Instantiate(sourceGo);
-                newGo.SetParent(ContainersGetter.GetContainer(ContainerNames.Background));
+                newGo.SetParent(ContainersGetter.GetContainer(ContainerNamesCommon.Background));
                 var firework = newGo.GetCompItem<Firework>("firework");
                 var content = newGo.GetCompItem<Transform>("content");
                 var discs = content.GetComponentsInChildren<Disc>().ToArray();

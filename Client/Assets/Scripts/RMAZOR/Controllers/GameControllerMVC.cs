@@ -1,6 +1,6 @@
-﻿using Common;
-using Common.Helpers;
-using Common.Utils;
+﻿using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using Zenject;
@@ -96,6 +96,8 @@ namespace RMAZOR.Controllers
             Model.Character.CharacterMoveContinued += View.OnCharacterMoveContinued;
             Model.Character.CharacterMoveFinished  += View.OnCharacterMoveFinished;
             Model.LevelStaging.LevelStageChanged   += View.OnLevelStageChanged;
+
+            Model.InputScheduler.LoadMazeInfo = View.LevelsLoader.GetLevelInfo;
             
             View.CommandsProceeder.Command         += Model.InputScheduler.AddCommand;
             View.MazeRotation.RotationFinished     += Model.MazeRotation.OnRotationFinished;

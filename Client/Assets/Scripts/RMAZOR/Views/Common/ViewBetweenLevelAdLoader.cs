@@ -1,7 +1,9 @@
 ﻿using Common;
 using Common.Helpers;
 using Common.Managers.Advertising;
-using Common.Ticker;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using UnityEngine.Events;
 
@@ -21,7 +23,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
 
-        private float m_TimeWithoutAdsInSeconds = 2f * 60f;
+        private float m_TimeWithoutAdsInSeconds = 1f * 60f;
 
         #endregion
         
@@ -66,7 +68,7 @@ namespace RMAZOR.Views.Common
         {
             bool DoTryShowAd()
             {
-                if (m_TimeWithoutAdsInSeconds < 3f * 60f)
+                if (m_TimeWithoutAdsInSeconds < GameSettings.betweenLevelAdShowIntervalInSeconds)
                     return false;
                 return _LevelIndex >= GameSettings.firstLevelToShowAds
                        && !_IsBonus

@@ -1,6 +1,6 @@
 ﻿// ReSharper disable ClassNeverInstantiated.Global
 
-using Common.Settings;
+using mazing.common.Runtime.Settings;
 
 namespace RMAZOR.Settings
 {

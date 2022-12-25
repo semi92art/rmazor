@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using Common.Constants;
 using Common.Extensions;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.UI.DialogViewers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
@@ -103,41 +106,49 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.DailyGiftPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    var dailyGiftPanel = DialogPanelsSet.GetPanel<IDailyGiftPanel>();
-                    var dv = DialogViewersController.GetViewer(dailyGiftPanel.DialogViewerType);
-                    dv.Show(dailyGiftPanel);
+                    var panel = DialogPanelsSet.GetPanel<IDailyGiftPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel);
                 }
                     break;
                 case EInputCommand.LevelsPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    var levelsDialogPanel = DialogPanelsSet.GetPanel<ILevelsDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(levelsDialogPanel.DialogViewerType);
-                    dv.Show(levelsDialogPanel);
+                    var panel = DialogPanelsSet.GetPanel<ILevelsDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel);
                 }
                     break;
                 case EInputCommand.PlayBonusLevelPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    var playBonusLevelPanel = DialogPanelsSet.GetPanel<IPlayBonusLevelDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(playBonusLevelPanel.DialogViewerType);
-                    dv.Show(playBonusLevelPanel);
+                    var panel = DialogPanelsSet.GetPanel<IPlayBonusLevelDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel);
                 }
                     break;
                 case EInputCommand.FinishLevelGroupPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    var finishLevelGroupDialogPanel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(finishLevelGroupDialogPanel.DialogViewerType);
-                    dv.Show(finishLevelGroupDialogPanel);
+                    var panel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel);
                 }
                     break;
                 case EInputCommand.TutorialPanel:
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    var tutorialDialogPanel = DialogPanelsSet.GetPanel<ITutorialDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(tutorialDialogPanel.DialogViewerType);
-                    dv.Show(tutorialDialogPanel, 3f);
+                    var panel = DialogPanelsSet.GetPanel<ITutorialDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel, 3f);
+                }
+                    break;
+                case EInputCommand.DisableAdsPanel:
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                    var panel = DialogPanelsSet.GetPanel<IDisableAdsDialogPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    dv.Show(panel, 3f);
                 }
                     break;
             }

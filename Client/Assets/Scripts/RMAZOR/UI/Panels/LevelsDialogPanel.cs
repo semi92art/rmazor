@@ -1,18 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Common;
-using Common.CameraProviders;
 using Common.Constants;
-using Common.Entities.UI;
-using Common.Enums;
+using Common.Entities;
 using Common.Extensions;
-using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Entities.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.UI.DialogViewers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -75,6 +81,7 @@ namespace RMAZOR.UI.Panels
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IConfirmLoadLevelDialogPanel        ConfirmLoadLevelDialogPanel    { get; }
         private IDialogViewersController            DialogViewersController        { get; }
+        private IFontProvider                       FontProvider                   { get; }
 
         private LevelsDialogPanel(
             ILevelsLoader                       _LevelsLoader,
@@ -88,7 +95,8 @@ namespace RMAZOR.UI.Panels
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
             IConfirmLoadLevelDialogPanel        _ConfirmLoadLevelDialogPanel,
-            IDialogViewersController            _DialogViewersController)
+            IDialogViewersController            _DialogViewersController,
+            IFontProvider                       _FontProvider)
             : base(
                 _Managers,
                 _Ticker,
@@ -103,6 +111,7 @@ namespace RMAZOR.UI.Panels
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             ConfirmLoadLevelDialogPanel    = _ConfirmLoadLevelDialogPanel;
             DialogViewersController        = _DialogViewersController;
+            FontProvider = _FontProvider;
         }
 
         #endregion
@@ -180,6 +189,7 @@ namespace RMAZOR.UI.Panels
                     Ticker,
                     Managers.AudioManager,
                     Managers.LocalizationManager,
+                    FontProvider,
                     m_SpriteLevelGroupItemEnabled, 
                     m_SpriteLevelGroupItemDisabled,
                     m_SpriteLevelGroupItemSelected,
@@ -290,7 +300,7 @@ namespace RMAZOR.UI.Panels
             }
             else
             {
-                 CommonUtils.ShowAlertDialog("OOPS", "I didn't create this level yet. Try to load it some later.");   
+                 MazorCommonUtils.ShowAlertDialog("OOPS", "I didn't create this level yet. Try to load it some later.");   
             }
         }
         

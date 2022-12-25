@@ -2,7 +2,10 @@
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using Shapes;
@@ -82,7 +85,7 @@ namespace RMAZOR.Views.UI
         private void InitShape()
         {
             const float scale = 3f;
-            var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
+            var cont = ContainersGetter.GetContainer(ContainerNamesCommon.GameUI);
             var goIndicator = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "rotating_possibility_indicator");
             goIndicator.name = Name;

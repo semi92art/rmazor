@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Common;
-using Common.CameraProviders;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
+using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Utils;
 using TMPro;
@@ -39,7 +45,7 @@ namespace RMAZOR.Views.UI
         
         private bool        m_DoUpdateTimeText;
 
-        private bool CanShowPanel => Model.LevelStaging.LevelIndex > 1
+        private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
                                      || (string) Model.LevelStaging.Arguments.GetSafe(
                                          CommonInputCommandArg.KeyNextLevelType, out _) ==
                                      CommonInputCommandArg.ParameterLevelTypeBonus; 
@@ -54,6 +60,8 @@ namespace RMAZOR.Views.UI
             m_Missed3Stars, 
             m_Missed2Stars,
             m_Missed1Star;
+
+        private long m_TimerTutorialIndexCached;
         
         #endregion
 
@@ -66,6 +74,7 @@ namespace RMAZOR.Views.UI
         private IColorProvider       ColorProvider       { get; }
         private IFontProvider        FontProvider        { get; }
         private ILocalizationManager LocalizationManager { get; }
+        private ILevelsLoader        LevelsLoader        { get; }
 
         public ViewUIStarsAndTimePanel(
             IModelGame           _Model,
@@ -74,7 +83,8 @@ namespace RMAZOR.Views.UI
             IViewGameTicker      _ViewGameTicker,
             IColorProvider       _ColorProvider,
             IFontProvider        _FontProvider,
-            ILocalizationManager _LocalizationManager)
+            ILocalizationManager _LocalizationManager,
+            ILevelsLoader        _LevelsLoader)
         {
             Model               = _Model;
             CameraProvider      = _CameraProvider;
@@ -83,6 +93,7 @@ namespace RMAZOR.Views.UI
             ColorProvider       = _ColorProvider;
             FontProvider        = _FontProvider;
             LocalizationManager = _LocalizationManager;
+            LevelsLoader        = _LevelsLoader;
         }
 
         #endregion
@@ -91,6 +102,7 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
+            CacheTimerTutorialLevelIndex();
             InitStarRenderers();
             InitTimeTexts();
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
@@ -171,13 +183,13 @@ namespace RMAZOR.Views.UI
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
                 .SetLocalPosX(screenBounds.min.x + 4f)
-                .SetLocalPosY(yPos + 2f)
+                .SetLocalPosY(yPos + 2.5f)
                 .SetLocalPosZ(10f);
             m_TimeText.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
                 .SetLocalPosX(screenBounds.min.x + 4f)
-                .SetLocalPosY(yPos + 4f)
+                .SetLocalPosY(yPos + 4.5f)
                 .SetLocalPosZ(10f);
         }
         
@@ -271,6 +283,25 @@ namespace RMAZOR.Views.UI
                 m_TimeThresholdText.text = LocalizationManager.GetTranslation("goal") + ": " +
                                            m_CurrentTimeThreshold.ToString("F1", m_FloatValueCultureInfo);
             }
+        }
+
+        private void CacheTimerTutorialLevelIndex()
+        {
+            for (int i = 0; i < 50; i++)
+            {
+                var levelInfo = LevelsLoader.GetLevelInfo(CommonData.GameId, i, false);
+                string args = levelInfo.AdditionalInfo.Arguments;
+                if (string.IsNullOrEmpty(args))
+                    continue;
+                if (!args.Contains("tutorial") || !args.Contains(":"))
+                    continue;
+                string tutorialType = args.Split(':')[1];
+                if (tutorialType != "timer")
+                    continue;
+                m_TimerTutorialIndexCached = i;
+                return;
+            }
+            m_TimerTutorialIndexCached = long.MaxValue;
         }
 
         #endregion

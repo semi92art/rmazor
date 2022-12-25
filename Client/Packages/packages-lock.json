@@ -1,18 +1,23 @@
 {
   "dependencies": {
-    "com.appodeal.appodeal-unity-plugin-upm": {
-      "version": "https://github.com/appodeal/appodeal-unity-plugin-upm.git",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "18127eb704e49f8801575c0067a56a077907903f"
-    },
     "com.coffee.softmask-for-ugui": {
       "version": "https://github.com/mob-sakai/SoftMaskForUGUI.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
       "hash": "b870d64b5704a764fd03aaccb11f2dbe652b1756"
+    },
+    "com.mazing.common": {
+      "version": "https://github.com/semi92art/mazing-common.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.unity.inputsystem": "1.4.4",
+        "com.unity.textmeshpro": "3.0.6",
+        "com.unity.purchasing": "4.5.1",
+        "com.unity.mobile.notifications": "2.1.0"
+      },
+      "hash": "36447fdda56f8dc4c111de67bbf570c7796ae35f"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -142,7 +147,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.remote-config": {
-      "version": "3.1.3",
+      "version": "3.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -176,18 +181,19 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.authentication": {
-      "version": "2.0.0",
+      "version": "2.3.1",
       "depth": 2,
       "source": "registry",
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.services.core": "1.3.1",
-        "com.unity.modules.unitywebrequest": "1.0.0"
+        "com.unity.services.core": "1.4.3",
+        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.ugui": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.4.0",
+      "version": "1.6.0",
       "depth": 1,
       "source": "registry",
       "dependencies": {

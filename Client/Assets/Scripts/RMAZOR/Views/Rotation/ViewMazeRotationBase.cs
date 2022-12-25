@@ -1,4 +1,4 @@
-﻿using Common.Exceptions;
+﻿using mazing.common.Runtime.Exceptions;
 using RMAZOR.Models;
 using UnityEngine.Events;
 

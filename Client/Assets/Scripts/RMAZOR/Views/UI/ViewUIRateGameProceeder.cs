@@ -2,7 +2,10 @@
 using Common;
 using Common.Extensions;
 using Common.Helpers;
-using Common.UI.DialogViewers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.UI.DialogViewers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
@@ -58,7 +61,7 @@ namespace RMAZOR.Views.UI
             m_LevelsFinishedThisSession++;
             if (MustShowPanelOnLevelFinished(_Args))
             {
-                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
+                // CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             }
         }
 

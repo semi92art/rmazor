@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.Ticker;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -146,7 +150,7 @@ namespace RMAZOR.Views.UI
             var screenBounds = GraphicUtils.GetVisibleBounds();
             const float horOffset = 3f;
             const float localScale = 1.5f;
-            var cont = ContainersGetter.GetContainer(ContainerNames.GameUI);
+            var cont = ContainersGetter.GetContainer(ContainerNamesCommon.GameUI);
             var goRcB = Managers.PrefabSetManager.InitPrefab(
                 cont, CommonPrefabSetNames.UiGame, "rotate_clockwise_button_2");
             var goRccB = Managers.PrefabSetManager.InitPrefab(

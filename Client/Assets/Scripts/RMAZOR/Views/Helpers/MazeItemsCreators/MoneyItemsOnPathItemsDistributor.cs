@@ -2,6 +2,7 @@
 using System.Linq;
 using Common.Entities;
 using Common.Helpers;
+using mazing.common.Runtime.Entities;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
 

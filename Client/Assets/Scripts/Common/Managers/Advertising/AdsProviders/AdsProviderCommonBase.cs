@@ -1,4 +1,5 @@
 ﻿using Common.Managers.Advertising.AdBlocks;
+using mazing.common.Runtime.Managers;
 using UnityEngine.Events;
 
 namespace Common.Managers.Advertising.AdsProviders
@@ -7,9 +8,9 @@ namespace Common.Managers.Advertising.AdsProviders
     {
         #region inject
 
-        private readonly   IAudioManager       m_AudioManager;
-        protected readonly IInterstitialAdBase m_InterstitialAd;
-        protected readonly IRewardedAdBase     m_RewardedAd;
+        private readonly IAudioManager       m_AudioManager;
+        private readonly IInterstitialAdBase m_InterstitialAd;
+        private readonly IRewardedAdBase     m_RewardedAd;
         
         protected AdsProviderCommonBase(
             IInterstitialAdBase _InterstitialAd,
@@ -25,7 +26,6 @@ namespace Common.Managers.Advertising.AdsProviders
         
         public override bool RewardedAdReady             => 
             m_RewardedAd != null && m_RewardedAd.Ready;
-        public override bool RewardedNonSkippableAdReady => RewardedAdReady;
         public override bool InterstitialAdReady         => 
             m_InterstitialAd != null && m_InterstitialAd.Ready;
 

@@ -2,19 +2,25 @@
 using System.Collections.Generic;
 using System.Globalization;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Entities;
-using Common.Entities.UI;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
 using Common.UI;
-using Common.UI.DialogViewers;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Entities.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -86,7 +92,6 @@ namespace RMAZOR.UI.Panels
         private IModelGame                          Model                          { get; }
         private IMoneyCounter                       MoneyCounter                   { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-        private IDialogViewersController            DialogViewersController        { get; }
 
         private FinishLevelGroupDialogPanel(
             ViewSettings                        _ViewSettings,
@@ -99,8 +104,7 @@ namespace RMAZOR.UI.Panels
             IViewInputCommandsProceeder         _CommandsProceeder,
             IModelGame                          _Model,
             IMoneyCounter                       _MoneyCounter,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IDialogViewersController _DialogViewersController)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
             : base(
                 _Managers,
                 _Ticker,
@@ -114,7 +118,6 @@ namespace RMAZOR.UI.Panels
             Model                          = _Model;
             MoneyCounter                   = _MoneyCounter;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
-            DialogViewersController = _DialogViewersController;
         }
 
         #endregion
@@ -181,6 +184,15 @@ namespace RMAZOR.UI.Panels
             base.OnDialogStartAppearing();
         }
 
+        public override void OnDialogAppeared()
+        {
+            //FIXME какогото хуя кнопки не включаются после пропуска уровня
+            m_ButtonMultiplyMoney.enabled = true;
+            m_ButtonSkip.enabled = true;
+            m_ButtonContinue.enabled = true;
+            base.OnDialogAppeared();
+        }
+
         public override void OnDialogDisappearing()
         {
             m_ButtonSkip.interactable = false;
@@ -200,28 +212,27 @@ namespace RMAZOR.UI.Panels
 
         #region nonpublic methods
 
-        private void GetPrefabContentObjects(GameObject _GameObject)
+        private void GetPrefabContentObjects(GameObject _Go)
         {
-            var go = _GameObject;
-            m_WheelPanelView         = go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
-            m_PanelAnimator          = go.GetCompItem<Animator>("panel_animator");
-            m_ButtonMultiplyMoney    = go.GetCompItem<Button>("multiply_money_button");
-            m_ButtonSkip             = go.GetCompItem<Button>("skip_button");
-            m_ButtonContinue         = go.GetCompItem<Button>("continue_button");
-            m_TitleText              = go.GetCompItem<TextMeshProUGUI>("title_text");
-            m_MoneyCountText         = go.GetCompItem<TextMeshProUGUI>("money_count_text");
-            m_MultiplyButtonText     = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
-            m_GetMoneyButtonText     = go.GetCompItem<TextMeshProUGUI>("skip_button_text");
-            m_ContinueButtonText     = go.GetCompItem<TextMeshProUGUI>("continue_button_text");
-            m_RewardText             = go.GetCompItem<TextMeshProUGUI>("reward_text");
-            m_WatchVideoToTheEndText = go.GetCompItem<TextMeshProUGUI>("watch_video_to_the_end_text");
-            m_AnimLoadingAds         = go.GetCompItem<Animator>("loading_ads_anim");
-            m_AnimMoneyIcon          = go.GetCompItem<Animator>("money_icon");
-            m_MoneyIcon              = go.GetCompItem<Image>("money_icon");
-            m_IconWatchAds           = go.GetCompItem<Image>("watch_ads_icon");
-            m_Background             = go.GetCompItem<Image>("background");
-            m_Triggerer              = go.GetCompItem<AnimationTriggerer>("triggerer");
-            m_TriggererMoneyIcon     = go.GetCompItem<AnimationTriggerer>("money_icon");
+            m_WheelPanelView         = _Go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
+            m_PanelAnimator          = _Go.GetCompItem<Animator>("panel_animator");
+            m_ButtonMultiplyMoney    = _Go.GetCompItem<Button>("multiply_money_button");
+            m_ButtonSkip             = _Go.GetCompItem<Button>("skip_button");
+            m_ButtonContinue         = _Go.GetCompItem<Button>("continue_button");
+            m_TitleText              = _Go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_MoneyCountText         = _Go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_MultiplyButtonText     = _Go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
+            m_GetMoneyButtonText     = _Go.GetCompItem<TextMeshProUGUI>("skip_button_text");
+            m_ContinueButtonText     = _Go.GetCompItem<TextMeshProUGUI>("continue_button_text");
+            m_RewardText             = _Go.GetCompItem<TextMeshProUGUI>("reward_text");
+            m_WatchVideoToTheEndText = _Go.GetCompItem<TextMeshProUGUI>("watch_video_to_the_end_text");
+            m_AnimLoadingAds         = _Go.GetCompItem<Animator>("loading_ads_anim");
+            m_AnimMoneyIcon          = _Go.GetCompItem<Animator>("money_icon");
+            m_MoneyIcon              = _Go.GetCompItem<Image>("money_icon");
+            m_IconWatchAds           = _Go.GetCompItem<Image>("watch_ads_icon");
+            m_Background             = _Go.GetCompItem<Image>("background");
+            m_Triggerer              = _Go.GetCompItem<AnimationTriggerer>("triggerer");
+            m_TriggererMoneyIcon     = _Go.GetCompItem<AnimationTriggerer>("money_icon");
         }
         
         private void LocalizeTextObjectsOnLoad()
@@ -389,7 +400,7 @@ namespace RMAZOR.UI.Panels
         private void Multiply()
         {
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                CommonData.SavedGameFileName,
+                MazorCommonData.SavedGameFileName,
                 true);
             void SendAnalytic()
             {
@@ -410,7 +421,7 @@ namespace RMAZOR.UI.Panels
                 long reward = MoneyCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;
                 var newSavedGame = new SavedGame
                 {
-                    FileName = CommonData.SavedGameFileName,
+                    FileName = MazorCommonData.SavedGameFileName,
                     Money = savedGame.Money + reward,
                     Level = Model.LevelStaging.LevelIndex,
                     Args = Model.LevelStaging.Arguments

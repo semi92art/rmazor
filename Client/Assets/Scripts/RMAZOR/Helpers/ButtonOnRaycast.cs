@@ -1,6 +1,6 @@
 ﻿using System;
-using Common.CameraProviders;
 using Common.Managers;
+using mazing.common.Runtime.CameraProviders;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;

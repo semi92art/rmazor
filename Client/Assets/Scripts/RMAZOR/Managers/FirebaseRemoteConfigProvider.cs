@@ -6,6 +6,7 @@ using Common;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.RemoteConfig;
+using mazing.common.Runtime;
 
 namespace RMAZOR.Managers
 {
@@ -18,7 +19,7 @@ namespace RMAZOR.Managers
         
         private Task InitializeFirebase()
         {
-            if (CommonData.FirebaseApp != null)
+            if (MazorCommonData.FirebaseApp != null)
             {
                 Dbg.Log("Firebase was initialized successfully before.");
                 return FetchDataAsync();
@@ -27,7 +28,7 @@ namespace RMAZOR.Managers
             {
                 if (_Task.Result == DependencyStatus.Available)
                 {
-                    CommonData.FirebaseApp = FirebaseApp.DefaultInstance;
+                    MazorCommonData.FirebaseApp = FirebaseApp.DefaultInstance;
                     FetchDataAsync();
                     Dbg.Log("Firebase initialized successfully");
                 } 

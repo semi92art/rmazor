@@ -5,14 +5,18 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.Ticker;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Coordinate_Converters;
 using Shapes;
 using UnityEngine;
 using UnityEngine.Rendering;
-using MathUtils = Common.Utils.MathUtils;
+using MathUtils = mazing.common.Runtime.Utils.MathUtils;
 
 namespace RMAZOR.Views.MazeItems.Additional
 {

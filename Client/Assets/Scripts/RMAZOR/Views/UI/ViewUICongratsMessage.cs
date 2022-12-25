@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.CameraProviders;
 using Common.Constants;
+using Common.Entities;
 using Common.Extensions;
 using Common.Managers;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Utils;
@@ -118,9 +124,9 @@ namespace RMAZOR.Views.UI
             m_CongratsText  = m_CongratsGo.GetCompItem<TextMeshPro>("text_congrats");
             m_CongratsLine  = m_CongratsGo.GetCompItem<Line>("line");
             m_CongratsAnim  = m_CongratsGo.GetCompItem<Animator>("animator");
-
             m_CompletedText.sortingOrder = SortingOrders.GameUI;
-            m_CongratsText.sortingOrder  = SortingOrders.GameUI;
+            m_CongratsText .sortingOrder = SortingOrders.GameUI;
+            m_CongratsLine .SortingOrder = SortingOrders.GameUI;
         }
         
         private void SetCongratsString()

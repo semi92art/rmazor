@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Entities;
+using mazing.common.Runtime.Entities;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -9,10 +10,10 @@ namespace RMAZOR.Models.MazeInfos
     [Serializable]
     public class MazeInfo
     {
-        [JsonIgnore] [SerializeField] private V2Int          size;
-        [JsonIgnore] [SerializeField] private List<PathItem> pathItems = new List<PathItem>();
-        [JsonIgnore] [SerializeField] private List<MazeItem> mazeItems = new List<MazeItem>();
-        [JsonIgnore] [SerializeField] private AdditionalInfo additionalInfo = new AdditionalInfo();
+        [JsonIgnore, SerializeField] private V2Int          size;
+        [JsonIgnore, SerializeField] private List<PathItem> pathItems = new List<PathItem>();
+        [JsonIgnore, SerializeField] private List<MazeItem> mazeItems = new List<MazeItem>();
+        [JsonIgnore, SerializeField] private AdditionalInfo additionalInfo = new AdditionalInfo();
         
         public V2Int Size
         {

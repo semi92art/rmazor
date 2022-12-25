@@ -4,11 +4,15 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Providers;
-using Common.SpawnPools;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;
@@ -80,7 +84,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         protected float CornerScaleCoefficient => ViewSettings.additionalBackgroundType == 2 ? 4f : 0.5f;
         
-        protected Transform Container => ContainersGetter.GetContainer(ContainerNames.MazeItems);
+        protected Transform Container => ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems);
 
         #endregion
 

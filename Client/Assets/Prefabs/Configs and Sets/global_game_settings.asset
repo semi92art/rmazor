@@ -16,7 +16,6 @@ MonoBehaviour:
   debugAnyway: 0
   testAds: 1
   logLevel: 5
-  showAdsEveryLevel: 2
   firstLevelToShowAds: 0
   payToContinueMoneyCount: 100
   moneyItemCoast: 1
@@ -25,3 +24,4 @@ MonoBehaviour:
   interstitialAdReadyForTest: 1
   interstitialAdsRatio: 0.3
   moneyItemsRate: 0.1
+  betweenLevelAdShowIntervalInSeconds: 120

@@ -1,6 +1,6 @@
-﻿using Common.Enums;
-using Common.UI;
-using Common.UI.DialogViewers;
+﻿using Common.UI;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.UI;
 using UnityEngine;
 
 namespace RMAZOR.UI.Panels

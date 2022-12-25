@@ -1,7 +1,8 @@
 ﻿using System;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Helpers;
-using Common.Helpers.Attributes;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Helpers.Attributes;
 using Newtonsoft.Json;
 using UnityEngine;
 

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Text;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.Notifications;
 using UnityEngine;
 #if UNITY_ANDROID
 using SA.Android.App;

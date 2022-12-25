@@ -30,6 +30,10 @@ MonoBehaviour:
       item: {fileID: 5943621020961091322, guid: fde9e367ae99b4340a60a025345b4174,
         type: 3}
       bundle: 0
+    - name: disable_ads_button
+      item: {fileID: 5943621020961091322, guid: fac8de0cb343e3142b0d27ed702c0f21,
+        type: 3}
+      bundle: 0
     - name: shop_button
       item: {fileID: 5943621020961091322, guid: a190bae0ede57a84eab3555ab84ee04a,
         type: 3}
@@ -44,6 +48,10 @@ MonoBehaviour:
       bundle: 0
     - name: levels_button
       item: {fileID: 5943621020961091322, guid: adbe2123617bf93488609fb51f5ef1bc,
+        type: 3}
+      bundle: 0
+    - name: rate_game_button
+      item: {fileID: 5943621020961091322, guid: 9d3af29492bfe1c49917f7e5e191f480,
         type: 3}
       bundle: 0
     - name: level_text
@@ -109,7 +117,11 @@ MonoBehaviour:
     - name: rotating_possibility_indicator
       item: {fileID: 564728429285595071, guid: e7a45bc2bcac80c4787595f721ffc2f7, type: 3}
       bundle: 0
-    - name: skip_level_button
+    - name: skip_level_button_with_ads
       item: {fileID: 7773209149359177075, guid: 502607507a9ca7342babe9c018a17bea,
+        type: 3}
+      bundle: 0
+    - name: skip_level_button
+      item: {fileID: 7773209149359177075, guid: 80f86ca963d317d4bbb6e141ed7c0051,
         type: 3}
       bundle: 0

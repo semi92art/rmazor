@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common;
-using Common.Extensions;
-using Common.Helpers;
-using RMAZOR.Helpers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
 using RMAZOR.Models.MazeInfos;
-using UnityEngine;
 using UnityEngine.Events;
-using Random = UnityEngine.Random;
 
 namespace RMAZOR.Models.InputSchedulers
 {
     public interface IInputSchedulerUiProceeder : IInit, IAddCommand
     {
+        Func<int, long, bool, MazeInfo>                              LoadMazeInfo { set; }
         event UnityAction<EInputCommand, Dictionary<string, object>> UiCommand;
     }
     
@@ -22,22 +20,20 @@ namespace RMAZOR.Models.InputSchedulers
 
         private IModelLevelStaging LevelStaging { get; }
         private IModelData         Data         { get; }
-        private ILevelsLoader      LevelsLoader { get; }
 
         private InputSchedulerUiProceeder(
             IModelLevelStaging _LevelStaging,
-            IModelData         _Data,
-            ILevelsLoader      _LevelsLoader)
+            IModelData         _Data)
         {
             LevelStaging = _LevelStaging;
             Data         = _Data;
-            LevelsLoader = _LevelsLoader;
-
         }
 
         #endregion
 
         #region api
+
+        public Func<int, long, bool, MazeInfo> LoadMazeInfo { private get; set; }
 
         public event UnityAction<EInputCommand, Dictionary<string, object>> UiCommand;
 
@@ -83,7 +79,7 @@ namespace RMAZOR.Models.InputSchedulers
                     break;
                 case EInputCommand.LoadNextLevel:
                     levelIndex = LevelStaging.LevelIndex + 1;
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, false);
+                    info = LoadMazeInfo(gameId, levelIndex, false);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.LoadLevelByIndex:
@@ -93,7 +89,7 @@ namespace RMAZOR.Models.InputSchedulers
                     levelIndex = Convert.ToInt64(levelIndexArg);
                     string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
                     bool isBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-                    info = LevelsLoader.GetLevelInfo(gameId, levelIndex, isBonus);
+                    info = LoadMazeInfo(gameId, levelIndex, isBonus);
                     LevelStaging.LoadLevel(info, levelIndex);
                     break;
                 case EInputCommand.ReadyToStartLevel:    LevelStaging.ReadyToStartLevel(_Args);    break;

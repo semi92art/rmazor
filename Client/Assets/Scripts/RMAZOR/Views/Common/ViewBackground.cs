@@ -1,5 +1,6 @@
 ﻿using Common;
-using Common.Providers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.CongratulationItems;
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine.Events;
+﻿using mazing.common.Runtime;
+using UnityEngine.Events;
 
 namespace Common.Managers.PlatformGameServices.GameServiceAuth
 {

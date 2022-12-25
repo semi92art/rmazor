@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Common.Helpers;
+using mazing.common.Runtime.Helpers;
+using RMAZOR.Models.MazeInfos;
 using UnityEngine.Events;
 
 namespace RMAZOR.Models.InputSchedulers
@@ -36,6 +39,11 @@ namespace RMAZOR.Models.InputSchedulers
         #endregion
         
         #region api
+
+        public Func<int, long, bool, MazeInfo> LoadMazeInfo
+        {
+            set => InputSchedulerUiProceeder.LoadMazeInfo = value;
+        }
         
         public event UnityAction<EInputCommand, Dictionary<string, object>> MoveCommand;
         public event UnityAction<EInputCommand, Dictionary<string, object>> RotateCommand;

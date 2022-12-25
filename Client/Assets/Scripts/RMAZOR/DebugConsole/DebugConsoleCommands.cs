@@ -5,10 +5,15 @@ using System.Text;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
 using Common.Extensions;
 using Common.Utils;
 using Lean.Localization;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
@@ -245,12 +250,7 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine(@"Wrong argument! Need ""true"" or ""false""");
                 return;
             }
-            var entity = new Entity<bool>
-            {
-                Result = EEntityResult.Success,
-                Value = _Args[0] == "true"
-            };
-            Controller.AdsManager.ShowAds = entity;
+            Controller.AdsManager.ShowAds = _Args[0] == "true";
         }
 
         private static void LoadLevel(string[] _Args)
@@ -298,7 +298,7 @@ namespace RMAZOR.DebugConsole
             }
             var entity = new SavedGame
             {
-                FileName = CommonData.SavedGameFileName,
+                FileName = MazorCommonData.SavedGameFileName,
                 Money = moneyCount,
                 Level = Controller.Model.LevelStaging.LevelIndex
             };
@@ -321,7 +321,7 @@ namespace RMAZOR.DebugConsole
             static void DisplaySavedGameMoney(bool _FromCache)
             {
                 var entity = Controller.ScoreManager.GetSavedGameProgress(
-                    CommonData.SavedGameFileName, _FromCache);
+                    MazorCommonData.SavedGameFileName, _FromCache);
                 Cor.Run(Cor.WaitWhile(
                     () => entity.Result == EEntityResult.Pending,
                     () =>

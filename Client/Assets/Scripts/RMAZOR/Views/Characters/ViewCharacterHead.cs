@@ -4,13 +4,19 @@ using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Enums;
-using Common.Exceptions;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
-using Common.SpawnPools;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Common;
@@ -228,7 +234,7 @@ namespace RMAZOR.Views.Characters
         
         private void InitPrefab()
         {
-            var contGo = ContainersGetter.GetContainer(ContainerNames.Character).gameObject;
+            var contGo = ContainersGetter.GetContainer(ContainerNamesMazor.Character).gameObject;
             var go = PrefabSetManager.InitPrefab(
                 contGo.transform, 
                 CommonPrefabSetNames.Views,

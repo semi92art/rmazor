@@ -2,9 +2,11 @@
 using System.Linq;
 using Common;
 using Common.Entities;
-using Common.Exceptions;
-using Common.Providers;
-using Common.Ticker;
+using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
@@ -132,24 +134,31 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             Vector2 left, right, down, up, zero;
             (left, right, down, up, zero) = (Vector2.left, Vector2.right, Vector2.down, Vector2.up, Vector2.zero);
             Vector2 start, end;
-            float c1 = IsBorderNearTrapReact(_Side) ? 1f : 1f;
+            const float c2 = 0.5f;
+            const float c3 = 0.48f;
+
+            float C(Vector2 _Side2)
+            {
+                var dir = RmazorUtils.GetDirectionVector(_Side, EMazeOrientation.North);
+                return PathExist((V2Int)pos + dir + (V2Int) _Side2) ? c3 : c2;
+            }
             switch (_Side)
             {
                 case EDirection.Up:
-                    start = pos + (c1 * up + left    * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
-                    end   = pos + (c1 * up + right   * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
+                    start = pos + up * c2 + left    * _Scale * C(left)  + (_StartLimit ? right * cr : zero);
+                    end   = pos + up * c2 + right   * _Scale * C(right) + (_EndLimit   ? left  * cr : zero);
                     break;
                 case EDirection.Right:
-                    start = pos + (c1 * right + down * _Scale) * 0.5f + (_StartLimit ? up    * cr : zero);
-                    end   = pos + (c1 * right + up   * _Scale) * 0.5f + (_EndLimit   ? down  * cr : zero);
+                    start = pos + right * c2 + down * _Scale * C(down)  + (_StartLimit ? up    * cr : zero);
+                    end   = pos + right * c2 + up   * _Scale * C(up)    + (_EndLimit   ? down  * cr : zero);
                     break;
                 case EDirection.Down:
-                    start = pos + (c1 * down + left  * _Scale) * 0.5f + (_StartLimit ? right * cr : zero);
-                    end   = pos + (c1 * down + right * _Scale) * 0.5f + (_EndLimit   ? left  * cr : zero);
+                    start = pos + down * c2 + left  * _Scale * C(left)  + (_StartLimit ? right * cr : zero);
+                    end   = pos + down * c2 + right * _Scale * C(right) + (_EndLimit   ? left  * cr : zero);
                     break;
                 case EDirection.Left:
-                    start = pos + (c1 * left + down * _Scale)  * 0.5f + (_StartLimit ? up     * cr : zero);
-                    end   = pos + (c1 * left + up   * _Scale)  * 0.5f + (_EndLimit   ? down   * cr : zero);
+                    start = pos + left * c2 + down  * _Scale  * C(down) + (_StartLimit ? up     * cr : zero);
+                    end   = pos + left * c2 + up    * _Scale  * C(up)   + (_EndLimit   ? down   * cr : zero);
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Side);

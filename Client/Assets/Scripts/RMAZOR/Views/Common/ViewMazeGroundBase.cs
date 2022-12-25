@@ -1,5 +1,6 @@
 ﻿using Common.Helpers;
-using Common.Providers;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 
 namespace RMAZOR.Views.Common

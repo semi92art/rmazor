@@ -1,5 +1,6 @@
 ﻿using Common.Managers;
-using Common.Ticker;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

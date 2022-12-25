@@ -1,15 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Common;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Entities;
 using Common.Helpers;
 using Common.Managers.Advertising;
 using Common.Managers.Notifications;
-using Common.Network;
-using Common.Network.DataFieldFilters;
 using Common.Utils;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Network.DataFieldFilters;
+using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using UnityEngine.Events;
@@ -28,7 +32,6 @@ namespace RMAZOR.Managers
         private const string IdAdditionalColorPropsSet              = "additional_color_props_set";
         private const string IdFirstLevelToShowAds                  = "ads_first_level_to_show_ads";
         private const string IdAdsProvidersInfos                    = "ads_providers_infos_v2";
-        private const string IdShowAdEveryLevel                     = "ads_show_ad_every_level";
         private const string IdAnimatePathFill                      = "animate_path_fill";
         private const string IdBackgroundTextureTriangles2PropsSet  = "background_texture_triangles2_props_set";
         private const string IdCharacterSpeed                       = "character_speed";
@@ -48,7 +51,6 @@ namespace RMAZOR.Managers
         private const string IdMovingTrapPause                      = "moving_trap_pause";
         private const string IdMovingTrapSpeed                      = "moving_trap_speed";
         private const string IdPayToContinueMoneyCount              = "pay_to_continue_money_count";
-        private const string IdShowFullTutorial                     = "show_full_tutorial";
         private const string IdShredingerBlockTime                  = "shredinger_block_time";
         private const string IdSkipButtonDelay                      = "skip_button_seconds";
         private const string IdSpearProjectileSpeed                 = "spear_projectile_speed";
@@ -61,6 +63,7 @@ namespace RMAZOR.Managers
         private const string IdCharacterDiedPanelBackgroundVar      = "char_died_g_pan_background_variant";
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
+        private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
 
         #endregion
         
@@ -181,9 +184,6 @@ namespace RMAZOR.Managers
                                 JsonConvert.DeserializeObject<int[]>(ToString(_V));
                         }),
                     true),
-                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowFullTutorial,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.showFullTutorial = ToBool(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFinishLevelGroupPanelGetMoneyTextVar,
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
@@ -210,9 +210,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToShowAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.firstLevelToShowAds = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdShowAdEveryLevel,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.showAdsEveryLevel = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(long), IdMoneyItemCoast,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.moneyItemCoast = ToInt(_V))),
@@ -225,6 +222,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMoneyItemsFillRate,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.moneyItemsRate = ToFloat(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdBetweenLevelAdShowIntervalInSeconds,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.betweenLevelAdShowIntervalInSeconds = ToFloat(_V))),
             };
         }
 
@@ -283,51 +283,16 @@ namespace RMAZOR.Managers
                     true),
             };
         }
-
-
-
+        
         private GameDataFieldFilter GetFilter()
         {
-            var fieldIds = new []
-            {
-                IdAdditionalColorPropsSet,
-                IdFirstLevelToShowAds,
-                IdAdsProvidersInfos,
-                IdShowAdEveryLevel,
-                IdAnimatePathFill,
-                IdBackgroundTextureTriangles2PropsSet,
-                IdCharacterSpeed,
-                IdColorGradingProps,
-                IdFirstLevelToRateGame,
-                IdFirstLevelToRateGameThisSession,
-                IdHammerShotPause,
-                IdInAppNotificationList,
-                IdInterstitialAdsRatio,
-                IdLevelsInGroup,
-                IdLineThickness,
-                IdMainColorPropsSet,
-                IdMazeItemTransitionTime,
-                IdMazeRotationSpeed,
-                IdGravityBlockSpeed,
-                IdMoneyItemCoast,
-                IdMovingTrapPause,
-                IdMovingTrapSpeed,
-                IdPayToContinueMoneyCount,
-                IdShowFullTutorial,
-                IdShredingerBlockTime,
-                IdSkipButtonDelay,
-                IdSpearProjectileSpeed,
-                IdTestDeviceIds,
-                IdTestDeviceIdsForAdmob,
-                IdTrapIncreasingIdleTime,
-                IdTrapIncreasingIncreasedTime,
-                IdMoneyItemsFillRate,
-                IdFinishLevelGroupPanelGetMoneyTextVar,
-                IdCharacterDiedPanelBackgroundVar,
-                IdBackgroundTextures,
-                IdAdditionalBackgroundType,
-            }
-                .Select(CommonUtils.StringToHash)
+            var fieldInfos = GetType().GetFields(
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            var fieldIds = fieldInfos
+                .Select(_Fi => _Fi.GetValue(this))
+                .Where(_V => _V is string)
+                .Cast<string>()
+                .Select(MazorCommonUtils.StringToHash)
                 .Select(_Id => (ushort) _Id)
                 .ToArray();
             return new GameDataFieldFilter(

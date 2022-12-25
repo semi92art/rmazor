@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common.Helpers;
-using Common.Ticker;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.MazeInfos;
 
 namespace RMAZOR.Models

@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.CameraProviders;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
-using Common.Providers;
 using Common.Utils;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
@@ -123,7 +128,7 @@ namespace RMAZOR.Views.Common
 
         private void InitMainBackgroundRenderer()
         {
-            var parent = ContainersGetter.GetContainer(ContainerNames.Background);
+            var parent = ContainersGetter.GetContainer(ContainerNamesCommon.Background);
             var go = PrefabSetManager.InitPrefab(
                 parent, "background", "background_texture");
             go.name = "Main Background Renderer";
@@ -161,7 +166,7 @@ namespace RMAZOR.Views.Common
         private void InitRenderCamera()
         {
             var camGo = new GameObject("Background Texture Camera");
-            var container = ContainersGetter.GetContainer(ContainerNames.Background);
+            var container = ContainersGetter.GetContainer(ContainerNamesCommon.Background);
             camGo.SetParent(container);
             var cam = camGo.AddComponent<Camera>();
             cam.orthographic = true;

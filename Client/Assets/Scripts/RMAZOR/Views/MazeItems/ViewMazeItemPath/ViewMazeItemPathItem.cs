@@ -1,5 +1,5 @@
 ﻿using System;
-using Common.Enums;
+using mazing.common.Runtime.Enums;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;

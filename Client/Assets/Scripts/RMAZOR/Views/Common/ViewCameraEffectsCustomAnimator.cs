@@ -1,8 +1,10 @@
 ﻿using Common;
-using Common.CameraProviders;
-using Common.CameraProviders.Camera_Effects_Props;
 using Common.Helpers;
-using Common.Providers;
+using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 using UnityEngine;
 

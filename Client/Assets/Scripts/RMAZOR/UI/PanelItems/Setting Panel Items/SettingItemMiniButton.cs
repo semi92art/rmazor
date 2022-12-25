@@ -1,8 +1,11 @@
 ﻿using System;
 using Common.Extensions;
 using Common.Managers;
-using Common.Ticker;
 using Common.UI;
+using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
