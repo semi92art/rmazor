@@ -15,9 +15,10 @@
         "com.unity.inputsystem": "1.4.4",
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.purchasing": "4.5.1",
-        "com.unity.mobile.notifications": "2.1.0"
+        "com.unity.mobile.notifications": "2.1.0",
+        "com.unity.modules.androidjni": "1.0.0"
       },
-      "hash": "36447fdda56f8dc4c111de67bbf570c7796ae35f"
+      "hash": "6944fb92109e8fe1b23a159fdc95e05b5db27f46"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",

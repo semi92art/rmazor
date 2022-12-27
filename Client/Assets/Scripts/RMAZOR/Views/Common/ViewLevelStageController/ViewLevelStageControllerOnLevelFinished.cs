@@ -70,7 +70,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
-            UnloadLevelAfterDelay(1.5f);
+            UnloadLevelWithDelay(_Args);
             SetLevelTimeRecord(_Args);
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
             CheckForAllLevelsPassed(_Args);
@@ -83,9 +83,13 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         #region nonpublic methods
 
-        private void UnloadLevelAfterDelay(float _Delay)
+        private void UnloadLevelWithDelay(LevelStageArgs _Args)
         {
-            Cor.Run(Cor.Delay(_Delay, ViewGameTicker, () =>
+            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            bool isThisLevelLastInGroup = !isThisLevelBonus && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex);
+            float delay = isThisLevelBonus || isThisLevelLastInGroup ? 0.5f : 1.5f;
+            Cor.Run(Cor.Delay(delay, ViewGameTicker, () =>
             {
                 if (Model.LevelStaging.LevelStage != ELevelStage.Finished)
                     return;

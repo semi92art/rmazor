@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -49,7 +45,7 @@ namespace RMAZOR.Views.MazeItems
         #region constants
 
         private const float  ScaleCoefficient                 = 0.8f;
-        private const int    TailItemsCount                   = 50;
+        private const int    TailItemsCount                   = 200;
         private const string TailItemsContainerName           = "Spear Projectile Container";
         private const float  OuterDiscBorderRotationSpeedIdle = 0.5f;
 
@@ -233,7 +229,7 @@ namespace RMAZOR.Views.MazeItems
         {
             const byte stencilRefId = 230;
             var go = PrefabSetManager.InitPrefab(
-                Object.transform, "views", "spear");
+                Object.transform, CommonPrefabSetNames.Views, "spear");
             m_ProjectileContainerOnAwait = go.GetCompItem<Transform>("container");
             int sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             var collisionDetector = go.GetCompItem<CollisionDetector2D>("collision_detector");

@@ -1,6 +1,8 @@
-﻿using mazing.common.Runtime;
+﻿using Common.Helpers;
+using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using Zenject;
@@ -30,16 +32,22 @@ namespace RMAZOR.Controllers
 
         #region inject
 
-        public IModelGame Model { get; private set; }
-        public IViewGame  View  { get; private set; }
+        public  IModelGame              Model                  { get; private set; }
+        public  IViewGame               View                   { get; private set; }
+        private IRemoteConfigManager    RemoteConfigManager    { get; set; }
+        private IRemotePropertiesRmazor RemotePropertiesRmazor { get; set; }
 
         [Inject]
         private void Inject(
             IModelGame _Model,
-            IViewGame  _View)
+            IViewGame  _View,
+            IRemoteConfigManager _RemoteConfigManager,
+            IRemotePropertiesRmazor _RemotePropertiesRmazor)
         {
-            Model = _Model;
-            View  = _View;
+            Model                  = _Model;
+            View                   = _View;
+            RemoteConfigManager    = _RemoteConfigManager;
+            RemotePropertiesRmazor = _RemotePropertiesRmazor;
         }
 
         #endregion
@@ -128,7 +136,19 @@ namespace RMAZOR.Controllers
                     View.Managers, 
                     View.CommandsProceeder,
                     View.CameraProvider);
-            View.Managers.DebugManager.Init();
+            if (RemoteConfigManager.Initialized)
+                InitDebugCore();
+            else
+                RemoteConfigManager.Initialize += InitDebugCore; 
+        }
+        
+        private void InitDebugCore()
+        {
+            Cor.Run(Cor.WaitNextFrame(() =>
+            {
+                SRDebug.Instance.IsTriggerEnabled = RemotePropertiesRmazor.DebugEnabled;
+                View.Managers.DebugManager.Init();
+            }, _FramesNum: 2U));
         }
 
         #endregion

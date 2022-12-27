@@ -178,7 +178,6 @@ namespace Mono_Installers
             Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()              .AsSingle();
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()               .AsSingle();
             Container.Bind<IFontProvider>()                .To<FontProviderMazor>()             .AsSingle();
-            Container.Bind<ISRDebuggerInitializer>()       .To<SRDebuggerInitializer>()           .AsSingle();
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()    .AsSingle();
             
             if (Application.isEditor)

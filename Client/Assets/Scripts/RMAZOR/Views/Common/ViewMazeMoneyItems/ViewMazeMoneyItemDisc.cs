@@ -225,7 +225,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         private void InitShape()
         {
             var go = PrefabSetManager.InitPrefab(
-                Parent, "views", "money_item");
+                Parent, CommonPrefabSetNames.Views, "money_item");
             m_Animator = go.GetCompItem<Animator>("animator");
             var col = ColorProvider.GetColor(ColorIds.MoneyItem);
             const int sortingOrder = SortingOrders.MoneyItem;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
+using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
@@ -142,7 +143,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             var saw = Object.AddComponentOnNewChild<SpriteRenderer>("Moving Trap", out _);
-            saw.sprite = Managers.PrefabSetManager.GetObject<Sprite>("views", "moving_trap");
+            saw.sprite = Managers.PrefabSetManager.GetObject<Sprite>(CommonPrefabSetNames.Views, "moving_trap");
             saw.color = ColorProvider.GetColor(ColorIds.MazeItem1);
             int sortingOrder = GetSortingOrder();
             saw.sortingOrder = sortingOrder;

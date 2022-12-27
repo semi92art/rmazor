@@ -213,19 +213,19 @@ namespace RMAZOR.UI.Panels
         {
             var psm = Managers.PrefabSetManager;
             m_SpriteLevelGroupItemEnabled = psm.GetObject<Sprite>(
-                "views", 
+                CommonPrefabSetNames.Views, 
                 "level_stage_item_enabled_sprite");
             m_SpriteLevelGroupItemDisabled = psm.GetObject<Sprite>(
-                "views", 
+                CommonPrefabSetNames.Views, 
                 "level_stage_item_disabled_sprite");
             m_SpriteLevelGroupItemSelected = psm.GetObject<Sprite>(
-                "views", 
+                CommonPrefabSetNames.Views, 
                 "level_stage_item_selected_sprite");
             m_SpriteLevelGroupItemStarEnabled = psm.GetObject<Sprite>(
-                "views", 
+                CommonPrefabSetNames.Views, 
                 "level_stage_item_star_enabled_sprite");
             m_SpriteLevelGroupItemStarDisabled = psm.GetObject<Sprite>(
-                "views", 
+                CommonPrefabSetNames.Views, 
                 "level_stage_item_star_disabled_sprite");
         }
 

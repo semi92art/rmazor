@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Common;
 using Common.Entities;
 using Common.Helpers;
-using Common.Managers.Advertising;
-using Common.Managers.Notifications;
 using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
@@ -287,7 +284,7 @@ namespace RMAZOR.Managers
         private GameDataFieldFilter GetFilter()
         {
             var fieldInfos = GetType().GetFields(
-                BindingFlags.Instance | BindingFlags.NonPublic);
+                BindingFlags.NonPublic | BindingFlags.Static);
             var fieldIds = fieldInfos
                 .Select(_Fi => _Fi.GetValue(this))
                 .Where(_V => _V is string)

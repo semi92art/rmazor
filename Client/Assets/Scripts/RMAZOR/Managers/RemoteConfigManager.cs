@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using Common;
-using Common.Entities;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Utils;
 using mazing.common.Runtime;
@@ -129,7 +126,7 @@ namespace RMAZOR.Managers
                 {
                     if (entity.Result == EEntityResult.Fail)
                     {
-                        Dbg.LogError("Failed to load test devices");
+                        Dbg.LogError("Failed to load test devices, value: " + entity.Value);
                         return;
                     }
                     string testDeviceIdfasJson = Convert.ToString(entity.Value);

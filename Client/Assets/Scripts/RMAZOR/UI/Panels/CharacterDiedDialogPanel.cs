@@ -148,7 +148,7 @@ namespace RMAZOR.UI.Panels
                 _ => $"{backgroundSpriteNameRaw}_1",
             };
             m_Background.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                "views", backgroundSpriteName);
+                CommonPrefabSetNames.Views, backgroundSpriteName);
         }
 
         public void ReturnFromShopPanel()

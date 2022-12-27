@@ -96,7 +96,7 @@ namespace Editor
         {
             var manager = new PrefabSetManager(new AssetBundleManagerFake());
             m_MainColorsPropsSetScrObj = manager.GetObject<MainColorsSetScriptableObject>(
-                "views", "color_set_light");
+                CommonPrefabSetNames.Views, "color_set_light");
             m_MainColorsPropsSet = m_MainColorsPropsSetScrObj.set;
             m_AdditionalColorsPropsSetScrObj = manager.GetObject<AdditionalColorsSetScriptableObject>(
                 "configs", "additional_colors_set");

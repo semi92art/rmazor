@@ -40,7 +40,6 @@ namespace Common.Managers.Advertising.AdsProviders
         {
             var reqConfig = new RequestConfiguration.Builder().build();
             MobileAds.SetiOSAppPauseOnBackground(true);
-            MobileAds.DisableMediationInitialization();
             MobileAds.SetRequestConfiguration(reqConfig);
             MobileAds.Initialize(_InitStatus =>
             {

@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -53,7 +51,7 @@ namespace RMAZOR.Views.Common
             if (m_Set.NullOrEmpty())
             {
                 m_Set = PrefabSetManager.GetObject<MainColorsSetScriptableObject>(
-                    "views", "color_set_light").set;
+                    CommonPrefabSetNames.Views, "color_set_light").set;
             }
             m_ColorsDict.Clear();
             foreach (var item in m_Set)

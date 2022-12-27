@@ -1,7 +1,4 @@
 ﻿using System;
-using Common;
-using Common.Helpers;
-using Common.Managers;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime;
@@ -35,16 +32,16 @@ namespace RMAZOR.Managers
         
         #region inject
 
-        private IRemotePropertiesRmazor     RemoteProperties  { get; }
-        private IModelGame                  Model             { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private IDebugSetting               DebugSetting      { get; }
-        private IAdsManager                 AdsManager        { get; }
-        private IScoreManager               ScoreManager      { get; }
-        private IAudioManager               AudioManager      { get; }
-        private IAnalyticsManager           AnalyticsManager  { get; }
-        private IDebugConsoleView           DebugConsoleView  { get; }
-        public  IFpsCounter                 FpsCounter        { get; }
+        private IRemotePropertiesRmazor     RemoteProperties      { get; }
+        private IModelGame                  Model                 { get; }
+        private IViewInputCommandsProceeder CommandsProceeder     { get; }
+        private IDebugSetting               DebugSetting          { get; }
+        private IAdsManager                 AdsManager            { get; }
+        private IScoreManager               ScoreManager          { get; }
+        private IAudioManager               AudioManager          { get; }
+        private IAnalyticsManager           AnalyticsManager      { get; }
+        private IDebugConsoleView           DebugConsoleView      { get; }
+        public  IFpsCounter                 FpsCounter            { get; }
 
         private DebugManager(
             IRemotePropertiesRmazor     _RemoteProperties,
@@ -58,16 +55,16 @@ namespace RMAZOR.Managers
             IDebugConsoleView           _DebugConsoleView,
             IFpsCounter                 _FpsCounter)
         {
-            RemoteProperties  = _RemoteProperties;
-            Model             = _Model;
-            CommandsProceeder = _CommandsProceeder;
-            DebugSetting      = _DebugSetting;
-            AdsManager        = _AdsManager;
-            ScoreManager      = _ScoreManager;
-            AudioManager      = _AudioManager;
-            AnalyticsManager  = _AnalyticsManager;
-            DebugConsoleView  = _DebugConsoleView;
-            FpsCounter        = _FpsCounter;
+            RemoteProperties      = _RemoteProperties;
+            Model                 = _Model;
+            CommandsProceeder     = _CommandsProceeder;
+            DebugSetting          = _DebugSetting;
+            AdsManager            = _AdsManager;
+            ScoreManager          = _ScoreManager;
+            AudioManager          = _AudioManager;
+            AnalyticsManager      = _AnalyticsManager;
+            DebugConsoleView      = _DebugConsoleView;
+            FpsCounter            = _FpsCounter;
         }
 
         #endregion

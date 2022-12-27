@@ -196,7 +196,7 @@ namespace RMAZOR.Views.MazeItems
             line.Color = col;
             line.SortingOrder = GetSortingOrder();
             trap.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                "views", "trap_react_spikes_sprite");
+                CommonPrefabSetNames.Views, "trap_react_spikes_sprite");
             trap.material = Managers.PrefabSetManager.InitObject<Material>(
                 "materials", "trap_react_spikes_material");
             trap.sortingOrder = GetSortingOrder();

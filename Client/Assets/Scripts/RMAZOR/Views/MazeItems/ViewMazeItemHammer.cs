@@ -185,7 +185,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             var go = PrefabSetManager.InitPrefab(
-                Object.transform, "views", "hammer");
+                Object.transform, CommonPrefabSetNames.Views, "hammer");
             m_HammerContainer = go.GetCompItem<Transform>("container");
             int sortingOrder = SortingOrders.GetBlockSortingOrder(Props.Type);
             var collisionDetector = go.GetCompItem<CollisionDetector2D>("collision_detector");

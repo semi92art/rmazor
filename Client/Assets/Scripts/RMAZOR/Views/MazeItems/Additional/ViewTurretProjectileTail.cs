@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
@@ -126,7 +127,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         private void InitShape(Transform _Parent)
         {
             var go = PrefabSetManager.InitPrefab(
-                _Parent, "views", "turret_projectile_tail");
+                _Parent, CommonPrefabSetNames.Views, "turret_projectile_tail");
             m_TailTr = go.GetCompItem<Transform>("tail");
             m_Renderers = m_TailTr.GetComponentsInChildren<Line>().ToList();
             foreach (var line in m_Renderers)

@@ -204,7 +204,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             var prefab = Managers.PrefabSetManager.InitPrefab(
-                Object.transform, "views", "trap_increasing_2");
+                Object.transform, CommonPrefabSetNames.Views, "trap_increasing_2");
             prefab.transform.SetLocalPosXY(Vector2.zero);
             m_Animator   = prefab.GetCompItem<Animator>("animator");
             m_Triggerer  = prefab.GetCompItem<AnimationTriggerer>("triggerer");

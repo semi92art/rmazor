@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Common;
-using Common.Entities;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
@@ -12,7 +8,8 @@ namespace RMAZOR.Managers
 {
     public interface IRemoteConfigProvider : IInit
     {
-        void                                  SetRemoteCachedPropertyInfos(List<RemoteConfigPropertyInfo> _Infos);
+        void SetRemoteCachedPropertyInfos(List<RemoteConfigPropertyInfo> _Infos);
+        
         IEnumerable<RemoteConfigPropertyInfo> GetFetchedInfos();
     }
     

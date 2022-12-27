@@ -5,14 +5,10 @@ using System.Text;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
-using Common.Managers.Analytics;
-using Common.Managers.IAP;
 using Common.Managers.PlatformGameServices;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -53,10 +49,9 @@ namespace RMAZOR
         private IRemoteConfigManager       RemoteConfigManager       { get; set; }
         private IPermissionsRequester      PermissionsRequester      { get; set; }
         private IAssetBundleManager        AssetBundleManager        { get; set; }
-        private ISRDebuggerInitializer     SrDebuggerInitializer     { get; set; }
         private IAchievementsSet           AchievementsSet           { get; set; }
         private ILeaderboardsSet           LeaderboardsSet           { get; set; }
-        private IAnalyticsManager          AnalyticsManager           { get; set; }
+        private IAnalyticsManager          AnalyticsManager          { get; set; }
         private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
         private CompanyLogo                CompanyLogo               { get; set; }
         
@@ -79,7 +74,6 @@ namespace RMAZOR
             IRemoteConfigManager       _RemoteConfigManager,
             IPermissionsRequester      _PermissionsRequester,
             ICommonTicker              _CommonTicker,
-            ISRDebuggerInitializer     _SrDebuggerInitializer,
             IAchievementsSet           _AchievementsSet,
             ILeaderboardsSet           _LeaderboardsSet,
             IApplicationVersionUpdater _ApplicationVersionUpdater,
@@ -98,7 +92,6 @@ namespace RMAZOR
             ShopManager               = _ShopManager;
             RemoteConfigManager       = _RemoteConfigManager;
             PermissionsRequester      = _PermissionsRequester;
-            SrDebuggerInitializer     = _SrDebuggerInitializer;
             AchievementsSet           = _AchievementsSet;
             LeaderboardsSet           = _LeaderboardsSet;
             ApplicationVersionUpdater = _ApplicationVersionUpdater;
@@ -209,7 +202,7 @@ namespace RMAZOR
     
         private void InitGameManagers()
         {
-            AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic("session_start");
+            AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic(AnalyticIds.SessionStart);
             InitRemoteConfigManager();
             InitAssetBundleManager();
             InitShopManager();
@@ -221,7 +214,6 @@ namespace RMAZOR
         private void InitRemoteConfigManager()
         {
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
-            RemoteConfigManager.Initialize += SrDebuggerInitializer.Init;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
             TryExecute(RemoteConfigManager.Init);

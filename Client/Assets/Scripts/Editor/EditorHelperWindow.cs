@@ -204,7 +204,7 @@ namespace Editor
             EditorUtilsEx.GuiButtonAction("Main Colors Set", () =>
             {
                 var mainColorsSetScrObj = GetPrefLoader().GetObject<MainColorsSetScriptableObject>(
-                    "views", "color_set_light");
+                    CommonPrefabSetNames.Views, "color_set_light");
                 var converter = new ColorJsonConverter();
                 string json = JsonConvert.SerializeObject(
                     mainColorsSetScrObj.set,

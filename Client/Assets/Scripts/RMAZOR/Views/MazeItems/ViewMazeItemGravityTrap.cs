@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
+using Common.Constants;
 using Common.Entities;
 using Common.Extensions;
 using Common.Helpers;
@@ -209,7 +210,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void InitShape()
         {
             var go = Managers.PrefabSetManager.InitPrefab(
-                Object.transform, "views", "gravity_trap");
+                Object.transform, CommonPrefabSetNames.Views, "gravity_trap");
             m_MaceTr = go.GetCompItem<Transform>("container");
             m_InnerDisc = go.GetCompItem<Disc>("inner disc");
             m_OuterDisc = go.GetCompItem<Disc>("outer disc");

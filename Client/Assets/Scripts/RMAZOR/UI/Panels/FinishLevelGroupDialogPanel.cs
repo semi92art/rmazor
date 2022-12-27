@@ -65,7 +65,7 @@ namespace RMAZOR.UI.Panels
             m_IconWatchAds, 
             m_Background;
         private Button     
-            m_ButtonMultiplyMoney,
+            m_ButtonMultiply,
             m_ButtonSkip,
             m_ButtonContinue;
         private TextMeshProUGUI
@@ -161,7 +161,7 @@ namespace RMAZOR.UI.Panels
                 5 => $"{backgroundSpriteNameRaw}_5",
                 _ => $"{backgroundSpriteNameRaw}_1",
             };
-            m_Background.sprite = psm.GetObject<Sprite>("views", backgroundSpriteName);
+            m_Background.sprite = psm.GetObject<Sprite>(CommonPrefabSetNames.Views, backgroundSpriteName);
         }
 
         public override void OnDialogStartAppearing()
@@ -171,11 +171,11 @@ namespace RMAZOR.UI.Panels
             m_MultiplyWord = Managers.LocalizationManager
                 .GetTranslation("multiply")
                 .ToUpper(CultureInfo.CurrentUICulture);
-            m_ButtonMultiplyMoney.gameObject.SetActive(true);
+            m_ButtonMultiply.gameObject.SetActive(true);
             m_ButtonSkip         .gameObject.SetActive(true);
             m_ButtonContinue     .gameObject.SetActive(false);
             m_ButtonSkip         .interactable = false;
-            m_ButtonMultiplyMoney.interactable = false;
+            m_ButtonMultiply.interactable = false;
             m_WatchVideoToTheEndText.enabled = false;
             m_RewardGot = false;
             m_MoneyCountText.text = MoneyCounter.CurrentLevelGroupMoney.ToString();
@@ -187,7 +187,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogAppeared()
         {
             //FIXME какогото хуя кнопки не включаются после пропуска уровня
-            m_ButtonMultiplyMoney.enabled = true;
+            m_ButtonMultiply.enabled = true;
             m_ButtonSkip.enabled = true;
             m_ButtonContinue.enabled = true;
             base.OnDialogAppeared();
@@ -196,7 +196,7 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogDisappearing()
         {
             m_ButtonSkip.interactable = false;
-            m_ButtonMultiplyMoney.interactable = false;
+            m_ButtonMultiply.interactable = false;
             m_WheelPanelView.StopWheel();
             base.OnDialogDisappearing();
         }
@@ -216,7 +216,7 @@ namespace RMAZOR.UI.Panels
         {
             m_WheelPanelView         = _Go.GetCompItem<MultiplyMoneyWheelPanelView>("wheel_panel_view");
             m_PanelAnimator          = _Go.GetCompItem<Animator>("panel_animator");
-            m_ButtonMultiplyMoney    = _Go.GetCompItem<Button>("multiply_money_button");
+            m_ButtonMultiply    = _Go.GetCompItem<Button>("multiply_money_button");
             m_ButtonSkip             = _Go.GetCompItem<Button>("skip_button");
             m_ButtonContinue         = _Go.GetCompItem<Button>("continue_button");
             m_TitleText              = _Go.GetCompItem<TextMeshProUGUI>("title_text");
@@ -272,7 +272,7 @@ namespace RMAZOR.UI.Panels
 
         private void SubscribeEventObjectsOnActions()
         {
-            m_ButtonMultiplyMoney.onClick.AddListener(     OnMultiplyButtonPressed);
+            m_ButtonMultiply.onClick.AddListener(     OnMultiplyButtonPressed);
             m_ButtonSkip.onClick.AddListener(              OnSkipButtonPressed);
             m_ButtonContinue.onClick.AddListener(          OnContinueButtonPressed);
             m_Triggerer.Trigger1                        += OnStartAppearingAnimationFinished;
@@ -323,8 +323,8 @@ namespace RMAZOR.UI.Panels
                 return;
             }
             m_AnimLoadingAds.SetGoActive(_Indicate);
-            m_IconWatchAds.enabled             = !_Indicate;
-            m_ButtonMultiplyMoney.interactable = !_Indicate;
+            m_IconWatchAds.enabled        = !_Indicate;
+            m_ButtonMultiply.interactable = !_Indicate;
         }
         
         private void OnStartAppearingAnimationFinished()
@@ -363,14 +363,15 @@ namespace RMAZOR.UI.Panels
                 TimePauser.UnpauseTimeInUi();
                 if (!m_RewardGot)
                     m_WatchVideoToTheEndText.enabled = true;
-                m_ButtonMultiplyMoney.gameObject.SetActive(false);
-                m_ButtonSkip         .gameObject.SetActive(false);
-                m_ButtonContinue     .gameObject.SetActive(true);
+                m_ButtonMultiply.gameObject.SetActive(false);
+                m_ButtonSkip    .gameObject.SetActive(false);
+                m_ButtonContinue.gameObject.SetActive(true);
             }
             Managers.AdsManager.ShowRewardedAd(
                 OnBeforeShown,
                 _OnReward: OnReward,
                 _OnClosed: OnClosed);
+            SendButtonPressedAnalytic(m_ButtonMultiply);
         }
 
         private void OnSkipButtonPressed()
@@ -382,11 +383,13 @@ namespace RMAZOR.UI.Panels
                 Multiply();
                 OnClose(UnpauseLevel);
             }, false, 3U));
+            SendButtonPressedAnalytic(m_ButtonSkip);
         }
 
         private void OnContinueButtonPressed()
         {
             OnClose(UnpauseLevel);
+            SendButtonPressedAnalytic(m_ButtonContinue);
         }
 
         private void UnpauseLevel()
@@ -402,14 +405,6 @@ namespace RMAZOR.UI.Panels
             var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
                 MazorCommonData.SavedGameFileName,
                 true);
-            void SendAnalytic()
-            {
-                var eventData = new Dictionary<string, object>
-                {
-                    {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}
-                };
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInFinishGroupPanelPressed, eventData);
-            }
             void SetMoneyInBank()
             {
                 bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
@@ -430,11 +425,7 @@ namespace RMAZOR.UI.Panels
             }
             Cor.Run(Cor.WaitWhile(
                 () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    SendAnalytic();
-                    SetMoneyInBank();
-                }));
+                SetMoneyInBank));
         }
 
         private IEnumerator StartIndicatingAdLoadingCoroutine()
@@ -446,6 +437,26 @@ namespace RMAZOR.UI.Panels
                 {
                     IndicateAdsLoading(false);
                 });
+        }
+
+        private void SendButtonPressedAnalytic(Object _Button)
+        {
+            string levelType = (string) Model.LevelStaging.Arguments.GetSafe(
+                    CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            string analyticId = null;
+            if (_Button == m_ButtonMultiply)
+                analyticId = "button_multiply_in_finish_level_group_pressed";
+            else if (_Button == m_ButtonSkip)
+                analyticId = "button_skip_in_finish_level_group_pressed";
+            else if (_Button == m_ButtonContinue)
+                analyticId = "button_continue_in_finish_level_group_pressed";
+            var eventData = new Dictionary<string, object>
+            {
+                {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex},
+                {AnalyticIds.ParameterLevelType, isThisLevelBonus ? 2 : 1},
+            };
+            Managers.AnalyticsManager.SendAnalytic(analyticId, eventData);
         }
 
         #endregion

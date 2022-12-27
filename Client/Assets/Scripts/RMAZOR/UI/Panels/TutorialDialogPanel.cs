@@ -152,7 +152,7 @@ namespace RMAZOR.UI.Panels
             for (int i = 1; i <= CharacterSpritesCount; i++)
             {
                 var charSprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                    "views", $"tutorial_character_sprite_{i}");
+                    CommonPrefabSetNames.Views, $"tutorial_character_sprite_{i}");
                 m_CharacterSprites.Add(charSprite);
             }
         }

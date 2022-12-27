@@ -207,7 +207,7 @@ namespace RMAZOR.Views.MazeItems.Additional
         {
             var projParent = ContainersGetter.GetContainer(ContainerNamesMazor.MazeItems);
             m_ProjectileObj =  PrefabSetManager.InitPrefab(
-                projParent, "views", "turret_projectile");
+                projParent, CommonPrefabSetNames.Views, "turret_projectile");
             m_ProjectileObj.name  = "Turret Projectile" + (m_Fake ? " Fake" : string.Empty);
             m_Rigidbody           = m_ProjectileObj.GetCompItem<Rigidbody2D>("rigidbody");
             m_Collider            = m_ProjectileObj.GetCompItem<CircleCollider2D>("collider");

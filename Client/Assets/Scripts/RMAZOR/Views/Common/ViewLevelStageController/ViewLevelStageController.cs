@@ -105,7 +105,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         public override void Init()
         {
             MoneyCounter.Init();
-            // TouchProceeder.Tap += OnTapScreenAction;
             CameraProvider.Init();
             StageControllerOnLevelReadyToStart.Init();
             StageControllerOnReadyToUnload.Init();

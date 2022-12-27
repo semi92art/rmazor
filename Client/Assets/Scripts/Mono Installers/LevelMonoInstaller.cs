@@ -20,6 +20,7 @@ using RMAZOR.UI.Panels;
 using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views;
 using RMAZOR.Views.Characters;
+using RMAZOR.Views.Characters.Head;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Common.BackgroundIdleItems;
@@ -242,13 +243,22 @@ namespace Mono_Installers
         private void BindCharacter()
         {
             Container.Bind<IViewCharacter>()         .To<ViewCharacter>()                 .AsSingle();
-            Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead>()             .AsSingle();
+            Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead01>()           .AsSingle();
             Container.Bind<IViewCharacterLegs>()     .To<ViewCharacterLegs>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
             Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailTriangle>()     .AsSingle();
             Container.Bind<IViewParticleBubble>()    .To<ViewParticleBubble>()            .AsSingle();
             Container.Bind<IViewParticleSpark>()     .To<ViewParticleSpark>()             .AsSingle();
             Container.Bind<IViewParticlesThrower>()  .To<ViewParticlesThrower>()          .AsTransient();
+            
+            // Container.Bind<IViewCharacterHead01>().To<ViewCharacterHead01>().AsSingle();
+            // Container.Bind<IViewCharacterHead02>().To<ViewCharacterHead02>().AsSingle();
+            // Container.Bind<IViewCharacterHead03>().To<ViewCharacterHead03>().AsSingle();
+            // Container.Bind<IViewCharacterHead04>().To<ViewCharacterHead04>().AsSingle();
+            // Container.Bind<IViewCharacterHead05>().To<ViewCharacterHead05>().AsSingle();
+            // Container.Bind<IViewCharacterHead06>().To<ViewCharacterHead06>().AsSingle();
+            // Container.Bind<IViewCharacterHead07>().To<ViewCharacterHead07>().AsSingle();
+            // Container.Bind<IViewCharacterHead08>().To<ViewCharacterHead08>().AsSingle();
         }
 
         private void BindUiCommon()

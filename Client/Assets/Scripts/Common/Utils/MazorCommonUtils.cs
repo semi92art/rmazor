@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
-using Common.Entities;
+using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Utils;
 using UnityEditor;
@@ -15,8 +15,6 @@ namespace Common.Utils
     {
         private static readonly object Lock = new object();
 
-        
-        
         public static void GetTouch(
             int         _Index,
             out int     _ID,
@@ -70,8 +68,6 @@ namespace Common.Utils
             var hashed = hasher.ComputeHash(Encoding.UTF8.GetBytes(_S));
             return BitConverter.ToInt32(hashed, 0);
         }
-        
-
 
         public static Entity<string> GetIdfa()
         {
