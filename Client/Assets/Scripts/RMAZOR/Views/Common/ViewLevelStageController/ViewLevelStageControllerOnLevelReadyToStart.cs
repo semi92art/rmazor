@@ -23,10 +23,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
     {
         #region nonpublic members
         
-        private static AudioClipArgs AudioClipArgsLevelStart => 
-            new AudioClipArgs("level_start", EAudioClipType.Music);
         private static AudioClipArgs AudioClipArgsMainTheme =>
-            new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
+            new AudioClipArgs("main_theme", EAudioClipType.Music, 0.25f, true);
 
         #endregion
 
@@ -104,11 +102,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             Cor.Run(Cor.WaitWhile(
                 () => !GameLogo.WasShown,
-                () =>
-                {
-                    SendAnalyticLevelReadyToStart();
-                    AudioManager.PlayClip(AudioClipArgsLevelStart);
-                }));
+                SendAnalyticLevelReadyToStart));
         }
         
         #endregion

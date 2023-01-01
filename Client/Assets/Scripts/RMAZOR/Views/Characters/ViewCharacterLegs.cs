@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -243,7 +240,7 @@ namespace RMAZOR.Views.Characters
         {
             float scale = CoordinateConverter.Scale;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
-            var a = dir * 0.45f;
+            var a = dir * 0.39f;
             var dirOrth = new Vector2(dir.y, dir.x);
             var b = a + dirOrth * 0.25f;
             var c = a - dirOrth * 0.25f;

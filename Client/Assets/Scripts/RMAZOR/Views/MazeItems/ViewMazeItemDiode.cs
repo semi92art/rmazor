@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
@@ -30,7 +27,10 @@ namespace RMAZOR.Views.MazeItems
         void OnDiodePass(DiodeEventArgs  _Args);
     }
     
-    public class ViewMazeItemDiode : ViewMazeItemBase, IViewMazeItemDiode, IUpdateTick
+    public class ViewMazeItemDiode : 
+        ViewMazeItemBase,
+        IViewMazeItemDiode, 
+        IUpdateTick
     {
         #region nonpublic members
 
@@ -95,15 +95,9 @@ namespace RMAZOR.Views.MazeItems
                 CommandsProceeder);
         }
         
-        public void OnDiodeBlock(DiodeEventArgs _Args)
-        {
-            
-        }
+        public void OnDiodeBlock(DiodeEventArgs _Args) { }
 
-        public void OnDiodePass(DiodeEventArgs _Args)
-        {
-            
-        }
+        public void OnDiodePass(DiodeEventArgs _Args) { }
         
         public void UpdateTick()
         {
@@ -167,7 +161,7 @@ namespace RMAZOR.Views.MazeItems
             bool  _Intermittent)
         {
             const float intermAddict = .15f;
-            const float sc1 = .5f;
+            float sc1 = .5f - ViewSettings.LineThickness * 0.5f;
             float sc2 = .5f - ViewSettings.LineThickness;
             Vector2 start, end;
             Vector2 left, right, down, up, zero;
