@@ -85,14 +85,17 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1f8bea132df1d364ebe0dcafbf9b47ec, type: 3}
   - {fileID: 21300000, guid: 68d9683374310ea4b81293e2d85fec28, type: 3}
   - {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
+  - {fileID: 21300000, guid: 0265cb438e108524f93c8b56118296b5, type: 3}
   - {fileID: 21300000, guid: 03a52e934f88f4a699b498a51573c186, type: 3}
   - {fileID: 21300000, guid: 9e6f89a3e596d8c48aafde6db002aa9d, type: 3}
+  - {fileID: 21300000, guid: 0389acc3cf824f24696735611dfff7c9, type: 3}
   - {fileID: 21300000, guid: 104912f320f7049fd8b3341edfd9093e, type: 3}
   - {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
   - {fileID: 21300000, guid: 7501cc34b94db9c48a876927ac5fc6f5, type: 3}
   - {fileID: 21300000, guid: cb37917483ee24fea8fab306393441e5, type: 3}
   - {fileID: 21300000, guid: a8de53744fc12304ab6ad5fd132b3092, type: 3}
   - {fileID: 21300000, guid: ca50a09402afe4058a4d3267095049d2, type: 3}
+  - {fileID: 21300000, guid: 20adbbd45050ab843b4ab283fbfe324e, type: 3}
   - {fileID: 21300000, guid: 2feaafe4e67104e6fbd6232e8f31f297, type: 3}
   - {fileID: 21300000, guid: 8233dff429464498185129b2457a136a, type: 3}
   - {fileID: 21300000, guid: f1d97a15b4cb41d4b9ab654443cc9377, type: 3}
@@ -155,6 +158,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: c7ade68a31f1d4e12a57617409b6ee8a, type: 3}
   - {fileID: 21300000, guid: 7b3d669a4bd374949bd345582865e998, type: 3}
   - {fileID: 21300000, guid: cbfbd5aa7d738454f8fe1b922499a3fe, type: 3}
+  - {fileID: 21300000, guid: 0c6f4aaa405a27f4eba8086c34530b98, type: 3}
   - {fileID: 21300000, guid: 68c9d8dac9c154c78a81912758e4fa3d, type: 3}
   - {fileID: 21300000, guid: 2c6b30fa55462274c9ae754eb1254e0f, type: 3}
   - {fileID: 21300000, guid: c166160be6e12114cbd29d91844bbc62, type: 3}
@@ -186,6 +190,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 88356b7eacd1940699896eb710886792, type: 3}
   - {fileID: 21300000, guid: 804461bef59b141dba258fc997c8ca15, type: 3}
   - {fileID: 21300000, guid: 38128ebe161ea084c9341c0ad4177217, type: 3}
+  - {fileID: 21300000, guid: 749d21ce7f9315d4aa5b6f9c223489e7, type: 3}
   - {fileID: 21300000, guid: 18c9eade2007517449c31f69142fffb0, type: 3}
   - {fileID: 21300000, guid: 5ad697ee6ff2f414e8ae241b1a7aa586, type: 3}
   - {fileID: 21300000, guid: 354c311ffdcdf4cea9a7e9326e0fa90b, type: 3}
@@ -228,14 +233,17 @@ SpriteAtlas:
   - icon_circle
   - Icon_Heart_2.Png
   - Icon_Reward_Pass_gold 1
+  - icon_christmas_sale
   - Label_TitleRibbon_Yellow
   - icon_menu
+  - strikeout_line_2
   - Icon_LanguageFlag_Large_Tha
   - Icon_ShopIcon_Gold3
   - VFX_Circle
   - Btn_MainButton_Green
   - Icon_Heart
   - Icon_LanguageFlag_Large_Ukr
+  - icon_sale_christmas
   - Popup_Frame01_Purple
   - fx_special_particle_white
   - Popup_Frame01_Green
@@ -298,6 +306,7 @@ SpriteAtlas:
   - Frame_ItemFrame01_Color_Red
   - shuriken
   - background
+  - Popup_Frame01_LightBlue_1
   - Icon_LanguageFlag_Large_Chn
   - icon_coin
   - Star_4_4_aura
@@ -329,6 +338,7 @@ SpriteAtlas:
   - Icon_LanguageFlag_Large_Pra
   - Btn_MainButton_Yellow
   - spike
+  - strikeout_line
   - spike1
   - icon_leaderboards
   - Label_LeftLabel02

@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Common;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Enums;
@@ -45,10 +41,11 @@ namespace RMAZOR.Views.UI
         
         private bool        m_DoUpdateTimeText;
 
-        private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
-                                     || (string) Model.LevelStaging.Arguments.GetSafe(
-                                         CommonInputCommandArg.KeyNextLevelType, out _) ==
-                                     CommonInputCommandArg.ParameterLevelTypeBonus; 
+        private bool CanShowPanel => false;
+        // private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
+        //                              || (string) Model.LevelStaging.Arguments.GetSafe(
+        //                                  CommonInputCommandArg.KeyNextLevelType, out _) ==
+        //                              CommonInputCommandArg.ParameterLevelTypeBonus; 
 
         private float 
             m_TimeThreshold3Stars, 

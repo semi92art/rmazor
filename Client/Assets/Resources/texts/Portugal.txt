@@ -99,3 +99,4 @@ tut_descr_movement = Oi! Vamos aprender alguns conceitos básicos! Para escapar,
 tutorial = tutorial
 tut_title_timer = cronômetro
 tut_descr_timer = Colete estrelas e estabeleça discos. Você pode reproduzir níveis e ver suas realizações no menu de níveis.
+extra_level = nivel extra

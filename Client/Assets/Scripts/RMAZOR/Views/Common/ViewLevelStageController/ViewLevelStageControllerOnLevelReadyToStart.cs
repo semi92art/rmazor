@@ -1,12 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
-using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Managers.Analytics;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -32,7 +24,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         #region nonpublic members
         
         private static AudioClipArgs AudioClipArgsLevelStart => 
-            new AudioClipArgs("level_start", EAudioClipType.GameSound);
+            new AudioClipArgs("level_start", EAudioClipType.Music);
         private static AudioClipArgs AudioClipArgsMainTheme =>
             new AudioClipArgs("main_theme", EAudioClipType.Music, _Loop: true);
 

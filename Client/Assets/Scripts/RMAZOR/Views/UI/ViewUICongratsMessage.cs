@@ -2,10 +2,6 @@
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -94,7 +90,7 @@ namespace RMAZOR.Views.UI
                     SetCongratsString();
                     ShowCongratsPanel(true);
                     break;
-                case ELevelStage.ReadyToUnloadLevel:
+                case ELevelStage.Unloaded:
                     m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
                     break;
             }

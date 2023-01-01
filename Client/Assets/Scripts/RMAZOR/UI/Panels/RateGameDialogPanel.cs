@@ -1,11 +1,5 @@
 using System.Globalization;
-using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -17,6 +11,7 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -154,7 +149,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnRateButtonClick()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton2Pressed);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameButton2Pressed);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
             OnClose(UnpauseLevel);

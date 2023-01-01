@@ -4,9 +4,6 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
@@ -95,8 +92,17 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             CommandsProceeder.Command  += OnCommand;
             ColorProvider.ColorChanged += OnColorChanged;
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             m_TopOffset = _Offsets.w;
             InitGameLogo();
+        }
+
+        private void OnActiveCameraChanged(Camera _Camera)
+        {
+            m_GameLogoObj.transform.SetParent(_Camera.transform);
+            m_GameLogoObj.transform.SetLocalPosXY(Vector2.zero);
+            LogoTextureProvider.Renderer.transform.SetParent(_Camera.transform);
+            LogoTextureProvider.Renderer.transform.SetLocalPosXY(Vector2.zero);
         }
 
         public void Show()
@@ -130,7 +136,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         {
             const string prefabName = "start_logo_4";
             var go = PrefabSetManager.InitPrefab(
-                ContainersGetter.GetContainer(ContainerNamesCommon.GameUI),
+                CameraProvider.Camera.transform,
                 CommonPrefabSetNames.UiGame,
                 prefabName);
             var trigerrer = go.GetCompItem<AnimationTriggerer>("triggerer");

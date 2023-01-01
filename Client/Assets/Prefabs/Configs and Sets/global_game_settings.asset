@@ -19,9 +19,8 @@ MonoBehaviour:
   firstLevelToShowAds: 0
   payToContinueMoneyCount: 100
   moneyItemCoast: 1
-  apkForAppodeal: 0
-  rewardedAdReadyForTest: 1
-  interstitialAdReadyForTest: 1
   interstitialAdsRatio: 0.3
   moneyItemsRate: 0.1
   betweenLevelAdShowIntervalInSeconds: 120
+  enableExtraLevels: 1
+  extraLevelEveryNStage: 3

@@ -99,3 +99,4 @@ tut_descr_movement = Hi! Let's learn some basics! To escape from the maze, move 
 tutorial = tutorial
 tut_title_timer = Level time
 tut_descr_timer = Pass the level for a certain time and get 3 stars. You can restart level from the levels menu.
+extra_level = extra level

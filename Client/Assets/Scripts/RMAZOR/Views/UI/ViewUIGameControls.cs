@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Extensions;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
-using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewUILevelSkippers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
@@ -118,7 +116,8 @@ namespace RMAZOR.Views.UI
                         m_ControlsShownFirstTime = true;
                     }
                     break;
-                case ELevelStage.ReadyToUnloadLevel: 
+                // case ELevelStage.ReadyToUnloadLevel: 
+                case ELevelStage.Unloaded: 
                     ShowControls(false, false); 
                     break;
             }
@@ -233,7 +232,6 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.ReadyToStart:
                 case ELevelStage.StartedOrContinued:
                     CommandsProceeder.UnlockCommands(CommandsProceeder.GetAllCommands(), group);
-                    
                     if (MazeContainsGravityItems())
                         CommandsProceeder.UnlockCommands(RmazorUtils.RotateCommands, group);
                     else

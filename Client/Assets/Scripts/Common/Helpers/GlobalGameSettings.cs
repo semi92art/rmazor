@@ -16,5 +16,7 @@ namespace Common.Helpers
         public float     interstitialAdsRatio;
         public float     moneyItemsRate;
         public float     betweenLevelAdShowIntervalInSeconds;
+        public bool      enableExtraLevels;
+        public int       extraLevelEveryNStage;
     }
 }

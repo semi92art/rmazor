@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Extensions;
 using Common.Helpers;
-using Common.Managers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
@@ -76,19 +74,22 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region inject
-        
-        protected IRemotePropertiesRmazor RemoteProperties { get; }
-        protected IColorProvider          ColorProvider    { get; }
-        protected IPrefabSetManager       PrefabSetManager { get; }
+
+        private   GlobalGameSettings      GlobalGameSettings { get; }
+        protected IRemotePropertiesRmazor RemoteProperties   { get; }
+        protected IColorProvider          ColorProvider      { get; }
+        protected IPrefabSetManager       PrefabSetManager   { get; }
 
         protected ViewMazeBackgroundTextureControllerBase(
+            GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager)
         {
-            RemoteProperties = _RemoteProperties;
-            ColorProvider    = _ColorProvider;
-            PrefabSetManager = _PrefabSetManager;
+            GlobalGameSettings = _GlobalGameSettings;
+            RemoteProperties   = _RemoteProperties;
+            ColorProvider      = _ColorProvider;
+            PrefabSetManager   = _PrefabSetManager;
         }
 
         #endregion
@@ -182,7 +183,9 @@ namespace RMAZOR.Views.Common
                 levelIndex = (int) _Args.LevelIndex - 1;
             else if (_ForNextLevel && !isBonusLevel)
                 levelIndex = (int) _Args.LevelIndex + 1;
-            int setItemIdx = isBonusLevel ? levelIndex : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
+            int setItemIdx = isBonusLevel ?
+                levelIndex * GlobalGameSettings.extraLevelEveryNStage
+                : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
             setItemIdx %= m_AdditionalBackgorundColorsSetItems.Count;
             if (setItemIdx < 0) setItemIdx = 0;
             var colorsSet = m_AdditionalBackgorundColorsSetItems[setItemIdx];
@@ -213,11 +216,13 @@ namespace RMAZOR.Views.Common
         private ICameraProvider CameraProvider { get; }
 
         public ViewMazeBackgroundTextureControllerFake(
+            GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager,
             ICameraProvider         _CameraProvider)
             : base(
+                _GlobalGameSettings,
                 _RemoteProperties,
                 _ColorProvider,
                 _PrefabSetManager)

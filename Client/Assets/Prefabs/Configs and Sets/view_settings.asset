@@ -36,13 +36,12 @@ MonoBehaviour:
   spearRotationSpeed: 5
   filledPathAlpha: 1
   additionalBackgroundAlpha: 0.5
-  skipLevelSeconds: 10
+  skipLevelSeconds: 1
   animatePathFill: 1
   animatePathFillTime: 0.5
   cameraSpeed: 0.1
   pathItemCharMoveHighlightTime: 0.3
   highlightPathItem: 1
-  showFullTutorial: 1
   levelsInGroup: 3,3,3
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
   finishLevelGroupPanelBackgroundVariant: 4

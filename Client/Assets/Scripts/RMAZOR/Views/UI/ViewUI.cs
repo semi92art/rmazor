@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
-using Common.Constants;
-using Common.Extensions;
-using Common.Utils;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
-using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.UI.Panels.ShopPanels;
@@ -22,7 +17,6 @@ namespace RMAZOR.Views.UI
         private IDialogViewersController            DialogViewersController        { get; }
         private IDialogPanelsSet                    DialogPanelsSet                { get; }
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
-        private IManagersGetter                     Managers                       { get; }
         private IViewUIRateGamePanelController      RateGamePanelController        { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IViewTimePauser                     TimePauser                     { get; }
@@ -32,16 +26,14 @@ namespace RMAZOR.Views.UI
             IViewUIGameControls                 _GameControls,
             IDialogPanelsSet                    _DialogPanelsSet,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IManagersGetter                     _Managers,
             IViewUIRateGamePanelController      _RateGamePanelController,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IViewTimePauser                    _TimePauser)
+            IViewTimePauser                     _TimePauser)
             : base(_GameControls)
         {
             DialogViewersController        = _DialogViewersController;
             DialogPanelsSet                = _DialogPanelsSet;
             CommandsProceeder              = _CommandsProceeder;
-            Managers                       = _Managers;
             RateGamePanelController        = _RateGamePanelController;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             TimePauser                     = _TimePauser;
@@ -71,7 +63,6 @@ namespace RMAZOR.Views.UI
                     var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
                     dv.Show(panel);
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.SettingsButtonPressed);
                 }
                     break;
                 case EInputCommand.ShopPanel:
@@ -97,10 +88,7 @@ namespace RMAZOR.Views.UI
                     object loadShopPanelFromCharDiedPanelArg = _Args.GetSafe(
                         CommonInputCommandArg.KeyLoadShopPanelFromCharacterDiedPanel, out bool keyExist);
                     if (!keyExist || (bool)loadShopPanelFromCharDiedPanelArg == false)
-                    {
                         SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
-                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.ShopButtonPressed);
-                    }
                 }
                     break;
                 case EInputCommand.DailyGiftPanel:
@@ -113,6 +101,7 @@ namespace RMAZOR.Views.UI
                     break;
                 case EInputCommand.LevelsPanel:
                 {
+                    
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<ILevelsDialogPanel>();
                     var dv = DialogViewersController.GetViewer(panel.DialogViewerType);

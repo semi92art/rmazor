@@ -99,3 +99,4 @@ tut_descr_movement = やあ！いくつかの基本を学びましょう！逃�
 tutorial = チュートリアル
 tut_title_timer = タイマー
 tut_descr_timer = 星を集めて記録を集めます。レベルを再生して、レベルのメニューで成果を確認できます。
+extra_level = 余分なレベル

@@ -12,9 +12,7 @@ using System.Text;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
 using Common.Managers;
-using Common.Managers.Advertising;
 using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
@@ -26,6 +24,7 @@ using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
 using RMAZOR;
+using RMAZOR.Constants;
 using RMAZOR.Controllers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -624,7 +623,7 @@ namespace SRDebuggerCustomOptions
                 {
                     {AnalyticIds.Parameter1ForTestAnalytic, Mathf.RoundToInt(Random.value * 100)}
                 };
-                _managers.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic, eventData);
+                _managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.TestAnalytic, eventData);
             }
         }
 

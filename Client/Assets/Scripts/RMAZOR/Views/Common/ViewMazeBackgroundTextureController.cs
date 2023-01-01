@@ -48,6 +48,7 @@ namespace RMAZOR.Views.Common
         private IBackgroundTextureProviderSet TextureProviderSet { get; }
         
         private ViewMazeBackgroundTextureController(
+            GlobalGameSettings            _GlobalGameSettings,
             IModelGame                    _Model,
             ICameraProvider               _CameraProvider,
             IContainersGetter             _ContainersGetter,
@@ -56,6 +57,7 @@ namespace RMAZOR.Views.Common
             IPrefabSetManager             _PrefabSetManager,
             IBackgroundTextureProviderSet _TextureProviderSet)
             : base(
+                _GlobalGameSettings,
                 _RemoteProperties,
                 _ColorProvider, 
                 _PrefabSetManager)

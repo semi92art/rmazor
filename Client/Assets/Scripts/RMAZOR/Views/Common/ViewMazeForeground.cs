@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Extensions;
-using Common.Managers;
+using Common.Helpers;
 using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
@@ -24,17 +24,22 @@ namespace RMAZOR.Views.Common
         
         #region inject
 
-        private IRemotePropertiesRmazor RemoteProperties { get; }
-        private IPrefabSetManager       PrefabSetManager { get; }
+        private GlobalGameSettings      GlobalGameSettings { get; }
+        private IRemotePropertiesRmazor RemoteProperties   { get; }
+        private IPrefabSetManager       PrefabSetManager   { get; }
 
         private ViewMazeForeground(
+            GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
-            IPrefabSetManager       _PrefabSetManager)
+            IPrefabSetManager       _PrefabSetManager,
+            CompanyLogo             _CompanyLogo,
+            ICameraProvider         _CameraProvider)
             : base(_ColorProvider)
         {
-            RemoteProperties = _RemoteProperties;
-            PrefabSetManager = _PrefabSetManager;
+            GlobalGameSettings = _GlobalGameSettings;
+            RemoteProperties   = _RemoteProperties;
+            PrefabSetManager   = _PrefabSetManager;
         }
         
         #endregion
@@ -47,7 +52,7 @@ namespace RMAZOR.Views.Common
             ColorProvider.AddIgnorableForThemeSwitchColor(ColorIds.Main);
             base.Init();
         }
-        
+
         #endregion
         
         #region nonpublic methods
@@ -77,7 +82,9 @@ namespace RMAZOR.Views.Common
             string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
             bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             int levelIndex = (int)_Args.LevelIndex;
-            int setItemIdx = isBonusLevel ? levelIndex : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
+            int setItemIdx = isBonusLevel ? 
+                levelIndex * GlobalGameSettings.extraLevelEveryNStage 
+                : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
             var colorsSet = m_BackAndFrontColorsSetItemsLight;
             setItemIdx %= colorsSet.Count;
             return colorsSet[setItemIdx].main;

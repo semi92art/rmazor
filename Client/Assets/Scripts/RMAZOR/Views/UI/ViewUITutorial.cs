@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -122,6 +118,9 @@ namespace RMAZOR.Views.UI
                 return;
             if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished(tutorialName)))
                 return;
+            if (tutorialName == "timer")
+                return;
+            StartMovementTutorial();
             Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown
                                         || Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart,
                 () =>

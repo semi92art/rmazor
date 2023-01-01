@@ -61,6 +61,8 @@ namespace RMAZOR.Managers
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
         private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
+        private const string IdEnableExtraLevels                    = "enable_extra_levels";
+        private const string IdExtraLevelEveryNStage                = "extra_level_every_n_stage";
 
         #endregion
         
@@ -222,6 +224,12 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdBetweenLevelAdShowIntervalInSeconds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.betweenLevelAdShowIntervalInSeconds = ToFloat(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdEnableExtraLevels,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.enableExtraLevels = ToBool(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdExtraLevelEveryNStage,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.extraLevelEveryNStage = ToInt(_V))),
             };
         }
 

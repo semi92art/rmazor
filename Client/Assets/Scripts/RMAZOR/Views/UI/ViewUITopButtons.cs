@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -26,10 +24,6 @@ namespace RMAZOR.Views.UI
     
     public class ViewUITopButtons : IViewUITopButtons
     {
-        #region constants
-
-        #endregion
-
         #region nonpublic members
         
         private readonly List<Component> m_Renderers = new List<Component>();
@@ -67,7 +61,9 @@ namespace RMAZOR.Views.UI
         }
         private bool CanShowDailyGiftButton => m_CanShowDailyGiftPanel 
                                                && (Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus);
-        private bool CanShowLevelsButton    => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
+
+        private bool CanShowLevelsButton => false;
+        // private bool CanShowLevelsButton => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
         private bool CanShowRateGameButton =>
             !m_CanShowDailyGiftPanel
             && ((Model.LevelStaging.LevelIndex > 8 && !IsNextLevelBonus)
@@ -130,28 +126,18 @@ namespace RMAZOR.Views.UI
             if (_Show || _Instantly)
             {
                 m_OpenSettingsPanelButton .SetGoActive(_Show);
-                if (CanShowDisableAdsButton)
-                    m_DisableAdsButton.SetGoActive(_Show);
-                if (CanShowShopButton)
-                    m_OpenShopPanelButton .SetGoActive(_Show);
-                if (CanShowDailyGiftButton)
-                    m_OpenDailyGiftPanelButton.SetGoActive(_Show);
-                if (CanShowLevelsButton)
-                    m_OpenLevelsPanelButton.SetGoActive(_Show);
-                if (CanShowRateGameButton)
-                    m_RateGameButton.SetGoActive(_Show);
+                m_DisableAdsButton        .SetGoActive(_Show && CanShowDisableAdsButton);
+                m_OpenShopPanelButton     .SetGoActive(_Show && CanShowShopButton);
+                m_OpenDailyGiftPanelButton.SetGoActive(_Show && CanShowDailyGiftButton);
+                m_OpenLevelsPanelButton   .SetGoActive(_Show && CanShowLevelsButton);
+                m_RateGameButton          .SetGoActive(_Show && CanShowRateGameButton);
             }
-            m_OpenSettingsPanelButton.enabled = _Show;
-            if (CanShowDisableAdsButton)
-                m_DisableAdsButton.enabled = _Show;
-            if (CanShowShopButton)
-                m_OpenShopPanelButton.enabled = _Show;
-            if (CanShowDailyGiftButton)
-                m_OpenDailyGiftPanelButton.enabled = _Show;
-            if (CanShowLevelsButton)
-                m_OpenLevelsPanelButton.enabled = _Show;
-            if (CanShowRateGameButton)
-                m_RateGameButton.enabled = _Show;
+            m_OpenSettingsPanelButton.enabled  = _Show;
+            m_DisableAdsButton.enabled         = _Show && CanShowDisableAdsButton;
+            m_OpenShopPanelButton.enabled      = _Show && CanShowShopButton;
+            m_OpenDailyGiftPanelButton.enabled = _Show && CanShowDailyGiftButton;
+            m_OpenLevelsPanelButton.enabled    = _Show && CanShowLevelsButton;
+            m_RateGameButton.enabled           = _Show && CanShowRateGameButton;
         }
 
         public IEnumerable<Component> GetRenderers()
@@ -337,32 +323,37 @@ namespace RMAZOR.Views.UI
         
         private void OnDisableAdsButtonPressed()
         {   
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.DisableAdsMainButtonPressed);
             CallCommand(EInputCommand.DisableAdsPanel);
         }
 
         private void OnOpenShopPanelButtonPressed()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.ShopButtonPressed);
             CallCommand(EInputCommand.ShopPanel);
         }
 
         private void OnOpenSettingsPanelButtonPressed()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.SettingsButtonPressed);
             CallCommand(EInputCommand.SettingsPanel);
         }
 
         private void OnOpenDailyGiftPanelButtonPressed()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.DailyGiftButtonPressed);
             CallCommand(EInputCommand.DailyGiftPanel);
         }
         
         private void OnOpenLevelsPanelButtonPressed()
         {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.LevelsButtonPressed);
             CallCommand(EInputCommand.LevelsPanel);
         }
 
         private void OnRateGameButtonPressed()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton3Pressed);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameMainButtonPressed);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
         }

@@ -2,12 +2,11 @@
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Helpers;
-using Common.Managers.Analytics;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.UI.DialogViewers;
+using RMAZOR.Constants;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
@@ -94,7 +93,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         private void SendLevelAnalyticEvent(LevelStageArgs _Args)
         {
-            const string analyticId = AnalyticIds.CharacterDied;
+            const string analyticId = AnalyticIdsRmazor.CharacterDied;
 
             if (string.IsNullOrEmpty(analyticId))
                 return;

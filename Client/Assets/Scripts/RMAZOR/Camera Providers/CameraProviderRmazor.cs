@@ -1,6 +1,4 @@
 ﻿using System;
-using Common.Extensions;
-using Common.Helpers;
 using Lean.Common;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
@@ -13,7 +11,11 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Camera_Providers
 {
-    public class CameraProviderRmazor : InitBase, ICameraProvider, IOnLevelStageChanged, IUpdateTick
+    public class CameraProviderRmazor : 
+        InitBase,
+        ICameraProvider,
+        IOnLevelStageChanged,
+        IUpdateTick
     {
         #region nonpublic members
         

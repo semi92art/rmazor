@@ -7,6 +7,7 @@ using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
+using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers.Notifications;
 using mazing.common.Runtime.Providers;
@@ -347,11 +348,21 @@ namespace RMAZOR.Views
             var notMan = Managers.NotificationsManager;
             var notifications = RemotePropertiesRmazor.Notifications 
                                 ?? DefaultNotificationsGetter.GetNotifications();
-            notMan.OperatingMode = Application.platform == RuntimePlatform.Android
-                ? ENotificationsOperatingMode.QueueClearAndReschedule
-                : ENotificationsOperatingMode.NoQueue;
-            if (notMan.OperatingMode.HasFlag(ENotificationsOperatingMode.RescheduleAfterClearing))
-                notMan.LastNotificationsCountToReschedule = notifications.Count;
+            var sessionsDict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays);
+            bool needToSendNotifications = false;
+            var today = DateTime.Now.Date;
+            for (int iDay = 0; iDay < 5; iDay++)
+            {
+                var iDateTime = today - TimeSpan.FromDays(iDay);
+                int sessionsCount = sessionsDict.GetSafe(iDateTime, out _);
+                if (sessionsCount > 0)
+                    continue;
+                needToSendNotifications = true;
+                break;
+            }
+            if (!needToSendNotifications)
+                return;
+            notMan.OperatingMode = ENotificationsOperatingMode.NoQueue;
             notMan.ClearAllNotifications();
             var currentLanguage = Managers.LocalizationManager.GetCurrentLanguage();
             foreach (var notification in notifications)

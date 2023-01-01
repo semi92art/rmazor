@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Common.Constants;
-using Common.Helpers;
-using Common.Utils;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Utils;
@@ -52,7 +47,7 @@ namespace Common.Managers.Analytics
         {
             if (string.IsNullOrEmpty(_AnalyticId))
                 return;
-            if (RemoteProperties.DebugEnabled && _AnalyticId != AnalyticIds.TestAnalytic)
+            if (RemoteProperties.DebugEnabled)
                 return;
             Cor.RunSync(() =>
             {

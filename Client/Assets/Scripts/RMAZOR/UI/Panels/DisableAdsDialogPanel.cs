@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common.Constants;
-using Common.Extensions;
-using Common.Managers.IAP;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities.UI;
@@ -29,25 +25,39 @@ namespace RMAZOR.UI.Panels
 
     public class DisableAdsDialogPanel : DialogPanelBase, IDisableAdsDialogPanel
     {
+        #region constants
 
+        private const float SaleCoefficient = 0.5f;
+
+        #endregion
+        
         #region nonpublic members
 
-        private Animator        m_Animator;
-        private TextMeshProUGUI m_BuyButtonTextTitle, m_BuyButtonTextPrice;
-        private Button          m_BuyButton;
-        private Button          m_CloseButton;
-        private bool            m_LastItemPriceRequestIsFail;
-        private string          m_NoAdsText, m_PriceText;
-        private ShopItemArgs    m_DisableAdsShopItemArgs;
+        private TextMeshProUGUI
+            m_BuyButtonTextPriceOld, 
+            m_BuyButtonTextPriceNew,
+            m_BuyButtonTextDefault;
+        private Image       
+            m_SalesIcon,
+            m_StrikeoutLine;
+        private Animator     m_Animator;
+        private Button       m_BuyButton;
+        private Button       m_CloseButton;
+        private bool         m_LastItemPriceRequestIsFail;
+        private string       m_OldPriceTextString;
+        private string       m_NewPriceTextString;
+        private ShopItemArgs m_DisableAdsShopItemArgs;
 
         #endregion
 
         #region inject
-        
+
+        private IModelGame                          Model                          { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IFontProvider                       FontProvider                   { get; }
 
         private DisableAdsDialogPanel(
+            IModelGame                          _Model,
             IManagersGetter                     _Managers,
             IUITicker                           _Ticker,
             ICameraProvider                     _CameraProvider,
@@ -64,6 +74,7 @@ namespace RMAZOR.UI.Panels
                 _TimePauser, 
                 _CommandsProceeder)
         {
+            Model                          = _Model;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             FontProvider                   = _FontProvider;
         }
@@ -97,7 +108,9 @@ namespace RMAZOR.UI.Panels
         public override void OnDialogStartAppearing()
         {
             var font = FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
-            m_BuyButtonTextTitle.font = font;
+            m_BuyButtonTextDefault.font  = font;
+            m_BuyButtonTextPriceOld.font = font;
+            m_BuyButtonTextPriceNew.font = font;
             if (m_DisableAdsShopItemArgs.Result() != EShopProductResult.Success)
                 m_DisableAdsShopItemArgs = GetDisableAdsShopItemArgs();
             SetBuyButtonText();
@@ -110,11 +123,14 @@ namespace RMAZOR.UI.Panels
 
         private void GetPrefabContentObjects(GameObject _Go)
         {
-            m_Animator           = _Go.GetCompItem<Animator>("animator");
-            m_CloseButton        = _Go.GetCompItem<Button>("close_button");
-            m_BuyButton          = _Go.GetCompItem<Button>("buy_button");
-            m_BuyButtonTextTitle = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_title");
-            m_BuyButtonTextPrice = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_price");
+            m_Animator              = _Go.GetCompItem<Animator>("animator");
+            m_CloseButton           = _Go.GetCompItem<Button>("close_button");
+            m_BuyButton             = _Go.GetCompItem<Button>("buy_button");
+            m_BuyButtonTextPriceOld = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_price_old");
+            m_BuyButtonTextPriceNew = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_price_new");
+            m_BuyButtonTextDefault  = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_default");
+            m_SalesIcon             = _Go.GetCompItem<Image>("sales_icon");
+            m_StrikeoutLine         = _Go.GetCompItem<Image>("strikeout_line");
         }
 
         private void SubscribeButtons()
@@ -134,40 +150,67 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonBuyClick()
         {
-            BuyHideAdsItem();
-            OnButtonCloseClick();
-        }
-        
-        private void BuyHideAdsItem()
-        {
-            Managers.AnalyticsManager.SendAnalytic(
-                AnalyticIds.Purchase,
-                new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, "no_ads"}});
-            Managers.AdsManager.ShowAds = false;
-            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
-            string dialogText = Managers.LocalizationManager.GetTranslation("mandatory_ads_disabled");
-            MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+            SendButtonPressedAnalytic();
+            Managers.ShopManager.Purchase(PurchaseKeys.NoAds);
         }
 
         private void SetBuyButtonText()
         {
             var locMan = Managers.LocalizationManager;
-            m_NoAdsText = locMan.GetTranslation("no_ads");
-            string buyText = locMan.GetTranslation("buy"); 
-            m_PriceText = m_DisableAdsShopItemArgs.Result() != EShopProductResult.Success ? 
-                locMan.GetTranslation("buy") : m_DisableAdsShopItemArgs.Price;
-            m_BuyButtonTextTitle.text = m_NoAdsText;
-            m_BuyButtonTextPrice.text = m_PriceText;
+            string buyText = locMan.GetTranslation("buy");
+            m_BuyButtonTextDefault.text = buyText;
+            if (m_DisableAdsShopItemArgs == null
+                || m_BuyButtonTextDefault.IsNull()
+                || m_BuyButtonTextPriceOld.IsNull()
+                || m_BuyButtonTextPriceNew.IsNull())
+            {
+                m_BuyButtonTextDefault.enabled  = true;
+                m_BuyButtonTextPriceOld.enabled = false;
+                m_StrikeoutLine.enabled         = false;
+                m_BuyButtonTextPriceNew.enabled = false;
+                m_SalesIcon.enabled             = false;
+                return;
+            }
+            var argsResult = m_DisableAdsShopItemArgs.Result();
+            bool argsResultSuccess = argsResult == EShopProductResult.Success;
+            m_BuyButtonTextDefault.enabled  = !argsResultSuccess;
+            m_BuyButtonTextPriceOld.enabled = argsResultSuccess;
+            m_BuyButtonTextPriceNew.enabled = argsResultSuccess;
+            m_StrikeoutLine.enabled         = argsResultSuccess;
+            m_SalesIcon.enabled             = argsResultSuccess;
+            int k = 0;
+            string currencyString = string.Empty;
+            while (char.IsLetter(m_DisableAdsShopItemArgs.LocalizedPriceString[k]))
+                currencyString += m_DisableAdsShopItemArgs.LocalizedPriceString[k++];
+            m_OldPriceTextString = currencyString + " " + Mathf.CeilToInt(
+                (float)m_DisableAdsShopItemArgs.LocalizedPrice / SaleCoefficient);
+            m_NewPriceTextString = m_DisableAdsShopItemArgs.LocalizedPriceString;
+            m_BuyButtonTextPriceOld.text = m_OldPriceTextString;
+            m_BuyButtonTextPriceNew.text = m_NewPriceTextString;
             var font = FontProvider.GetFont(ETextType.MenuUI, locMan.GetCurrentLanguage());
-            m_BuyButtonTextTitle.font = font;
-            if (m_PriceText != buyText)
+            m_BuyButtonTextPriceOld.font = font;
+            if (m_NewPriceTextString != buyText)
                 font = FontProvider.GetFont(ETextType.MenuUI, ELanguage.English);
-            m_BuyButtonTextPrice.font = font;
+            m_BuyButtonTextPriceNew.font = font;
         }
 
         private ShopItemArgs GetDisableAdsShopItemArgs()
         {
             return Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
+        }
+        
+        private void SendButtonPressedAnalytic()
+        {
+            string levelType = (string) Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            const string analyticId = "button_buy_no_ads_in_disable_ads_panel_pressed";
+            var eventData = new Dictionary<string, object>
+            {
+                {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex},
+                {AnalyticIds.ParameterLevelType, isThisLevelBonus ? 2 : 1},
+            };
+            Managers.AnalyticsManager.SendAnalytic(analyticId, eventData);
         }
 
         #endregion

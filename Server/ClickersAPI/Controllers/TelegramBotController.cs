@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +10,6 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using static ClickersAPI.Helpers.AnalyticIds;
 
 namespace ClickersAPI.Controllers
 {
@@ -69,8 +66,6 @@ namespace ClickersAPI.Controllers
         [HttpPost("send_message")]
         public async Task<ActionResult<string>> SendAppEvent([FromBody] AppEventDto _AppEventDto)
         {
-            if (!GetValidAnalyticIds().Contains(_AppEventDto.Action))
-                return Mapper.Map<string>("invalid action");    
             var sb = new StringBuilder();
             sb.AppendLine("Action: " + _AppEventDto.Action);
             sb.AppendLine($"Country: {_AppEventDto.Country}, Language: {_AppEventDto.Language}");
@@ -124,37 +119,6 @@ namespace ClickersAPI.Controllers
             };
             Console.WriteLine(errorMessage);
             return Task.CompletedTask;
-        }
-
-        private static IEnumerable<string> GetValidAnalyticIds()
-        {
-            return new[]
-            {
-                SessionStart,
-                LevelReadyToStart,
-                LevelStarted,
-                LevelFinished,
-                ShopButtonPressed,
-                SettingsButtonPressed,
-                RateGameButton1Pressed,
-                RateGameButton2Pressed,
-                LeaderboardsButtonPressed,
-                EnableMusicButtonPressed,
-                DisableMusicButtonPressed,
-                EnableSoundButtonPressed,
-                DisableSoundButtonPressed,
-                EnableHapticsButtonPressed,
-                DisableHapticsButtonPressed,
-                WatchAdInCharacterDiedPanelPressed,
-                WatchAdInShopPanelPressed,
-                WatchAdInFinishGroupPanelPressed,
-                CharacterDied,
-                AdShown,
-                AdClicked,
-                AdReward,
-                AdClosed,
-                AdFailedToShow
-            };
         }
 
         #endregion

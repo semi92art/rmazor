@@ -99,3 +99,4 @@ tut_descr_movement = Hi! Lassen Sie uns einige Grundlagen lernen! Um zu entkomme
 tutorial = Lernprogramm
 tut_title_timer = Timer
 tut_descr_timer = Sammeln Sie Sterne und setzen Sie Rekorde. Sie können Levels wiederholen und Ihre Erfolge im Menü Levels sehen.
+extra_level = zusätzliches Niveau

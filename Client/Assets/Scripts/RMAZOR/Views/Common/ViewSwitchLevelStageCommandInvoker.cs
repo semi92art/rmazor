@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Common.Extensions;
+using Common.Helpers;
 using mazing.common.Runtime.Extensions;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -18,13 +18,16 @@ namespace RMAZOR.Views.Common
     {
         #region inject
 
-        private IModelGame                  Model             { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private GlobalGameSettings          GlobalGameSettings { get; }
+        private IModelGame                  Model              { get; }
+        private IViewInputCommandsProceeder CommandsProceeder  { get; }
 
-        public ViewSwitchLevelStageCommandInvoker(
+        private ViewSwitchLevelStageCommandInvoker(
+            GlobalGameSettings          _GlobalGameSettings,
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder)
         {
+            GlobalGameSettings = _GlobalGameSettings;
             Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
         }
@@ -153,8 +156,9 @@ namespace RMAZOR.Views.Common
                     nextLevelIndex = currentLevelIndex - levelIndexInGroup;
                     break;
                 case ParameterLevelTypeBonus:
-                    long firstLevelInNextGroup = RmazorUtils.GetFirstLevelInGroupIndex((int) currentLevelIndex + 1 + 1);
-                    nextLevelIndex = firstLevelInNextGroup;
+                    long firstLevelInCurrentGroup = RmazorUtils.GetFirstLevelInGroupIndex(
+                        (int) currentLevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1);
+                    nextLevelIndex = firstLevelInCurrentGroup;
                     break;
             }
             _Args.SetSafe(KeyLevelIndex, nextLevelIndex);
@@ -173,12 +177,9 @@ namespace RMAZOR.Views.Common
             string nextLevelType = GetNextLevelType(_Args);
             long nextLevelIndex = nextLevelType switch
             {
-                ParameterLevelTypeBonus => 
-                    RmazorUtils.GetLevelsGroupIndex(currentLevelIndex) - 1,
-                ParameterLevelTypeMain =>
-                    RmazorUtils.GetFirstLevelInGroupIndex((int) currentLevelIndex + 1) +
-                    RmazorUtils.GetLevelsInGroup((int) currentLevelIndex + 1),
-                _ => currentLevelIndex
+                ParameterLevelTypeBonus => GetNextBonusLevelIndex(currentLevelIndex),
+                ParameterLevelTypeMain  => GetNextMainLevelIndex(currentLevelIndex),
+                _                       => currentLevelIndex
             };
             _Args.SetSafe(KeyLevelIndex, nextLevelIndex);
             CommandsProceeder.RaiseCommand(EInputCommand.LoadLevelByIndex, _Args, true);
@@ -196,8 +197,7 @@ namespace RMAZOR.Views.Common
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeMain);
                     break;
                 case ParameterPlayBonusLevelPanel:
-                    int levelsGroup = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
-                    int bonusLevelIndex = levelsGroup - 1;
+                    long bonusLevelIndex = GetNextBonusLevelIndex(Model.LevelStaging.LevelIndex);
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
                     _Args.SetSafe(KeyLevelIndex, bonusLevelIndex);
                     break;
@@ -209,6 +209,19 @@ namespace RMAZOR.Views.Common
                     break;
             }
             CommandsProceeder.RaiseCommand(EInputCommand.StartUnloadingLevel, _Args, true);
+        }
+
+        private long GetNextBonusLevelIndex(long _CurrentMainLevelIndex)
+        {
+            long levelsGroupIndex = RmazorUtils.GetLevelsGroupIndex(_CurrentMainLevelIndex);
+            return (levelsGroupIndex - 1) / GlobalGameSettings.extraLevelEveryNStage;
+        }
+
+        private long GetNextMainLevelIndex(long _CurrentBonusLevelIndex)
+        {
+            long levelsGroupIndex = _CurrentBonusLevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1;
+            return RmazorUtils.GetFirstLevelInGroupIndex((int)levelsGroupIndex) +
+                   RmazorUtils.GetLevelsInGroup((int)levelsGroupIndex);
         }
 
         #endregion

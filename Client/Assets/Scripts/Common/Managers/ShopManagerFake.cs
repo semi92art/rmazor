@@ -19,33 +19,38 @@ namespace Common.Managers.IAP
         {
             {PurchaseKeys.Money1, new ShopItemArgs
             {
-                Currency = "RUB",
-                Price = "100",
-                Result = () => Result
+                Currency             = "RUB",
+                LocalizedPrice       = 100m,
+                LocalizedPriceString = "RUB 100",
+                Result               = () => Result
             }},
             {PurchaseKeys.Money2, new ShopItemArgs
             {
-                Currency = "RUB",
-                Price = "200",
-                Result = () => Result
+                Currency             = "RUB",
+                LocalizedPrice       = 200m,
+                LocalizedPriceString = "RUB 200",
+                Result               = () => Result
             }},
             {PurchaseKeys.Money3, new ShopItemArgs
             {
-                Currency = "RUB",
-                Price = "300",
-                Result = () => Result
+                Currency             = "RUB",
+                LocalizedPrice       = 300m,
+                LocalizedPriceString = "RUB 300",
+                Result               = () => Result
             }},
             {PurchaseKeys.NoAds, new ShopItemArgs
             {
-                Currency = "RUB",
-                Price = "100",
-                Result = () => Result
+                Currency             = "RUB",
+                LocalizedPrice       = 100m,
+                LocalizedPriceString = "RUB 100",
+                Result               = () => Result
             }},
             {PurchaseKeys.DarkTheme, new ShopItemArgs
             {
-                Currency = "RUB",
-                Price = "100",
-                Result = () => Result
+                Currency             = "RUB",
+                LocalizedPrice       = 100m,
+                LocalizedPriceString = "RUB 100",
+                Result               = () => Result
             }}
         };
         

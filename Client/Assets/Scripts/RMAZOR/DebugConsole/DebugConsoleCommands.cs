@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
-using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
-using Common.Utils;
 using Lean.Localization;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
@@ -14,6 +11,7 @@ using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
@@ -410,7 +408,7 @@ namespace RMAZOR.DebugConsole
             {
                 {AnalyticIds.Parameter1ForTestAnalytic, Mathf.RoundToInt(UnityEngine.Random.value * 100)}
             };
-            Controller.AnalyticsManager.SendAnalytic(AnalyticIds.TestAnalytic, eventData);
+            Controller.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.TestAnalytic, eventData);
         }
     }
 }

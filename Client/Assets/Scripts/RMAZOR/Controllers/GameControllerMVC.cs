@@ -1,5 +1,4 @@
-﻿using Common.Helpers;
-using mazing.common.Runtime;
+﻿using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
@@ -64,13 +63,13 @@ namespace RMAZOR.Controllers
             
             Model.Init();
 
-            Model.PathItemsProceeder.PathCompleted     += View.Character.OnPathCompleted;
-            Model.PathItemsProceeder.PathCompleted     += View.LevelStageController.OnPathCompleted;
-            Model.PathItemsProceeder.PathCompleted     += View.PathItemsGroup.OnPathCompleted;
-            Model.PathItemsProceeder.PathProceeded     += View.PathItemsGroup.OnPathProceed;
-            Model.MazeRotation.RotationStarted         += View.MazeRotation.OnRotationStarted;
-            Model.MazeRotation.RotationFinished        += View.MazeRotation.OnRotationFinished;
-            Model.MazeRotation.RotationFinished        += View.TouchProceeder.OnRotationFinished;
+            Model.PathItemsProceeder.PathCompleted += View.Character.OnPathCompleted;
+            Model.PathItemsProceeder.PathCompleted += View.LevelStageController.OnPathCompleted;
+            Model.PathItemsProceeder.PathCompleted += View.PathItemsGroup.OnPathCompleted;
+            Model.PathItemsProceeder.PathProceeded += View.PathItemsGroup.OnPathProceed;
+            Model.MazeRotation.RotationStarted     += View.MazeRotation.OnRotationStarted;
+            Model.MazeRotation.RotationFinished    += View.MazeRotation.OnRotationFinished;
+            Model.MazeRotation.RotationFinished    += View.TouchProceeder.OnRotationFinished;
             
             var mItemProcs = Model.ModelItemsProceedersSet;
             var vItemGrps   = View.MazeItemsGroupSet;

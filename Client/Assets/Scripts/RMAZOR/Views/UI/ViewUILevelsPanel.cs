@@ -3,8 +3,6 @@ using System.Linq;
 using Common.Constants;
 using Common.Extensions;
 using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Enums;
@@ -58,22 +56,24 @@ namespace RMAZOR.Views.UI
         private float       m_TopOffset;
         private bool        m_FirstMoveOrRotateCommandInvoked;
         private bool        m_HighlightCurrentLevelBox;
-        private int         m_CurrentLevelGroupIndex;
+        private int         m_LevelIndexInGroup;
         private float       m_CurrentLevelBoxDashOffset;
 
         #endregion
 
         #region inject
 
-        private IModelGame                  Model             { get; }
-        private IViewInputCommandsProceeder CommandsProceeder { get; }
-        private ICameraProvider             CameraProvider    { get; }
-        private IViewGameTicker             GameTicker        { get; }
-        private IManagersGetter             Managers          { get; }
-        private IViewUIGameLogo             GameLogo          { get; }
-        private IFontProvider               FontProvider      { get; }
+        private GlobalGameSettings          GlobalGameSettings { get; }
+        private IModelGame                  Model              { get; }
+        private IViewInputCommandsProceeder CommandsProceeder  { get; }
+        private ICameraProvider             CameraProvider     { get; }
+        private IViewGameTicker             GameTicker         { get; }
+        private IManagersGetter             Managers           { get; }
+        private IViewUIGameLogo             GameLogo           { get; }
+        private IFontProvider               FontProvider       { get; }
 
         private ViewUILevelsPanel(
+            GlobalGameSettings          _GlobalGameSettings,
             IModelGame                  _Model,
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider             _CameraProvider,
@@ -82,6 +82,7 @@ namespace RMAZOR.Views.UI
             IViewUIGameLogo             _GameLogo,
             IFontProvider               _FontProvider)
         {
+            GlobalGameSettings = _GlobalGameSettings;
             Model             = _Model;
             CommandsProceeder = _CommandsProceeder;
             CameraProvider    = _CameraProvider;
@@ -116,11 +117,10 @@ namespace RMAZOR.Views.UI
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded:
-                    SetLevelCheckMarks(_Args, false);
                     EnableCurrentLevelBoxHighlighting(_Args);
                     break;
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
-                    SetLevelCheckMarks(_Args, true);    
+                    SetLevelCheckMarks(true);    
                     break;
             }
         }
@@ -138,7 +138,7 @@ namespace RMAZOR.Views.UI
                 return;
             m_CurrentLevelBoxDashOffset += GameTicker.DeltaTime * 0.3f;
             m_CurrentLevelBoxDashOffset = MathUtils.ClampInverse(m_CurrentLevelBoxDashOffset, 0f, 10f);
-            m_LevelBoxes[m_CurrentLevelGroupIndex].SetDashOffset(m_CurrentLevelBoxDashOffset);
+            m_LevelBoxes[m_LevelIndexInGroup].SetDashOffset(m_CurrentLevelBoxDashOffset);
         }
 
         #endregion
@@ -152,18 +152,16 @@ namespace RMAZOR.Views.UI
         
         private void OnActiveCameraChanged(Camera _Camera)
         {
-            if (GameLogo.WasShown)
+            var parent = _Camera.transform;
+            foreach (var transform in m_LevelPanelItemsFinishPositionsY.Keys)
             {
-                var parent = _Camera.transform;
-                foreach (var transform in m_LevelPanelItemsFinishPositionsY.Keys)
-                {
-                    float yPos = m_LevelPanelItemsFinishPositionsY[transform];
-                    transform.SetParentEx(parent).SetLocalPosY(yPos).SetLocalPosZ(10f);
-                }
-                var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
-                m_StageText.transform.SetLocalPosX(screenBounds.center.x);
-                m_LevelText.transform.SetLocalPosX(screenBounds.center.x);
+                float yPos = m_LevelPanelItemsFinishPositionsY[transform];
+                yPos += GameLogo.WasShown ? 0f : StartAnimOffset;
+                transform.SetParentEx(parent).SetLocalPosY(yPos).SetLocalPosZ(10f);
             }
+            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+            m_StageText.transform.SetLocalPosX(screenBounds.center.x);
+            m_LevelText.transform.SetLocalPosX(screenBounds.center.x);
             UpdateCheckMarks(_Camera);
         }
         
@@ -181,17 +179,18 @@ namespace RMAZOR.Views.UI
             var locMan = Managers.LocalizationManager;
             var font = FontProvider.GetFont(ETextType.GameUI, locMan.GetCurrentLanguage());
             m_StageText.font = m_LevelText.font = font;
-            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyNextLevelType, out _);
+            string key = Model.LevelStaging.LevelStage == ELevelStage.Loaded
+                ? CommonInputCommandArg.KeyNextLevelType
+                : CommonInputCommandArg.KeyCurrentLevelType;
+            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(key, out _);
             bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            if (isNextLevelBonus)
-            {
-                m_StageText.text = m_LevelText.text = string.Empty;
-                return;
-            }
-            int levelsGroupIdx = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
+            int levelsGroupIdx = isNextLevelBonus ?
+                (int)Model.LevelStaging.LevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1 
+                : RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             m_StageText.text = locMan.GetTranslation("stage") + " " + levelsGroupIdx;
-            m_LevelText.text = locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
+            m_LevelText.text = isNextLevelBonus ?
+                locMan.GetTranslation("extra_level")
+                : locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
         }
         
         private void InitLevelPanel()
@@ -262,7 +261,7 @@ namespace RMAZOR.Views.UI
                 CommonInputCommandArg.KeyNextLevelType, out _);
             bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             int checkMarksCount = isNextLevelBonus ?
-                0 :  RmazorUtils.GetLevelsInGroup(groupIndex);
+                1 :  RmazorUtils.GetLevelsInGroup(groupIndex);
             float yPos = screenBounds.max.y - 8.5f;
             for (int i = 0; i < checkMarksCount; i++)
             {
@@ -276,22 +275,30 @@ namespace RMAZOR.Views.UI
                     .SetLocalPosX(screenBounds.center.x + xIndent)
                     .SetLocalPosY(yPos + yIndent);
             }
+            SetLevelCheckMarks(false);
         }
         
-        private void SetLevelCheckMarks(LevelStageArgs _Args, bool _LevelPassedJustNow)
+        private void SetLevelCheckMarks(bool _LevelPassedJustNow)
         {
-            string nextLevelType = (string)_Args.Args.GetSafe(
-                CommonInputCommandArg.KeyNextLevelType, out _);
+            for (int i = 0; i < m_CheckMarks.Count; i++)
+                m_CheckMarks[i].SetTrigger(AnimKeyCheckMarkIdle);
+            string key = Model.LevelStaging.LevelStage == ELevelStage.Loaded
+                ? CommonInputCommandArg.KeyNextLevelType
+                : CommonInputCommandArg.KeyCurrentLevelType;
+            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                key, out _);
             bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             if (isNextLevelBonus)
+            {
+                if (_LevelPassedJustNow)
+                    m_CheckMarks[0].SetTrigger(AnimKeyCheckMarkPass);
                 return;
-            int lastPassedLevelInGroupIndex = RmazorUtils.GetIndexInGroup(_Args.LevelIndex);
+            }
+            int lastPassedLevelInGroupIndex = RmazorUtils.GetIndexInGroup(Model.LevelStaging.LevelIndex);
             for (int i = 0; i < lastPassedLevelInGroupIndex; i++)
                 m_CheckMarks[i].SetTrigger(AnimKeyChekMarkSet);
             m_CheckMarks[lastPassedLevelInGroupIndex].SetTrigger(
                 _LevelPassedJustNow ? AnimKeyCheckMarkPass : AnimKeyCheckMarkIdle);
-            for (int i = lastPassedLevelInGroupIndex; i < m_CheckMarks.Count; i++)
-                m_CheckMarks[i].SetTrigger(AnimKeyCheckMarkIdle);
         }
         
         private void AnimateLevelsPanelAfterFirstMove()
@@ -312,9 +319,12 @@ namespace RMAZOR.Views.UI
         {
             foreach (var box in m_LevelBoxes)
                 box.SetDashed(false).SetDashOffset(0f);
-            m_CurrentLevelGroupIndex = RmazorUtils.GetIndexInGroup(_Args.LevelIndex);
+            string nextLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
+                CommonInputCommandArg.KeyNextLevelType, out _);
+            bool isNextLevelBonus = nextLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            m_LevelIndexInGroup = isNextLevelBonus ? 0 : RmazorUtils.GetIndexInGroup(_Args.LevelIndex);
             m_HighlightCurrentLevelBox = true;
-            m_LevelBoxes[m_CurrentLevelGroupIndex].SetDashed(true)
+            m_LevelBoxes[m_LevelIndexInGroup].SetDashed(true)
                 .SetDashSize(8f)
                 .SetDashType(DashType.Rounded)
                 .SetDashSpace(DashSpace.FixedCount)
@@ -329,12 +339,12 @@ namespace RMAZOR.Views.UI
                 1f / m_CheckMarks.First().speed,
                 _OnProgress: _P =>
                 {
-                    m_LevelBoxes[m_CurrentLevelGroupIndex].SetDashSpacing(0.3f * (1 - _P));
+                    m_LevelBoxes[m_LevelIndexInGroup].SetDashSpacing(0.3f * (1 - _P));
                 },
                 _OnFinish: () =>
                 {
                     m_HighlightCurrentLevelBox = false;
-                    m_LevelBoxes[m_CurrentLevelGroupIndex]
+                    m_LevelBoxes[m_LevelIndexInGroup]
                         .SetDashed(false)
                         .SetDashOffset(m_CurrentLevelBoxDashOffset = 0f);
                 }));

@@ -4,10 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities.UI;
@@ -159,7 +155,6 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
-            m_ButtonClose.SetGoActive(false);
             TimePauser.PauseTimeInGame();
             var font =  FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
             m_Title.font = m_Description.font = font;
@@ -240,7 +235,7 @@ namespace RMAZOR.UI.Panels
                 for (int i = 0; i < textLength; i++)
                     sb.Append(descriptionCharArray[i]);
                 m_Description.text = sb.ToString();
-            }, _OnFinish: () => m_ButtonClose.SetGoActive(true));
+            });
         }
 
         private static int GetNumberOfFinishedTutorials()

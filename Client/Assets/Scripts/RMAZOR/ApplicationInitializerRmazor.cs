@@ -320,9 +320,14 @@ namespace RMAZOR
         {
             string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
             bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            long newLevelIndex = !isBonusLevel ? _LevelIndex : RmazorUtils.GetFirstLevelInGroupIndex((int)_LevelIndex + 1 + 1);
-            var info = LevelsLoader.GetLevelInfo(1, newLevelIndex, false);
-            _Controller.Model.LevelStaging.LoadLevel(info, newLevelIndex);
+            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex, isBonusLevel);
+            _Controller.Model.LevelStaging.Arguments ??= new Dictionary<string, object>();
+            _Controller.Model.LevelStaging.Arguments.SetSafe(
+                CommonInputCommandArg.KeyNextLevelType,
+                isBonusLevel ?
+                    CommonInputCommandArg.ParameterLevelTypeBonus
+                    : CommonInputCommandArg.ParameterLevelTypeMain);
+            _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
         }
         
         private void OnScoreManagerInitialize()

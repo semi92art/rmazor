@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Entities.UI;

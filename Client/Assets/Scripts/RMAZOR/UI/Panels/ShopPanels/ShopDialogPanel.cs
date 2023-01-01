@@ -3,11 +3,7 @@ using System.Globalization;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.Managers.IAP;
 using Common.ScriptableObjects;
-using Common.UI;
 using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
@@ -21,6 +17,7 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Panel_Items;
@@ -235,7 +232,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {
                     if (_Info.BuyForWatchingAd)
                     {
-                        Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInShopPanelPressed);
+                        Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInShopPanelPressed);
                         void OnBeforeAdShown()
                         {
                             Managers.AudioManager.MuteAudio(EAudioClipType.Music);
@@ -269,7 +266,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     if (_Args?.Result() != EShopProductResult.Success)
                         return;
                     _Info.Currency = _Args.Currency;
-                    _Info.Price = _Args.Price;
+                    _Info.Price = _Args.LocalizedPriceString;
                 });
             Cor.Run(Cor.WaitWhile(
                 () =>
@@ -283,7 +280,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     if (_Args?.Result() == EShopProductResult.Success)
                     {
                         _Info.Currency = _Args.Currency;
-                        _Info.Price = _Args.Price;
+                        _Info.Price = _Args.LocalizedPriceString;
                     }
                     _Info.Ready = true;
                 }));

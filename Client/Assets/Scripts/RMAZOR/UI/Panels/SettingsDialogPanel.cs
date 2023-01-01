@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -22,6 +16,7 @@ using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Settings;
@@ -159,18 +154,18 @@ namespace RMAZOR.UI.Panels
 
         private void InitSettingItems()
         {
-            InitSettingItem(SettingsGetter.SoundSetting);
             InitSettingItem(SettingsGetter.MusicSetting);
-            InitSettingItem(SettingsGetter.LanguageSetting);
+            InitSettingItem(SettingsGetter.SoundSetting);
             InitSettingItem(SettingsGetter.NotificationSetting);
             InitSettingItem(SettingsGetter.HapticsSetting);
+            InitSettingItem(SettingsGetter.LanguageSetting);
         }
 
         private void InitOtherButtons()
         {
-            InitRateUsButton();
             InitLeaderboardsButton();
             InitRestorePurchasesButton();
+            InitRateUsButton();
         }
 
         private void InitSettingItem<T>(ISetting<T> _Setting)
@@ -254,7 +249,7 @@ namespace RMAZOR.UI.Panels
                 Managers.LocalizationManager,
                 () =>
                 {
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RateGameButton1Pressed);
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameButton1Pressed);
                     Managers.ShopManager.RateGame();
                 },
                 Managers.PrefabSetManager.GetObject<Sprite>(
@@ -275,7 +270,7 @@ namespace RMAZOR.UI.Panels
                 Managers.LocalizationManager,
                 () =>
                 {
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LeaderboardsButtonPressed);
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.LeaderboardsButtonPressed);
                     var scoreEntity = Managers.ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
                     Cor.Run(Cor.WaitWhile(
                         () => scoreEntity.Result == EEntityResult.Pending,
@@ -328,7 +323,7 @@ namespace RMAZOR.UI.Panels
                 Managers.LocalizationManager,
                 () =>
                 {
-                    Managers.AnalyticsManager.SendAnalytic(AnalyticIds.RestorePurchasesButtonPressed);
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RestorePurchasesButtonPressed);
                     Managers.ShopManager.RestorePurchases();
                 },
                 Managers.PrefabSetManager.GetObject<Sprite>(

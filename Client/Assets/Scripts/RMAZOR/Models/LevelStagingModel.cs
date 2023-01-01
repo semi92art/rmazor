@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Helpers;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using RMAZOR.Models.MazeInfos;
@@ -57,7 +56,7 @@ namespace RMAZOR.Models
         int                        DiesCount      { get; }
         ELevelStage                LevelStage     { get; }
         ELevelStage                PrevLevelStage { get; }
-        Dictionary<string, object> Arguments      { get; }
+        Dictionary<string, object> Arguments      { get; set; }
 
         void LoadLevel(MazeInfo _Info, long _LevelIndex, Dictionary<string, object> _Args = null);
         
@@ -101,7 +100,7 @@ namespace RMAZOR.Models
         public int                        DiesCount      { get; private set; }
         public ELevelStage                LevelStage     { get; private set; } = ELevelStage.Unloaded;
         public ELevelStage                PrevLevelStage { get; private set; } = ELevelStage.Unloaded;
-        public Dictionary<string, object> Arguments      { get; private set; }
+        public Dictionary<string, object> Arguments      { get; set; }
 
         public event LevelStageHandler LevelStageChanged;
 

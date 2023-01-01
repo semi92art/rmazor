@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common.Helpers;
 using Common.Managers.Achievements;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
@@ -8,6 +9,7 @@ using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -32,6 +34,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         #region inject
 
+        private GlobalGameSettings                  GlobalGameSettings             { get; }
         private ViewSettings                        ViewSettings                   { get; }
         private IModelGame                          Model                          { get; }
         private IManagersGetter                     Managers                       { get; }
@@ -43,6 +46,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
 
         public ViewLevelStageControllerOnLevelFinished(
+            GlobalGameSettings                  _GlobalGameSettings,
             ViewSettings                        _ViewSettings,
             IModelGame                          _Model,
             IManagersGetter                     _Managers,
@@ -52,6 +56,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
             IViewGameTicker                     _ViewGameTicker)
         {
+            GlobalGameSettings             = _GlobalGameSettings;
             ViewSettings                   = _ViewSettings;
             Model                          = _Model;
             Managers                       = _Managers;
@@ -173,9 +178,12 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                      && _Args.Args != null 
                      && !currentLevelIsBonus)
             {
-                int nextBonusLevelIndexToLoad = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex) - 1;
+                int levelGroupIndex = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex);
+                int nextBonusLevelIndexToLoad = (levelGroupIndex - 1) / GlobalGameSettings.extraLevelEveryNStage;
                 int bonusLevelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, true);
-                var inputCommand = nextBonusLevelIndexToLoad < bonusLevelsCount
+                var inputCommand = GlobalGameSettings.enableExtraLevels
+                                   && (levelGroupIndex - 1) % GlobalGameSettings.extraLevelEveryNStage == 0
+                                   && nextBonusLevelIndexToLoad < bonusLevelsCount
                     ? EInputCommand.PlayBonusLevelPanel
                     : EInputCommand.FinishLevelGroupPanel;
                 CommandsProceeder.RaiseCommand(
@@ -217,7 +225,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 });
             Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex));
             if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelStageFinished);
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.LevelStageFinished);
         }
         
         private static bool CheckIfLevelWasFinishedAtLeastOnce(long _LevelIndex)
@@ -228,7 +236,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 wasFinishedAtLeastOnce = true;
             if (wasFinishedAtLeastOnce) 
                 return true;
-            Dbg.Log("CheckIfLevelWasFinishedAtLeastOnce false");
             finishedOnceDict ??= new List<long>();
             finishedOnceDict.Add(_LevelIndex);
             finishedOnceDict = finishedOnceDict.Distinct().ToList();

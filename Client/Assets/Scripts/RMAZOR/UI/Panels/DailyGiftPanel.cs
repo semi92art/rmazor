@@ -5,11 +5,6 @@ using System.Globalization;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -22,6 +17,7 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -334,7 +330,7 @@ namespace RMAZOR.UI.Panels
                 {
                     {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}
                 };
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInFinishGroupPanelPressed, eventData);
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInFinishGroupPanelPressed, eventData);
             }
             void SetMoneyInBank()
             {

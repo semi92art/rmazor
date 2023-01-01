@@ -99,3 +99,4 @@ tut_descr_movement = 안녕! 몇 가지 기본 사항을 봅시다! 탈출하려
 tutorial = 지도 시간
 tut_title_timer = 시간제 노동자
 tut_descr_timer = 별을 수집하고 기록하십시오. 레벨 메뉴에서 레벨을 재생하고 업적을 볼 수 있습니다.
+extra_level = 추가 레벨

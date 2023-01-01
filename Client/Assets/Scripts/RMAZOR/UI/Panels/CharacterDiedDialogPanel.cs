@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
 using Common.Helpers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
@@ -19,6 +15,7 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -77,14 +74,12 @@ namespace RMAZOR.UI.Panels
         #region inject
 
         private GlobalGameSettings                  GlobalGameSettings             { get; }
-        private ViewSettings                        ViewSettings                   { get; }
         private IModelGame                          Model                          { get; }
         private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
 
         private CharacterDiedDialogPanel(
             GlobalGameSettings                  _GlobalGameSettings,
-            ViewSettings                        _ViewSettings,
             IModelGame                          _Model,
             IManagersGetter                     _Managers,
             IUITicker                           _UITicker,
@@ -103,7 +98,6 @@ namespace RMAZOR.UI.Panels
                 _CommandsProceeder)
         {
             GlobalGameSettings             = _GlobalGameSettings;
-            ViewSettings                   = _ViewSettings;
             Model                          = _Model;
             BetweenLevelAdShower           = _BetweenLevelAdShower;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
@@ -137,18 +131,6 @@ namespace RMAZOR.UI.Panels
             m_MoneyIconInPayButton.sprite = moneyIconSprite;
             m_Countdown.color = ColorProvider.GetColor(ColorIds.UiBorder);
             m_CountdownBackground.color = Color.black;
-            const string backgroundSpriteNameRaw = "character_died_panel_background";
-            string backgroundSpriteName = ViewSettings.characterDiedPanelBackgroundVariant switch
-            {
-                1 => $"{backgroundSpriteNameRaw}_1",
-                2 => $"{backgroundSpriteNameRaw}_2",
-                3 => $"{backgroundSpriteNameRaw}_3",
-                4 => $"{backgroundSpriteNameRaw}_4",
-                5 => $"{backgroundSpriteNameRaw}_5",
-                _ => $"{backgroundSpriteNameRaw}_1",
-            };
-            m_Background.sprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                CommonPrefabSetNames.Views, backgroundSpriteName);
         }
 
         public void ReturnFromShopPanel()
@@ -231,7 +213,7 @@ namespace RMAZOR.UI.Panels
         
         private void OnWatchAdsButtonClick()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.WatchAdInCharacterDiedPanelPressed);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInCharacterDiedPanelPressed);
             void OnAdReward()
             {
                 m_AdsWatched = true;
