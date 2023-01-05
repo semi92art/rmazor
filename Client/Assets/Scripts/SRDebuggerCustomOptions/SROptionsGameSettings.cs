@@ -14,6 +14,7 @@ using Common.Constants;
 using Common.Entities;
 using Common.Managers;
 using Common.Utils;
+using Firebase.Extensions;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -523,6 +524,24 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 _managers.ScoreManager.DeleteSavedGame(MazorCommonData.SavedGameFileName);
+            }
+        }
+        
+        [Category(CategoryCommon)]
+        public bool Get_FCM_Token
+        {
+            get => false;
+            set
+            {
+                if (!value)
+                    return;
+                Firebase.Messaging.FirebaseMessaging.GetTokenAsync()
+                    .ContinueWithOnMainThread(_Task =>
+                    {
+                        string token = _Task.Result;
+                        Dbg.Log("FCM Token: " + token);
+                        CommonUtils.CopyToClipboard(token);
+                    });
             }
         }
 

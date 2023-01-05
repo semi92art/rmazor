@@ -8,6 +8,7 @@ using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using UnityEngine.Events;
@@ -22,17 +23,20 @@ namespace RMAZOR.Managers
         private IRemoteConfigProvider         RemoteConfigProvider         { get; }
         private GlobalGameSettings            GlobalGameSettings           { get; }
         private IRemotePropertiesRmazor       RemoteProperties             { get; }
+        private ICommonTicker                 CommonTicker                 { get; }
 
         protected RemoteConfigManager(
             IRemotePropertiesInfoProvider _RemotePropertiesInfoProvider,
             IRemoteConfigProvider         _RemoteConfigProvider,
             GlobalGameSettings            _GlobalGameSettings,
-            IRemotePropertiesRmazor       _RemoteProperties)
+            IRemotePropertiesRmazor       _RemoteProperties,
+            ICommonTicker                 _CommonTicker)
         {
             RemotePropertiesInfoProvider = _RemotePropertiesInfoProvider;
             RemoteConfigProvider         = _RemoteConfigProvider;
             GlobalGameSettings           = _GlobalGameSettings;
             RemoteProperties             = _RemoteProperties;
+            CommonTicker                 = _CommonTicker;
         }
         
         public override void Init()
@@ -50,10 +54,14 @@ namespace RMAZOR.Managers
                 RemoteConfigProvider.Init();
             };
             RemotePropertiesInfoProvider.Init();
+            Cor.Run(Cor.Delay(3f, CommonTicker, SignalInit));
         }
 
         private void SignalInit()
         {
+            if (Initialized)
+                return;
+            Dbg.Log("Remote Config Manager initialized!");
             base.Init();
         }
         

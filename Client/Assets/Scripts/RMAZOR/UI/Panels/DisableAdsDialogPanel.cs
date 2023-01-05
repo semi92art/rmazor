@@ -47,7 +47,7 @@ namespace RMAZOR.UI.Panels
         private string       m_OldPriceTextString;
         private string       m_NewPriceTextString;
         private ShopItemArgs m_DisableAdsShopItemArgs;
-
+        
         #endregion
 
         #region inject
@@ -156,13 +156,12 @@ namespace RMAZOR.UI.Panels
 
         private void SetBuyButtonText()
         {
+            if (!AllObjectsAreNotNull())
+                return;
             var locMan = Managers.LocalizationManager;
             string buyText = locMan.GetTranslation("buy");
             m_BuyButtonTextDefault.text = buyText;
-            if (m_DisableAdsShopItemArgs == null
-                || m_BuyButtonTextDefault.IsNull()
-                || m_BuyButtonTextPriceOld.IsNull()
-                || m_BuyButtonTextPriceNew.IsNull())
+            if (m_DisableAdsShopItemArgs == null)
             {
                 m_BuyButtonTextDefault.enabled  = true;
                 m_BuyButtonTextPriceOld.enabled = false;
@@ -211,6 +210,18 @@ namespace RMAZOR.UI.Panels
                 {AnalyticIds.ParameterLevelType, isThisLevelBonus ? 2 : 1},
             };
             Managers.AnalyticsManager.SendAnalytic(analyticId, eventData);
+        }
+
+        private bool AllObjectsAreNotNull()
+        {
+            return m_BuyButtonTextDefault.IsNotNull()
+                   && m_BuyButtonTextPriceNew.IsNotNull()
+                   && m_BuyButtonTextPriceOld.IsNotNull()
+                   && m_Animator.IsNotNull()
+                   && m_BuyButton.IsNotNull()
+                   && m_CloseButton.IsNotNull()
+                   && m_SalesIcon.IsNotNull()
+                   && m_StrikeoutLine.IsNotNull();
         }
 
         #endregion

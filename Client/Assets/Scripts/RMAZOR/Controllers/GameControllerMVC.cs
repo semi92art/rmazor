@@ -126,15 +126,6 @@ namespace RMAZOR.Controllers
 
         private void InitDebugging()
         {
-            if (SRDebug.Instance == null)
-                return;
-            SRLauncher.Init(
-                    Model.Settings, 
-                    View.Settings, 
-                    Model.LevelStaging,
-                    View.Managers, 
-                    View.CommandsProceeder,
-                    View.CameraProvider);
             if (RemoteConfigManager.Initialized)
                 InitDebugCore();
             else
@@ -143,8 +134,17 @@ namespace RMAZOR.Controllers
         
         private void InitDebugCore()
         {
+            if (SRDebug.Instance == null)
+                SRDebug.Init();
             Cor.Run(Cor.WaitNextFrame(() =>
             {
+                SRLauncher.Init(
+                    Model.Settings, 
+                    View.Settings, 
+                    Model.LevelStaging,
+                    View.Managers, 
+                    View.CommandsProceeder,
+                    View.CameraProvider);
                 SRDebug.Instance.IsTriggerEnabled = RemotePropertiesRmazor.DebugEnabled;
                 View.Managers.DebugManager.Init();
             }, _FramesNum: 2U));

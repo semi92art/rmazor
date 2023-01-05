@@ -21,7 +21,6 @@ namespace RMAZOR.Managers
         {
             if (MazorCommonData.FirebaseApp != null)
             {
-                Dbg.Log("Firebase was initialized successfully before.");
                 return FetchDataAsync();
             }
             return FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
@@ -30,10 +29,9 @@ namespace RMAZOR.Managers
                 {
                     MazorCommonData.FirebaseApp = FirebaseApp.DefaultInstance;
                     FetchDataAsync();
-                    Dbg.Log("Firebase initialized successfully");
                 } 
                 else
-                    Dbg.LogError($"Could not resolve all Firebase dependencies: {_Task.Result}");
+                    Dbg.LogError($"Remote Config: Could not resolve all Firebase dependencies: {_Task.Result}");
             });
         }
         

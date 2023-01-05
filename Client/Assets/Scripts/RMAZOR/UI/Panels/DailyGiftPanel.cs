@@ -13,6 +13,7 @@ using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
@@ -86,6 +87,7 @@ namespace RMAZOR.UI.Panels
         
         private IModelGame                          Model                          { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IFontProvider                       FontProvider                   { get; }
 
         public DailyGiftPanel(
             IManagersGetter                     _Managers,
@@ -95,7 +97,8 @@ namespace RMAZOR.UI.Panels
             IViewTimePauser                     _TimePauser,
             IModelGame                          _Model,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IFontProvider                       _FontProvider)
             : base(
                 _Managers,
                 _Ticker,
@@ -106,6 +109,7 @@ namespace RMAZOR.UI.Panels
         {
             Model                          = _Model;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            FontProvider                   = _FontProvider;
         }
 
         #endregion
@@ -136,11 +140,19 @@ namespace RMAZOR.UI.Panels
                 "icons", 
                 "icon_coin_ui_multiplied");
 
+            m_TodayGiftMoneyCountText.font = FontProvider.GetFont(
+                ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
+            Managers.LocalizationManager.LanguageChanged += OnLanguageChanged;
             m_TodayGiftMoneyCountText.text = m_TodayGiftMoneyCount.ToString();
             m_GetButton.onClick.AddListener(OnGetButtonClick);
             m_MultiplyButton.onClick .AddListener(OnMultiplyButtonClick);
             m_TriggererMoneyIcon.Trigger1 += () => Cor.Run(OnMoneyIconStartDisappearingCoroutine());
             m_TriggererMoneyIcon.Trigger2 += OnMoneyItemAnimTrigger2;
+        }
+
+        private void OnLanguageChanged(ELanguage _Language)
+        {
+            m_TodayGiftMoneyCountText.font = FontProvider.GetFont(ETextType.MenuUI, _Language);
         }
 
         public override void OnDialogStartAppearing()

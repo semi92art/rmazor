@@ -14,6 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
+    - main: {r: 0.23529412, g: 0.10664171, b: 0.09803922, a: 1}
+      bacground1: {r: 0.65882355, g: 0.51974577, b: 0.47843137, a: 1}
+      bacground2: {r: 0.5188679, g: 0.24707206, b: 0.23251157, a: 1}
+      inUse: 0
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: gradient
+        additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
       bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
       bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
@@ -132,7 +155,7 @@ MonoBehaviour:
     - main: {r: 1, g: 0, b: 0.721591, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.5660378, g: 0.15752938, b: 0.4522962, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -152,56 +175,10 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: toon_rain
         additionalBackgroundName: additional_background_texture_1
-    - main: {r: 0.09803922, g: 0.13049206, b: 0.23529412, a: 1}
-      bacground1: {r: 0.65882355, g: 0.47843137, b: 0.5185124, a: 1}
-      bacground2: {r: 0.20392157, g: 0.2287542, b: 0.39607844, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 0
-        diffusion: 0
-        color: {r: 0, g: 0, b: 0, a: 0}
-        amount: 0
-        threshold: 0
-        softness: 0
-      additionalInfo:
-        dark: 0
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: squares_fall
-        additionalBackgroundName: additional_background_texture_1
-    - main: {r: 0, g: 1, b: 0.1385839, a: 1}
-      bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.16862744, g: 0.62352943, b: 0.17057174, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 1
-      uiBackgroundFillType: 1
-      bloom:
-        enableBloom: 1
-        diffusion: 0.6
-        color: {r: 0, g: 0.5568628, b: 1, a: 1}
-        amount: 300
-        threshold: 10
-        softness: 1
-      additionalInfo:
-        dark: 1
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: sunflow
-        additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.16981131, g: 0.131918, b: 0.071288705, a: 1}
       bacground1: {r: 0.7372549, g: 0.58893687, b: 0.36470586, a: 1}
       bacground2: {r: 0.4716981, g: 0.36222854, b: 0.1980242, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 2
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -220,6 +197,29 @@ MonoBehaviour:
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
         backgroundName: skyline
+        additionalBackgroundName: additional_background_texture_1
+    - main: {r: 0, g: 1, b: 0.1385839, a: 1}
+      bacground1: {r: 0, g: 0, b: 0, a: 1}
+      bacground2: {r: 0.16862744, g: 0.62352943, b: 0.17057174, a: 1}
+      inUse: 0
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 1
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 1
+        diffusion: 0.6
+        color: {r: 0, g: 0.5568628, b: 1, a: 1}
+        amount: 300
+        threshold: 10
+        softness: 1
+      additionalInfo:
+        dark: 1
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
     - main: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
       bacground1: {r: 0.7169812, g: 0.7169812, b: 0.7169812, a: 1}

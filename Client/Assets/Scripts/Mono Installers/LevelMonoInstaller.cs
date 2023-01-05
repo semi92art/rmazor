@@ -1,6 +1,4 @@
 ﻿using Common;
-using Common.Helpers;
-using Common.UI;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Helpers;
@@ -21,6 +19,8 @@ using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.Views;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Characters.Head;
+using RMAZOR.Views.Characters.Legs;
+using RMAZOR.Views.Characters.Tails;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Common.BackgroundIdleItems;
@@ -243,16 +243,21 @@ namespace Mono_Installers
         private void BindCharacter()
         {
             Container.Bind<IViewCharacter>()         .To<ViewCharacter>()                 .AsSingle();
-            Container.Bind<IViewCharacterHead>()     .To<ViewCharacterHead01>()           .AsSingle();
-            Container.Bind<IViewCharacterLegs>()     .To<ViewCharacterLegs>()             .AsSingle();
             Container.Bind<IViewCharacterEffector>() .To<ViewCharacterEffectorParticles>().AsSingle();
-            Container.Bind<IViewCharacterTail>()     .To<ViewCharacterTailTriangle>()     .AsSingle();
             Container.Bind<IViewParticleBubble>()    .To<ViewParticleBubble>()            .AsSingle();
             Container.Bind<IViewParticleSpark>()     .To<ViewParticleSpark>()             .AsSingle();
             Container.Bind<IViewParticlesThrower>()  .To<ViewParticlesThrower>()          .AsTransient();
+
+            Container.Bind<IViewCharactersSet>().To<ViewCharactersSet>().AsSingle();
+
+            Container.Bind<IViewCharacterLegs01>().To<ViewCharacterLegs01>().AsSingle();
+            Container.Bind<IViewCharacterLegsFake>().To<ViewCharacterLegsFake>().AsSingle();
+
+            Container.Bind<IViewCharacterTail01>().To<ViewCharacterTail01>().AsSingle();
+            Container.Bind<IViewCharacterTailFake>().To<ViewCharacterTailFake>().AsSingle();
             
-            // Container.Bind<IViewCharacterHead01>().To<ViewCharacterHead01>().AsSingle();
-            // Container.Bind<IViewCharacterHead02>().To<ViewCharacterHead02>().AsSingle();
+            Container.Bind<IViewCharacterHead01>().To<ViewCharacterHead01>().AsSingle();
+            Container.Bind<IViewCharacterHead02>().To<ViewCharacterHead02>().AsSingle();
             // Container.Bind<IViewCharacterHead03>().To<ViewCharacterHead03>().AsSingle();
             // Container.Bind<IViewCharacterHead04>().To<ViewCharacterHead04>().AsSingle();
             // Container.Bind<IViewCharacterHead05>().To<ViewCharacterHead05>().AsSingle();

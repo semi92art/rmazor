@@ -7,7 +7,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Jumping
+  m_Name: Jumping 1
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -37,19 +37,19 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -7218639455645269565}
-    m_Position: {x: 210, y: 160, z: 0}
+    m_Position: {x: 310, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2471765886675725793}
-    m_Position: {x: 300, y: -20, z: 0}
+    m_Position: {x: 450, y: -60, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8476050388118545018}
-    m_Position: {x: 400, y: 370, z: 0}
+    m_Position: {x: 440, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5485844566544859957}
-    m_Position: {x: 460, y: 170, z: 0}
+    m_Position: {x: 560, y: 140, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7928260638370813279}
-    m_Position: {x: 690, y: 120, z: 0}
+    m_Position: {x: 710, y: 190, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: -91765379181924870}
@@ -59,9 +59,9 @@ AnimatorStateMachine:
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: 320, y: 60, z: 0}
-  m_EntryPosition: {x: 320, y: -90, z: 0}
-  m_ExitPosition: {x: 320, y: -150, z: 0}
+  m_AnyStatePosition: {x: 470, y: 40, z: 0}
+  m_EntryPosition: {x: 470, y: -140, z: 0}
+  m_ExitPosition: {x: 470, y: -190, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: 2471765886675725793}
 --- !u!1101 &-4004805601832861836
@@ -198,6 +198,12 @@ AnimatorController:
     m_DefaultBool: 0
     m_Controller: {fileID: 0}
   - m_Name: anim4
+    m_Type: 9
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 0}
+  - m_Name: anim5
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0

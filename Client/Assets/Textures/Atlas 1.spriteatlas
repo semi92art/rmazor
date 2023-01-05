@@ -85,7 +85,6 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1f8bea132df1d364ebe0dcafbf9b47ec, type: 3}
   - {fileID: 21300000, guid: 68d9683374310ea4b81293e2d85fec28, type: 3}
   - {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
-  - {fileID: 21300000, guid: 0265cb438e108524f93c8b56118296b5, type: 3}
   - {fileID: 21300000, guid: 03a52e934f88f4a699b498a51573c186, type: 3}
   - {fileID: 21300000, guid: 9e6f89a3e596d8c48aafde6db002aa9d, type: 3}
   - {fileID: 21300000, guid: 0389acc3cf824f24696735611dfff7c9, type: 3}
@@ -233,7 +232,6 @@ SpriteAtlas:
   - icon_circle
   - Icon_Heart_2.Png
   - Icon_Reward_Pass_gold 1
-  - icon_christmas_sale
   - Label_TitleRibbon_Yellow
   - icon_menu
   - strikeout_line_2

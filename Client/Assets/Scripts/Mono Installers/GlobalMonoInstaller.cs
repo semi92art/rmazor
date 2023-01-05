@@ -179,6 +179,7 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()               .AsSingle();
             Container.Bind<IFontProvider>()                .To<FontProviderMazor>()             .AsSingle();
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()    .AsSingle();
+            Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
             
             if (Application.isEditor)
             {

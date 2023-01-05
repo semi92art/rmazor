@@ -163,43 +163,43 @@ namespace RMAZOR.Views.UI
             const float additionalVerticalOffset = 0f;
             const float horizontalOffset = 1f;
             var parent = _Camera.transform;
-            var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
+            var visibleBounds = GraphicUtils.GetVisibleBounds(_Camera);
             var scaleVec = Vector2.one * GraphicUtils.AspectRatio * 3f;
-            float yPos = screenBounds.max.y - m_TopOffset - additionalVerticalOffset;
+            float yPos = visibleBounds.max.y - m_TopOffset - additionalVerticalOffset;
             m_DisableAdsButton.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
-                .SetLocalPosX(screenBounds.min.x + horizontalOffset)
+                .SetLocalPosX(visibleBounds.min.x + horizontalOffset)
                 .SetLocalPosY(yPos)
                 .SetLocalPosZ(10f);
             m_OpenShopPanelButton.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
-                .SetLocalPosX(screenBounds.min.x + horizontalOffset)
+                .SetLocalPosX(visibleBounds.min.x + horizontalOffset)
                 .SetLocalPosY(yPos)
                 .SetLocalPosZ(10f);
             m_OpenSettingsPanelButton.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
-                .SetLocalPosX(screenBounds.max.x - horizontalOffset)
+                .SetLocalPosX(visibleBounds.max.x - horizontalOffset)
                 .SetLocalPosY(yPos)
                 .SetLocalPosZ(10f);
             m_OpenDailyGiftPanelButton.transform
                     .SetParentEx(parent)
                     .SetLocalScaleXY(scaleVec)
-                    .SetLocalPosX(screenBounds.min.x + horizontalOffset + 5f)
+                    .SetLocalPosX(visibleBounds.min.x + horizontalOffset + 5f)
                     .SetLocalPosY(yPos)
                     .SetLocalPosZ(10f);
             m_RateGameButton.transform
                 .SetParentEx(parent)
                 .SetLocalScaleXY(scaleVec)
-                .SetLocalPosX(screenBounds.min.x + horizontalOffset + 5f)
+                .SetLocalPosX(visibleBounds.min.x + horizontalOffset + 5f)
                 .SetLocalPosY(yPos)
                 .SetLocalPosZ(10f);
             m_OpenLevelsPanelButton.transform
                     .SetParentEx(parent)
                     .SetLocalScaleXY(scaleVec)
-                    .SetLocalPosX(screenBounds.max.x - horizontalOffset - 5f)
+                    .SetLocalPosX(visibleBounds.max.x - horizontalOffset - 5f)
                     .SetLocalPosY(yPos)
                     .SetLocalPosZ(10f);
         }

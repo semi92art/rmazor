@@ -169,7 +169,7 @@ namespace RMAZOR.UI.Panels
             long levelIndex = Model.LevelStaging.LevelIndex;
             if (!RmazorUtils.IsLastLevelInGroup(levelIndex))
                 return;
-            BetweenLevelAdShower.ShowAd = false;
+            BetweenLevelAdShower.ShowAdEnabled = false;
             if (MoneyCounter.CurrentLevelGroupMoney <= 0) return;
             CommandsProceeder.RaiseCommand(
                 EInputCommand.FinishLevelGroupPanel, 

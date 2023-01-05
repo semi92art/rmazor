@@ -63,6 +63,8 @@ namespace RMAZOR.Managers
         private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
         private const string IdEnableExtraLevels                    = "enable_extra_levels";
         private const string IdExtraLevelEveryNStage                = "extra_level_every_n_stage";
+        private const string IdShowOnlyRewardedAds                  = "show_only_rewarded_ads";
+        private const string IdCharacterId                          = "character_id";
 
         #endregion
         
@@ -199,6 +201,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdAdditionalBackgroundType,
                     _Value => Execute(
                         _Value, _V => ViewSettings.additionalBackgroundType = ToInt(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterId,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.characterId = ToInt(_V))),
             };
         }
 
@@ -224,12 +229,15 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdBetweenLevelAdShowIntervalInSeconds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.betweenLevelAdShowIntervalInSeconds = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdEnableExtraLevels,
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdEnableExtraLevels,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.enableExtraLevels = ToBool(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdExtraLevelEveryNStage,
+                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdExtraLevelEveryNStage,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.extraLevelEveryNStage = ToInt(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowOnlyRewardedAds,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.showOnlyRewardedAds = ToBool(_V))),
             };
         }
 

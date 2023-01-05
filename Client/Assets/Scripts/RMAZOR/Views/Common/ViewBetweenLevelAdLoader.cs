@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Helpers;
+﻿using Common.Helpers;
 using Common.Managers.Advertising;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
@@ -11,7 +10,7 @@ namespace RMAZOR.Views.Common
 {
     public interface IViewBetweenLevelAdShower: IInit
     {
-        bool ShowAd { get; set; }
+        bool ShowAdEnabled { get; set; }
         
         void TryShowAd(
             long        _LevelIndex,
@@ -25,25 +24,29 @@ namespace RMAZOR.Views.Common
 
         private float m_TimeWithoutAdsInSeconds = 1f * 60f;
 
+        private bool AdIsReady => GlobalGameSettings.showOnlyRewardedAds
+            ? AdsManager.RewardedAdReady
+            : AdsManager.InterstitialAdReady;
+
         #endregion
         
         #region inject
 
         private IAdsManager                         AdsManager                     { get; }
-        private GlobalGameSettings                  GameSettings                   { get; }
+        private GlobalGameSettings                  GlobalGameSettings             { get; }
         private IViewTimePauser                     TimePauser                     { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private ICommonTicker                       CommonTicker                   { get; }
 
         public ViewBetweenLevelAdShower(
             IAdsManager                         _AdsManager,
-            GlobalGameSettings                  _GameSettings,
+            GlobalGameSettings                  _GlobalGameSettings,
             IViewTimePauser                     _TimePauser,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
             ICommonTicker                       _CommonTicker)
         {
             AdsManager                     = _AdsManager;
-            GameSettings                   = _GameSettings;
+            GlobalGameSettings             = _GlobalGameSettings;
             TimePauser                     = _TimePauser;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             CommonTicker = _CommonTicker;
@@ -53,7 +56,7 @@ namespace RMAZOR.Views.Common
 
         #region api
 
-        public bool ShowAd { get; set; }
+        public bool ShowAdEnabled { get; set; }
 
         public override void Init()
         {
@@ -66,16 +69,16 @@ namespace RMAZOR.Views.Common
             bool        _IsBonus,
             UnityAction _OnAdClosed)
         {
-            bool DoTryShowAd()
+            bool IsPossibleToShowAd()
             {
-                if (m_TimeWithoutAdsInSeconds < GameSettings.betweenLevelAdShowIntervalInSeconds)
+                if (m_TimeWithoutAdsInSeconds < GlobalGameSettings.betweenLevelAdShowIntervalInSeconds)
                     return false;
-                return _LevelIndex >= GameSettings.firstLevelToShowAds
+                return _LevelIndex >= GlobalGameSettings.firstLevelToShowAds
                        && !_IsBonus
-                       && ShowAd
-                       && AdsManager.InterstitialAdReady;
+                       && ShowAdEnabled
+                       && AdIsReady;
             }
-            if (DoTryShowAd())
+            if (IsPossibleToShowAd())
             {
                 void OnBeforeAdShown()
                 {
@@ -88,21 +91,43 @@ namespace RMAZOR.Views.Common
                     m_TimeWithoutAdsInSeconds = 0f;
                     _OnAdClosed?.Invoke();
                 }
-                AdsManager.ShowInterstitialAd(
-                    OnBeforeAdShown, 
-                    _OnClosed: OnAdClosedOrFailedToShow,
-                    _OnFailedToShow: OnAdClosedOrFailedToShow);
+                ShowAd(OnBeforeAdShown, OnAdClosedOrFailedToShow, OnAdClosedOrFailedToShow);
             }
             else
             {
                 _OnAdClosed?.Invoke();
             }
-            ShowAd = true;
+            ShowAdEnabled = true;
         }
         
         public void UpdateTick()
         {
             m_TimeWithoutAdsInSeconds += CommonTicker.DeltaTime;
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void ShowAd(
+            UnityAction _OnBeforeAdShown,
+            UnityAction _OnAdClosed,
+            UnityAction _OnAdFailedToShow)
+        {
+            if (GlobalGameSettings.showOnlyRewardedAds)
+            {
+                AdsManager.ShowRewardedAd(
+                    _OnBeforeAdShown, 
+                    _OnClosed: _OnAdClosed,
+                    _OnFailedToShow: _OnAdFailedToShow);
+            }
+            else
+            {
+                AdsManager.ShowInterstitialAd(
+                    _OnBeforeAdShown, 
+                    _OnClosed: _OnAdClosed,
+                    _OnFailedToShow: _OnAdFailedToShow);
+            }
         }
 
         #endregion

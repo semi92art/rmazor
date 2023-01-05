@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Common;
-using Common.Entities;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Ticker;
@@ -72,7 +69,6 @@ namespace RMAZOR.Managers
         {
             if (Initialized)
                 return;
-            Dbg.Log("Remote Config Initialized with status: " + _Response.status);
             base.Init();
         }
 

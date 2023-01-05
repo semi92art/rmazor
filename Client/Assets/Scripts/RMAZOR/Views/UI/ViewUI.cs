@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Debugging;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.UI.Panels.ShopPanels;
@@ -20,6 +23,9 @@ namespace RMAZOR.Views.UI
         private IViewUIRateGamePanelController      RateGamePanelController        { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
         private IViewTimePauser                     TimePauser                     { get; }
+        private IFpsCounter                         FpsCounter                     { get; }
+        private ICameraProvider                     CameraProvider                 { get; }
+        private IRemoteConfigManager                RemoteConfigManager            { get; }
 
         private ViewUI(
             IDialogViewersController            _DialogViewersController,
@@ -28,7 +34,10 @@ namespace RMAZOR.Views.UI
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewUIRateGamePanelController      _RateGamePanelController,
             IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IViewTimePauser                     _TimePauser)
+            IViewTimePauser                     _TimePauser,
+            IFpsCounter                         _FpsCounter,
+            ICameraProvider                     _CameraProvider,
+            IRemoteConfigManager                _RemoteConfigManager)
             : base(_GameControls)
         {
             DialogViewersController        = _DialogViewersController;
@@ -37,6 +46,9 @@ namespace RMAZOR.Views.UI
             RateGamePanelController        = _RateGamePanelController;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
             TimePauser                     = _TimePauser;
+            FpsCounter                     = _FpsCounter;
+            CameraProvider                 = _CameraProvider;
+            RemoteConfigManager            = _RemoteConfigManager;
         }
 
         #endregion
@@ -49,10 +61,28 @@ namespace RMAZOR.Views.UI
             GameControls.Init();
             DialogViewersController.Init();
             RateGamePanelController.Init();
+            if (RemoteConfigManager.Initialized) InitFpsCounter();
+            else RemoteConfigManager.Initialize += InitFpsCounter;
             Cor.Run(Cor.WaitNextFrame(() => DialogPanelsSet.Init()));
             base.Init();
         }
-        
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            RateGamePanelController.OnLevelStageChanged(_Args);
+            GameControls.OnLevelStageChanged(_Args);
+        }
+
+        #endregion
+
+        #region nonpbulic methods
+
+        private void InitFpsCounter()
+        {
+            FpsCounter.Init();
+            CameraProvider.ActiveCameraChanged += FpsCounter.OnActiveCameraChanged;
+        }
+
         private void OnCommand(EInputCommand _Key, Dictionary<string, object> _Args)
         {
             switch (_Key)
@@ -141,12 +171,6 @@ namespace RMAZOR.Views.UI
                 }
                     break;
             }
-        }
-
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            RateGamePanelController.OnLevelStageChanged(_Args);
-            GameControls.OnLevelStageChanged(_Args);
         }
 
         #endregion

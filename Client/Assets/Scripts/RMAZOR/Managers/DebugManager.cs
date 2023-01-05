@@ -94,7 +94,6 @@ namespace RMAZOR.Managers
                 return;
             DebugSetting.ValueSet += EnableDebug;
             InitDebugConsole(false);
-            FpsCounter.Init();
             EnableDebug(DebugSetting.Get());
             base.Init();
         }

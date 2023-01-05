@@ -17,6 +17,9 @@
     <package>com.google.firebase:firebase-crashlytics-unity:9.6.0</package>
     <package>com.google.firebase:firebase-dynamic-links:21.0.2</package>
     <package>com.google.firebase:firebase-dynamic-links-unity:9.6.0</package>
+    <package>com.google.firebase:firebase-iid:21.1.0</package>
+    <package>com.google.firebase:firebase-messaging:23.0.8</package>
+    <package>com.google.firebase:firebase-messaging-unity:9.6.0</package>
     <package>com.google.games:gpgs-plugin-support:0.10.14</package>
   </packages>
   <files>
@@ -30,6 +33,8 @@
     <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-crashlytics-unity/9.6.0/firebase-crashlytics-unity-9.6.0.pom</file>
     <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-dynamic-links-unity/9.6.0/firebase-dynamic-links-unity-9.6.0.aar</file>
     <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-dynamic-links-unity/9.6.0/firebase-dynamic-links-unity-9.6.0.pom</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-messaging-unity/9.6.0/firebase-messaging-unity-9.6.0.aar</file>
+    <file>Assets/GeneratedLocalRepo/Firebase/m2repository/com/google/firebase/firebase-messaging-unity/9.6.0/firebase-messaging-unity-9.6.0.pom</file>
     <file>Assets/GeneratedLocalRepo/GooglePlayGames/Editor/m2repository/com/google/games/gpgs-plugin-support/0.10.14/gpgs-plugin-support-0.10.14.aar</file>
     <file>Assets/GeneratedLocalRepo/GooglePlayGames/Editor/m2repository/com/google/games/gpgs-plugin-support/0.10.14/gpgs-plugin-support-0.10.14.pom</file>
   </files>

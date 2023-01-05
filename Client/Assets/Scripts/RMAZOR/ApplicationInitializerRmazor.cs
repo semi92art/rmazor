@@ -8,6 +8,7 @@ using Common.Entities;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
+using Common.Managers.Notifications;
 using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
@@ -53,6 +54,7 @@ namespace RMAZOR
         private ILeaderboardsSet           LeaderboardsSet           { get; set; }
         private IAnalyticsManager          AnalyticsManager          { get; set; }
         private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
+        private IPushNotificationsProvider PushNotificationsProvider { get; set; }
         private CompanyLogo                CompanyLogo               { get; set; }
         
 #if UNITY_ANDROID
@@ -78,6 +80,7 @@ namespace RMAZOR
             ILeaderboardsSet           _LeaderboardsSet,
             IApplicationVersionUpdater _ApplicationVersionUpdater,
             IAnalyticsManager          _AnalyticsManager,
+            IPushNotificationsProvider _PushNotificationsProvider,
             CompanyLogo                _CompanyLogo)
         {
             GlobalGameSettings        = _GameSettings;
@@ -96,6 +99,7 @@ namespace RMAZOR
             LeaderboardsSet           = _LeaderboardsSet;
             ApplicationVersionUpdater = _ApplicationVersionUpdater;
             AnalyticsManager          = _AnalyticsManager;
+            PushNotificationsProvider = _PushNotificationsProvider;
             CompanyLogo               = _CompanyLogo;
         }
         
@@ -216,7 +220,7 @@ namespace RMAZOR
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
-            TryExecute(RemoteConfigManager.Init);
+            RemoteConfigManager.Initialize += InitPushNotificationsProvider;
         }
 
         private void InitAssetBundleManager()
@@ -252,6 +256,11 @@ namespace RMAZOR
         private void InitLocalizationManager()
         {
             TryExecute(LocalizationManager.Init);
+        }
+
+        private void InitPushNotificationsProvider()
+        {
+            TryExecute(PushNotificationsProvider.Init);
         }
 
         private static void TryExecute(UnityAction _Action)

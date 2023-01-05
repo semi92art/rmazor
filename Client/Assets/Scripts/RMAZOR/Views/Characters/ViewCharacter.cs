@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Helpers;
 using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Helpers;
@@ -14,6 +11,8 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Characters.Head;
+using RMAZOR.Views.Characters.Legs;
+using RMAZOR.Views.Characters.Tails;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
@@ -36,24 +35,26 @@ namespace RMAZOR.Views.Characters
         private bool    m_Activated;
         private Vector2 m_NewPosition;
         private bool    m_IsMoving;
+        
+        private IViewCharacterHead Head { get; set; }
+        private IViewCharacterTail Tail { get; set; }
+        private IViewCharacterLegs Legs { get; set; }
 
         #endregion
         
         #region inject
 
-        private   IViewCharacterHead          Head              { get; }
-        protected IViewCharacterTail          Tail              { get; }
-        private   IViewCharacterLegs          Legs              { get; }
-        private   IViewCharacterEffector      Effector          { get; }
-        private   IManagersGetter             Managers          { get; }
-        private   IMazeShaker                 MazeShaker        { get; }
-        private   IViewInputCommandsProceeder CommandsProceeder { get; }
-        protected IViewGameTicker             ViewGameTicker    { get; }
+
+        private ViewSettings                ViewSettings      { get; }
+        private IViewCharacterEffector      Effector          { get; }
+        private IManagersGetter             Managers          { get; }
+        private IMazeShaker                 MazeShaker        { get; }
+        private IViewInputCommandsProceeder CommandsProceeder { get; }
+        private IViewGameTicker             ViewGameTicker    { get; }
+        private IViewCharactersSet          CharactersSet     { get; }
 
         private ViewCharacter(
-            IViewCharacterHead          _Head,
-            IViewCharacterTail          _Tail,
-            IViewCharacterLegs          _Legs,
+            ViewSettings                _ViewSettings,
             IViewCharacterEffector      _Effector,
             ICoordinateConverter        _CoordinateConverter,
             IModelGame                  _Model,
@@ -61,20 +62,20 @@ namespace RMAZOR.Views.Characters
             IManagersGetter             _Managers,
             IMazeShaker                 _MazeShaker,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewGameTicker             _ViewGameTicker) 
+            IViewGameTicker             _ViewGameTicker,
+            IViewCharactersSet          _CharactersSet) 
             : base(
                 _CoordinateConverter, 
                 _Model, 
                 _ContainersGetter)
         {
-            Head              = _Head;
-            Tail              = _Tail;
-            Legs              = _Legs;
+            ViewSettings      = _ViewSettings;
             Effector          = _Effector;
             Managers          = _Managers;
             MazeShaker        = _MazeShaker;
             CommandsProceeder = _CommandsProceeder;
             ViewGameTicker    = _ViewGameTicker;
+            CharactersSet     = _CharactersSet;
         }
         
         #endregion
@@ -108,6 +109,10 @@ namespace RMAZOR.Views.Characters
                 var args = GetCharacterEndMoveAudioClipArgs(i);
                 Managers.AudioManager.InitClip(args);
             }
+
+            var setItem = CharactersSet.GetItem(ViewSettings.characterId);
+            (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
+            
             Tail.GetCharacterObjects = GetObjects;
             Head.Init();
             Tail.Init();

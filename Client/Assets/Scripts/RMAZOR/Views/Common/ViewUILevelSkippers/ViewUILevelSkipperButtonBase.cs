@@ -176,7 +176,7 @@ namespace RMAZOR.Views.Common.ViewUILevelSkippers
                 CommonInputCommandArg.KeyCurrentLevelType, out _);
             bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
             LevelSkipped = true;
-            BetweenLevelAdShower.ShowAd = false;
+            BetweenLevelAdShower.ShowAdEnabled = false;
             bool isLastLevelInGroup = RmazorUtils.IsLastLevelInGroup(levelIndex) && !isCurrentLevelBonus;
             if (isLastLevelInGroup)
             {

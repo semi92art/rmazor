@@ -111,26 +111,27 @@ namespace RMAZOR.Views.UI
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.LevelStage != ELevelStage.Loaded)
-                return;
-            string tutorialName = CurrentLevelTutorialName();
-            if (string.IsNullOrEmpty(tutorialName))
-                return;
-            if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished(tutorialName)))
-                return;
-            if (tutorialName == "timer")
-                return;
-            StartMovementTutorial();
-            Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown
-                                        || Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart,
-                () =>
-                {
-                    if (tutorialName == "movement")
-                        StartMovementTutorial();
-                    if (!GetValidSystemLanguages().Contains(Application.systemLanguage))
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
+                    string tutorialName = CurrentLevelTutorialName();
+                    if (string.IsNullOrEmpty(tutorialName))
                         return;
-                    ShowTutorialPanel(tutorialName);
-                }));
+                    if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished(tutorialName)))
+                        return;
+                    if (tutorialName == "timer")
+                        return;
+                    Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown,
+                        () =>
+                        {
+                            if (tutorialName == "movement")
+                                StartMovementTutorial();
+                            if (!GetValidSystemLanguages().Contains(Application.systemLanguage))
+                                return;
+                            ShowTutorialPanel(tutorialName);
+                        }));
+                    break;
+            }
         }
 
         #endregion

@@ -13,6 +13,7 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
+using RMAZOR.Views.Characters.Tails;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
 using Shapes;

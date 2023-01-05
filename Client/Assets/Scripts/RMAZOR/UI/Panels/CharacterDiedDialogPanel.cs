@@ -343,7 +343,7 @@ namespace RMAZOR.UI.Panels
         {
             TimePauser.UnpauseTimeInGame();
             TimePauser.UnpauseTimeInUi();
-            BetweenLevelAdShower.ShowAd = false;
+            BetweenLevelAdShower.ShowAdEnabled = false;
             var arguments = new Dictionary<string, object>
             {
                 {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterCharacterDiedPanel}

@@ -25,11 +25,14 @@ namespace RMAZOR.Views.Characters.Head
         #endregion
 
         #region nonpublic members
+        
+        private static int _AnimKeyStartJumping2 = Animator.StringToHash("anim5");
 
         private static int AnimKeyStartMove    => AnimKeys.Anim;
         private static int AnimKeyStartMove2   => AnimKeys.Anim4;
         private static int AnimKeyBump         => AnimKeys.Anim2;
-        private static int AnimKeyStartJumping => AnimKeys.Anim3;
+        private static int AnimKeyStartJumping1 => AnimKeys.Anim3;
+        private static int AnimKeyStartJumping2 => _AnimKeyStartJumping2;
         
         protected abstract string PrefabName { get; }
 
@@ -131,7 +134,7 @@ namespace RMAZOR.Views.Characters.Head
                     break;
                 case ELevelStage.CharacterKilled:
                     ActivateShapes(false);
-                    m_Animator.SetTrigger(AnimKeyStartJumping);
+                    m_Animator.SetTrigger(AnimKeyStartJumping1);
                     break;
             }
         }
@@ -159,11 +162,11 @@ namespace RMAZOR.Views.Characters.Head
             if (_Appear)
             {
                 ActivateShapes(true);
-                m_Animator.SetTrigger(AnimKeyStartJumping);
+                m_Animator.SetTrigger(AnimKeyStartJumping1);
             }
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
-                m_Animator.SetTrigger(AnimKeyStartJumping);
+                m_Animator.SetTrigger(AnimKeyStartJumping1);
             AppearTransitioner.DoAppearTransition(
                 _Appear,
                 GetAppearSets(_Appear),
@@ -202,7 +205,7 @@ namespace RMAZOR.Views.Characters.Head
             m_HeadObj.transform.SetLocalScaleXY(localScale);
             m_BorderObj.transform.SetLocalScaleXY(localScale);
             SetOrientation(EDirection.Right, false);
-            m_Animator.SetTrigger(AnimKeyStartJumping);
+            m_Animator.SetTrigger(AnimKeyStartJumping1);
         }
         
         private void SetOrientation(

@@ -47,6 +47,7 @@ namespace RMAZOR
         public string backgroundTextures;
         public int    additionalBackgroundType;
         public bool   showPathItems;
+        public int    characterId;
 
 
         public float LineThickness

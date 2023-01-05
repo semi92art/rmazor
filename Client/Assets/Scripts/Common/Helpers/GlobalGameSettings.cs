@@ -18,5 +18,6 @@ namespace Common.Helpers
         public float     betweenLevelAdShowIntervalInSeconds;
         public bool      enableExtraLevels;
         public int       extraLevelEveryNStage;
+        public bool      showOnlyRewardedAds;
     }
 }
