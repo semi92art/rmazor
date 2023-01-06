@@ -1,9 +1,13 @@
 ﻿#if FIREBASE
+using System.Collections;
+using System.Threading.Tasks;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.Messaging;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Utils;
+using UnityEngine;
 
 namespace Common.Managers.Notifications
 {
@@ -17,43 +21,56 @@ public interface IPushNotificationsProvider : IInit { }
         
         #endregion
 
+        #region inject
+        
+        private IFirebaseInitializer FirebaseInitializer { get; }
+
+        private PushNotificationsProviderFirebase(IFirebaseInitializer _FirebaseInitializer)
+        {
+            FirebaseInitializer = _FirebaseInitializer;
+        }
+
+        #endregion
+
         #region api
 
         public override void Init()
         {
-            if (MazorCommonData.FirebaseApp != null)
-            {
-                InitMessaging();
-                return;
-            }
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(_Task => {
-                var dependencyStatus = _Task.Result;
-                if (dependencyStatus == DependencyStatus.Available) {
-                    InitMessaging();
-                } else {
-                    Dbg.LogError(
-                        "Could not resolve all Firebase dependencies: " + dependencyStatus);
-                }
-            });
+            Cor.Run(InitializeFirebaseMessagingCoroutine());
         }
 
         #endregion
 
         #region nonpublic methods
 
+        private IEnumerator InitializeFirebaseMessagingCoroutine()
+        {
+            if (!FirebaseInitializer.Initialized)
+                yield return null;
+            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
+            {
+                Dbg.LogError("Failed to initialize Firebase Messaging," +
+                             $" dependency status: {FirebaseInitializer.DependencyStatus}");
+                yield break;
+            }
+            InitMessaging();
+        }
+
         private void InitMessaging()
         {
+            if (Application.isEditor)
+                return;
             FirebaseMessaging.TokenReceived += OnTokenReceived;
             FirebaseMessaging.MessageReceived += OnMessageReceived;
+            SubscribeAndRequestPermissions();
+        }
+
+        private void SubscribeAndRequestPermissions()
+        {
             FirebaseMessaging.SubscribeAsync(Topic).ContinueWithOnMainThread(_Task => {
                 LogTaskCompletion(_Task, "SubscribeAsync");
             });
-            Dbg.Log("Firebase Messaging Initialized");
             base.Init();
-            // This will display the prompt to request permission to receive
-            // notifications if the prompt has not already been displayed before. (If
-            // the user already responded to the prompt, thier decision is cached by
-            // the OS and can be changed in the OS settings).
             FirebaseMessaging.RequestPermissionAsync().ContinueWithOnMainThread(
                 _Task => {
                     LogTaskCompletion(_Task, "RequestPermissionAsync");
@@ -61,7 +78,7 @@ public interface IPushNotificationsProvider : IInit { }
             );
         }
         
-        private static bool LogTaskCompletion(System.Threading.Tasks.Task _Task, string _Operation) 
+        private static bool LogTaskCompletion(Task _Task, string _Operation) 
         {
             bool complete = false;
             if (_Task.IsCanceled) 

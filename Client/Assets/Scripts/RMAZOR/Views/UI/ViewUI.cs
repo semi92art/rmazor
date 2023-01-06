@@ -80,6 +80,8 @@ namespace RMAZOR.Views.UI
         private void InitFpsCounter()
         {
             FpsCounter.Init();
+            if (CameraProvider.Camera.IsNotNull())
+                FpsCounter.OnActiveCameraChanged(CameraProvider.Camera);
             CameraProvider.ActiveCameraChanged += FpsCounter.OnActiveCameraChanged;
         }
 

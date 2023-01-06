@@ -137,8 +137,8 @@ namespace Mono_Installers
                 // .To<ViewMazeAdditionalBackgroundFake>()   
                 .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItems>()      
-                // .To<ViewMazeBackgroundIdleItems>()    
-                .To<ViewMazeBackgroundIdleItemsFake>()    
+                .To<ViewMazeBackgroundIdleItems>()    
+                // .To<ViewMazeBackgroundIdleItemsFake>()    
                 .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();

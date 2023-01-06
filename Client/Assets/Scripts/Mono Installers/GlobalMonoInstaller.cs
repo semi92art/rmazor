@@ -213,6 +213,10 @@ namespace Mono_Installers
 #endif
 
             Container.Bind<IApplicationVersionUpdater>().To<ApplicationVersionUpdater>().AsSingle();
+            
+#if FIREBASE
+            Container.Bind<IFirebaseInitializer>().To<FirebaseInitializer>().AsSingle();
+#endif
         }
     }
 }

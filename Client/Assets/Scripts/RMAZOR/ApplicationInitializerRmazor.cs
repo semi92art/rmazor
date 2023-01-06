@@ -60,6 +60,9 @@ namespace RMAZOR
 #if UNITY_ANDROID
         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
 #endif
+#if FIREBASE
+        [Inject] private IFirebaseInitializer FirebaseInitializer { get; set; }
+#endif
 
         [Inject] 
         private void Inject(
@@ -114,12 +117,15 @@ namespace RMAZOR
 #if UNITY_ANDROID
             InitAndroidPerformanceClient();
 #endif
+#if FIREBASE
+            FirebaseInitializer.Init();
+#endif
             var scene = SceneManager.GetActiveScene();
             if (scene.name == SceneNames.Preload)
                 CommonData.GameId = GameIds.RMAZOR;
             LogAppInfo();
             yield return PermissionsRequestCoroutine();
-            InitStartData();
+            yield return InitStartData();
             InitGameManagers();
             InitDefaultData();
             yield return LoadSceneLevel();
@@ -194,7 +200,7 @@ namespace RMAZOR
 
         private IEnumerator InitGameControllerCoroutine()
         {
-            const float waitingTime = 1.5f;
+            const float waitingTime = 3f;
             yield return Cor.WaitWhile(
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
@@ -213,6 +219,7 @@ namespace RMAZOR
             InitScoreManager();
             InitGameClient();
             InitLocalizationManager();
+            InitPushNotificationsProvider();
         }
 
         private void InitRemoteConfigManager()
@@ -220,7 +227,7 @@ namespace RMAZOR
             RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
             RemoteConfigManager.Initialize += AdsManager.Init;
             RemoteConfigManager.Initialize += HapticsManager.Init;
-            RemoteConfigManager.Initialize += InitPushNotificationsProvider;
+            RemoteConfigManager.Init();
         }
 
         private void InitAssetBundleManager()
@@ -378,12 +385,13 @@ namespace RMAZOR
             SetDefaultLanguage();
         }
 
-        private void InitStartData()
+        private IEnumerator InitStartData()
         {
             MazorCommonData.Release = true;
             SaveUtils.PutValue(SaveKeysMazor.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             Dbg.LogLevel = GlobalGameSettings.logLevel;
+            yield return null;
         }
 
         private void SetDefaultLanguage()

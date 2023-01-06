@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Ticker;
@@ -41,7 +40,7 @@ namespace RMAZOR.Managers
 
         #region nonpublic methods
 
-        protected override Task FetchConfigs()
+        protected override void FetchConfigs()
         {
             Cor.Run(Cor.Delay(3f, CommonTicker, () =>
             {
@@ -53,7 +52,6 @@ namespace RMAZOR.Managers
             RemoteConfigService.Instance.SetEnvironmentID("production");
             RemoteConfigService.Instance.FetchCompleted += _instance.OnFetchCompleted;
             RemoteConfigService.Instance.FetchConfigs(new UserAttributes(), new AppAttributes());
-            return null;
         }
         
         private void OnFetchCompleted(ConfigResponse _Response)
@@ -65,7 +63,7 @@ namespace RMAZOR.Managers
             FinishFetching(_Response);
         }
         
-        private void FinishFetching(ConfigResponse _Response)
+        private void FinishFetching(ConfigResponse _)
         {
             if (Initialized)
                 return;

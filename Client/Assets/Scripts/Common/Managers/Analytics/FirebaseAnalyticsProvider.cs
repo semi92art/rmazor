@@ -1,14 +1,14 @@
 ﻿#if FIREBASE
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
 using Firebase;
 using Firebase.Analytics;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Managers.Analytics;
-using UnityEngine;
+using mazing.common.Runtime.Utils;
 
 namespace Common.Managers.Analytics
 {
@@ -16,56 +16,55 @@ namespace Common.Managers.Analytics
 
     public class FirebaseAnalyticsProvider : AnalyticsProviderBase, IFirebaseAnalyticsProvider
     {
+        #region inject
+        
+        private IFirebaseInitializer FirebaseInitializer { get; }
+
+        private FirebaseAnalyticsProvider(IFirebaseInitializer _FirebaseInitializer)
+        {
+            FirebaseInitializer = _FirebaseInitializer;
+        }
+
+        #endregion
+        
         #region api
         
         public override void Init()
         {
-            InitializeFirebase();
+            Cor.Run(InitializeAnalyticsCoroutine());
             base.Init();
         }
 
         #endregion
 
         #region nonpublic methods
-        
-        private static void InitializeFirebase()
+
+        private IEnumerator InitializeAnalyticsCoroutine()
         {
-            // if (Application.isEditor)
-            //     return;
-            if (MazorCommonData.FirebaseApp != null)
+            if (!FirebaseInitializer.Initialized)
+                yield return null;
+            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
             {
-                InitializeAnalytics();
-                Dbg.Log("Firebase initialized successfully");
-                return;
+                Dbg.LogError("Failed to initialize Firebase Analytics," +
+                             $" dependency status: {FirebaseInitializer.DependencyStatus}");
+                yield break;
             }
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
-            {
-                if (_Task.Result == DependencyStatus.Available)
-                {
-                    MazorCommonData.FirebaseApp = FirebaseApp.DefaultInstance;
-                    InitializeAnalytics();
-                    Dbg.Log("Firebase initialized successfully");
-                } 
-                else
-                    Dbg.LogError($"Could not resolve all Firebase dependencies: {_Task.Result}");
-            });
-        }
-        
-        private static void InitializeAnalytics()
-        {
             FirebaseAnalytics.SetAnalyticsCollectionEnabled(true);
             FirebaseAnalytics.SetUserProperty(
                 FirebaseAnalytics.UserPropertySignUpMethod,
                 "Google");
+            base.Init();
         }
-        
+
         protected override void SendAnalyticCore(
             string                      _AnalyticId, 
             IDictionary<string, object> _EventData = null)
         {
             if (_AnalyticId == "session_start")
                 return;
-            if (MazorCommonData.FirebaseApp == null)
+            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
+                return;
+            if (FirebaseInitializer.FirebaseApp == null)
                 return;
             Parameter[] @params = _EventData?.Select(_Kvp =>
             {
@@ -82,9 +81,6 @@ namespace Common.Managers.Analytics
                 };
                 return p;
             }).Where(_P => _P != null).ToArray();
-            Dbg.Log("Trying to send analytic to " +
-                    $"firebase with analytic id {_AnalyticId} " +
-                    $"and event data {(_EventData == null ? "not null" : "null")}");
             if (@params == null)
                 FirebaseAnalytics.LogEvent(_AnalyticId);
             else

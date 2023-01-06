@@ -182,7 +182,7 @@ namespace RMAZOR.UI.Panels
             while (char.IsLetter(m_DisableAdsShopItemArgs.LocalizedPriceString[k]))
                 currencyString += m_DisableAdsShopItemArgs.LocalizedPriceString[k++];
             m_OldPriceTextString = currencyString + " " + Mathf.CeilToInt(
-                (float)m_DisableAdsShopItemArgs.LocalizedPrice / SaleCoefficient);
+                (float)m_DisableAdsShopItemArgs.LocalizedPrice / SaleCoefficient) + ".00";
             m_NewPriceTextString = m_DisableAdsShopItemArgs.LocalizedPriceString;
             m_BuyButtonTextPriceOld.text = m_OldPriceTextString;
             m_BuyButtonTextPriceNew.text = m_NewPriceTextString;

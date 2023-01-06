@@ -127,6 +127,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 95b47228ba5478f44832e46b93611e4c, type: 3}
   - {fileID: 21300000, guid: 4f004328d7c9547edae34787869f3e8a, type: 3}
   - {fileID: 21300000, guid: 9577c428d7714d741bff2986f7030699, type: 3}
+  - {fileID: 21300000, guid: b5a0f4583d838f54e90d327e86847a8f, type: 3}
   - {fileID: 21300000, guid: 35d7e6588f1f34db1b9a5e62f4efdf77, type: 3}
   - {fileID: 21300000, guid: 928516686caa643f5b6615dc945cff34, type: 3}
   - {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
@@ -188,6 +189,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4e75ac6e2ecb7459bb371db0894b53ff, type: 3}
   - {fileID: 21300000, guid: 88356b7eacd1940699896eb710886792, type: 3}
   - {fileID: 21300000, guid: 804461bef59b141dba258fc997c8ca15, type: 3}
+  - {fileID: 21300000, guid: 69d43bbe4df9d33448c5801b69562b8a, type: 3}
   - {fileID: 21300000, guid: 38128ebe161ea084c9341c0ad4177217, type: 3}
   - {fileID: 21300000, guid: 749d21ce7f9315d4aa5b6f9c223489e7, type: 3}
   - {fileID: 21300000, guid: 18c9eade2007517449c31f69142fffb0, type: 3}
@@ -274,6 +276,7 @@ SpriteAtlas:
   - Popup_Frame01_Red
   - Label_TitleRibbon_Green
   - spikes_custom
+  - Popup_Frame01_Yellow
   - Frame_ItemFrame01_Color_Blue
   - Icon_ShopIcon_Gold2
   - icon-square
@@ -335,6 +338,7 @@ SpriteAtlas:
   - Icon_LanguageFlag_Large_Kor
   - Icon_LanguageFlag_Large_Pra
   - Btn_MainButton_Yellow
+  - icon_sale_50_percent_black
   - spike
   - strikeout_line
   - spike1

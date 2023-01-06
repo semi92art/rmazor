@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
@@ -17,10 +16,10 @@ namespace RMAZOR.Managers
     {
         private List<RemoteConfigPropertyInfo> m_Infos;
         
-        public override async void Init()
+        public override void Init()
         {
             if (NetworkUtils.IsInternetConnectionAvailable())
-                await FetchConfigs();
+                FetchConfigs();
             else 
                 base.Init();
         }
@@ -35,7 +34,7 @@ namespace RMAZOR.Managers
             return m_Infos;
         }
 
-        protected abstract Task FetchConfigs();
+        protected abstract void FetchConfigs();
         
         protected void OnFetchConfigsCompletedSuccessfully()
         {

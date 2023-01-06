@@ -11,6 +11,7 @@ using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
+using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
@@ -77,6 +78,7 @@ namespace RMAZOR.UI.Panels
         private IModelGame                          Model                          { get; }
         private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IFontProvider                       FontProvider                   { get; }
 
         private CharacterDiedDialogPanel(
             GlobalGameSettings                  _GlobalGameSettings,
@@ -88,7 +90,8 @@ namespace RMAZOR.UI.Panels
             IColorProvider                      _ColorProvider,
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewBetweenLevelAdShower           _BetweenLevelAdShower,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IFontProvider                       _FontProvider)
             : base(
                 _Managers,
                 _UITicker, 
@@ -101,6 +104,7 @@ namespace RMAZOR.UI.Panels
             Model                          = _Model;
             BetweenLevelAdShower           = _BetweenLevelAdShower;
             SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            FontProvider = _FontProvider;
         }
         
         #endregion
@@ -160,6 +164,9 @@ namespace RMAZOR.UI.Panels
 
         public override void OnDialogStartAppearing()
         {
+            m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
+            m_TextPayMoneyCount.font = FontProvider.GetFont(
+                ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
             TimePauser.PauseTimeInGame();
             m_CountdownValue = 1f;
             m_AdsWatched       = false;
@@ -283,7 +290,6 @@ namespace RMAZOR.UI.Panels
         private void LocalizeTextObjectsOnLoad()
         {
             var locMan = Managers.LocalizationManager;
-            m_TextPayMoneyCount.text  = GlobalGameSettings.payToContinueMoneyCount.ToString();
             locMan.AddTextObject(
                 new LocalizableTextObjectInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have",
                     _T => _T.ToUpper()));

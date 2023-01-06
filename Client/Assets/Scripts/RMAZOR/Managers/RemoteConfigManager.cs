@@ -54,14 +54,14 @@ namespace RMAZOR.Managers
                 RemoteConfigProvider.Init();
             };
             RemotePropertiesInfoProvider.Init();
-            Cor.Run(Cor.Delay(3f, CommonTicker, SignalInit));
+            Cor.Run(Cor.Delay(10f, CommonTicker, () => SignalInit(false)));
         }
 
-        private void SignalInit()
+        private void SignalInit(bool _Success)
         {
             if (Initialized)
                 return;
-            Dbg.Log("Remote Config Manager initialized!");
+            Dbg.Log($"Remote Config Manager initialization success: {_Success}");
             base.Init();
         }
         
@@ -82,7 +82,7 @@ namespace RMAZOR.Managers
         {
             Cor.Run(Cor.WaitWhile(
                 () => !m_FetchCompletedActionDone,
-                SignalInit));
+                () => SignalInit(true)));
             var infos = RemoteConfigProvider.GetFetchedInfos().ToList();
             var entity = SetValuesOfPropertyInfos(infos);
             Cor.Run(Cor.WaitWhile(

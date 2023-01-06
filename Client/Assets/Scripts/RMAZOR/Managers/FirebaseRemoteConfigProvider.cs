@@ -1,51 +1,61 @@
 ﻿#if FIREBASE
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Common;
 using Firebase;
 using Firebase.Extensions;
 using Firebase.RemoteConfig;
 using mazing.common.Runtime;
+using mazing.common.Runtime.Utils;
 
 namespace RMAZOR.Managers
 {
     public class FirebaseRemoteConfigProvider : RemoteConfigProviderBase
     {
-        protected override async Task FetchConfigs()
-        {
-            await InitializeFirebase();
-        }
+        #region inject
         
-        private Task InitializeFirebase()
+        private IFirebaseInitializer FirebaseInitializer { get; }
+
+        private FirebaseRemoteConfigProvider(IFirebaseInitializer _FirebaseInitializer)
         {
-            if (MazorCommonData.FirebaseApp != null)
+            FirebaseInitializer = _FirebaseInitializer;
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        protected override void FetchConfigs()
+        {
+            Cor.Run(InitializeRemoteConfigCoroutine());
+        }
+
+        private IEnumerator InitializeRemoteConfigCoroutine()
+        {
+            if (!FirebaseInitializer.Initialized)
+                yield return null;
+            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
             {
-                return FetchDataAsync();
+                Dbg.LogError("Failed to initialize Firebase Remote Config," +
+                             $" dependency status: {FirebaseInitializer.DependencyStatus}");
+                yield break;
             }
-            return FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
-            {
-                if (_Task.Result == DependencyStatus.Available)
-                {
-                    MazorCommonData.FirebaseApp = FirebaseApp.DefaultInstance;
-                    FetchDataAsync();
-                } 
-                else
-                    Dbg.LogError($"Remote Config: Could not resolve all Firebase dependencies: {_Task.Result}");
-            });
+            FetchDataAsync();
         }
         
-        private Task FetchDataAsync() 
+        private void FetchDataAsync() 
         {
             var fetchTask = FirebaseRemoteConfig.DefaultInstance.FetchAsync(
                 TimeSpan.Zero);
-            return fetchTask.ContinueWithOnMainThread(_Task =>
+            fetchTask.ContinueWithOnMainThread(_Task =>
             {
                 FirebaseRemoteConfig.DefaultInstance
                     .ActivateAsync()
                     .ContinueWithOnMainThread(_Task2 =>
                     {
                         OnFetchConfigsCompletedSuccessfully();
+                        Dbg.Log("Firebase Remote Config Initialization finished");
                     });
             });
         }
@@ -68,6 +78,8 @@ namespace RMAZOR.Managers
             var remoteValue= @switch[_Info.Type]();
             _Info.SetCachedValue(remoteValue);
         }
+
+        #endregion
     }
 }
 #endif

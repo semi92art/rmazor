@@ -120,11 +120,7 @@ namespace RMAZOR.Managers
             {
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdCharacterSpeed,
                     _Value => Execute(
-                        _Value, _V =>
-                        {
-                            Dbg.Log("Character speed: " + ToFloat(_V));
-                            ModelSettings.characterSpeed = ToFloat(_V);
-                        })),
+                        _Value, _V => ModelSettings.characterSpeed = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdGravityBlockSpeed,
                     _Value => Execute(
                         _Value, _V => ModelSettings.gravityBlockSpeed = ToFloat(_V))),
@@ -299,8 +295,8 @@ namespace RMAZOR.Managers
         
         private GameDataFieldFilter GetFilter()
         {
-            var fieldInfos = GetType().GetFields(
-                BindingFlags.NonPublic | BindingFlags.Static);
+            var fieldInfos = GetType()
+                .GetFields(BindingFlags.NonPublic | BindingFlags.Static);
             var fieldIds = fieldInfos
                 .Select(_Fi => _Fi.GetValue(this))
                 .Where(_V => _V is string)
