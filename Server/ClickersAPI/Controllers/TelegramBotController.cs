@@ -60,7 +60,7 @@ namespace ClickersAPI.Controllers
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
             cts.Cancel();
-            return Mapper.Map<string>("bot_initialized");
+            return new OkResult();
         }
 
         [HttpPost("send_message")]
@@ -77,7 +77,7 @@ namespace ClickersAPI.Controllers
             }
             string messageText = sb.ToString();
             await _telegramBotClient.SendTextMessageAsync(AdminChatId, messageText);
-            return Mapper.Map<string>("message sent");
+            return new OkResult();
         }
 
         #endregion

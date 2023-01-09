@@ -9,7 +9,7 @@ namespace ClickersAPI.Controllers
         [HttpGet("timetest")]
         public IActionResult GetCurrentTime()
         {
-            string message = "UTC date and time";
+            const string message = "UTC date and time";
             return Ok(new {message, DateTime.UtcNow});
         }
     }
