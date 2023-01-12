@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Entities.UI;
@@ -70,7 +66,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
         
         public void PreInit(
             List<ELanguage>                _Languages,

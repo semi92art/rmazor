@@ -1,10 +1,4 @@
 ﻿using System;
-using Common;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
@@ -34,7 +28,6 @@ namespace RMAZOR.Camera_Providers
         private Camera      m_LevelCamera;
         protected Transform LevelCameraTr;
         private   Transform m_FollowTr;
-        protected bool      LevelCameraInitialized;
         protected bool      FollowTransformIsNotNull;
         
         private FastDOF             m_DepthOfField;
@@ -79,7 +72,23 @@ namespace RMAZOR.Camera_Providers
                 FollowTransformIsNotNull = value.IsNotNull();
             }
         }
-        public virtual Camera    Camera => LevelCameraInitialized ? m_LevelCamera : Camera.main;
+
+        public virtual Camera Camera => Initialized ? m_LevelCamera : Camera.main;
+
+        public override void Init()
+        {
+            if (Initialized)
+                return;
+            if (m_LevelCamera.IsNotNull())
+                return;
+            InitLevelCamera();
+            InitLevelCameraEffectComponents();
+            Cor.Run(Cor.WaitWhile(InitializationPredicate,
+                () =>
+                {
+                    base.Init();
+                }));
+        }
 
         public void SetEffectProps<T>(ECameraEffect _Effect, T _Args) where T : ICameraEffectProps
         {
@@ -365,7 +374,6 @@ namespace RMAZOR.Camera_Providers
                 return;
             if (SceneManager.GetActiveScene().name != SceneNames.Level)
             {
-                LevelCameraInitialized = false;
                 FollowTransformIsNotNull = false;
                 return;
             }
@@ -384,7 +392,6 @@ namespace RMAZOR.Camera_Providers
             var obj = GameObject.Find(CameraName);
             LevelCameraTr = obj.transform;
             m_LevelCamera = obj.GetComponent<Camera>();
-            LevelCameraInitialized = true;
         }
 
         private void InitLevelCameraEffectComponents()
@@ -396,6 +403,17 @@ namespace RMAZOR.Camera_Providers
             InitFxaa();
             InitPixelate();
             InitBloom();
+        }
+
+        private bool InitializationPredicate()
+        {
+            return m_LevelCamera           .IsNull()
+                   || m_DepthOfField       .IsNull()
+                   || m_FastGlitch         .IsNull()
+                   || m_ChromaticAberration.IsNull()
+                   || m_Fxaa               .IsNull()
+                   || m_Pixelate           .IsNull()
+                   || m_FastBloom          .IsNull();
         }
 
         private void InitDepthOfField()

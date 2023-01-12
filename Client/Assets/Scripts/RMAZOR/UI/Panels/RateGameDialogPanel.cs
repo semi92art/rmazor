@@ -70,7 +70,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium3;
+        public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -113,7 +113,7 @@ namespace RMAZOR.UI.Panels
                 new LocalizableTextObjectInfo(neverButtonText, ETextType.MenuUI, "never",
                     _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
         }
-
+        
         public override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();

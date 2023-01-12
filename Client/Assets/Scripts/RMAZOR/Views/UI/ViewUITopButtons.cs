@@ -33,7 +33,8 @@ namespace RMAZOR.Views.UI
             m_OpenSettingsPanelButton, 
             m_OpenDailyGiftPanelButton,
             m_OpenLevelsPanelButton,
-            m_RateGameButton;
+            m_RateGameButton,
+            m_HomeButton;
         private float m_TopOffset;
         private bool  m_CanShowDailyGiftPanel;
 
@@ -59,16 +60,19 @@ namespace RMAZOR.Views.UI
                 return saveKeyValue.HasValue && saveKeyValue.Value;
             }
         }
+        
         private bool CanShowDailyGiftButton => m_CanShowDailyGiftPanel 
                                                && (Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus);
 
         private bool CanShowLevelsButton => false;
         // private bool CanShowLevelsButton => Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus;
+        
         private bool CanShowRateGameButton =>
             !m_CanShowDailyGiftPanel
             && ((Model.LevelStaging.LevelIndex > 8 && !IsNextLevelBonus)
                 || (Model.LevelStaging.LevelIndex > 2 && IsNextLevelBonus));
 
+        private bool CanShowHomeButton => true;
 
         #endregion
 
@@ -111,6 +115,7 @@ namespace RMAZOR.Views.UI
             InitOpenDailyGiftPanelButton();
             InitOpenLevelsPanelButton();
             InitRateGameButton();
+            InitHomeButton();
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             Managers.ShopManager.AddPurchaseAction(
                 PurchaseKeys.NoAds,
@@ -131,6 +136,7 @@ namespace RMAZOR.Views.UI
                 m_OpenDailyGiftPanelButton.SetGoActive(_Show && CanShowDailyGiftButton);
                 m_OpenLevelsPanelButton   .SetGoActive(_Show && CanShowLevelsButton);
                 m_RateGameButton          .SetGoActive(_Show && CanShowRateGameButton);
+                m_HomeButton              .SetGoActive(_Show && CanShowHomeButton);
             }
             m_OpenSettingsPanelButton.enabled  = _Show;
             m_DisableAdsButton.enabled         = _Show && CanShowDisableAdsButton;
@@ -138,6 +144,7 @@ namespace RMAZOR.Views.UI
             m_OpenDailyGiftPanelButton.enabled = _Show && CanShowDailyGiftButton;
             m_OpenLevelsPanelButton.enabled    = _Show && CanShowLevelsButton;
             m_RateGameButton.enabled           = _Show && CanShowRateGameButton;
+            m_HomeButton.enabled               = _Show && CanShowHomeButton;
         }
 
         public IEnumerable<Component> GetRenderers()
@@ -202,6 +209,12 @@ namespace RMAZOR.Views.UI
                     .SetLocalPosX(visibleBounds.max.x - horizontalOffset - 5f)
                     .SetLocalPosY(yPos)
                     .SetLocalPosZ(10f);
+            m_HomeButton.transform
+                .SetParentEx(parent)
+                .SetLocalScaleXY(scaleVec)
+                .SetLocalPosX(visibleBounds.max.x - horizontalOffset - 5f)
+                .SetLocalPosY(yPos)
+                .SetLocalPosZ(10f);
         }
 
         private void InitDisableAdsButton()
@@ -320,6 +333,24 @@ namespace RMAZOR.Views.UI
                 ViewInputTouchProceeder);
             buttonGo.SetActive(false);
         }
+
+        private void InitHomeButton()
+        {
+            var cont = CameraProvider.Camera.transform;
+            var buttonGo = Managers.PrefabSetManager.InitPrefab(
+                cont, CommonPrefabSetNames.UiGame, "home_button");
+            var renderer = buttonGo.GetCompItem<SpriteRenderer>("button_sprite");
+            renderer.sortingOrder = SortingOrders.GameUI;
+            m_Renderers.Add(renderer);
+            m_HomeButton = buttonGo.GetCompItem<ButtonOnRaycast>("button");
+            m_HomeButton.Init(
+                OnHomeButtonPressed, 
+                () => Model.LevelStaging.LevelStage,
+                CameraProvider,
+                Managers.HapticsManager,
+                ViewInputTouchProceeder);
+            buttonGo.SetActive(false);
+        }
         
         private void OnDisableAdsButtonPressed()
         {   
@@ -356,6 +387,12 @@ namespace RMAZOR.Views.UI
             Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameMainButtonPressed);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
+        }
+
+        private void OnHomeButtonPressed()
+        {
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.HomeButtonPressed);
+            CallCommand(EInputCommand.MainMenuPanel);
         }
 
         private void CallCommand(EInputCommand _Command)

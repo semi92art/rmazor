@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
-using Common.Extensions;
-using Common.Helpers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -13,6 +10,11 @@ using RMAZOR.Views.InputConfigurators;
 namespace RMAZOR.Views.UI
 {
     public interface IViewUIRateGamePanelController : IInit, IOnLevelStageChanged { }
+
+    public class ViewUIRateGamePanelControllerFake : InitBase, IViewUIRateGamePanelController
+    {
+        public void OnLevelStageChanged(LevelStageArgs _Args) { }
+    }
     
     public class ViewUIRateGamePanelController : InitBase, IViewUIRateGamePanelController
     {
@@ -61,7 +63,7 @@ namespace RMAZOR.Views.UI
             m_LevelsFinishedThisSession++;
             if (MustShowPanelOnLevelFinished(_Args))
             {
-                // CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
+                CommandsProceeder.RaiseCommand(EInputCommand.RateGamePanel, null);
             }
         }
 
@@ -75,7 +77,7 @@ namespace RMAZOR.Views.UI
                 return;
             m_RatePanelShownThisSession = true;
             var panel = DialogPanelsSet.GetPanel<IRateGameDialogPanel>();
-            var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+            var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
             dv.Show(panel);
         }
 

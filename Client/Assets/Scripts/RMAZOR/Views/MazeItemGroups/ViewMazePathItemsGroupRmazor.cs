@@ -38,6 +38,8 @@ namespace RMAZOR.Views.MazeItemGroups
             base.OnLevelStageChanged(_Args);
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    return;
                 case ELevelStage.Loaded:
                     UpdatePathItemFilledDictionary();
                     break;

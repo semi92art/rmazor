@@ -21,6 +21,7 @@
         PauseLevel,
         UnPauseLevel,
         KillCharacter,
+        ExitLevelStaging,
         // ui commands
         ShopPanel,
         DisableAdsPanel,
@@ -31,6 +32,8 @@
         FinishLevelGroupPanel,
         PlayBonusLevelPanel,
         TutorialPanel,
+        MainMenuPanel,
+        RateGameFromGameUi,
         // debug commands
         EnableDebug,
         DisableDebug,

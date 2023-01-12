@@ -182,7 +182,7 @@ namespace Editor
             }
             var props = m_AdditionalColorsPropsSet[m_CurrSetIdx];
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
-            CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
+            CommonDataRmazor.BackgroundTextureControllerRmazor?.SetAdditionalInfo(props.additionalInfo);
             CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
             m_ColorProvider.SetColor(ColorIds.MoneyItem, m_ColorProvider.GetColor(ColorIds.MoneyItem));
             m_ColorProvider.SetColor(ColorIds.Main, props.main);

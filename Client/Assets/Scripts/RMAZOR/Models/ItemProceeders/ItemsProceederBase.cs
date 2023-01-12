@@ -121,6 +121,7 @@ namespace RMAZOR.Models.ItemProceeders
                 case ELevelStage.ReadyToUnloadLevel: 
                 case ELevelStage.Unloaded:
                 case ELevelStage.CharacterKilled:
+                case ELevelStage.None:
                     break;
                 default:
                     throw new SwitchCaseNotImplementedException(_Args.LevelStage);

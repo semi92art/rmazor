@@ -46,6 +46,10 @@ MonoBehaviour:
       item: {fileID: 5943621020961091322, guid: a6f10440acfb1714e931e957afea6e62,
         type: 3}
       bundle: 0
+    - name: home_button
+      item: {fileID: 5943621020961091322, guid: 2e9ebe32fd8d7b34d82a9b9bfc67549f,
+        type: 3}
+      bundle: 0
     - name: levels_button
       item: {fileID: 5943621020961091322, guid: adbe2123617bf93488609fb51f5ef1bc,
         type: 3}
@@ -98,15 +102,7 @@ MonoBehaviour:
       item: {fileID: 6624169740486630875, guid: 5b0a6bed4109d2144b0279826ee42655,
         type: 3}
       bundle: 0
-    - name: start_logo_maze_blade_2
-      item: {fileID: 6624169740486630875, guid: 2a968f992deb07046b81d4708f5dd8a4,
-        type: 3}
-      bundle: 0
-    - name: start_logo_maze_blade_3
-      item: {fileID: 6624169740486630875, guid: 80c2fa2114012d1469d77680028f7233,
-        type: 3}
-      bundle: 0
-    - name: start_logo_4
+    - name: game_logo_blady_maze
       item: {fileID: 6624169740486630875, guid: 657651291fa7a3a49ad35f57dac1eff5,
         type: 3}
       bundle: 0

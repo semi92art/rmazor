@@ -1,9 +1,4 @@
-﻿using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.Utils;
-using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Entities;
+﻿using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -45,9 +40,9 @@ namespace RMAZOR.Camera_Providers
         private ViewSettings ViewSettings { get; }
 
         protected DynamicCameraProvider(
+            ViewSettings      _ViewSettings,
             IModelGame        _Model,
             IPrefabSetManager _PrefabSetManager,
-            ViewSettings      _ViewSettings,
             IViewGameTicker   _ViewGameTicker) 
             : base(_PrefabSetManager, _ViewGameTicker)
         {
@@ -74,23 +69,23 @@ namespace RMAZOR.Camera_Providers
         
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.LevelStage != ELevelStage.Loaded || _Args.PreviousStage == ELevelStage.Paused)
-                return;
-            m_EnableFollow = RmazorUtils.IsBigMaze(Model.Data.Info.Size);
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.Loaded when _Args.PreviousStage != ELevelStage.Paused:
+                    m_EnableFollow = RmazorUtils.IsBigMaze(Model.Data.Info.Size);
+                    break;
+                default:
+                    return;
+            }
         }
 
         #endregion
 
         #region nonpublic methods
-        
-        private void OnLastMazeSizeChanged(V2Int _Size)
-        {
-            
-        }
 
         private void CameraFollow()
         {
-            if (!LevelCameraInitialized
+            if (!Initialized
                 || !FollowTransformIsNotNull
                 || !m_EnableFollow)
             {

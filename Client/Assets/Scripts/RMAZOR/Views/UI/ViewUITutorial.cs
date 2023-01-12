@@ -189,7 +189,7 @@ namespace RMAZOR.Views.UI
             );
             TutorialDialogPanel.SetPanelInfo(info);
             TutorialDialogPanel.PrepareVideo();
-            var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerType);
+            var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerId);
             if (!m_TutorialPanelLoaded)
             {
                 TutorialDialogPanel.LoadPanel(dv.Container, dv.Back);

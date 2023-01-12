@@ -8,9 +8,9 @@ namespace RMAZOR
     public static class CommonDataRmazor
     {
         public static int[] LevelsInGroupArray = {3, 3, 3};
-        
+
         public static ViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator;
-        public static ViewMazeBackgroundTextureController          BackgroundTextureController;
+        public static ViewMazeBackgroundTextureControllerRmazor    BackgroundTextureControllerRmazor;
         public static ViewMazeAdditionalBackgroundDrawerRmazorFull AdditionalBackgroundDrawer;
 
         public static LevelStageArgs LastLevelStageArgs;
@@ -18,10 +18,10 @@ namespace RMAZOR
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void ResetState()
         {
-            CameraEffectsCustomAnimator = null;
-            BackgroundTextureController = null;
-            AdditionalBackgroundDrawer  = null;
-            LastLevelStageArgs          = null;
+            CameraEffectsCustomAnimator       = null;
+            BackgroundTextureControllerRmazor = null;
+            AdditionalBackgroundDrawer        = null;
+            LastLevelStageArgs                = null;
         }
     }
 }

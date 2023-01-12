@@ -174,15 +174,6 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 case ELevelStage.Unloaded:
                     m_Animator.SetTrigger(AnimKeys.Stop);
                     break;
-                case ELevelStage.Loaded:
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.CharacterKilled:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
             }
         }
         

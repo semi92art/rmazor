@@ -96,14 +96,14 @@ namespace RMAZOR.Views.Characters
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            if (_Args.LevelStage == ELevelStage.CharacterKilled)
+            switch (_Args.LevelStage)
             {
-                ThrowParticlesOnCharacterDisappear(true, Model.Character.Position);
-            }
-            else if (_Args.LevelStage != ELevelStage.Finished)
-            {
-                if (!m_Initialized)
+                case ELevelStage.CharacterKilled:
+                    ThrowParticlesOnCharacterDisappear(true, Model.Character.Position);
+                    break;
+                case ELevelStage.Finished when !m_Initialized:
                     Activated = true;
+                    break;
             }
         }
         

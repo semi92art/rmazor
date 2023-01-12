@@ -107,8 +107,8 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium3;
-        public override Animator          Animator         => m_Animator;
+        public override int      DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
+        public override Animator Animator       => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
 

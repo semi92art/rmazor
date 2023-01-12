@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common;
 using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
@@ -14,7 +10,6 @@ using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
-using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
@@ -115,6 +110,7 @@ namespace RMAZOR.Views.MazeItems
                 case ELevelStage.Paused:
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Unloaded:
+                case ELevelStage.None:
                     ProceedingStage = EProceedingStage.Inactive;
                     break;
                 default:

@@ -22,15 +22,8 @@ namespace RMAZOR.UI.Panels
 {
     public interface IPlayBonusLevelDialogPanel : IDialogPanel { }
 
-    public class PlayBonusLevelDialogPanelFake : IPlayBonusLevelDialogPanel
-    {
-        public EDialogViewerType DialogViewerType   => default;
-        public EAppearingState   AppearingState     { get; set; }
-        public RectTransform     PanelRectTransform => null;
-        public Animator          Animator           => null;
-        
-        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
-    }
+    public class PlayBonusLevelDialogPanelFake
+        : DialogPanelFake, IPlayBonusLevelDialogPanel { }
     
     public class PlayBonusLevelDialogPanel : DialogPanelBase, IPlayBonusLevelDialogPanel
     {
@@ -82,7 +75,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
         
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -99,6 +92,7 @@ namespace RMAZOR.UI.Panels
             m_PlayButton.onClick.AddListener(OnPlayButtonClick);
             m_SkipButton.onClick.AddListener(OnSkipButtonClick);
         }
+
 
         public override void OnDialogStartAppearing()
         {

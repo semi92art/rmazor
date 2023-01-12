@@ -55,7 +55,7 @@ namespace RMAZOR.Controllers
         
         public override void Init()
         {
-            InitDebugging();
+            CommonUtils.DoOnInitializedEx(RemoteConfigManager, InitDebugging);
             bool modelInitialized = false;
             bool viewInitialized = false;
             Model.Initialize += () => modelInitialized = true;
@@ -123,16 +123,8 @@ namespace RMAZOR.Controllers
         #endregion
 
         #region nonpublic members
-
-        private void InitDebugging()
-        {
-            if (RemoteConfigManager.Initialized)
-                InitDebugCore();
-            else
-                RemoteConfigManager.Initialize += InitDebugCore; 
-        }
         
-        private void InitDebugCore()
+        private void InitDebugging()
         {
             if (SRDebug.Instance == null)
                 SRDebug.Init();

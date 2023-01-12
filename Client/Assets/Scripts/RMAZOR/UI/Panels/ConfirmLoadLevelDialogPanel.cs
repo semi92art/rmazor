@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -28,22 +24,15 @@ namespace RMAZOR.UI.Panels
     public interface IConfirmLoadLevelDialogPanel : IDialogPanel
     {
         void SetLevelGroupAndIndex(
-            int         _LevelGroupIndex, 
-            int         _LevelIndexInGroup);
+            int _LevelGroupIndex,
+            int _LevelIndexInGroup);
     }
     
-    public class ConfirmLoadLevelDialogPanelFake : IConfirmLoadLevelDialogPanel
+    public class ConfirmLoadLevelDialogPanelFake : FakeDialogPanel, IConfirmLoadLevelDialogPanel
     {
-        public EDialogViewerType DialogViewerType   => default;
-        public EAppearingState   AppearingState     { get; set; }
-        public RectTransform     PanelRectTransform => null;
-        public Animator          Animator           => null;
-        
-        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
-
         public void SetLevelGroupAndIndex(
-            int         _LevelGroupIndex,
-            int         _LevelIndexInGroup) { }
+            int _LevelGroupIndex,
+            int _LevelIndexInGroup) { }
     }
      
     public class ConfirmLoadLevelDialogPanel : DialogPanelBase, IConfirmLoadLevelDialogPanel
@@ -89,7 +78,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
         
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -103,6 +92,7 @@ namespace RMAZOR.UI.Panels
             LocalizeTexts();
             SubscribeButtonEvents();
         }
+
 
         public void SetLevelGroupAndIndex(
             int         _LevelGroupIndex,

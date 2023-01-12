@@ -2,9 +2,6 @@
 using System.Globalization;
 using System.Linq;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.UI;
 using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
@@ -33,15 +30,8 @@ namespace RMAZOR.UI.Panels
 {
     public interface ILevelsDialogPanel : IDialogPanel { }
     
-    public class LevelsDialogPanelFake : ILevelsDialogPanel
-    {
-        public EDialogViewerType DialogViewerType   => default;
-        public EAppearingState   AppearingState     { get; set; }
-        public RectTransform     PanelRectTransform => null;
-        public Animator          Animator           => null;
-        
-        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
-    }
+    public class LevelsDialogPanelFake : 
+        DialogPanelFake, ILevelsDialogPanel { }
      
     public class LevelsDialogPanel : DialogPanelBase, ILevelsDialogPanel
     {
@@ -117,9 +107,9 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region api
-        
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override Animator          Animator         => m_PanelAnimator;
+
+        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override Animator Animator       => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -134,6 +124,7 @@ namespace RMAZOR.UI.Panels
             LocalizeTexts();
             SubscribeButtonEvents();
         }
+
 
         public override void OnDialogStartAppearing()
         {
@@ -273,14 +264,15 @@ namespace RMAZOR.UI.Panels
                     _LevelInGroupIndex =>
                     {
                         long currentLevelIdxInGroup = RmazorUtils.GetIndexInGroup(Model.LevelStaging.LevelIndex);   
-                        if (RmazorUtils.WasLevelGroupFinishedBefore(currentLevelGroupIdx) || currentLevelIdxInGroup == 0 || isCurrentLevelBonus)
+                        if (RmazorUtils.WasLevelGroupFinishedBefore(currentLevelGroupIdx) 
+                            || currentLevelIdxInGroup == 0 || isCurrentLevelBonus)
                         {
                             LoadLevel(iLevelsGroup, _LevelInGroupIndex);
                         }
                         else
                         {
                             ConfirmLoadLevelDialogPanel.SetLevelGroupAndIndex(iLevelsGroup, _LevelInGroupIndex);
-                            var dv = DialogViewersController.GetViewer(ConfirmLoadLevelDialogPanel.DialogViewerType);
+                            var dv = DialogViewersController.GetViewer(ConfirmLoadLevelDialogPanel.DialogViewerId);
                             dv.Show(ConfirmLoadLevelDialogPanel);
                         }
                     });

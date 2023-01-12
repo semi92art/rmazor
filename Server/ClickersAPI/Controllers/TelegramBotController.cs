@@ -70,6 +70,7 @@ namespace ClickersAPI.Controllers
             sb.AppendLine("Action: " + _AppEventDto.Action);
             sb.AppendLine($"Country: {_AppEventDto.Country}, Language: {_AppEventDto.Language}");
             sb.AppendLine($"Platform: {_AppEventDto.Platform}, App Ver.: {_AppEventDto.AppVersion}");
+            sb.AppendLine($"IDFA: {_AppEventDto.Idfa}");
             if (_AppEventDto.EventData != null)
             {
                 foreach ((string key, var value) in _AppEventDto.EventData)

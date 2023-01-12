@@ -134,6 +134,7 @@ GameObject:
   m_Component:
   - component: {fileID: 174139393}
   - component: {fileID: 174139392}
+  - component: {fileID: 174139394}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -168,6 +169,14 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!81 &174139394
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 174139391}
+  m_Enabled: 1
 --- !u!1001 &497956441
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -180,10 +189,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Static Camera
       objectReference: {fileID: 0}
-    - target: {fileID: 4521276296573485170, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
+    - target: {fileID: 4521276296573485168, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
         type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294442807
+      propertyPath: m_TagString
+      value: MainCamera
       objectReference: {fileID: 0}
     - target: {fileID: 4521276296573485171, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
         type: 3}
@@ -272,8 +281,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04e81e2efdb244aeb8b5ce8eb6b54570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
-    type: 3}
 --- !u!114 &703413959
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,6 +358,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_MoveRepeatDelay: 0.5
   m_MoveRepeatRate: 0.1
   m_XRTrackingOrigin: {fileID: 0}
@@ -420,21 +428,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Dynamic Camera
-      objectReference: {fileID: 0}
-    - target: {fileID: 4521276296573485168, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
-        type: 3}
-      propertyPath: m_TagString
-      value: Untagged
-      objectReference: {fileID: 0}
-    - target: {fileID: 4521276296573485169, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4521276296573485170, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
-        type: 3}
-      propertyPath: m_CullingMask.m_Bits
-      value: 4294442807
       objectReference: {fileID: 0}
     - target: {fileID: 4521276296573485171, guid: 901c01ba18bd8ba4dbdcd4637ed8b46e,
         type: 3}

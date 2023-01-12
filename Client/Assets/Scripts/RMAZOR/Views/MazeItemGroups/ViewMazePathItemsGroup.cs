@@ -87,6 +87,8 @@ namespace RMAZOR.Views.MazeItemGroups
         {
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    return;
                 case ELevelStage.Loaded:
                 {
                     m_FirstMoveDone = false;

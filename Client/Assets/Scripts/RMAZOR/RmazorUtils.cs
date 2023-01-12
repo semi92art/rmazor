@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
-using Common.Entities;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Exceptions;
@@ -45,7 +41,9 @@ namespace RMAZOR
                     EInputCommand.ShopPanel,
                     EInputCommand.SettingsPanel,
                     EInputCommand.DailyGiftPanel,
-                    EInputCommand.LevelsPanel
+                    EInputCommand.LevelsPanel,
+                    EInputCommand.MainMenuPanel,
+                    EInputCommand.RateGameFromGameUi
                 }
                 .Concat(MoveAndRotateCommands);
         }

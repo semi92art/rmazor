@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using Common;
+using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Debugging;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
@@ -26,6 +29,9 @@ namespace RMAZOR.Views.UI
         private IFpsCounter                         FpsCounter                     { get; }
         private ICameraProvider                     CameraProvider                 { get; }
         private IRemoteConfigManager                RemoteConfigManager            { get; }
+        private IDialogViewerMedium2                DialogViewerMedium2            { get; }
+        private IDialogViewerFullscreen2            DialogViewerFullscreen2        { get; }
+        private IManagersGetter                     Managers                       { get; }
 
         private ViewUI(
             IDialogViewersController            _DialogViewersController,
@@ -37,7 +43,10 @@ namespace RMAZOR.Views.UI
             IViewTimePauser                     _TimePauser,
             IFpsCounter                         _FpsCounter,
             ICameraProvider                     _CameraProvider,
-            IRemoteConfigManager                _RemoteConfigManager)
+            IRemoteConfigManager                _RemoteConfigManager,
+            IDialogViewerMedium2                _DialogViewerMedium2,
+            IDialogViewerFullscreen2            _DialogViewerFullscreen2,
+            IManagersGetter                     _Managers)
             : base(_GameControls)
         {
             DialogViewersController        = _DialogViewersController;
@@ -49,6 +58,9 @@ namespace RMAZOR.Views.UI
             FpsCounter                     = _FpsCounter;
             CameraProvider                 = _CameraProvider;
             RemoteConfigManager            = _RemoteConfigManager;
+            DialogViewerMedium2            = _DialogViewerMedium2;
+            DialogViewerFullscreen2        = _DialogViewerFullscreen2;
+            Managers = _Managers;
         }
 
         #endregion
@@ -57,12 +69,17 @@ namespace RMAZOR.Views.UI
 
         public override void Init()
         {
+            DialogViewerFullscreen2.Initialize += () => DialogViewerFullscreen2.Container.parent.SetLocalPosZ(0f);
             CommandsProceeder.Command += OnCommand;
             GameControls.Init();
             DialogViewersController.Init();
+            DialogViewerMedium2.OtherDialogViewersShowing = () => false;
+            DialogViewerFullscreen2.OtherDialogViewersShowing = () => false;
+            DialogViewersController.RegisterDialogViewer(DialogViewerMedium2);
+            DialogViewersController.RegisterDialogViewer(DialogViewerFullscreen2);
+            
             RateGamePanelController.Init();
-            if (RemoteConfigManager.Initialized) InitFpsCounter();
-            else RemoteConfigManager.Initialize += InitFpsCounter;
+            CommonUtils.DoOnInitializedEx(RemoteConfigManager, InitFpsCounter);
             Cor.Run(Cor.WaitNextFrame(() => DialogPanelsSet.Init()));
             base.Init();
         }
@@ -92,7 +109,7 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.SettingsPanel:
                 {
                     var panel = DialogPanelsSet.GetPanel<ISettingDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel);
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                 }
@@ -100,7 +117,7 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.ShopPanel:
                 {
                     var panel = DialogPanelsSet.GetPanel<IShopDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     panel.SetOnCloseFinishAction(() =>
                     {
                         object loadShopPanelFromCharDiedPanelArg1 = _Args.GetSafe(
@@ -127,7 +144,7 @@ namespace RMAZOR.Views.UI
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<IDailyGiftPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel);
                 }
                     break;
@@ -136,7 +153,7 @@ namespace RMAZOR.Views.UI
                     
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<ILevelsDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel);
                 }
                     break;
@@ -144,7 +161,7 @@ namespace RMAZOR.Views.UI
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<IPlayBonusLevelDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel);
                 }
                     break;
@@ -152,7 +169,7 @@ namespace RMAZOR.Views.UI
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<IFinishLevelGroupDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel);
                 }
                     break;
@@ -160,7 +177,7 @@ namespace RMAZOR.Views.UI
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<ITutorialDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel, 3f);
                 }
                     break;
@@ -168,8 +185,23 @@ namespace RMAZOR.Views.UI
                 {
                     SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                     var panel = DialogPanelsSet.GetPanel<IDisableAdsDialogPanel>();
-                    var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                     dv.Show(panel, 3f);
+                }
+                    break;
+                case EInputCommand.MainMenuPanel:
+                {
+                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.ExitLevelStaging);
+                    var panel = DialogPanelsSet.GetPanel<IMainMenuPanel>();
+                    var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
+                    dv.Show(panel);
+                }
+                    break;
+                case EInputCommand.RateGameFromGameUi:
+                {
+                    Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameMainButtonPressed);
+                    Managers.ShopManager.RateGame();
+                    SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
                 }
                     break;
             }

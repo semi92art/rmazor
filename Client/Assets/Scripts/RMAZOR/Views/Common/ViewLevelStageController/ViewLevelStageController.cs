@@ -19,22 +19,17 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 {
     public interface IViewLevelStageController : IOnLevelStageChanged, IInit, IOnPathCompleted
     {
-        void RegisterProceeders(List<IOnLevelStageChanged> _Proceeder, int _ExecuteOrder);
+        void RegisterProceeder(IOnLevelStageChanged _Proceeder, int _ExecuteOrder);
     }
 
     public class ViewLevelStageController : InitBase, IViewLevelStageController
     {
         #region nonpublic members
         
-        private static AudioClipArgs AudioClipArgsLevelStart => 
-            new AudioClipArgs("level_start", EAudioClipType.GameSound);
-        private static AudioClipArgs AudioClipArgsLevelComplete => 
-            new AudioClipArgs("level_complete", EAudioClipType.GameSound);
-
-        private readonly SortedDictionary<int, List<IOnLevelStageChanged>> m_ProceedersToExecuteBeforeGroups      
-            = new SortedDictionary<int, List<IOnLevelStageChanged>>();
-        private readonly SortedDictionary<int, List<IOnLevelStageChanged>> m_ProceedersToExecuteAfterGroups      
-            = new SortedDictionary<int, List<IOnLevelStageChanged>>();
+        private readonly SortedDictionary<int, IOnLevelStageChanged> m_ProceedersToExecuteBeforeGroups      
+            = new SortedDictionary<int, IOnLevelStageChanged>();
+        private readonly SortedDictionary<int, IOnLevelStageChanged> m_ProceedersToExecuteAfterGroups      
+            = new SortedDictionary<int, IOnLevelStageChanged>();
 
         private bool                m_FirstTimeLevelLoaded;
         private List<IViewMazeItem> m_MazeItemsCached;
@@ -45,22 +40,23 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         #region inject
 
-        private IModelGame                                    Model                              { get; }
-        private IManagersGetter                               Managers                           { get; }
-        private IViewMazeItemsGroupSet                        MazeItemsGroupSet                  { get; }
-        private IViewMazePathItemsGroup                       PathItemsGroup                     { get; }
-        private IViewFullscreenTransitioner                   FullscreenTransitioner             { get; }
-        private IViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator        { get; }
-        private IMoneyCounter                                 MoneyCounter                       { get; }
-        private ICameraProvider                               CameraProvider                     { get; }
-        private ICoordinateConverter                          CoordinateConverter                { get; }
-        private IViewSwitchLevelStageCommandInvoker           SwitchLevelStageCommandInvoker     { get; }
-        private IViewLevelStageControllerOnLevelFinished      StageControllerOnLevelFinished     { get; }
-        private IViewLevelStageControllerOnLevelUnloaded      StageControllerOnLevelUnloaded     { get; }
-        private IViewLevelStageControllerOnCharacterKilled    StageControllerOnCharacterKilled   { get; }
-        private IViewLevelStageControllerOnLevelLoaded        StageControllerOnLevelLoaded       { get; }
-        private IViewLevelStageControllerOnReadyToUnloadLevel StageControllerOnReadyToUnload     { get; }
-        private IViewLevelStageControllerOnLevelReadyToStart  StageControllerOnLevelReadyToStart { get; }
+        private IModelGame                                    Model                                  { get; }
+        private IManagersGetter                               Managers                               { get; }
+        private IViewMazeItemsGroupSet                        MazeItemsGroupSet                      { get; }
+        private IViewMazePathItemsGroup                       PathItemsGroup                         { get; }
+        private IViewFullscreenTransitioner                   FullscreenTransitioner                 { get; }
+        private IViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator            { get; }
+        private IMoneyCounter                                 MoneyCounter                           { get; }
+        private ICameraProvider                               CameraProvider                         { get; }
+        private ICoordinateConverter                          CoordinateConverter                    { get; }
+        private IViewSwitchLevelStageCommandInvoker           SwitchLevelStageCommandInvoker         { get; }
+        private IViewLevelStageControllerOnLevelFinished      StageControllerOnLevelFinished         { get; }
+        private IViewLevelStageControllerOnLevelUnloaded      StageControllerOnLevelUnloaded         { get; }
+        private IViewLevelStageControllerOnCharacterKilled    StageControllerOnCharacterKilled       { get; }
+        private IViewLevelStageControllerOnLevelLoaded        StageControllerOnLevelLoaded           { get; }
+        private IViewLevelStageControllerOnReadyToUnloadLevel StageControllerOnReadyToUnload         { get; }
+        private IViewLevelStageControllerOnLevelReadyToStart  StageControllerOnLevelReadyToStart     { get; }
+        private IViewLevelStageControllerOnExitLevelStaging   LevelStageControllerOnExitLevelStaging { get; }
 
         private ViewLevelStageController(
             IModelGame                                    _Model,
@@ -78,7 +74,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewLevelStageControllerOnCharacterKilled    _StageControllerOnCharacterKilled,
             IViewLevelStageControllerOnLevelLoaded        _StageControllerOnLevelLoaded,
             IViewLevelStageControllerOnReadyToUnloadLevel _StageControllerOnReadyToUnload,
-            IViewLevelStageControllerOnLevelReadyToStart  _StageControllerOnLevelReadyToStart)
+            IViewLevelStageControllerOnLevelReadyToStart  _StageControllerOnLevelReadyToStart,
+            IViewLevelStageControllerOnExitLevelStaging   _LevelStageControllerOnExitLevelStaging)
         {
             Model                            = _Model;
             Managers                         = _Managers;
@@ -95,6 +92,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             StageControllerOnLevelLoaded     = _StageControllerOnLevelLoaded;
             StageControllerOnReadyToUnload   = _StageControllerOnReadyToUnload;
             StageControllerOnLevelReadyToStart = _StageControllerOnLevelReadyToStart;
+            LevelStageControllerOnExitLevelStaging = _LevelStageControllerOnExitLevelStaging;
             MoneyCounter                     = _MoneyCounter;
         }
 
@@ -104,25 +102,24 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public override void Init()
         {
-            MoneyCounter.Init();
-            CameraProvider.Init();
+            MoneyCounter                      .Init();
+            CameraProvider                    .Init();
             StageControllerOnLevelReadyToStart.Init();
-            StageControllerOnReadyToUnload.Init();
+            StageControllerOnReadyToUnload    .Init();
+            StageControllerOnLevelFinished    .Init();
             Cor.Run(Cor.WaitNextFrame(CameraEffectsCustomAnimator.Init));
             FullscreenTransitioner.TransitionFinished += OnBetweenLevelTransitionFinished;
-            Managers.AudioManager.InitClip(AudioClipArgsLevelStart);
-            Managers.AudioManager.InitClip(AudioClipArgsLevelComplete);
             base.Init();
         }
 
-        public void RegisterProceeders(List<IOnLevelStageChanged> _Proceeders, int _ExecuteOrder)
+        public void RegisterProceeder(IOnLevelStageChanged _Proceeder, int _ExecuteOrder)
         {
             var dict = _ExecuteOrder < 0 ?
                 m_ProceedersToExecuteBeforeGroups : m_ProceedersToExecuteAfterGroups;
             if (!dict.ContainsKey(_ExecuteOrder))
-                dict.Add(_ExecuteOrder, _Proceeders);
+                dict.Add(_ExecuteOrder, _Proceeder);
             else 
-                dict[_ExecuteOrder] = _Proceeders;
+                dict[_ExecuteOrder] = _Proceeder;
         }
 
         public void OnPathCompleted(V2Int _LastPath)
@@ -141,6 +138,9 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             ProceedProceedersToExecuteAfterMazeItemGroups(_Args);
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    LevelStageControllerOnExitLevelStaging.OnExitLevelStaging(_Args);
+                    break;
                 case ELevelStage.Loaded:
                     StageControllerOnLevelLoaded.OnLevelLoaded(_Args, GetMazeItems(_Args));
                     break;
@@ -193,13 +193,13 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private void ProceedProceedersToExecuteBeforeMazeItemGroups(LevelStageArgs _Args)
         {
             foreach (var proceeder in m_ProceedersToExecuteBeforeGroups)
-                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+                proceeder.Value.OnLevelStageChanged(_Args);
         }
         
         private void ProceedProceedersToExecuteAfterMazeItemGroups(LevelStageArgs _Args)
         {
             foreach (var proceeder in m_ProceedersToExecuteAfterGroups)
-                proceeder.Value.ForEach(_P => _P.OnLevelStageChanged(_Args));
+                proceeder.Value.OnLevelStageChanged(_Args);
         }
 
         private IReadOnlyCollection<IViewMazeItem> GetMazeItems(LevelStageArgs _Args)

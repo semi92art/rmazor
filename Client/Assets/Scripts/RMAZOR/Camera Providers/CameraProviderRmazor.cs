@@ -4,6 +4,7 @@ using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using UnityEngine;
@@ -56,7 +57,7 @@ namespace RMAZOR.Camera_Providers
             StaticCameraProvider  = _StaticCameraProvider;
             DynamicCameraProvider = _DynamicCameraProvider;
             CameraProviderFake    = _CameraProviderFake;
-            Ticker = _Ticker;
+            Ticker                = _Ticker;
         }
 
         #endregion
@@ -70,6 +71,8 @@ namespace RMAZOR.Camera_Providers
             StaticCameraProvider.Init();
             DynamicCameraProvider.Init();
             Ticker.Register(this);
+            bool InitPredicate() => !StaticCameraProvider.Initialized || !DynamicCameraProvider.Initialized;
+            Cor.Run(Cor.WaitWhile(InitPredicate, base.Init));
             base.Init();
         }
 
@@ -133,8 +136,17 @@ namespace RMAZOR.Camera_Providers
             ActiveCameraChanged?.Invoke(Camera);
             if (DynamicCameraProvider is IOnLevelStageChanged onLevelStageChangedDynamicCameraProvider)
                 onLevelStageChangedDynamicCameraProvider.OnLevelStageChanged(_Args);
-            if (CurrentProvider is IDynamicCameraProvider)
-                CurrentProvider.Camera.tag = "MainCamera";
+            switch (CurrentProvider)
+            {
+                case IStaticCameraProvider:
+                    StaticCameraProvider.Camera.tag = "MainCamera";
+                    DynamicCameraProvider.Camera.tag = "OtherCamera";
+                    break;
+                case IDynamicCameraProvider:
+                    StaticCameraProvider.Camera.tag = "OtherCamera";
+                    DynamicCameraProvider.Camera.tag = "MainCamera";
+                    break;
+            }
         }
 
         #endregion

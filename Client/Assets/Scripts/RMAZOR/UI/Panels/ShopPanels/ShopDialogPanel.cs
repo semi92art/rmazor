@@ -82,9 +82,9 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium2;
-        public          bool              Initialized      { get; private set; }
-        public event UnityAction          Initialize;
+        public override int      DialogViewerId => MazorCommonDialogViewerIds.Medium2;
+        public          bool     Initialized    { get; private set; }
+        public event UnityAction Initialize;
         
         public void Init()
         {

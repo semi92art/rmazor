@@ -74,7 +74,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                     else
                     {
                         var panel = DialogPanelsSet.GetPanel<ICharacterDiedDialogPanel>();
-                        var dv = DialogViewersController.GetViewer(panel.DialogViewerType);
+                        var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                         SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
                         dv.Show(panel, 3f);
                     }

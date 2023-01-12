@@ -894,7 +894,7 @@ namespace SRDebuggerCustomOptions
                     _ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
                     _ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType));
                     CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
-                    CommonDataRmazor.BackgroundTextureController?.SetAdditionalInfo(props.additionalInfo);
+                    CommonDataRmazor.BackgroundTextureControllerRmazor?.SetAdditionalInfo(props.additionalInfo);
                 }
 
                 LoadColorsProvider(false);

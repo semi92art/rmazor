@@ -1,7 +1,4 @@
 ﻿using System.Linq;
-using Common;
-using Common.Helpers;
-using Common.UI;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.UI;
@@ -32,6 +29,7 @@ namespace RMAZOR.UI.Panels
         private ILevelsDialogPanel           LevelsDialogPanel           { get; }
         private IConfirmLoadLevelDialogPanel ConfirmLoadLevelDialogPanel { get; }
         private IDisableAdsDialogPanel       DisableAdsDialogPanel       { get; }
+        private IMainMenuPanel               MainMenuPanel               { get; }
 
 
         public DialogPanelsSet(
@@ -47,7 +45,8 @@ namespace RMAZOR.UI.Panels
             IDailyGiftPanel              _DailyGiftPanel,
             ILevelsDialogPanel           _LevelsDialogPanel,
             IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel,
-            IDisableAdsDialogPanel       _DisableAdsDialogPanel)
+            IDisableAdsDialogPanel       _DisableAdsDialogPanel,
+            IMainMenuPanel               _MainMenuPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -62,6 +61,7 @@ namespace RMAZOR.UI.Panels
             LevelsDialogPanel           = _LevelsDialogPanel;
             ConfirmLoadLevelDialogPanel = _ConfirmLoadLevelDialogPanel;
             DisableAdsDialogPanel       = _DisableAdsDialogPanel;
+            MainMenuPanel               = _MainMenuPanel;
         }
 
         #endregion
@@ -90,7 +90,8 @@ namespace RMAZOR.UI.Panels
                 DailyGiftPanel,
                 LevelsDialogPanel,
                 ConfirmLoadLevelDialogPanel,
-                DisableAdsDialogPanel
+                DisableAdsDialogPanel,
+                MainMenuPanel
             };
             var result = panels.FirstOrDefault(_Panel => _Panel is T);
             return (T)result;
@@ -106,21 +107,21 @@ namespace RMAZOR.UI.Panels
             {
                 CharacterDiedDialogPanel,
                 (IDialogPanel)SettingDialogPanel, 
-                // SettingLanguageDialogPanel,
+                // SettingLanguageDialogPanel, // инициализировать на старте не нужно
                 ShopDialogPanel,
                 RateGameDialogPanel,
-                // TutorialDialogPanel,
+                // TutorialDialogPanel, // инициализировать на старте не нужно
                 FinishLevelGroupDialogPanel,
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
                 LevelsDialogPanel,
                 ConfirmLoadLevelDialogPanel,
-                DisableAdsDialogPanel
+                DisableAdsDialogPanel,
+                MainMenuPanel
             };
             foreach (var panel in panelsToLoad)
             {
-                var dv = DialogViewersController.GetViewer(
-                    panel.DialogViewerType);
+                var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                 panel.LoadPanel(dv.Container, dv.Back);
             }
         }

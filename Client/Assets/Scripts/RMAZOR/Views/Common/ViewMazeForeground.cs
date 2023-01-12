@@ -3,7 +3,6 @@ using System.Linq;
 using Common;
 using Common.Helpers;
 using mazing.common.Runtime;
-using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
@@ -32,9 +31,7 @@ namespace RMAZOR.Views.Common
             GlobalGameSettings      _GlobalGameSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
-            IPrefabSetManager       _PrefabSetManager,
-            CompanyLogo             _CompanyLogo,
-            ICameraProvider         _CameraProvider)
+            IPrefabSetManager       _PrefabSetManager)
             : base(_ColorProvider)
         {
             GlobalGameSettings = _GlobalGameSettings;

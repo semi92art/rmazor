@@ -60,3 +60,7 @@ MonoBehaviour:
       item: {fileID: 8219298684319459333, guid: 21e8371bbde43814eb36d3acdd05bd10,
         type: 3}
       bundle: 0
+    - name: main_menu_panel
+      item: {fileID: 8219298684319459333, guid: 12154ba3f21b7214e8b25799aa5cf138,
+        type: 3}
+      bundle: 0

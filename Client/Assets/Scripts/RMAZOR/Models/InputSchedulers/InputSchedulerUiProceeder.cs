@@ -58,6 +58,7 @@ namespace RMAZOR.Models.InputSchedulers
                 case EInputCommand.KillCharacter:
                 case EInputCommand.StartUnloadingLevel:
                 case EInputCommand.LoadLevelByIndex:
+                case EInputCommand.ExitLevelStaging:
                     UiCommand?.Invoke(_Command, _Args);
                     break;
             }
@@ -97,9 +98,10 @@ namespace RMAZOR.Models.InputSchedulers
                 case EInputCommand.FinishLevel:          LevelStaging.FinishLevel(_Args);          break;
                 case EInputCommand.PauseLevel:           LevelStaging.PauseLevel(_Args);           break;
                 case EInputCommand.UnPauseLevel:         LevelStaging.UnPauseLevel(_Args);         break;
-                case EInputCommand.StartUnloadingLevel:   LevelStaging.ReadyToUnloadLevel(_Args);   break;
+                case EInputCommand.StartUnloadingLevel:  LevelStaging.ReadyToUnloadLevel(_Args);   break;
                 case EInputCommand.UnloadLevel:          LevelStaging.UnloadLevel(_Args);          break;
                 case EInputCommand.KillCharacter:        LevelStaging.KillCharacter(_Args);        break;
+                case EInputCommand.ExitLevelStaging:     LevelStaging.ExitLevelStaging(_Args);     break;
             }
         }
 

@@ -1,9 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
 using Common.Utils;
 using Lean.Common;
 using Lean.Touch;
@@ -140,11 +135,6 @@ namespace RMAZOR.Views.InputConfigurators
                 lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>(
                     "icons", "finger_texture");
             }
-            var goLeanMultiUpdate = new GameObject("Lean Multi Update");
-            goLeanMultiUpdate.SetParent(GetContainer());
-            var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
-            lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
-            
             LeanTouch.OnFingerUp   -= OnFingerUp;
             LeanTouch.OnFingerUp   += OnFingerUp;
             LeanTouch.OnFingerDown -= LeanTouchOnOnFingerDown;
@@ -170,8 +160,7 @@ namespace RMAZOR.Views.InputConfigurators
             var lmu = goLeanMultiUpdate.AddComponent<LeanMultiUpdate>();
             lmu.Coordinate = LeanMultiUpdate.CoordinateType.ScreenPixels;
             lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
-            LeanTouch.OnFingerUp -= OnFingerUp;
-            LeanTouch.OnFingerUp += OnFingerUp;
+            lmu.OnFingers.AddListener(OnLeanMultiUpdateFingers);
         }
 
         private void InitLeanTouchForTapToNext()

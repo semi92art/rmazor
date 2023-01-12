@@ -98,7 +98,7 @@ namespace RMAZOR.UI.Panels
         
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
+        public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -126,6 +126,7 @@ namespace RMAZOR.UI.Panels
             PanelRectTransform = go.RTransform();
             PanelRectTransform.SetGoActive(false);
         }
+
 
         public override void OnDialogStartAppearing()
         {
@@ -220,7 +221,7 @@ namespace RMAZOR.UI.Panels
                 Ticker,
                 Managers.AudioManager,
                 Managers.LocalizationManager,
-                DialogViewersController.GetViewer(LanguagePanel.DialogViewerType),
+                DialogViewersController.GetViewer(LanguagePanel.DialogViewerId),
                 _Language =>
                 {
                     void SetLangSetting()

@@ -147,24 +147,14 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             if (!Active)
                 return;
             m_Animator.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
-            switch (_Args.LevelStage)
+            int? animTrigger = _Args.LevelStage switch
             {
-                case ELevelStage.ReadyToStart:
-                    m_Animator.SetTrigger(AnimKeys.Anim);
-                    break;
-                case ELevelStage.Unloaded:
-                    m_Animator.SetTrigger(AnimKeys.Stop);
-                    break;
-                case ELevelStage.Loaded:
-                case ELevelStage.StartedOrContinued:
-                case ELevelStage.Paused:
-                case ELevelStage.Finished:
-                case ELevelStage.ReadyToUnloadLevel:
-                case ELevelStage.CharacterKilled:
-                    break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Args.LevelStage);
-            }
+                ELevelStage.ReadyToStart => AnimKeys.Anim,
+                ELevelStage.Unloaded     => AnimKeys.Stop,
+                _                        => null
+            };
+            if (animTrigger.HasValue)
+                m_Animator.SetTrigger(animTrigger.Value);
         }
         
         public void EnableInitializedShapes(bool _Enable)

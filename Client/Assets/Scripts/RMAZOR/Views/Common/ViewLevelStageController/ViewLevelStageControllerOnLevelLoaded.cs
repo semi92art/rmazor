@@ -10,7 +10,6 @@ using RMAZOR.Models;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
-using RMAZOR.Views.UI.Game_Logo;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
@@ -21,12 +20,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
     
     public class ViewLevelStageControllerOnLevelLoaded : IViewLevelStageControllerOnLevelLoaded
     {
-        #region nonpublic members
-        
-        private bool m_StartLogoShowing = true;
-
-        #endregion
-
         #region inject
         
         private ViewSettings                     ViewSettings                { get; }
@@ -36,8 +29,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
         private IViewMazePathItemsGroup          PathItemsGroup              { get; }
         private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
-        private CompanyLogo                      CompanyLogo                 { get; }
-        private IViewUIGameLogo                  GameLogo                    { get; }
 
         public ViewLevelStageControllerOnLevelLoaded(
             ViewSettings                     _ViewSettings,
@@ -46,9 +37,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewCharacter                   _Character,
             IViewFullscreenTransitioner      _FullscreenTransitioner,
             IViewMazePathItemsGroup          _PathItemsGroup,
-            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator,
-            CompanyLogo                      _CompanyLogo,
-            IViewUIGameLogo                  _GameLogo)
+            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator)
         {
             ViewSettings                = _ViewSettings;
             Model                       = _Model;
@@ -57,8 +46,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             FullscreenTransitioner      = _FullscreenTransitioner;
             PathItemsGroup              = _PathItemsGroup;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
-            CompanyLogo                 = _CompanyLogo;
-            GameLogo                    = _GameLogo;
         }
 
 
@@ -66,16 +53,9 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         #region api
         
-        
         public void OnLevelLoaded(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems)
         {
             SaveGame(_Args);
-            if (m_StartLogoShowing)
-            {
-                CompanyLogo.HideLogo();
-                GameLogo.Show();
-                m_StartLogoShowing = false;
-            }
             Character.Appear(true);
             foreach (var pathItem in PathItemsGroup.PathItems)
             {
@@ -84,6 +64,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(true);
+            FullscreenTransitioner.Enabled = true;
             FullscreenTransitioner.DoTextureTransition(false, ViewSettings.betweenLevelTransitionTime);
             CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(true);
         }

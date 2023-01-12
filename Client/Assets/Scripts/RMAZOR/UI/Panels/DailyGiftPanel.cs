@@ -35,16 +35,11 @@ namespace RMAZOR.UI.Panels
         UnityAction OnClose { set; }
     }
     
-    public class DailyGiftPanelFake : IDailyGiftPanel
+    public class DailyGiftPanelFake : DialogPanelFake, IDailyGiftPanel
     {
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public UnityAction OnClose { get; set; }
-        public EDialogViewerType DialogViewerType   => default;
-        public EAppearingState   AppearingState     { get; set; }
-        public RectTransform     PanelRectTransform => null;
-        public Animator          Animator           => null;
+        public UnityAction     OnClose            { get; set; }
         
-        public void        LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
+        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
     }
      
     public class DailyGiftPanel : DialogPanelBase, IDailyGiftPanel
@@ -117,9 +112,9 @@ namespace RMAZOR.UI.Panels
         #region api
 
         public UnityAction OnClose { private get; set; }
-        
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override Animator          Animator         => m_PanelAnimator;
+
+        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override Animator Animator       => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {

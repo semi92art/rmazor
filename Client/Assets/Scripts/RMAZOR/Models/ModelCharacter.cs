@@ -119,7 +119,8 @@ namespace RMAZOR.Models
                 case ELevelStage.ReadyToStart when _Args.PrePreviousStage == ELevelStage.CharacterKilled:
                     Revive(false);
                     break;
-                case ELevelStage.CharacterKilled: Die();         
+                case ELevelStage.CharacterKilled:
+                    Die();         
                     break;
             }
         }

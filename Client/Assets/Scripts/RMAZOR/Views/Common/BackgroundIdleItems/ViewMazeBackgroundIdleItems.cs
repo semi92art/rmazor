@@ -165,6 +165,9 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 m_SquaresPool  .Add(squareItem);
                 m_TrianglesPool.Add(triangleItem);
             }
+            m_DiscsPool    .DeactivateAll();
+            m_SquaresPool  .DeactivateAll();
+            m_TrianglesPool.DeactivateAll();
         }
 
         protected override void ProceedItems()

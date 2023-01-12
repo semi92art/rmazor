@@ -74,6 +74,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 457f50d7294e4b7fa90e426c0ae71616, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
+    type: 3}
   companyLogo: {fileID: 8828779044702047863, guid: bfe13c5da350a5743a9ec173908f293d,
     type: 3}
   globalGameSettings: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}

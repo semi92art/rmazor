@@ -26,6 +26,15 @@ namespace RMAZOR.Views.UI
         void ShowControls(bool _Show, bool _Instantly);
     }
 
+    public class ViewUIStarsAndTimePanelFake : IViewUIStarsAndTimePanel
+    {
+        public IEnumerable<Component> GetRenderers() => new Component[0];
+        
+        public void Init(Vector4                       _Offsets)               { }
+        public void OnLevelStageChanged(LevelStageArgs _Args)                  { }
+        public void ShowControls(bool                  _Show, bool _Instantly) { }
+    }
+
     public class ViewUIStarsAndTimePanel :
         InitBase,
         IViewUIStarsAndTimePanel,
@@ -41,11 +50,10 @@ namespace RMAZOR.Views.UI
         
         private bool        m_DoUpdateTimeText;
 
-        private bool CanShowPanel => false;
-        // private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
-        //                              || (string) Model.LevelStaging.Arguments.GetSafe(
-        //                                  CommonInputCommandArg.KeyNextLevelType, out _) ==
-        //                              CommonInputCommandArg.ParameterLevelTypeBonus; 
+        private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
+                                     || (string) Model.LevelStaging.Arguments.GetSafe(
+                                         CommonInputCommandArg.KeyNextLevelType, out _) ==
+                                     CommonInputCommandArg.ParameterLevelTypeBonus; 
 
         private float 
             m_TimeThreshold3Stars, 

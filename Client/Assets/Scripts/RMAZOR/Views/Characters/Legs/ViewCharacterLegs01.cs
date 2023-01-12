@@ -75,8 +75,7 @@ namespace RMAZOR.Views.Characters.Legs
             set
             {
                 m_Activated = value;
-                m_Leg1Body.enabled = m_Leg2Body.enabled = value;
-                m_Leg1Border.enabled = m_Leg2Border.enabled = value;
+                ActivateShapes(value);
                 if (value)
                     UpdatePrefab();
             }
@@ -116,6 +115,9 @@ namespace RMAZOR.Views.Characters.Legs
         {
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    ActivateShapes(false);
+                    return;
                 case ELevelStage.Loaded:
                     m_LastMazeOrientation = EMazeOrientation.North;
                     break;
@@ -196,6 +198,7 @@ namespace RMAZOR.Views.Characters.Legs
             m_Leg2Border = go.GetCompItem<Rectangle>("leg_2_border")
                 .SetColor(borderCol)
                 .SetSortingOrder(SortingOrders.Character - 1);
+            Activated = false;
         }
 
         private void UpdatePrefab()

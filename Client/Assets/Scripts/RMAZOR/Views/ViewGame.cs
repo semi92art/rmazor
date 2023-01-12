@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Constants;
 using Common.Managers.Advertising.AdsProviders;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Enums;
-using mazing.common.Runtime.Exceptions;
-using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
-using mazing.common.Runtime.Managers.Notifications;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
@@ -17,6 +15,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
+using RMAZOR.UI.Panels;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
@@ -53,35 +52,37 @@ namespace RMAZOR.Views
         ILevelsLoader                 LevelsLoader         { get; }
     }
     
-    public class ViewGame : InitBase, IViewGame, IApplicationPause, IUpdateTick
+    public class ViewGame : InitBase, IViewGame
     {
         #region nonpublic members
 
         private float    m_SecondsInLevelWithoutInputActions;
-        private float    m_LastPauseTime;
-        private object[] m_ProceedersCached;
+        private object[] m_ProceedersCached; 
 
         #endregion
         
         #region inject
 
-        private IRemotePropertiesRmazor       RemotePropertiesRmazor { get; }
-        public  ViewSettings                  Settings               { get; }
-        public  IContainersGetter             ContainersGetter       { get; }
-        public  IViewUI                       UI                     { get; }
-        public  IViewLevelStageController     LevelStageController   { get; }
-        public  IViewInputCommandsProceeder   CommandsProceeder      { get; }
-        public  IViewInputTouchProceeder      TouchProceeder         { get; }
-        public  IViewCharacter                Character              { get; }
-        public  IViewMazeRotation             MazeRotation           { get; }
-        public  IViewMazeItemsGroupSet        MazeItemsGroupSet      { get; }
-        public  IViewMazePathItemsGroup       PathItemsGroup         { get; }
-        public  IManagersGetter               Managers               { get; }
-        public  IViewBackground               Background             { get; }
-        public  IViewMazeAdditionalBackground AdditionalBackground   { get; }
-        private IViewFullscreenTransitioner   FullscreenTransitioner { get; }
-        public  ICameraProvider               CameraProvider         { get; }
-        public  ILevelsLoader                 LevelsLoader           { get; }
+        public  ViewSettings                   Settings                  { get; }
+        public  IContainersGetter              ContainersGetter          { get; }
+        public  IViewUI                        UI                        { get; }
+        public  IViewLevelStageController      LevelStageController      { get; }
+        public  IViewInputCommandsProceeder    CommandsProceeder         { get; }
+        public  IViewInputTouchProceeder       TouchProceeder            { get; }
+        public  IViewCharacter                 Character                 { get; }
+        public  IViewMazeRotation              MazeRotation              { get; }
+        public  IViewMazeItemsGroupSet         MazeItemsGroupSet         { get; }
+        public  IViewMazePathItemsGroup        PathItemsGroup            { get; }
+        public  IManagersGetter                Managers                  { get; }
+        public  IViewBackground                Background                { get; }
+        public  IViewMazeAdditionalBackground  AdditionalBackground      { get; }
+        private IViewFullscreenTransitioner    FullscreenTransitioner    { get; }
+        public  ICameraProvider                CameraProvider            { get; }
+        public  ILevelsLoader                  LevelsLoader              { get; }
+        private IDialogPanelsSet               DialogPanelsSet           { get; }
+        private IViewIdleAdsPlayer             IdleAdsPlayer             { get; }
+        private IViewGameIdleQuitter           IdleQuitter               { get; }
+        private IViewMobileNotificationsSender MobileNotificationsSender { get; }
 
         private IViewMazeCommon             Common                 { get; }
         private IViewMazeForeground         Foreground             { get; }
@@ -89,41 +90,37 @@ namespace RMAZOR.Views
         private IColorProvider              ColorProvider          { get; }
         private IRendererAppearTransitioner AppearTransitioner     { get; }
         private IAdsProvidersSet            AdsProvidersSet        { get; }
-        private IModelGame                  Model                  { get; }
         private ICommonTicker               CommonTicker           { get; }
-        private ISystemTicker               SystemTicker           { get; }
-        private ViewSettings                ViewSettings           { get; }
 
         private ViewGame(
-            IRemotePropertiesRmazor       _RemotePropertiesRmazor,
-            ViewSettings                  _Settings,
-            IContainersGetter             _ContainersGetter,
-            IViewUI                       _UI,
-            IViewLevelStageController     _LevelStageController,
-            IViewInputCommandsProceeder   _CommandsProceeder,
-            IViewInputTouchProceeder      _TouchProceeder,
-            IViewCharacter                _Character,
-            IViewMazeCommon               _Common,
-            IViewBackground               _Background,
-            IViewMazeForeground           _Foreground,
-            IViewMazeRotation             _MazeRotation,
-            IViewMazeItemsGroupSet        _MazeItemsGroupSet,
-            IViewMazePathItemsGroup       _PathItemsGroup,
-            IManagersGetter               _Managers,
-            ICoordinateConverter          _CoordinateConverter,
-            IColorProvider                _ColorProvider,
-            ICameraProvider               _CameraProvider,
-            IRendererAppearTransitioner   _AppearTransitioner,
-            IViewMazeAdditionalBackground _AdditionalBackground,
-            IViewFullscreenTransitioner   _FullscreenTransitioner,
-            IAdsProvidersSet              _AdsProvidersSet,
-            IModelGame                    _Model,
-            ICommonTicker                 _CommonTicker,
-            ISystemTicker                 _SystemTicker,
-            ViewSettings                  _ViewSettings,
-            ILevelsLoader                 _LevelsLoader)
+            ViewSettings                   _Settings,
+            IContainersGetter              _ContainersGetter,
+            IViewUI                        _UI,
+            IViewLevelStageController      _LevelStageController,
+            IViewInputCommandsProceeder    _CommandsProceeder,
+            IViewInputTouchProceeder       _TouchProceeder,
+            IViewCharacter                 _Character,
+            IViewMazeCommon                _Common,
+            IViewBackground                _Background,
+            IViewMazeForeground            _Foreground,
+            IViewMazeRotation              _MazeRotation,
+            IViewMazeItemsGroupSet         _MazeItemsGroupSet,
+            IViewMazePathItemsGroup        _PathItemsGroup,
+            IManagersGetter                _Managers,
+            ICoordinateConverter           _CoordinateConverter,
+            IColorProvider                 _ColorProvider,
+            ICameraProvider                _CameraProvider,
+            IRendererAppearTransitioner    _AppearTransitioner,
+            IViewMazeAdditionalBackground  _AdditionalBackground,
+            IViewFullscreenTransitioner    _FullscreenTransitioner,
+            IAdsProvidersSet               _AdsProvidersSet,
+            ICommonTicker                  _CommonTicker,
+            ILevelsLoader                  _LevelsLoader,
+            IDialogPanelsSet               _DialogPanelsSet,
+            IViewIdleAdsPlayer             _IdleAdsPlayer,
+            IViewGameIdleQuitter           _IdleQuitter,
+            IViewMobileNotificationsSender _MobileNotificationsSender)
         {
-            RemotePropertiesRmazor       = _RemotePropertiesRmazor;
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
             UI                           = _UI;
@@ -145,11 +142,12 @@ namespace RMAZOR.Views
             AdditionalBackground         = _AdditionalBackground;
             FullscreenTransitioner       = _FullscreenTransitioner;
             AdsProvidersSet              = _AdsProvidersSet;
-            Model                        = _Model;
             CommonTicker                 = _CommonTicker;
-            SystemTicker                 = _SystemTicker;
-            ViewSettings                 = _ViewSettings;
             LevelsLoader                 = _LevelsLoader;
+            DialogPanelsSet              = _DialogPanelsSet;
+            IdleAdsPlayer                = _IdleAdsPlayer;
+            IdleQuitter                  = _IdleQuitter;
+            MobileNotificationsSender    = _MobileNotificationsSender;
         }
         
         #endregion
@@ -160,12 +158,14 @@ namespace RMAZOR.Views
         {
             if (Initialized)
                 return;
-            CommonDataRmazor.LevelsInGroupArray = ViewSettings.LevelsInGroup; 
-            m_LastPauseTime = SystemTicker.Time;
+            CommonDataRmazor.LevelsInGroupArray = Settings.LevelsInGroup; 
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
+            RegisterLevelsStagingProceeders();
             InitProceeders();
-            SendNotificationsOnInit();
+            TouchProceeder.ProceedRotation = Application.isEditor;
+            CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
+            CommonUtils.DoOnInitializedEx(DialogPanelsSet, () => Cor.Run(LoadMainMenuOnStart()));
             base.Init();
         }
         
@@ -194,72 +194,16 @@ namespace RMAZOR.Views
             foreach (var proceeder in proceeders)
                 proceeder?.OnCharacterMoveFinished(_Args);
         }
-        
-        public void OnApplicationPause(bool _Pause)
-        {
-            if (_Pause)
-                m_LastPauseTime = SystemTicker.Time;
-            else
-            {
-                float secondsLeft = SystemTicker.Time - m_LastPauseTime;
-                if (secondsLeft / (60f * 60f) > 6f)
-                    ReloadGame();
-            }
-        }
-        
-        public void UpdateTick()
-        {
-            if (!Initialized)
-                return;
-            ShowAdIfNoActionsForLongTime();
-        }
 
         #endregion
         
         #region nonpublic methods
-
-        private void ShowAdIfNoActionsForLongTime()
+        
+        private IEnumerator LoadMainMenuOnStart()
         {
-            bool IsCorrectLevelStage()
-            {
-                var levelStage = Model.LevelStaging.LevelStage;
-                switch (levelStage)
-                {
-                    case ELevelStage.ReadyToStart:
-                        case ELevelStage.StartedOrContinued:
-                        case ELevelStage.Paused:
-                        return true;
-                    case ELevelStage.Finished when !RmazorUtils.IsLastLevelInGroup(Model.LevelStaging.LevelIndex):
-                        return true;
-                    case ELevelStage.Finished:
-                    case ELevelStage.Loaded:
-                    case ELevelStage.ReadyToUnloadLevel:
-                    case ELevelStage.Unloaded:
-                    case ELevelStage.CharacterKilled:
-                        return false;
-                    default: throw new SwitchCaseNotImplementedException(levelStage);
-                }
-            }
-            bool PassedEnoughTime()
-            {
-                return CommandsProceeder.TimeFromLastCommandInSecs > 30f
-                       && Managers.AdsManager.RewardedAdReady;
-            }
-            if (!IsCorrectLevelStage() 
-                || !PassedEnoughTime()
-                || Managers.AdsManager.RewardedAdReady)
-            {
-                return;
-            }
-            void OnBeforeAdShown()
-            {
-                Managers.AudioManager.MuteAudio(EAudioClipType.Music);
-            }
-            void OnAdClosed()
-            {
-                Managers.AudioManager.UnmuteAudio(EAudioClipType.Music);
-            }
-            Managers.AdsManager.ShowRewardedAd(OnBeforeAdShown, _OnClosed: OnAdClosed);
+            if (!CameraProvider.Initialized)
+                yield return null;
+            CommandsProceeder.RaiseCommand(EInputCommand.MainMenuPanel, null);
         }
 
         private void InitAdsProvidersMuteAudioAction()
@@ -271,17 +215,14 @@ namespace RMAZOR.Views
         private void MuteAudio(bool _Mute)
         {
             var audioManager = Managers.AudioManager;
-            if (_Mute)
+            var audioClipTypes = Enum
+                .GetValues(typeof(EAudioClipType))
+                .Cast<EAudioClipType>()
+                .ToList();
+            foreach (var audioClipType in audioClipTypes)
             {
-                audioManager.MuteAudio(EAudioClipType.Music);
-                audioManager.MuteAudio(EAudioClipType.UiSound);
-                audioManager.MuteAudio(EAudioClipType.GameSound);
-            }
-            else
-            {
-                audioManager.UnmuteAudio(EAudioClipType.Music);
-                audioManager.UnmuteAudio(EAudioClipType.UiSound);
-                audioManager.UnmuteAudio(EAudioClipType.GameSound);
+                if (_Mute) audioManager.MuteAudio(audioClipType);
+                else       audioManager.UnmuteAudio(audioClipType);
             }
         }
         
@@ -292,94 +233,55 @@ namespace RMAZOR.Views
             CommonUtils.DoOnInitializedEx(
                 Managers.RemoteConfigManager, 
                 () => Managers.AnalyticsManager.Init());
-            var proceedersToExecuteOnLevelStageChangedBeforeGroups = new object[]
-            {
-                ContainersGetter,
-                Common,
-                UI,
-                TouchProceeder,
-                CommandsProceeder,
-                Character,
-                MazeRotation,
-                PathItemsGroup,
-                MazeItemsGroupSet,
-                AppearTransitioner,
-                FullscreenTransitioner,
-                Foreground,
-                Background
-            };
-            var proceedersToExecuteOnLevelStageChangedAfretGroups = new object[]
-            {
-                AdditionalBackground,
-                CameraProvider,
-                Managers
-            };
-            m_ProceedersCached = proceedersToExecuteOnLevelStageChangedBeforeGroups
-                .Concat(proceedersToExecuteOnLevelStageChangedAfretGroups)
-                .ToArray();
-            LevelStageController
-                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>(
-                        proceedersToExecuteOnLevelStageChangedBeforeGroups)
-                .Where(_P => _P != null).ToList(), -1);
-            LevelStageController
-                .RegisterProceeders(GetInterfaceOfProceeders<IOnLevelStageChanged>(
-                        proceedersToExecuteOnLevelStageChangedAfretGroups)
-                    .Where(_P => _P != null).ToList(), 2);
-            ColorProvider.Init();
-            CameraProvider.Init();
+            // RegisterLevelsStagingProceeders();
+            m_ProceedersCached = GetOrderedViewGameProceedersToExecute().Values.ToArray();
+            ColorProvider            .Init();
+            CameraProvider           .Init();
+            IdleAdsPlayer            .Init();
+            IdleQuitter              .Init();
+            MobileNotificationsSender.Init();
             foreach (var initObj in GetInterfaceOfProceeders<IInit>())
                 initObj?.Init();
             LevelStageController.Init();
-            TouchProceeder.ProceedRotation = Application.isEditor;
-            CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
         }
 
-        private T[] GetInterfaceOfProceeders<T>(object[] _Proceeders = null) where T : class
+        private void RegisterLevelsStagingProceeders()
         {
-            return Array.ConvertAll(_Proceeders ?? m_ProceedersCached, _Item => _Item as T);
-        }
-
-        private void SendNotificationsOnInit()
-        {
-            if (!MazorCommonData.Release)
-                return;
-            if (RemotePropertiesRmazor.Notifications == null)
-                return;
-            var notMan = Managers.NotificationsManager;
-            var notifications = RemotePropertiesRmazor.Notifications 
-                                ?? DefaultNotificationsGetter.GetNotifications();
-            var sessionsDict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays);
-            bool needToSendNotifications = false;
-            var today = DateTime.Now.Date;
-            for (int iDay = 0; iDay < 5; iDay++)
+            var allProceeders = GetOrderedViewGameProceedersToExecute();
+            foreach ((int key, var value) in allProceeders)
             {
-                var iDateTime = today - TimeSpan.FromDays(iDay);
-                int sessionsCount = sessionsDict.GetSafe(iDateTime, out _);
-                if (sessionsCount > 0)
-                    continue;
-                needToSendNotifications = true;
-                break;
-            }
-            if (!needToSendNotifications)
-                return;
-            notMan.OperatingMode = ENotificationsOperatingMode.NoQueue;
-            notMan.ClearAllNotifications();
-            var currentLanguage = Managers.LocalizationManager.GetCurrentLanguage();
-            foreach (var notification in notifications)
-            {
-                notMan.SendNotification(
-                    notification.Title[currentLanguage], 
-                    notification.Body[currentLanguage], 
-                    notification.Span,
-                    _Reschedule: Application.platform == RuntimePlatform.Android,
-                    _SmallIcon: "small_notification_icon",
-                    _LargeIcon: "large_notification_icon");
+                if (value is IOnLevelStageChanged onLevelStageChanged)
+                    LevelStageController.RegisterProceeder(onLevelStageChanged, key);
             }
         }
-
-        private static void ReloadGame()
+        
+        private SortedDictionary<int, object> GetOrderedViewGameProceedersToExecute()
         {
-            Application.Quit();
+            return new SortedDictionary<int, object>
+            {
+                {-13, ContainersGetter},
+                {-12, Common},
+                {-11, UI},
+                {-10, TouchProceeder},
+                {-09, CommandsProceeder},
+                {-08, Character},
+                {-07, MazeRotation},
+                {-06, PathItemsGroup},
+                {-05, MazeItemsGroupSet},
+                {-04, AppearTransitioner},
+                {-03, FullscreenTransitioner},
+                {-02, Foreground},
+                {-01, Background},
+                
+                {+01, AdditionalBackground},
+                {+02, CameraProvider},
+                {+03, Managers},
+            };
+        }
+        
+        private T[] GetInterfaceOfProceeders<T>() where T : class
+        {
+            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
         }
         
         #endregion

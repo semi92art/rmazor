@@ -120,6 +120,8 @@ namespace RMAZOR.Views.Characters.Head
                 m_Animator.speed = _Args.LevelStage == ELevelStage.Paused ? 0f : 1f;
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    return;
                 case ELevelStage.Loaded:
                     m_LastMazeOrientation = EMazeOrientation.North;
                     SetOrientation(EDirection.Right, false);

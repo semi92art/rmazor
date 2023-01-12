@@ -1,9 +1,5 @@
 ﻿using System;
-using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
@@ -47,8 +43,8 @@ namespace RMAZOR.Views.Coordinate_Converters
         protected bool    Initialized;
         protected bool    MazeDataWasSet;
         protected float   ScaleValue;
-        protected Vector2 MazeSizeForPositioning;
-        protected Vector2 MazeSizeForScale;
+        protected Vector2 MazeSizeForPositioning = new Vector2(10f, 10f);
+        protected Vector2 MazeSizeForScale       = new Vector2(10f, 10f);
         protected Vector2 Center;
         protected bool    IsDebug;
 
@@ -144,8 +140,6 @@ namespace RMAZOR.Views.Coordinate_Converters
         {
             if (!Initialized)
                 Dbg.LogError("Coordinate converter was not initialized.");
-            if (!MazeDataWasSet || MazeSizeForPositioning.x < MathUtils.Epsilon || MazeSizeForPositioning.y < MathUtils.Epsilon)
-                Dbg.LogError("Maze size was not set.");
         }
 
         #endregion

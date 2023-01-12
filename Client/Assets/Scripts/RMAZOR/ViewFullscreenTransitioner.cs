@@ -15,6 +15,7 @@ namespace RMAZOR
     {
         event UnityAction<bool> TransitionFinished;
         void                    DoTextureTransition(bool _Appear, float _Duration);
+        bool                    Enabled { get; set; }
     }
     
     public class ViewFullscreenTransitioner : InitBase, IViewFullscreenTransitioner
@@ -52,6 +53,7 @@ namespace RMAZOR
         {
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             TextureProvider.Init();
+            Enabled = false;
             base.Init();
         }
 
@@ -61,6 +63,12 @@ namespace RMAZOR
             Cor.Stop(m_TextureCoroutine);
             m_TextureCoroutine = DoTextureTransitionCoroutine(_Appear, _Duration);
             Cor.Run(m_TextureCoroutine);
+        }
+
+        public bool Enabled
+        {
+            get => TextureProvider.Renderer.enabled;
+            set => TextureProvider.Renderer.enabled = value;
         }
 
         #endregion

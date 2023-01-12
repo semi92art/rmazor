@@ -83,8 +83,8 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override Animator          Animator         => m_Animator;
+        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override Animator Animator       => m_Animator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -99,6 +99,7 @@ namespace RMAZOR.UI.Panels
             SubscribeButtons();
             m_DisableAdsShopItemArgs = GetDisableAdsShopItemArgs();
         }
+
 
         private void OnLanguageChanged(ELanguage _Language)
         {

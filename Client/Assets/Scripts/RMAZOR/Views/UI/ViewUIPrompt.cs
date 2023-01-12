@@ -166,6 +166,7 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.ReadyToUnloadLevel:
                 case ELevelStage.Paused:
                 case ELevelStage.CharacterKilled:
+                case ELevelStage.None:
                     HidePrompt(true);
                     break;
                 default:

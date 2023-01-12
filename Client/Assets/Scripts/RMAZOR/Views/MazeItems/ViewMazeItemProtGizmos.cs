@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Entities;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Exceptions;
 using RMAZOR.Models.MazeInfos;

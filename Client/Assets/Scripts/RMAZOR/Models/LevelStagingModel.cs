@@ -7,6 +7,7 @@ namespace RMAZOR.Models
 {
     public enum ELevelStage
     {
+        None,
         Loaded,
         ReadyToStart,
         StartedOrContinued,
@@ -68,6 +69,7 @@ namespace RMAZOR.Models
         void KillCharacter(Dictionary<string, object>        _Args = null);
         void ReadyToUnloadLevel(Dictionary<string, object>   _Args = null);
         void UnloadLevel(Dictionary<string, object>          _Args = null);
+        void ExitLevelStaging(Dictionary<string, object>     _Args = null);
     }
 
     public class ModelLevelStaging : InitBase, IModelLevelStaging, IUpdateTick
@@ -75,8 +77,8 @@ namespace RMAZOR.Models
         #region nonpublic members
 
         private bool        m_DoUpdateLevelTime;
-        private ELevelStage PrevPrevLevelStage { get; set; }     = ELevelStage.Unloaded;
-        private ELevelStage PrevPrevPrevLevelStage { get; set; } = ELevelStage.Unloaded;
+        private ELevelStage PrevPrevLevelStage { get; set; }     = ELevelStage.None;
+        private ELevelStage PrevPrevPrevLevelStage { get; set; } = ELevelStage.None;
         
         #endregion
     
@@ -160,6 +162,11 @@ namespace RMAZOR.Models
         public void UnloadLevel(Dictionary<string, object> _Args = null)
         {
             InvokeLevelStageChanged(ELevelStage.Unloaded, _Args);
+        }
+
+        public void ExitLevelStaging(Dictionary<string, object> _Args = null)
+        {
+            InvokeLevelStageChanged(ELevelStage.None, _Args);
         }
 
         #endregion

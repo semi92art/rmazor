@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using System.Linq;
+using Common;
 using Common.Helpers;
 using Common.Managers;
 using Common.Managers.Advertising;
@@ -14,25 +15,39 @@ using Common.Managers.PlatformGameServices.Leaderboards;
 using Common.Managers.PlatformGameServices.SavedGames;
 using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
 using mazing.common.Runtime;
+using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Debugging;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Managers.Notifications;
 using mazing.common.Runtime.Network;
+using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Settings;
 using mazing.common.Runtime.Ticker;
 using RMAZOR;
+using RMAZOR.Camera_Providers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
+using RMAZOR.Models;
+using RMAZOR.Models.InputSchedulers;
+using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Settings;
+using RMAZOR.Views.Common.FullscreenTextureProviders;
+using RMAZOR.Views.ContainerGetters;
+using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.UI.Game_Logo;
 using UnityEngine;
 using Zenject;
+using ZMAZOR.Views.Camera_Providers;
+using ZMAZOR.Views.Coordinate_Converters;
 
 namespace Mono_Installers
 {
     public class GlobalMonoInstaller : MonoInstaller
     {
+        public GameObject         colorProvider;
         public GameObject         companyLogo;
         public GlobalGameSettings globalGameSettings;
         public ModelSettings      modelSettings;
@@ -42,6 +57,13 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
+            Dbg.Log(Container.AllContracts.Count());
+            foreach (var bindingId in Container.AllContracts)
+            {
+                Dbg.Log($"Binded type: {bindingId.Type}");
+            }
+            BindCamera();
+            BindModel();
             BindSettings();
             BindTickers();
             BindAnalytics();
@@ -167,18 +189,62 @@ namespace Mono_Installers
 #endif
             }
         }
+        
+        private void BindModel()
+        {
+            Container.Bind<IInputScheduler>()             .To<InputScheduler>()             .AsSingle();
+            Container.Bind<IInputSchedulerGameProceeder>().To<InputSchedulerGameProceeder>().AsSingle();
+            Container.Bind<IInputSchedulerUiProceeder>()  .To<InputSchedulerUiProceeder>()  .AsSingle();
+            Container.Bind<IModelData>()                  .To<ModelData>()                  .AsSingle();
+            Container.Bind<IModelMazeRotation>()          .To<ModelMazeRotation>()          .AsSingle();
+            Container.Bind<IModelCharacter>()             .To<ModelCharacter>()             .AsSingle();
+            Container.Bind<IModelGame>()                  .To<ModelGame>()                  .AsSingle();
+            Container.Bind<IModelLevelStaging>()          .To<ModelLevelStaging>()          .AsSingle();
+            Container.Bind<IPathItemsProceeder>()         .To<PathItemsProceeder>()         .AsSingle();
+            Container.Bind<ITrapsMovingProceeder>()       .To<TrapsMovingProceeder>()       .AsSingle();
+            Container.Bind<IGravityItemsProceeder>()      .To<GravityItemsProceeder>()      .AsSingle();
+            Container.Bind<ITrapsReactProceeder>()        .To<TrapsReactProceeder>()        .AsSingle();
+            Container.Bind<ITurretsProceeder>()           .To<TurretsProceeder>()           .AsSingle();
+            Container.Bind<ITrapsIncreasingProceeder>()   .To<TrapsIncreasingProceeder>()   .AsSingle();
+            Container.Bind<IPortalsProceeder>()           .To<PortalsProceeder>()           .AsSingle();
+            Container.Bind<IShredingerBlocksProceeder>()  .To<ShredingerBlocksProceeder>()  .AsSingle();
+            Container.Bind<ISpringboardProceeder>()       .To<SpringboardProceeder>()       .AsSingle();
+            Container.Bind<IHammersProceeder>()           .To<HammersProceeder>()           .AsSingle();
+            Container.Bind<ISpearsProceeder>()            .To<SpearsProceeder>()            .AsSingle();
+            Container.Bind<IDiodesProceeder>()            .To<DiodesProceeder>()            .AsSingle();
+            Container.Bind<IKeyLockMazeItemsProceeder>()  .To<KeyLockMazeItemsProceeder>()  .AsSingle();
+            Container.Bind<IModelItemsProceedersSet>()    .To<ModelItemsProceedersSet>()    .AsSingle();
+            
+            Container.Bind<IModelMazeInfoCorrector>()         
+                .To<ModelMazeInfoCorrectorWithWallSurrounding>()
+                .AsSingle();
+            Container.Bind<IModelCharacterPositionValidator>()
+                .To<ModelCharacterPositionValidator>()
+                .AsSingle();
+            Container.Bind<IRevivePositionProvider>()
+                .To<RevivePositionProvider>()
+                .AsSingle();
+        }
 
         private void BindOther()
         {
-            Container.Bind<CompanyLogo>()                  .FromComponentInNewPrefab(companyLogo) .AsSingle();
-            Container.Bind<IGameClient>()                  .To<GameClient>()                      .AsSingle();
-            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()              .AsSingle();
-            Container.Bind<ILocalizationManager>()         .To<LeanLocalizationManager>()         .AsSingle();
-            Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()                .AsSingle();
-            Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()              .AsSingle();
-            Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()               .AsSingle();
+            if (!MazorCommonData.Release)
+            {
+                Container.Bind<IViewUIGameLogo>()       .To<ViewUIGameLogoFake>()     .AsSingle();
+            }
+            else
+            {
+                Container.Bind<IViewUIGameLogo>()       .To<ViewUIGameLogoBladyMaze2>().AsSingle();
+            }
+            
+            Container.Bind<IGameClient>()                  .To<GameClient>()                    .AsSingle();
+            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()            .AsSingle();
+            Container.Bind<ILocalizationManager>()         .To<LeanLocalizationManager>()       .AsSingle();
+            Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()              .AsSingle();
+            Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()            .AsSingle();
+            Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()             .AsSingle();
             Container.Bind<IFontProvider>()                .To<FontProviderMazor>()             .AsSingle();
-            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()    .AsSingle();
+            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()  .AsSingle();
             Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
             
             if (Application.isEditor)
@@ -217,6 +283,48 @@ namespace Mono_Installers
 #if FIREBASE
             Container.Bind<IFirebaseInitializer>().To<FirebaseInitializer>().AsSingle();
 #endif
+            
+            Container.Bind<IColorProvider>()             
+                .FromComponentInNewPrefab(colorProvider)
+                .AsSingle();
+            Container.Bind<IViewMazeGameLogoTextureProvider>()   
+                .To<ViewMazeGameLogoTextureProviderCirclesToSquares>()
+                .AsSingle();
+            Container.Bind(typeof(IContainersGetter), typeof(IContainersGetterRmazor))
+                .To<ContainersGetterRmazor>()
+                .AsSingle();
+            Container.Bind<ICoordinateConverterForSmallLevels>().To<CoordinateConverterForSmallLevels>().AsSingle();
+            Container.Bind<ICoordinateConverterForBigLevels>()  .To<CoordinateConverterForBigLevels>()  .AsSingle();
+            switch (CommonData.GameId)
+            {
+                case GameIds.RMAZOR:
+                    Container.Bind<ICoordinateConverter>().To<CoordinateConverterRmazor>().AsSingle();
+                    break;
+                case GameIds.ZMAZOR:
+                    Container.Bind<ICoordinateConverter>().To<CoordinateConverterZmazor>().AsSingle();
+                    break;
+            }
+            var inputControllerType = Application.isEditor ? 
+                typeof(ViewCommandsProceederInEditor) : typeof(ViewInputCommandsProceeder);
+            Container.Bind<IViewInputCommandsProceeder>()
+                .To(inputControllerType) 
+                .AsSingle();
+        }
+        
+        private void BindCamera()
+        {
+            Container.Bind<IStaticCameraProvider>() .To<StaticCameraProvider>() .AsSingle();
+            Container.Bind<IDynamicCameraProvider>().To<DynamicCameraProvider>().AsSingle();
+            Container.Bind<ICameraProviderFake>()   .To<CameraProviderFake>()   .AsSingle();
+            switch (CommonData.GameId)
+            {
+                case GameIds.RMAZOR:
+                    Container.Bind<ICameraProvider>().To<CameraProviderRmazor>().AsSingle();
+                    break;
+                case GameIds.ZMAZOR:
+                    Container.Bind<ICameraProvider>().To<CameraProviderZmazor>().AsSingle();
+                    break;
+            }
         }
     }
 }

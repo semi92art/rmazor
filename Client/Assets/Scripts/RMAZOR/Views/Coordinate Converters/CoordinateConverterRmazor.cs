@@ -10,10 +10,17 @@ namespace RMAZOR.Views.Coordinate_Converters
     public class CoordinateConverterRmazor : ICoordinateConverter
     {
         #region nonpublic members
-        private ICoordinateConverter CurrentCoordinateConverter => 
-            RmazorUtils.IsBigMaze(Model.Data.Info.Size) ? 
-            (ICoordinateConverter)CoordinateConverterForBigLevels 
-            : CoordinateConverterForSmallLevels;
+        private ICoordinateConverter CurrentCoordinateConverter
+        {
+            get
+            {
+                if (Model.Data.Info == null)
+                    return CoordinateConverterForSmallLevels;
+                return RmazorUtils.IsBigMaze(Model.Data.Info.Size)
+                    ? (ICoordinateConverter) CoordinateConverterForBigLevels
+                    : CoordinateConverterForSmallLevels;
+            }
+        }
 
         #endregion
 

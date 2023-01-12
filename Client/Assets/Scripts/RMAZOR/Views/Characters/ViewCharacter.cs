@@ -192,6 +192,8 @@ namespace RMAZOR.Views.Characters
         {
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    break;
                 case ELevelStage.Loaded:
                     SetStartOrRevivePosition();
                     Activated = true;

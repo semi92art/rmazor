@@ -192,6 +192,9 @@ namespace RMAZOR.Views.UI
             const string group = nameof(IViewUIGameControls);
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None:
+                    CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
+                    break;
                 case ELevelStage.Loaded:
                 case ELevelStage.Paused:
                 case ELevelStage.ReadyToUnloadLevel:

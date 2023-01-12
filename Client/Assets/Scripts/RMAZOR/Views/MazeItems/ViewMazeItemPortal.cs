@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Common;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
@@ -149,14 +146,16 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void InitShape()
         {
+            int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.Portal);
             m_Center = Object.AddComponentOnNewChild<Disc>("Portal Item", out _)
                 .SetType(DiscType.Disc)
+                .SetSortingOrder(sortingOrder)
                 .SetColor(GetMainColor());
             for (int i = 0; i < OrbitsCount; i++)
             {
                 var orbit = Object.AddComponentOnNewChild<Disc>($"Orbit {i + 1}", out _, Vector2.zero)
                     .SetType(DiscType.Arc)
-                    .SetSortingOrder(SortingOrders.GetBlockSortingOrder(EMazeItemType.Portal))
+                    .SetSortingOrder(sortingOrder)
                     .SetArcEndCaps(ArcEndCap.Round)
                     .SetColor(GetMainColor())
                     .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f);

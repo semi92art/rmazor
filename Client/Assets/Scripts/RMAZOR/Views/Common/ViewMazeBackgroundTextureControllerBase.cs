@@ -16,32 +16,13 @@ namespace RMAZOR.Views.Common
 {
     public class CurrentLevelBackgroundTexturesArgs
     {
-        public Color          CurrentColor1  { get; }
-        public Color          CurrentColor2  { get; }
-        public Color          PreviousColor1 { get; }
-        public Color          PreviousColor2 { get; }
-        public Color          NextColor1     { get; }
-        public Color          NextColor2     { get; }
-        public BloomPropsArgs BloomPropsArgs { get; }
-        
+        public BloomPropsArgs                     BloomPropsArgs { get; }
         public AdditionalColorPropsAdditionalInfo AdditionalInfo { get; }
 
         public CurrentLevelBackgroundTexturesArgs(
-            Color                              _CurrentColor1,
-            Color                              _CurrentColor2,
-            Color                              _PreviousColor1,
-            Color                              _PreviousColor2,
-            Color                              _NextColor1,
-            Color                              _NextColor2,
             BloomPropsArgs                     _BloomPropsArgs,
             AdditionalColorPropsAdditionalInfo _AdditionalInfo)
         {
-            CurrentColor1  = _CurrentColor1;
-            CurrentColor2  = _CurrentColor2;
-            PreviousColor1 = _PreviousColor1;
-            PreviousColor2 = _PreviousColor2;
-            NextColor1     = _NextColor1;
-            NextColor2     = _NextColor2;
             BloomPropsArgs = _BloomPropsArgs;
             AdditionalInfo = _AdditionalInfo;
         }
@@ -63,9 +44,7 @@ namespace RMAZOR.Views.Common
             BackCol1Current,
             BackCol2Current,
             BackCol1Prev,
-            BackCol2Prev,
-            BackCol1Next,
-            BackCol2Next;
+            BackCol2Prev;
 
         private BloomPropsArgs m_BloomPropsArgs;
 
@@ -116,12 +95,6 @@ namespace RMAZOR.Views.Common
         public CurrentLevelBackgroundTexturesArgs GetBackgroundColorArgs()
         {
             return new CurrentLevelBackgroundTexturesArgs(
-                BackCol1Current,
-                BackCol2Current,
-                BackCol1Prev,
-                BackCol2Prev,
-                BackCol1Next,
-                BackCol2Next,
                 m_BloomPropsArgs,
                 AdditionalInfo);
         }
@@ -150,7 +123,6 @@ namespace RMAZOR.Views.Common
         {
             var setItemCurrent = GetAdditionalColorsSetItemIndexForLevel(_Args);
             var setItemPrev = GetAdditionalColorsSetItemIndexForLevel(_Args, true);
-            var setItemNext = GetAdditionalColorsSetItemIndexForLevel(_Args, _ForNextLevel: true);
             m_BloomPropsArgs = setItemCurrent.bloom;
             AdditionalInfo = setItemCurrent.additionalInfo;
             ColorProvider.SetColor(ColorIds.PathItem,          GetBackgroundColor(ColorIds.PathItem,       setItemCurrent));
@@ -165,8 +137,6 @@ namespace RMAZOR.Views.Common
             BackCol2Current = GetBackgroundColor(idx2, setItemCurrent);
             BackCol1Prev = GetBackgroundColor(idx1, setItemPrev);
             BackCol2Prev = GetBackgroundColor(idx2, setItemPrev);
-            BackCol1Next = GetBackgroundColor(idx1, setItemNext);
-            BackCol2Next = GetBackgroundColor(idx2, setItemNext);
             ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
             ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
         }

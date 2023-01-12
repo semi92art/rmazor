@@ -14,11 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - name: dialog_viewer
-      item: {fileID: 6009559761229068857, guid: f89d217feb272fb41b6df9bbb7e43091,
-        type: 3}
-      bundle: 0
-    - name: medium_1
+    - name: medium_common
       item: {fileID: 6009559761229068857, guid: f6722810d9c75d64299108e3fcfda8b2,
         type: 3}
       bundle: 0
@@ -26,7 +22,11 @@ MonoBehaviour:
       item: {fileID: 6009559761229068857, guid: 176fe70dbb68ea64389c57fcca4a327f,
         type: 3}
       bundle: 0
-    - name: medium_3
+    - name: fullscreen_common
+      item: {fileID: 6009559761229068857, guid: 6310f287706315e4d967e2c57811ea7b,
+        type: 3}
+      bundle: 0
+    - name: fullscreen_2
       item: {fileID: 6009559761229068857, guid: 6310f287706315e4d967e2c57811ea7b,
         type: 3}
       bundle: 0

@@ -53,7 +53,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public abstract EDialogViewerType DialogViewerType { get; }
+        public abstract int DialogViewerId { get; }
 
         public EAppearingState AppearingState
         {

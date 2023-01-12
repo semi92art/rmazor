@@ -23,7 +23,7 @@ namespace RMAZOR.Helpers
         private bool         m_EnteredOnThisTouchSession;
         private bool         m_ExitedOnThisTimeSession;
 
-        private Func<ELevelStage>        m_LevelStage;
+        private Func<ELevelStage>        m_GetLevelStage;
         private ICameraProvider          m_CameraProvider;
         private IHapticsManager          m_HapticsManager;
         private IViewInputTouchProceeder m_ViewInputTouchProceeder;
@@ -36,7 +36,7 @@ namespace RMAZOR.Helpers
             IHapticsManager          _HapticsManager,
             IViewInputTouchProceeder _ViewInputTouchProceeder)
         {
-            m_LevelStage              = _LevelStage;
+            m_GetLevelStage              = _LevelStage;
             m_CameraProvider          = _CameraProvider;
             m_HapticsManager          = _HapticsManager;
             m_ViewInputTouchProceeder = _ViewInputTouchProceeder;
@@ -48,9 +48,15 @@ namespace RMAZOR.Helpers
         {
             if (!m_Initialized)
                 return;
-            if (m_LevelStage() == ELevelStage.Paused
-                || m_LevelStage() == ELevelStage.CharacterKilled)
-                return;
+            var levelStage = m_GetLevelStage();
+            switch (levelStage)
+            {
+                case ELevelStage.None:
+                case ELevelStage.Paused:
+                case ELevelStage.CharacterKilled:
+                    return;
+                    break;
+            }
             m_PrevFingerState = m_FingerState;
             if (m_ViewInputTouchProceeder.AreFingersOnScreen(1))
                 ProceedButtonNotIdleState();

@@ -1,11 +1,8 @@
 ﻿using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
 using Common.Managers.PlatformGameServices;
 using Common.ScriptableObjects;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;

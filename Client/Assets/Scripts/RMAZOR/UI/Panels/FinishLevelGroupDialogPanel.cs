@@ -31,15 +31,8 @@ namespace RMAZOR.UI.Panels
 {
     public interface IFinishLevelGroupDialogPanel : IDialogPanel { }
     
-    public class FinishLevelGroupDialogPanelFake : IFinishLevelGroupDialogPanel
-    {
-        public EDialogViewerType DialogViewerType   => default;
-        public EAppearingState   AppearingState     { get; set; }
-        public RectTransform     PanelRectTransform => null;
-        public Animator          Animator           => null;
-        
-        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
-    }
+    public class FinishLevelGroupDialogPanelFake 
+        : DialogPanelFake, IFinishLevelGroupDialogPanel { }
 
     public class FinishLevelGroupDialogPanel : DialogPanelBase, IFinishLevelGroupDialogPanel
     {
@@ -120,8 +113,8 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override EDialogViewerType DialogViewerType => EDialogViewerType.Medium1;
-        public override Animator          Animator         => m_PanelAnimator;
+        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override Animator Animator       => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -159,7 +152,7 @@ namespace RMAZOR.UI.Panels
             };
             m_Background.sprite = psm.GetObject<Sprite>(CommonPrefabSetNames.Views, backgroundSpriteName);
         }
-
+        
         public override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();

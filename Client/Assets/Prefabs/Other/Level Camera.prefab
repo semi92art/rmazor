@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4521276296573485171}
   - component: {fileID: 4521276296573485170}
-  - component: {fileID: 4521276296573485169}
   - component: {fileID: 4521276296573485161}
   - component: {fileID: 4521276296573485172}
   - component: {fileID: 4521276296573485160}
@@ -21,7 +20,7 @@ GameObject:
   - component: {fileID: 4521276296573485162}
   m_Layer: 0
   m_Name: Level Camera
-  m_TagString: MainCamera
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -65,14 +64,14 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 30
+  far clip plane: 100
   field of view: 121
   orthographic: 1
   orthographic size: 40
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 4294442807
   m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -84,14 +83,6 @@ Camera:
   m_OcclusionCulling: 0
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &4521276296573485169
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4521276296573485168}
-  m_Enabled: 1
 --- !u!114 &4521276296573485161
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234,17 +225,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 4521276296573485168}
-      name: fast_dof
-    - item: {fileID: 4521276296573485168}
-      name: fast_glitch
-    - item: {fileID: 4521276296573485168}
-      name: color_grading
-    - item: {fileID: 4521276296573485168}
-      name: chromatic_aberration
-    - item: {fileID: 4521276296573485168}
-      name: pixelate
-    - item: {fileID: 4521276296573485168}
-      name: fxaa
-    - item: {fileID: 4521276296573485168}
-      name: bloom
+    - name: fast_dof
+      item: {fileID: 4521276296573485168}
+    - name: fast_glitch
+      item: {fileID: 4521276296573485168}
+    - name: color_grading
+      item: {fileID: 4521276296573485168}
+    - name: chromatic_aberration
+      item: {fileID: 4521276296573485168}
+    - name: pixelate
+      item: {fileID: 4521276296573485168}
+    - name: fxaa
+      item: {fileID: 4521276296573485168}
+    - name: bloom
+      item: {fileID: 4521276296573485168}

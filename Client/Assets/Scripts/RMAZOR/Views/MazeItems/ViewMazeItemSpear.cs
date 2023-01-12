@@ -170,11 +170,14 @@ namespace RMAZOR.Views.MazeItems
         
         public void UpdateTick()
         {
+            var levelStage = Model.LevelStaging.LevelStage;
+            if (levelStage == ELevelStage.None || levelStage == ELevelStage.Finished)
+                return;
+            if (!ActivatedInSpawnPool)
+                return;
             if (!Model.Character.Alive)
                 return;
             if (Model.PathItemsProceeder.AllPathsProceeded)
-                return;
-            if (Model.LevelStaging.LevelStage == ELevelStage.Finished)
                 return;
             if (m_ProjectileIsFlying)
             {

@@ -1,8 +1,4 @@
-﻿using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
-using mazing.common.Runtime.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
@@ -52,6 +48,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         protected void ScaleTextureToViewport(Component _Renderer)
         {
             var camera = CameraProvider.Camera;
+            if (camera.IsNull())
+                return;
             var tr = _Renderer.transform;
             tr.position = camera.transform.position.PlusZ(20f);
             var bds = GraphicUtils.GetVisibleBounds();

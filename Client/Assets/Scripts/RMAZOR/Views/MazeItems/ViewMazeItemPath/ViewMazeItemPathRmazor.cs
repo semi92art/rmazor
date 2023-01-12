@@ -131,16 +131,13 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {
             base.OnLevelStageChanged(_Args);
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.ReadyToStart 
-                    when _Args.PreviousStage == ELevelStage.Paused 
-                         && _Args.PrePreviousStage == ELevelStage.CharacterKilled:
-                {
-                    HighlightEnabled = true;
-                }
-                    break;
-            }
+            if (_Args.LevelStage != ELevelStage.ReadyToStart)
+                return;
+            if (_Args.PreviousStage != ELevelStage.Paused)
+                return;
+            if (_Args.PrePreviousStage != ELevelStage.CharacterKilled)
+                return;
+            HighlightEnabled = true;
         }
 
         public override void Collect(bool _Collect, bool _OnStart)

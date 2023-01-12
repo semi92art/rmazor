@@ -61,6 +61,7 @@ namespace RMAZOR.Views.Common
                 case EInputCommand.KillCharacter:
                 case EInputCommand.FinishLevel:
                 case EInputCommand.UnloadLevel:
+                case EInputCommand.ExitLevelStaging:
                     CommandsProceeder.RaiseCommand(_SwitchStageCommand, newArguments, true);
                     break;
             }
@@ -83,13 +84,6 @@ namespace RMAZOR.Views.Common
             return newArguments;
         }
 
-        private string GetCurrentLevelType(Dictionary<string, object> _Arguments)
-        {
-            string currentLevelType = (string)_Arguments.GetSafe(
-                KeyCurrentLevelType, out _);
-            return currentLevelType;
-        }
-        
         private string GetNextLevelType(Dictionary<string, object> _Arguments)
         {
             string nextLevelType = (string)_Arguments.GetSafe(
@@ -209,6 +203,13 @@ namespace RMAZOR.Views.Common
                     break;
             }
             CommandsProceeder.RaiseCommand(EInputCommand.StartUnloadingLevel, _Args, true);
+        }
+        
+        private string GetCurrentLevelType(Dictionary<string, object> _Arguments)
+        {
+            string currentLevelType = (string)_Arguments.GetSafe(
+                KeyCurrentLevelType, out _);
+            return currentLevelType;
         }
 
         private long GetNextBonusLevelIndex(long _CurrentMainLevelIndex)

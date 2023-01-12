@@ -7,6 +7,7 @@ using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Constants;
@@ -18,12 +19,12 @@ using RMAZOR.Views.InputConfigurators;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
-    public interface IViewLevelStageControllerOnLevelFinished
+    public interface IViewLevelStageControllerOnLevelFinished : IInit
     {
         void OnLevelFinished(LevelStageArgs _Args);
     }
     
-    public class ViewLevelStageControllerOnLevelFinished : IViewLevelStageControllerOnLevelFinished
+    public class ViewLevelStageControllerOnLevelFinished : InitBase, IViewLevelStageControllerOnLevelFinished
     {
         #region nonpublic members
 
@@ -70,6 +71,12 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         #endregion
         
         #region api
+
+        public override void Init()
+        {
+            Managers.AudioManager.InitClip(AudioClipArgsLevelComplete);
+            base.Init();
+        }
 
         public void OnLevelFinished(LevelStageArgs _Args)
         {

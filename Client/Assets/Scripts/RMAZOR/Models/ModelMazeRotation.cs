@@ -68,9 +68,7 @@ namespace RMAZOR.Models
         {
             switch (_Args.LevelStage)
             {
-                case ELevelStage.ReadyToStart:
-                    if (Orientation == EMazeOrientation.North)
-                        return;
+                case ELevelStage.ReadyToStart when Orientation != EMazeOrientation.North:
                     var rotDir = (int) Orientation < 2
                         ? EMazeRotateDirection.CounterClockwise
                         : EMazeRotateDirection.Clockwise;

@@ -21,11 +21,10 @@ using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Network;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
-using Newtonsoft.Json;
 using RMAZOR.Controllers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
-using RMAZOR.Models;
+using RMAZOR.Views.UI.Game_Logo;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Purchasing;
@@ -55,7 +54,7 @@ namespace RMAZOR
         private IAnalyticsManager          AnalyticsManager          { get; set; }
         private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
         private IPushNotificationsProvider PushNotificationsProvider { get; set; }
-        private CompanyLogo                CompanyLogo               { get; set; }
+        private IViewUIGameLogo            GameLogo                  { get; set; }
         
 #if UNITY_ANDROID
         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
@@ -84,7 +83,7 @@ namespace RMAZOR
             IApplicationVersionUpdater _ApplicationVersionUpdater,
             IAnalyticsManager          _AnalyticsManager,
             IPushNotificationsProvider _PushNotificationsProvider,
-            CompanyLogo                _CompanyLogo)
+            IViewUIGameLogo            _GameLogo)
         {
             GlobalGameSettings        = _GameSettings;
             RemoteProperties          = _RemoteProperties;
@@ -103,7 +102,7 @@ namespace RMAZOR
             ApplicationVersionUpdater = _ApplicationVersionUpdater;
             AnalyticsManager          = _AnalyticsManager;
             PushNotificationsProvider = _PushNotificationsProvider;
-            CompanyLogo               = _CompanyLogo;
+            GameLogo                  = _GameLogo;
         }
         
         #endregion
@@ -191,10 +190,8 @@ namespace RMAZOR
         
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
-            CompanyLogo.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;
-            if (!_Scene.name.EqualsIgnoreCase(SceneNames.Level)) 
-                return;
+            GameLogo.Init();
             Cor.Run(InitGameControllerCoroutine());
         }
 
@@ -282,70 +279,12 @@ namespace RMAZOR
             }
         }
 
-        private void InitGameController()
+        private static void InitGameController()
         {
             var controller = GameControllerMVC.CreateInstance();
-            controller.Initialize += () =>
-            {
-                const string fName = MazorCommonData.SavedGameFileName;
-                var sgEntityRemote = ScoreManager.GetSavedGameProgress(fName, false);
-                var sgEntityCache = ScoreManager.GetSavedGameProgress(fName, true);
-                Cor.Run(Cor.WaitWhile(
-               () => sgEntityRemote.Result == EEntityResult.Pending,
-               () =>
-               {
-                   bool castSgRemoteSuccess = sgEntityRemote.Value.CastTo(out SavedGame sgRemote);
-                   if (sgEntityRemote.Result != EEntityResult.Success || !castSgRemoteSuccess)
-                   {
-                       Cor.Run(Cor.WaitWhile(
-                           () => sgEntityCache.Result == EEntityResult.Pending,
-                           () =>
-                           {
-                               bool castSgCacheSuccess = sgEntityCache.Value.CastTo(out SavedGame sgCache);
-                               if (sgEntityCache.Result != EEntityResult.Success || !castSgCacheSuccess)
-                               {
-                                   Dbg.LogWarning("Failed to load saved game entity: " +
-                                                  $"_Result: {sgEntityCache.Result}," +
-                                                  $" castSuccess: {castSgCacheSuccess}," +
-                                                  $" _Value: {JsonConvert.SerializeObject(sgEntityCache.Value)}");
-                                   var savedGame = new SavedGame
-                                   {
-                                       FileName = fName,
-                                       Level = 0,
-                                       Money = 100
-                                   };
-                                   ScoreManager.SaveGameProgress(savedGame, true);
-                                   LoadLevelByIndex(controller, 0, null);
-                                   return;
-                               }
-                               LoadLevelByIndex(controller, sgCache.Level, sgCache.Args);
-                           },
-                           _Seconds: 1f));
-                       return;
-                   }
-                   LoadLevelByIndex(controller, sgRemote.Level, sgRemote.Args);
-               }, _Seconds: 1f));
-            };
             controller.Init();
         }
 
-        private void LoadLevelByIndex(
-            IGameController            _Controller,
-            long                       _LevelIndex,
-            Dictionary<string, object> _Args)
-        {
-            string levelType = (string) _Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
-            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
-            var info = LevelsLoader.GetLevelInfo(1, _LevelIndex, isBonusLevel);
-            _Controller.Model.LevelStaging.Arguments ??= new Dictionary<string, object>();
-            _Controller.Model.LevelStaging.Arguments.SetSafe(
-                CommonInputCommandArg.KeyNextLevelType,
-                isBonusLevel ?
-                    CommonInputCommandArg.ParameterLevelTypeBonus
-                    : CommonInputCommandArg.ParameterLevelTypeMain);
-            _Controller.Model.LevelStaging.LoadLevel(info, _LevelIndex);
-        }
-        
         private void OnScoreManagerInitialize()
         {
             var savedGameServerEntity = ScoreManager.GetSavedGameProgress(

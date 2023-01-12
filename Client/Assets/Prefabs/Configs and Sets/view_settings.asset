@@ -50,4 +50,4 @@ MonoBehaviour:
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
   showPathItems: 1
-  characterId: 1
+  characterId: 2

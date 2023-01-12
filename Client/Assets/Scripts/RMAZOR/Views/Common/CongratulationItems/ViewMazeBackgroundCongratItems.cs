@@ -81,14 +81,8 @@ namespace RMAZOR.Views.Common.CongratulationItems
             m_DoAnimateCongrats = false;
             switch (_Args.LevelStage)
             {
-                case ELevelStage.Finished:
-                    m_DoAnimateCongrats = true;
-                    break;
-                case ELevelStage.Unloaded:
-                {
-                    m_BackCongratsItemsPool.DeactivateAll();
-                    break;
-                }
+                case ELevelStage.Finished: m_DoAnimateCongrats = true;              break;
+                case ELevelStage.Unloaded: m_BackCongratsItemsPool.DeactivateAll(); break;
             }
         }
         
