@@ -33,14 +33,23 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         #region nonpublic members
 
-        private static int AnimKeyGameLogoShow        => AnimKeys.Anim2;
+        private static int AnimKeyGameLogoShow        => AnimKeys.Anim;
         private static int AnimKeyGameLogoStartHiding => AnimKeys.Anim3;
+
+        private static Dictionary<string, float> GameLogoPartsShowDelaysDict 
+            => new Dictionary<string, float>
+            {
+                {"top_text_animator", 0.3f},
+                {"bottom_line_animator", 0.5f},
+                {"bottom_text_animator", 0.7f}
+            };
         
-        private static Dictionary<string, float> GameLogoPartsDelaysDict => new Dictionary<string, float>
+        private static Dictionary<string, float> GameLogoPartsHideDelaysDict 
+            => new Dictionary<string, float>
         {
-            {"top_text_animator", 0.5f},
-            {"bottom_line_animator", 0.8f},
-            {"bottom_text_animator", 1.0f}
+            {"top_text_animator", 0.8f},
+            {"bottom_line_animator", 1.1f},
+            {"bottom_text_animator", 1.3f}
         };
 
         private List<Component> m_Renderers;
@@ -49,6 +58,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private bool                         m_GameLogoAppeared;
         private Dictionary<string, Animator> m_GameLogoCharAnims;
         private bool                         m_OnStart = true;
+        private GameObject                   m_CompanyLogoObj;
         
         #endregion
         
@@ -104,9 +114,9 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         public void Show()
         {
-            if (m_GameLogoAppeared)
-                return;
-            ShowGameLogoCoroutine();
+            m_CompanyLogoObj.GetComponent<Canvas>().enabled = false;
+            m_CompanyLogoObj.DestroySafe();
+            ShowGameLogo();
         }
         
         #endregion
@@ -120,8 +130,10 @@ namespace RMAZOR.Views.UI.Game_Logo
             m_OnStart = false;
         }
 
-        private void ShowGameLogoCoroutine()
+        private void ShowGameLogo()
         {
+            if (m_GameLogoAppeared)
+                return;
             m_GameLogoAppeared = true;
             LockGameplayAndUiCommands(true);
             GetStartGameLogoTransform(out Vector2 position, out float scale);
@@ -130,7 +142,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             LogoTextureProvider.SetColor(MazorCommonData.CompanyLogoBackgroundColor);
             LogoTextureProvider.SetTransitionValue(1f, true);
             SetColors(ColorProvider.GetColor(ColorIds.UI));
-            ShowGameLogo();
+            ShowGameLogoCore();
         }
         
         private void SetGameLogoTransform(Vector2 _Position, float _Scale)
@@ -141,6 +153,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void InitGameLogo()
         {
+            m_CompanyLogoObj = GameObject.Find("Company Logo Canvas");
             const string prefabName = "game_logo_blady_maze";
             var go = PrefabSetManager.InitPrefab(
                 null,
@@ -148,7 +161,7 @@ namespace RMAZOR.Views.UI.Game_Logo
                 prefabName);
             var trigerrer = go.GetCompItem<AnimationTriggerer>("triggerer");
             trigerrer.Trigger1 += () => Cor.Run(HideGameLogoCoroutine());
-            m_GameLogoCharAnims = GameLogoPartsDelaysDict.Keys
+            m_GameLogoCharAnims = GameLogoPartsHideDelaysDict.Keys
                 .ToDictionary(
                     _C => _C, 
                     _C => go.GetCompItem<Animator>(_C));
@@ -195,7 +208,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private IEnumerator HideGameLogoCoroutine()
         {
             StartHidingGameLogo(HideBackgroundTime);
-            yield return Cor.Delay(1.2f, GameTicker);
+            yield return Cor.Delay(1.5f, GameTicker);
             yield return Cor.Lerp(
                 GameTicker,
                 HideBackgroundTime,
@@ -211,7 +224,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void LockGameplayAndUiCommands(bool _Lock)
         {
-            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
+            var commandsToLock = RmazorUtils.GetCommandsToLockInGameUiMenus();
             const string lockGroup = nameof(IViewUIGameLogo); 
             if (_Lock)
                 CommandsProceeder.LockCommands(commandsToLock, lockGroup);
@@ -219,11 +232,11 @@ namespace RMAZOR.Views.UI.Game_Logo
                 CommandsProceeder.UnlockCommands(commandsToLock, lockGroup);
         }
 
-        private void ShowGameLogo()
+        private void ShowGameLogoCore()
         {
             foreach (string key in m_GameLogoCharAnims.Keys)
             {
-                RaiseGameLogoItemAnimTrigger(key, AnimKeyGameLogoShow, 0f);
+                RaiseGameLogoItemAnimTrigger(key, AnimKeyGameLogoShow, GameLogoPartsShowDelaysDict[key]);
             }
         }
         
@@ -232,7 +245,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             foreach ((string key, var animator) in m_GameLogoCharAnims)
             {
                 animator.speed = 1f / _Time;
-                RaiseGameLogoItemAnimTrigger(key, AnimKeyGameLogoStartHiding, GameLogoPartsDelaysDict[key]);
+                RaiseGameLogoItemAnimTrigger(key, AnimKeyGameLogoStartHiding, GameLogoPartsHideDelaysDict[key]);
             }
         }
 

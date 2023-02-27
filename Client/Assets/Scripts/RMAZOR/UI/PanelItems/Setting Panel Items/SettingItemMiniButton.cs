@@ -1,7 +1,4 @@
 ﻿using System;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -12,7 +9,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemMiniButton : SimpleUiItemBase
+    public class SettingItemMiniButton : SimpleUiItem
     {
         #region serialized fields
         
@@ -48,7 +45,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             toggle.onValueChanged.AddListener(_On =>
             {
                 _Action?.Invoke(_On);
-                SoundOnClick();
+                PlayButtonClickSound();
                 SetBackgroundAndIcon(_On);
             });
         }

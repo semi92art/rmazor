@@ -5,9 +5,13 @@ namespace RMAZOR.Views.UI
 {
     public class ViewUIGameControlsFake : ViewUIGameControlsBase
     {
-        public ViewUIGameControlsFake(IModelGame _Model, IViewInputCommandsProceeder _CommandsProceeder) 
+        public ViewUIGameControlsFake(
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder) 
             : base(_Model, _CommandsProceeder) { }
 
-        public override void OnLevelStageChanged(LevelStageArgs _Args) { }
+        public override void OnLevelStageChanged(LevelStageArgs                       _Args) { }
+        public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args) { }
+        public override void OnMazeRotationFinished(MazeRotationEventArgs _Args)             { }
     }
 }

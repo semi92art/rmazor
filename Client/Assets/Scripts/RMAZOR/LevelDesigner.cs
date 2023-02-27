@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -21,6 +18,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR
 {
@@ -47,7 +45,6 @@ namespace RMAZOR
         [HideInInspector] public float      aParam;
         [HideInInspector] public bool       valid;
         [HideInInspector] public V2Int      size;
-        [HideInInspector] public int        loadedLevelGameId    = -1;
         [HideInInspector] public int        loadedLevelIndex     = -1;
         [HideInInspector] public int        loadedLevelHeapIndex = -1;
         [HideInInspector] public GameObject mazeObject;
@@ -85,12 +82,6 @@ namespace RMAZOR
             set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerHeapIndex, value);
         }
 
-        public static int LevelDesignerGameId
-        {
-            get => SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerGameId);
-            set => SaveUtilsInEditor.PutValue(SaveKeysInEditor.DesignerGameId, value);
-        }
-
         public MazeInfo GetLevelInfoFromScene()
         {
             mazeObject = GameObject.Find(ContainerNamesMazor.MazeItems);
@@ -118,14 +109,13 @@ namespace RMAZOR
                         Position = protItemStart!.Props.Position
                     });
             }
-
             var mazeProtItems = maze
                 .Where(_Item => !_Item.Props.IsNode)
                 .Select(_Item => _Item.Props).ToList();
             int maxX = mazeProtItems.Any() ? mazeProtItems.Max(_Item => _Item.Position.X + 1) : 0;
-            maxX = Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
+            maxX = pathItems.Any() ? Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1)) : maxX;
             int maxY = mazeProtItems.Any() ? mazeProtItems.Max(_Item => _Item.Position.Y + 1) : 0;
-            maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
+            maxY = pathItems.Any() ? Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1)) : maxY;
             var mazeSize = new V2Int(maxX, maxY);
             return new MazeInfo
             {
@@ -141,12 +131,12 @@ namespace RMAZOR
                             new MazeItem
                             {
                                 Directions = new List<V2Int> {_Dir},
-                                Pair = _Item.Pair,
-                                Path = _Item.Path,
-                                Type = _Item.Type,
+                                Pair     = _Item.Pair,
+                                Path     = _Item.Path,
+                                Type     = _Item.Type,
                                 Position = _Item.Position,
-                                Blank = _Item.Blank,
-                                Args = _Item.Args
+                                Blank    = _Item.Blank,
+                                Args     = _Item.Args
                             });
                     }).ToList()
             };
@@ -167,12 +157,6 @@ namespace RMAZOR
                 return;
             switch (_Change)
             {
-                case PlayModeStateChange.EnteredEditMode:
-                    break;
-                case PlayModeStateChange.ExitingEditMode:
-                    Dbg.Log("LevelDesignerGameId: " + LevelDesignerGameId);
-                    CommonData.GameId = LevelDesignerGameId;
-                    break;
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
                     MazorCommonData.Release = false;
@@ -215,7 +199,12 @@ namespace RMAZOR
             controller.Initialize += () =>
             {
                 int selectedLevel = SaveUtilsInEditor.GetValue(SaveKeysInEditor.DesignerSelectedLevel);
-                controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel);
+                var args = new Dictionary<string, object>
+                {
+                    {KeyGameMode,      ParameterGameModeMain},
+                    {KeyNextLevelType, ParameterLevelTypeDefault},
+                };
+                controller.Model.LevelStaging.LoadLevel(MazeInfo, selectedLevel, args);
             };
             controller.Init();
             SceneManager.sceneLoaded -= OnSceneLoaded;

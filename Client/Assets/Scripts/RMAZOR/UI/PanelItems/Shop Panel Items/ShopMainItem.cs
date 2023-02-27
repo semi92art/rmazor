@@ -20,7 +20,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
         {
             Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Shop Item";
-            button.onClick.AddListener(SoundOnClick);
+            button.onClick.AddListener(PlayButtonClickSound);
             button.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;
         }

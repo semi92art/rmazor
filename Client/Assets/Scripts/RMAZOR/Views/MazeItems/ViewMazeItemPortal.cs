@@ -201,7 +201,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.MazeItem2)
+            if (_ColorId != GetMazeItemBlockColorId())
                 return;
             m_Center.Color = _Color;
             foreach (var item in m_Orbits)
@@ -263,7 +263,7 @@ namespace RMAZOR.Views.MazeItems
 
         private Color GetMainColor()
         {
-            return ColorProvider.GetColor(ColorIds.MazeItem2);
+            return ColorProvider.GetColor(GetMazeItemBlockColorId());
         }
 
         #endregion

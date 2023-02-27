@@ -19,6 +19,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -73,7 +74,7 @@ namespace RMAZOR.Views.MazeItems
         private IPrefabSetManager                   PrefabSetManager               { get; }
         private IMazeShaker                         Shaker                         { get; }
         private IViewParticlesThrower               ParticlesThrower               { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemHammer(
             ViewSettings                        _ViewSettings,
@@ -88,7 +89,7 @@ namespace RMAZOR.Views.MazeItems
             IPrefabSetManager                   _PrefabSetManager,
             IMazeShaker                         _Shaker,
             IViewParticlesThrower               _ParticlesThrower,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
+            IViewLevelStageSwitcher _LevelStageSwitcher) 
             : base(
                 _ViewSettings,
                 _Model,
@@ -103,7 +104,7 @@ namespace RMAZOR.Views.MazeItems
             PrefabSetManager               = _PrefabSetManager;
             Shaker                         = _Shaker;
             ParticlesThrower               = _ParticlesThrower;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
@@ -150,7 +151,7 @@ namespace RMAZOR.Views.MazeItems
                 PrefabSetManager,
                 Shaker,
                 ParticlesThrower.Clone() as IViewParticlesThrower,
-                SwitchLevelStageCommandInvoker);
+                LevelStageSwitcher);
         
         public Func<ViewCharacterInfo> GetViewCharacterInfo { private get; set; }
         
@@ -266,7 +267,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
                 break;
             }
         }

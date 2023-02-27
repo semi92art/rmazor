@@ -1539,7 +1539,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &5645051723886357034
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -1556,7 +1556,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!114 &5645051723886357035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1571,46 +1571,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 5059098813564520511}
-      name: animator
-    - item: {fileID: 5059098813564520511}
-      name: counter
-    - item: {fileID: 5059098813564520511}
-      name: triggerer
-    - item: {fileID: 4437524263811026742}
-      name: blade_container_1
-    - item: {fileID: 1812606193686754284}
-      name: blade_container_2
-    - item: {fileID: 2644816165411980465}
-      name: blade_container_3
-    - item: {fileID: 5886397057207878708}
-      name: blade_container_4
-    - item: {fileID: 6790848557289920620}
-      name: blade_1
-    - item: {fileID: 1021985679241019523}
-      name: blade_2
-    - item: {fileID: 559375525048970296}
-      name: blade_3
-    - item: {fileID: 3526383146176656641}
-      name: blade_4
-    - item: {fileID: 1313957701647770393}
-      name: center
-    - item: {fileID: 7750792906373817836}
-      name: center_2
-    - item: {fileID: 8397948449258392043}
-      name: head
-    - item: {fileID: 7644597584044222211}
-      name: head_border
-    - item: {fileID: 1276882345924891198}
-      name: eye_1_angry
-    - item: {fileID: 4184988484037369276}
-      name: eye_2_angry
-    - item: {fileID: 8121896726682201617}
-      name: mouth
-    - item: {fileID: 2859678353268580892}
-      name: eye_1_idle
-    - item: {fileID: 4877288327507515327}
-      name: eye_2_idle
+    - name: animator
+      item: {fileID: 5059098813564520511}
+    - name: counter
+      item: {fileID: 5059098813564520511}
+    - name: triggerer
+      item: {fileID: 5059098813564520511}
+    - name: blade_container_1
+      item: {fileID: 4437524263811026742}
+    - name: blade_container_2
+      item: {fileID: 1812606193686754284}
+    - name: blade_container_3
+      item: {fileID: 2644816165411980465}
+    - name: blade_container_4
+      item: {fileID: 5886397057207878708}
+    - name: blade_1
+      item: {fileID: 6790848557289920620}
+    - name: blade_2
+      item: {fileID: 1021985679241019523}
+    - name: blade_3
+      item: {fileID: 559375525048970296}
+    - name: blade_4
+      item: {fileID: 3526383146176656641}
+    - name: center
+      item: {fileID: 1313957701647770393}
+    - name: center_2
+      item: {fileID: 7750792906373817836}
+    - name: head
+      item: {fileID: 8397948449258392043}
+    - name: head_border
+      item: {fileID: 7644597584044222211}
+    - name: eye_1_angry
+      item: {fileID: 1276882345924891198}
+    - name: eye_2_angry
+      item: {fileID: 4184988484037369276}
+    - name: mouth_1
+      item: {fileID: 8121896726682201617}
+    - name: eye_1_idle
+      item: {fileID: 2859678353268580892}
+    - name: eye_2_idle
+      item: {fileID: 4877288327507515327}
+    - name: mouth_2
+      item: {fileID: 3234793842790397495}
 --- !u!114 &9171679553502429605
 MonoBehaviour:
   m_ObjectHideFlags: 0

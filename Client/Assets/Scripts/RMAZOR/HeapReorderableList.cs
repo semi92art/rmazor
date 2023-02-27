@@ -2,16 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
+using Editor;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using RMAZOR.Helpers;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -42,9 +40,9 @@ namespace RMAZOR
         #region serialized fields
 
         [SerializeField] private SerializableDictionary<EMazeItemType, bool> filters;
-        [SerializeField] private List<MazeInfo>                              levelsCached;
 
-        [SerializeField] private int  gameId;
+        [SerializeField] private List<MazeInfo> levelsCached;
+
         [SerializeField] private int  heapIndex;
         [SerializeField] private int  selectedIndexCheck   = -1;
         [SerializeField] private int  loadedLevelIndex     = -1;
@@ -58,30 +56,23 @@ namespace RMAZOR
 
         public UnityAction<int> OnSelect;
 
-        public int GameId
-        {
-            get => gameId;
-            set => gameId = value;
-        }
-        
         public List<MazeInfo> Levels
         {
             get => levelsCached;
             set => levelsCached = value;
         }
 
-        public int SelectedIndex => (page - 1) * LevelsOnPage + List.index;
-        public int Count         => levelsCached.Count;
+        public int SelectedIndex => GetSelectedIndex(List.index);
+
+        public int Count => levelsCached.Count;
 
         public HeapReorderableList(
-            int              _GameId,
             int              _HeapIndex,
             UnityAction<int> _OnSelect)
         {
-            gameId = _GameId;
-            heapIndex = _HeapIndex;
-            levelsCached = GetLevelsSaver().LoadHeapLevels(_GameId, _HeapIndex).Levels;
-            OnSelect = _OnSelect;
+            heapIndex    = _HeapIndex;
+            levelsCached = GetLevelsSaver().LoadHeapLevels(_HeapIndex).Levels;
+            OnSelect     = _OnSelect;
             InitFilters();
             ReloadList();
         }
@@ -90,11 +81,10 @@ namespace RMAZOR
         {
             if (filters.NullOrEmpty())
                 InitFilters();
-            var lvls = levelsCached;
             var levelsOnPage = Enumerable.Range(
                     (page - 1) * LevelsOnPage,
-                    Math.Min(LevelsOnPage, lvls.Count - (page - 1) * LevelsOnPage))
-                .Select(_I => lvls[_I])
+                    Math.Min(LevelsOnPage, levelsCached.Count - (page - 1) * LevelsOnPage))
+                .Select(_I => levelsCached[_I])
                 .ToList();
             List = new ReorderableList(
                 levelsOnPage,
@@ -123,12 +113,10 @@ namespace RMAZOR
             bool needToReload = List == null || filters == null;
             if (needToReload) 
                 return true;
-            try
-            {
-                _ = List.count; //-V3125
+            try {
+               _ = List.count; //-V3125
             }
-            catch
-            {
+            catch {
                 return true;
             }
             return false;
@@ -141,62 +129,57 @@ namespace RMAZOR
 
         public void Insert(int _Index, MazeInfo _Info)
         {
-            var lvls = levelsCached;
-            lvls?.Insert(_Index, _Info);
+            levelsCached?.Insert(_Index, _Info);
             ReloadList();
         }
 
         public void Add(MazeInfo _Info)
         {
-            var lvls = levelsCached;
-            lvls?.Add(_Info);
+            levelsCached?.Add(_Info);
             ReloadList();
         }
 
-        public void Reload(int _GameId, int _HeapIndex, bool _Forced = false)
+        public void Reload(int _HeapIndex, bool _Forced = false)
         {
-            if (levelsCached != null && levelsCached.Any() && gameId > 0 && heapIndex > 0 && !_Forced)
+            if (levelsCached != null && levelsCached.Any() && heapIndex > 0 && !_Forced)
             {
                 ReloadList();
                 return;
             }
-            gameId = _GameId;
-            heapIndex = _HeapIndex;
-            levelsCached = GetLevelsSaver().LoadHeapLevels(gameId, heapIndex).Levels;
-            page = 1;
+            heapIndex    = _HeapIndex;
+            levelsCached = GetLevelsSaver().LoadHeapLevels(heapIndex).Levels;
+            page         = 1;
             ReloadList();
         }
 
         public void Delete(int _Index)
         {
-            var lvls = levelsCached;
-            if (lvls == null)
+            if (levelsCached == null)
             {
                 Dbg.LogError("Failed to delete level");
                 return;
             }
-            if (_Index < 0 || _Index >= lvls.Count)
+            if (_Index < 0 || _Index >= levelsCached.Count)
                 return;
-            lvls.RemoveAt(_Index);
+            levelsCached.RemoveAt(_Index);
             ReloadList();
             Save();
         }
 
         public void Save()
         {
-            var lvls = levelsCached;
-            GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, lvls);
+            GetLevelsSaver().SaveLevelsToHeap(heapIndex, levelsCached);
         }
 
         public void Save(MazeInfo _Info, int _Index)
         {
-            var lvls = levelsCached;
-            _Info.AdditionalInfo.Arguments = lvls[_Index].AdditionalInfo.Arguments;
-            _Info.AdditionalInfo.Comment   = lvls[_Index].AdditionalInfo.Comment;
-            _Info.AdditionalInfo.Time3Stars     = lvls[_Index].AdditionalInfo.Time3Stars;
-            _Info.AdditionalInfo.Time2Stars     = lvls[_Index].AdditionalInfo.Time2Stars;
-            _Info.AdditionalInfo.Time1Star     = lvls[_Index].AdditionalInfo.Time1Star;
-            lvls[_Index] = _Info;
+            _Info.AdditionalInfo.Arguments          = levelsCached[_Index].AdditionalInfo.Arguments;
+            _Info.AdditionalInfo.Comment            = levelsCached[_Index].AdditionalInfo.Comment;
+            _Info.AdditionalInfo.Time3Stars         = levelsCached[_Index].AdditionalInfo.Time3Stars;
+            _Info.AdditionalInfo.Time2Stars         = levelsCached[_Index].AdditionalInfo.Time2Stars;
+            _Info.AdditionalInfo.Time1Star          = levelsCached[_Index].AdditionalInfo.Time1Star;
+            _Info.AdditionalInfo.PassCommandsRecord = levelsCached[_Index].AdditionalInfo.PassCommandsRecord;
+            levelsCached[_Index] = _Info;
             ReloadList();
             Save();
         }
@@ -209,8 +192,7 @@ namespace RMAZOR
 
         public void NextPage()
         {
-            var lvls = levelsCached;
-            page = Math.Min(page + 1, lvls.Count / LevelsOnPage + 1);
+            page = Math.Min(page + 1, levelsCached.Count / LevelsOnPage + 1);
             ReloadList();
         }
 
@@ -225,7 +207,7 @@ namespace RMAZOR
                 int i1 = LevelsOnPage * (page - 1) + i;
                 levelsCached[i1] = _Levels[i];
             }
-            GetLevelsSaver().SaveLevelsToHeap(gameId, heapIndex, levelsCached);
+            GetLevelsSaver().SaveLevelsToHeap(heapIndex, levelsCached);
         }
 
         private void InitFilters()
@@ -244,10 +226,7 @@ namespace RMAZOR
             float x, y, w;
             Rect UpdateRect() { return new Rect(x, y, w, LineHeight); }
             (x, y, w) = (_Rect.x, _Rect.y, _Rect.width * 0.5f);
-            var lvls = levelsCached;
-            EditorGUI.LabelField(UpdateRect(), $"Levels in heap: {lvls.Count}");
-            x = _Rect.width * 0.5f;
-            showTimes = EditorGUI.Toggle(UpdateRect(), "Show times", showTimes);
+            EditorGUI.LabelField(UpdateRect(), $"Levels in heap: {levelsCached.Count}");
             var filterKeys = Enum.GetValues(typeof(EMazeItemType))
                 .Cast<EMazeItemType>()
                 .Except(new[] {EMazeItemType.Block})
@@ -291,11 +270,10 @@ namespace RMAZOR
             GUI.contentColor = ContentColor;
         }
 
-        public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex, int _GameId)
+        public void SetupLoadedLevel(int _LevelIndex, int _HeapIndex)
         {
             loadedLevelIndex     = _LevelIndex;
             loadedLevelHeapIndex = _HeapIndex;
-            gameId               = _GameId;
         }
 
         private void OnDrawElementCallback(Rect _Rect, int _Index, bool _IsActive, bool _IsFocused)
@@ -350,7 +328,7 @@ namespace RMAZOR
             if (!showTimes)
                 return;
             const float w2 = 25f;
-            float w3 = (_Rect.width - 3f * w2 - 25f) * 0.3333f;
+            float w3 = (_Rect.width - 4f * w2 - 25f) * 0.25f;
             (x, y, w) = (25f, _Rect.y + LineHeight * 1.1f, w2);
             GUI.Label(GetRect(), "T1");
             (x, w) = (x + w2, w3);
@@ -363,8 +341,23 @@ namespace RMAZOR
             GUI.Label(GetRect(), "T3");
             (x, w) = (x + w2, w3);
             info.AdditionalInfo.Time1Star = EditorGUI.FloatField(GetRect(), info.AdditionalInfo.Time1Star);
+            (x, w) = (x + w3 + 5f, _Rect.width - (x + w3));
+            if (GUI.Button(GetRect(), "Pass"))
+                OpenSetPassCommandsWindow(_Index);
         }
-
+        
+        private void OpenSetPassCommandsWindow(int _LevelIndex)
+        {
+            int selectedIndex = GetSelectedIndex(_LevelIndex);
+            var levelInfo = levelsCached[selectedIndex];
+            SetPassCommandsEditorWindow.ShowWindow(levelInfo);
+        }
+        
+        private int GetSelectedIndex(int _Index)
+        {
+            return (page - 1) * LevelsOnPage + _Index;
+        }
+        
         private static Color GetContentColor(int _Index)
         {
             int groupIndex = RmazorUtils.GetLevelsGroupIndex(_Index);
@@ -400,9 +393,10 @@ namespace RMAZOR
         private static LevelsSaver GetLevelsSaver()
         {
             var assetBundleManager = new AssetBundleManagerFake();
-            var prefabSetManager = new PrefabSetManager(assetBundleManager);
-            var mazeInfoValidator = new MazeInfoValidator();
-            return new LevelsSaver(prefabSetManager, mazeInfoValidator);
+            var prefabSetManager   = new PrefabSetManager(assetBundleManager);
+            var mazeInfoValidator  = new MazeInfoValidator();
+            var levelGenerator     = new LevelGeneratorRmazor(new LevelAnalyzerRmazor());
+            return new LevelsSaver(prefabSetManager, mazeInfoValidator, levelGenerator);
         }
 
         #endregion

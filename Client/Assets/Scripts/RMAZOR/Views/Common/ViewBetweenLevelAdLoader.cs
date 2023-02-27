@@ -4,6 +4,7 @@ using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common
@@ -35,20 +36,20 @@ namespace RMAZOR.Views.Common
         private IAdsManager                         AdsManager                     { get; }
         private GlobalGameSettings                  GlobalGameSettings             { get; }
         private IViewTimePauser                     TimePauser                     { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
         private ICommonTicker                       CommonTicker                   { get; }
 
         public ViewBetweenLevelAdShower(
             IAdsManager                         _AdsManager,
             GlobalGameSettings                  _GlobalGameSettings,
             IViewTimePauser                     _TimePauser,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IViewLevelStageSwitcher _LevelStageSwitcher,
             ICommonTicker                       _CommonTicker)
         {
             AdsManager                     = _AdsManager;
             GlobalGameSettings             = _GlobalGameSettings;
             TimePauser                     = _TimePauser;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
             CommonTicker = _CommonTicker;
         }
 
@@ -83,7 +84,7 @@ namespace RMAZOR.Views.Common
                 void OnBeforeAdShown()
                 {
                     TimePauser.PauseTimeInGame();
-                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                    LevelStageSwitcher.SwitchLevelStage(EInputCommand.PauseLevel);
                 }
                 void OnAdClosedOrFailedToShow()
                 {

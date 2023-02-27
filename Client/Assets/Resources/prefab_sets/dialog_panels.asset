@@ -52,6 +52,10 @@ MonoBehaviour:
       item: {fileID: 8219298684319459333, guid: df4827ff9bec9c94ab4a2777f96f600d,
         type: 3}
       bundle: 0
+    - name: levels_panel_puzzles
+      item: {fileID: 8219298684319459333, guid: 27351da02b3db804e855853a9699b452,
+        type: 3}
+      bundle: 0
     - name: confirm_load_level_panel
       item: {fileID: 8219298684319459333, guid: 20799b2e4ea8fd84580943c3afc27892,
         type: 3}
@@ -62,5 +66,25 @@ MonoBehaviour:
       bundle: 0
     - name: main_menu_panel
       item: {fileID: 8219298684319459333, guid: 12154ba3f21b7214e8b25799aa5cf138,
+        type: 3}
+      bundle: 0
+    - name: daily_challenge_panel
+      item: {fileID: 8219298684319459333, guid: 2a9a6409c48dbbe4ebf46a8217de0303,
+        type: 3}
+      bundle: 0
+    - name: hint_panel
+      item: {fileID: 8219298684319459333, guid: f229c471f165c5f4886eb6ec7339d8bc,
+        type: 3}
+      bundle: 0
+    - name: random_generation_params_panel
+      item: {fileID: 8219298684319459333, guid: 7eb155768397b5a419cd7926ed039773,
+        type: 3}
+      bundle: 0
+    - name: customize_character_panel
+      item: {fileID: 8219298684319459333, guid: 6a8498c372be6d246b86d8816c06c590,
+        type: 3}
+      bundle: 0
+    - name: confirm_go_to_main_menu_panel
+      item: {fileID: 8219298684319459333, guid: 1264d2e276edb0d4eadf158163685e24,
         type: 3}
       bundle: 0

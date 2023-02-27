@@ -14,21 +14,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
-      name: model_settings
+    - name: model_settings
+      item: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}
       bundle: 0
-    - item: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
-      name: view_settings
+    - name: view_settings
+      item: {fileID: 11400000, guid: 95742306892dcc5439babdbcfba0b157, type: 2}
       bundle: 0
-    - item: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
-      name: common_game_settings
+    - name: common_game_settings
+      item: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
       bundle: 0
-    - item: {fileID: 11400000, guid: 1bc0e589c0093c44aa6a7fd8a7e759b1, type: 2}
-      name: triangles_texture_set
+    - name: triangles_texture_set
+      item: {fileID: 11400000, guid: 1bc0e589c0093c44aa6a7fd8a7e759b1, type: 2}
       bundle: 0
-    - item: {fileID: 11400000, guid: 3f7ee430962a6224aac784e5ddc40db9, type: 2}
-      name: triangles2_texture_set
+    - name: triangles2_texture_set
+      item: {fileID: 11400000, guid: 3f7ee430962a6224aac784e5ddc40db9, type: 2}
       bundle: 0
-    - item: {fileID: 11400000, guid: 8f61b1750b52d734dabc81c3db819e86, type: 2}
-      name: additional_colors_set
+    - name: additional_colors_set
+      item: {fileID: 11400000, guid: 8f61b1750b52d734dabc81c3db819e86, type: 2}
+      bundle: 0
+    - name: random_levels_gen_params
+      item: {fileID: 11400000, guid: fcc0a57c3fc83944bb53796fc169eb49, type: 2}
+      bundle: 0
+    - name: custom_characters_set
+      item: {fileID: 11400000, guid: 28e85e425d6aedb4b9a4375271ea6a4d, type: 2}
+      bundle: 0
+    - name: custom_character_colors_set_set
+      item: {fileID: 11400000, guid: 37482d8db51a2c34d9e84aaf06ad9303, type: 2}
       bundle: 0

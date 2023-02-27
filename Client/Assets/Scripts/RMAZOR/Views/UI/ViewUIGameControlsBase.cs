@@ -1,26 +1,29 @@
 ﻿using System.Linq;
-using Common;
-using Common.Extensions;
-using Common.Helpers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.InputConfigurators;
-using UnityEngine.Events;
+using RMAZOR.Views.Rotation;
 
 namespace RMAZOR.Views.UI
 {
-    public interface IViewUIGameControls : IInit, IOnLevelStageChanged
+    public interface IViewUIGameControls 
+        : IInit,
+          IOnLevelStageChanged,
+          ICharacterMoveFinished,
+          IMazeRotationFinished
     {
         void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args);
         void OnMazeItemMoveFinished(MazeItemMoveEventArgs _Args);
-
     }
     
     public abstract class ViewUIGameControlsBase : InitBase, IViewUIGameControls
     {
+        #region inject
+
         protected IModelGame                  Model             { get; }
         protected IViewInputCommandsProceeder CommandsProceeder { get; }
 
@@ -30,7 +33,13 @@ namespace RMAZOR.Views.UI
             CommandsProceeder = _CommandsProceeder;
         }
 
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
+        #endregion
+
+        #region api
+
+        public abstract void OnLevelStageChanged(LevelStageArgs                       _Args);
+        public abstract void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args);
+        public abstract void OnMazeRotationFinished(MazeRotationEventArgs             _Args);
 
         public virtual void OnMazeItemMoveStarted(MazeItemMoveEventArgs _Args)
         {
@@ -56,5 +65,7 @@ namespace RMAZOR.Views.UI
                 RmazorUtils.MoveAndRotateCommands, 
                 nameof(IViewUIGameControls));
         }
+
+        #endregion
     }
 }

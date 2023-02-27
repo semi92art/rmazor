@@ -10,16 +10,20 @@ using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.UI.Panels;
+using RMAZOR.UI.Utils;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
 using RMAZOR.Views.Common.ViewLevelStageController;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.Controllers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
@@ -34,7 +38,9 @@ namespace RMAZOR.Views
         IOnLevelStageChanged,
         ICharacterMoveStarted,
         ICharacterMoveContinued,
-        ICharacterMoveFinished
+        ICharacterMoveFinished,
+        IMazeRotationStarted,
+        IMazeRotationFinished
     {
         ViewSettings                  Settings             { get; }
         IViewUI                       UI                   { get; }
@@ -48,8 +54,8 @@ namespace RMAZOR.Views
         IManagersGetter               Managers             { get; }
         IViewBackground               Background           { get; }
         IViewMazeAdditionalBackground AdditionalBackground { get; }
-        ICameraProvider               CameraProvider       { get; }
         ILevelsLoader                 LevelsLoader         { get; }
+        ICameraProvider               CameraProvider       { get; }
     }
     
     public class ViewGame : InitBase, IViewGame
@@ -64,7 +70,6 @@ namespace RMAZOR.Views
         #region inject
 
         public  ViewSettings                   Settings                  { get; }
-        public  IContainersGetter              ContainersGetter          { get; }
         public  IViewUI                        UI                        { get; }
         public  IViewLevelStageController      LevelStageController      { get; }
         public  IViewInputCommandsProceeder    CommandsProceeder         { get; }
@@ -76,21 +81,28 @@ namespace RMAZOR.Views
         public  IManagersGetter                Managers                  { get; }
         public  IViewBackground                Background                { get; }
         public  IViewMazeAdditionalBackground  AdditionalBackground      { get; }
-        private IViewFullscreenTransitioner    FullscreenTransitioner    { get; }
         public  ICameraProvider                CameraProvider            { get; }
         public  ILevelsLoader                  LevelsLoader              { get; }
+        
+        private IViewFullscreenTransitioner    FullscreenTransitioner    { get; }
         private IDialogPanelsSet               DialogPanelsSet           { get; }
         private IViewIdleAdsPlayer             IdleAdsPlayer             { get; }
         private IViewGameIdleQuitter           IdleQuitter               { get; }
         private IViewMobileNotificationsSender MobileNotificationsSender { get; }
-
-        private IViewMazeCommon             Common                 { get; }
-        private IViewMazeForeground         Foreground             { get; }
-        private ICoordinateConverter        CoordinateConverter    { get; }
-        private IColorProvider              ColorProvider          { get; }
-        private IRendererAppearTransitioner AppearTransitioner     { get; }
-        private IAdsProvidersSet            AdsProvidersSet        { get; }
-        private ICommonTicker               CommonTicker           { get; }
+        private IViewInputCommandsRecorder     InputCommandsRecorder     { get; }
+        private IViewInputCommandsPlayer       InputCommandsPlayer       { get; }
+        private IUITicker                      UiTicker                  { get; }
+        private IRewardCounter                 RewardCounter             { get; }
+        private IRemoteConfigManager           RemoteConfigManager       { get; }
+        private IDialogViewersController       DialogViewersController   { get; }
+        private IViewLevelStageSwitcher        LevelStageSwitcher        { get; }
+        private IContainersGetter              ContainersGetter          { get; }
+        private IViewMazeCommon                Common                    { get; }
+        private ICoordinateConverter           CoordinateConverter       { get; }
+        private IColorProvider                 ColorProvider             { get; }
+        private IRendererAppearTransitioner    AppearTransitioner        { get; }
+        private IAdsProvidersSet               AdsProvidersSet           { get; }
+        private ICommonTicker                  CommonTicker              { get; }
 
         private ViewGame(
             ViewSettings                   _Settings,
@@ -102,7 +114,6 @@ namespace RMAZOR.Views
             IViewCharacter                 _Character,
             IViewMazeCommon                _Common,
             IViewBackground                _Background,
-            IViewMazeForeground            _Foreground,
             IViewMazeRotation              _MazeRotation,
             IViewMazeItemsGroupSet         _MazeItemsGroupSet,
             IViewMazePathItemsGroup        _PathItemsGroup,
@@ -119,7 +130,14 @@ namespace RMAZOR.Views
             IDialogPanelsSet               _DialogPanelsSet,
             IViewIdleAdsPlayer             _IdleAdsPlayer,
             IViewGameIdleQuitter           _IdleQuitter,
-            IViewMobileNotificationsSender _MobileNotificationsSender)
+            IViewMobileNotificationsSender _MobileNotificationsSender,
+            IViewInputCommandsRecorder     _InputCommandsRecorder,
+            IViewInputCommandsPlayer       _InputCommandsPlayer,
+            IUITicker                      _UiTicker,
+            IRewardCounter                 _RewardCounter,
+            IRemoteConfigManager           _RemoteConfigManager,
+            IDialogViewersController       _DialogViewersController,
+            IViewLevelStageSwitcher        _LevelStageSwitcher)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -130,7 +148,6 @@ namespace RMAZOR.Views
             Character                    = _Character;
             Common                       = _Common;
             Background                   = _Background;
-            Foreground                   = _Foreground;
             MazeRotation                 = _MazeRotation;
             MazeItemsGroupSet            = _MazeItemsGroupSet;
             PathItemsGroup               = _PathItemsGroup;
@@ -148,6 +165,13 @@ namespace RMAZOR.Views
             IdleAdsPlayer                = _IdleAdsPlayer;
             IdleQuitter                  = _IdleQuitter;
             MobileNotificationsSender    = _MobileNotificationsSender;
+            InputCommandsRecorder        = _InputCommandsRecorder;
+            InputCommandsPlayer          = _InputCommandsPlayer;
+            UiTicker                     = _UiTicker;
+            RewardCounter                = _RewardCounter;
+            RemoteConfigManager          = _RemoteConfigManager;
+            DialogViewersController      = _DialogViewersController;
+            LevelStageSwitcher           = _LevelStageSwitcher;
         }
         
         #endregion
@@ -194,6 +218,20 @@ namespace RMAZOR.Views
             foreach (var proceeder in proceeders)
                 proceeder?.OnCharacterMoveFinished(_Args);
         }
+        
+        public void OnMazeRotationStarted(MazeRotationEventArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<IMazeRotationStarted>();
+            foreach (var proceeder in proceeders)
+                proceeder?.OnMazeRotationStarted(_Args);
+        }
+        
+        public void OnMazeRotationFinished(MazeRotationEventArgs _Args)
+        {
+            var proceeders = GetInterfaceOfProceeders<IMazeRotationFinished>();
+            foreach (var proceeder in proceeders)
+                proceeder?.OnMazeRotationFinished(_Args);
+        }
 
         #endregion
         
@@ -203,7 +241,16 @@ namespace RMAZOR.Views
         {
             if (!CameraProvider.Initialized)
                 yield return null;
-            CommandsProceeder.RaiseCommand(EInputCommand.MainMenuPanel, null);
+            var mainMenuPanel = DialogPanelsSet.GetPanel<IMainMenuPanel>();
+            var dv = DialogViewersController.GetViewer(mainMenuPanel.DialogViewerId);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.ExitLevelStaging);
+            dv.Show(mainMenuPanel, _AdditionalCameraEffectsAction: MainMenuAdditionalCameraEffectsAction);
+        }
+        
+        private void MainMenuAdditionalCameraEffectsAction(bool _Appear, float _Time)
+        {
+            Cor.Run(MainMenuUtils.SubPanelsAdditionalCameraEffectsActionCoroutine(_Appear, _Time,
+                CameraProvider, UiTicker));
         }
 
         private void InitAdsProvidersMuteAudioAction()
@@ -230,10 +277,7 @@ namespace RMAZOR.Views
         {
             CoordinateConverter.GetContainer = ContainersGetter.GetContainer;
             CoordinateConverter.Init();
-            CommonUtils.DoOnInitializedEx(
-                Managers.RemoteConfigManager, 
-                () => Managers.AnalyticsManager.Init());
-            // RegisterLevelsStagingProceeders();
+            CommonUtils.DoOnInitializedEx(RemoteConfigManager, () => Managers.AnalyticsManager.Init());
             m_ProceedersCached = GetOrderedViewGameProceedersToExecute().Values.ToArray();
             ColorProvider            .Init();
             CameraProvider           .Init();
@@ -270,12 +314,14 @@ namespace RMAZOR.Views
                 {-05, MazeItemsGroupSet},
                 {-04, AppearTransitioner},
                 {-03, FullscreenTransitioner},
-                {-02, Foreground},
                 {-01, Background},
-                
+                // Maze item groups execute here
                 {+01, AdditionalBackground},
                 {+02, CameraProvider},
                 {+03, Managers},
+                {+04, InputCommandsRecorder},
+                {+05, InputCommandsPlayer},
+                {+06, RewardCounter}
             };
         }
         

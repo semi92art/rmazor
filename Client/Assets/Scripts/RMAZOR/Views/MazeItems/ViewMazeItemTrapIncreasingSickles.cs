@@ -16,7 +16,7 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -69,7 +69,7 @@ namespace RMAZOR.Views.MazeItems
         private Triangle
             m_Eye1Angry,
             m_Eye2Angry;
-        private Line m_Mouth;
+        private Line m_Mouth1, m_Mouth2;
 
         private bool  m_IsRotatingSoundPlaying;
         private bool? m_TrapOpened;
@@ -79,19 +79,19 @@ namespace RMAZOR.Views.MazeItems
 
         #region inject
         
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemTrapIncreasingSickles(
-            ViewSettings                        _ViewSettings,
-            IModelGame                          _Model,
-            ICoordinateConverter                _CoordinateConverter,
-            IContainersGetter                   _ContainersGetter,
-            IViewGameTicker                     _GameTicker,
-            IRendererAppearTransitioner         _Transitioner,
-            IManagersGetter                     _Managers,
-            IColorProvider                      _ColorProvider,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            ViewSettings                _ViewSettings,
+            IModelGame                  _Model,
+            ICoordinateConverter        _CoordinateConverter,
+            IContainersGetter           _ContainersGetter,
+            IViewGameTicker             _GameTicker,
+            IRendererAppearTransitioner _Transitioner,
+            IManagersGetter             _Managers,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewLevelStageSwitcher     _LevelStageSwitcher)
             : base(
                 _ViewSettings,
                 _Model,
@@ -103,7 +103,7 @@ namespace RMAZOR.Views.MazeItems
                 _ColorProvider,
                 _CommandsProceeder)
         {
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
@@ -125,7 +125,7 @@ namespace RMAZOR.Views.MazeItems
             Managers,
             ColorProvider,
             CommandsProceeder,
-            SwitchLevelStageCommandInvoker);
+            LevelStageSwitcher);
 
         public override bool ActivatedInSpawnPool
         {
@@ -183,7 +183,8 @@ namespace RMAZOR.Views.MazeItems
                     m_Eye2Idle  .SetColor(_Color);
                     m_Eye1Angry .SetColor(_Color);
                     m_Eye2Angry .SetColor(_Color);
-                    m_Mouth     .SetColor(_Color);
+                    m_Mouth1    .SetColor(_Color);
+                    m_Mouth2    .SetColor(_Color);
                     break;
                 case ColorIds.MazeItem1:
                     m_Center .SetColor(_Color);
@@ -213,7 +214,8 @@ namespace RMAZOR.Views.MazeItems
             m_Eye2Idle   = prefab.GetCompItem<Rectangle>("eye_2_idle");
             m_Eye1Angry  = prefab.GetCompItem<Triangle>("eye_1_angry");
             m_Eye2Angry  = prefab.GetCompItem<Triangle>("eye_2_angry");
-            m_Mouth      = prefab.GetCompItem<Line>("mouth");
+            m_Mouth1     = prefab.GetCompItem<Line>("mouth_1");
+            m_Mouth2     = prefab.GetCompItem<Line>("mouth_2");
             int sortingOrder = SortingOrders.GetBlockSortingOrder(EMazeItemType.TrapIncreasing);
             m_Center    .SetSortingOrder(sortingOrder);
             m_Center2   .SetSortingOrder(sortingOrder);
@@ -223,7 +225,8 @@ namespace RMAZOR.Views.MazeItems
             m_Eye2Idle  .SetSortingOrder(sortingOrder + 2);
             m_Eye1Angry .SetSortingOrder(sortingOrder + 2);
             m_Eye2Angry .SetSortingOrder(sortingOrder + 2);
-            m_Mouth.SetSortingOrder(sortingOrder + 2);
+            m_Mouth1    .SetSortingOrder(sortingOrder + 2);
+            m_Mouth2    .SetSortingOrder(sortingOrder + 2);
             for (int i = 1; i <= 4; i++)
             {
                 m_BladeContainers.Add(prefab.GetCompItem<Line>($"blade_container_{i}"));
@@ -323,16 +326,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnAppearStart(bool _Appear)
         {
-            if (_Appear)
-            {
-                m_Animator.enabled = true;
-                m_Animator.ResetTrigger(AnimKeyClose);
-                m_Animator.ResetTrigger(AnimKeyOpen);
-            }
-            else
-            {
-                CloseTrap();
-            }
+            m_Animator.enabled = _Appear;
             base.OnAppearStart(_Appear);
         }
 
@@ -367,10 +361,10 @@ namespace RMAZOR.Views.MazeItems
                 return;
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeyDeathPosition, 
+                {ComInComArg.KeyDeathPosition, 
                     (V2)CoordinateConverter.ToLocalCharacterPosition(cPos)}
             };
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, args);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter, args);
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
@@ -380,7 +374,7 @@ namespace RMAZOR.Views.MazeItems
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {new Component[] { m_Center, m_Center2, m_Head }, () => colMazeItem1}, 
-                {new Component[] { m_Center2, m_HeadBorder, m_Eye1Idle, m_Eye2Idle, m_Eye1Angry, m_Eye2Angry, m_Mouth }, () => colMain}, 
+                {new Component[] { m_Center2, m_HeadBorder, m_Eye1Idle, m_Eye2Idle, m_Eye1Angry, m_Eye2Angry, m_Mouth1, m_Mouth2 }, () => colMain}, 
                 {m_Blades, () => colMazeItem1}, 
                 {m_BladeContainers, () => colMazeItem1.SetA(0.5f)}
             };

@@ -17,6 +17,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using Shapes;
@@ -59,7 +60,7 @@ namespace RMAZOR.Views.MazeItems
         #region inject
         
         private IMazeShaker                         MazeShaker                     { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemGravityTrap(
             ViewSettings                        _ViewSettings,
@@ -72,7 +73,7 @@ namespace RMAZOR.Views.MazeItems
             IMazeShaker                         _MazeShaker,
             IColorProvider                      _ColorProvider,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher _LevelStageSwitcher)
             : base(
                 _ViewSettings,
                 _Model,
@@ -85,7 +86,7 @@ namespace RMAZOR.Views.MazeItems
                 _CommandsProceeder)
         {
             MazeShaker                     = _MazeShaker;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
         
         #endregion
@@ -105,7 +106,7 @@ namespace RMAZOR.Views.MazeItems
             MazeShaker,
             ColorProvider,
             CommandsProceeder,
-            SwitchLevelStageCommandInvoker);
+            LevelStageSwitcher);
 
         protected override int LinesAndJointsColorId => ColorIds.MazeItem1;
 
@@ -288,14 +289,14 @@ namespace RMAZOR.Views.MazeItems
                     m_Position);
                 if (dist + MathUtils.Epsilon > 1f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
             }
             else
             {
                 var cPos = Model.Character.Position;
                 if (Vector2.Distance(cPos, m_Position) + MathUtils.Epsilon > 0.9f)
                     return;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
             }
         }
 

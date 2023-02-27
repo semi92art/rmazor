@@ -1,4 +1,5 @@
 ﻿using System;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine;
@@ -44,7 +45,9 @@ namespace RMAZOR.Views.Coordinate_Converters
 
         #region api
 
-        public float Scale => CurrentCoordinateConverter.Scale;
+        public float Scale => Model.LevelStaging.LevelStage == ELevelStage.None
+            ? 1f 
+            : CurrentCoordinateConverter.Scale;
 
         public Func<string, Transform> GetContainer
         {

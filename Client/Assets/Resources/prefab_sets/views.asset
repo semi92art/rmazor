@@ -152,3 +152,35 @@ MonoBehaviour:
     - name: tutorial_character_sprite_5
       item: {fileID: 21300000, guid: 7d95d16f78c92ae4baf0213258c2c1b1, type: 3}
       bundle: 0
+    - name: daily_challenge_money_icon_1
+      item: {fileID: 21300000, guid: 82813c074e2854877b1382f0e987511b, type: 3}
+      bundle: 0
+    - name: daily_challenge_money_icon_2
+      item: {fileID: 21300000, guid: 2340e003a4a6745a8929491f3b365cea, type: 3}
+      bundle: 0
+    - name: daily_challenge_money_icon_3
+      item: {fileID: 21300000, guid: 928516686caa643f5b6615dc945cff34, type: 3}
+      bundle: 0
+    - name: daily_gift_icon_disabled
+      item: {fileID: 21300000, guid: 58b3d7517aaea33498aa1186b7b698da, type: 3}
+      bundle: 0
+    - name: preview_character_camera_texture
+      item: {fileID: 8400000, guid: c7ca8306e87d71c4799c23a2cba8d975, type: 2}
+      bundle: 0
+    - name: character_panel_character_item
+      item: {fileID: 7721579039813235215, guid: bd753003b3959f4489a4d2e70456b731,
+        type: 3}
+      bundle: 0
+    - name: character_panel_color_set_item
+      item: {fileID: 7721579039813235215, guid: 1bcb4f0a82a6bca44820dbd68f77baae,
+        type: 3}
+      bundle: 0
+    - name: game_money_icon_sprite_enabled
+      item: {fileID: 21300000, guid: 33effd6735e414dc7b70ded5e8bb47f8, type: 3}
+      bundle: 0
+    - name: game_money_icon_sprite_disabled
+      item: {fileID: 21300000, guid: ef573f7e091dc6f429ee8040e8597c14, type: 3}
+      bundle: 0
+    - name: color_grading_material
+      item: {fileID: 2100000, guid: f04e630018f946b428a07a09856d123a, type: 2}
+      bundle: 0

@@ -7,12 +7,14 @@ namespace RMAZOR.Views.Characters.Head
 {
     public interface IViewCharacterHead03 : IViewCharacterHead { }
 
-    public class ViewCharacterHead03 : ViewCharacterHeadRectangleWithEyesBase, IViewCharacterHead03
+    public class ViewCharacterHead03 
+        : ViewCharacterHeadRectangleWithEyesAndMouthBase, 
+          IViewCharacterHead03
     {
         #region nonpublic members
 
-        protected override string PrefabName => "character_head_02";
-        
+        protected override string PrefabName => "character_head_03";
+
         #endregion
 
         #region inject

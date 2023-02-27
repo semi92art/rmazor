@@ -1,10 +1,8 @@
 ﻿using System.Linq;
+using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
 using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
@@ -28,7 +26,7 @@ namespace Editor
         private IColorProvider                      m_ColorProvider;
         private MainColorsSetScriptableObject       m_MainColorsPropsSetScrObj;
         private AdditionalColorsSetScriptableObject m_AdditionalColorsPropsSetScrObj;
-        private AdditionalColorsPropsSet            m_AdditionalColorsPropsSet;
+        private AdditionalColorsPropsAssetItemsSet  m_AdditionalColorsPropsSet;
         private MainColorsPropsSet                  m_MainColorsPropsSet;
         private Color?                              m_UiColor;
         private Color                               m_UiColorCheck;
@@ -99,7 +97,7 @@ namespace Editor
                 CommonPrefabSetNames.Views, "color_set_light");
             m_MainColorsPropsSet = m_MainColorsPropsSetScrObj.set;
             m_AdditionalColorsPropsSetScrObj = manager.GetObject<AdditionalColorsSetScriptableObject>(
-                "configs", "additional_colors_set");
+                CommonPrefabSetNames.Configs, "additional_colors_set");
             m_AdditionalColorsPropsSet = m_AdditionalColorsPropsSetScrObj.set;
         }
 
@@ -184,15 +182,15 @@ namespace Editor
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
             CommonDataRmazor.BackgroundTextureControllerRmazor?.SetAdditionalInfo(props.additionalInfo);
             CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
-            m_ColorProvider.SetColor(ColorIds.MoneyItem, m_ColorProvider.GetColor(ColorIds.MoneyItem));
-            m_ColorProvider.SetColor(ColorIds.Main, props.main);
-            m_ColorProvider.SetColor(ColorIds.Background1, props.bacground1);
-            m_ColorProvider.SetColor(ColorIds.Background2, props.bacground2);
-            m_ColorProvider.SetColor(ColorIds.PathItem, props.GetColor(props.pathItemFillType));
-            m_ColorProvider.SetColor(ColorIds.PathBackground, props.GetColor(props.pathBackgroundFillType));
-            m_ColorProvider.SetColor(ColorIds.PathFill, props.GetColor(props.pathFillFillType));
-            m_ColorProvider.SetColor(ColorIds.Character2, props.GetColor(props.characterBorderFillType));
-            m_ColorProvider.SetColor(ColorIds.UiBackground, props.GetColor(props.uiBackgroundFillType));
+            m_ColorProvider.SetColor(ColorIds.MoneyItem,         m_ColorProvider.GetColor(ColorIds.MoneyItem));
+            m_ColorProvider.SetColor(ColorIds.Main,              props.main);
+            m_ColorProvider.SetColor(ColorIds.Background1,       props.bacground1);
+            m_ColorProvider.SetColor(ColorIds.Background2,       props.bacground2);
+            m_ColorProvider.SetColor(ColorIds.PathItem,          props.GetColor(props.pathItemFillType));
+            m_ColorProvider.SetColor(ColorIds.PathBackground,    props.GetColor(props.pathBackgroundFillType));
+            m_ColorProvider.SetColor(ColorIds.PathFill,          GetAdditionalColorPathItemFill(props));
+            m_ColorProvider.SetColor(ColorIds.Character2,        props.GetColor(props.characterBorderFillType));
+            m_ColorProvider.SetColor(ColorIds.UiBackground,      props.GetColor(props.uiBackgroundFillType));
             m_ColorProvider.SetColor(ColorIds.GameUiAlternative, props.GetColor(props.uiBackgroundFillType));
         }
 
@@ -276,6 +274,26 @@ namespace Editor
                 m_AdditionalColorsPropsSet,
                 converter);
             CommonUtils.CopyToClipboard(json);
+        }
+        
+        private static Color GetAdditionalColorPathItemFill(AdditionalColorsPropsAssetItem _Props)
+        {
+            if (!SRLauncher.ViewSettings.mazeItemBlockColorEqualsMainColor)
+                return _Props.GetColor(_Props.pathFillFillType);
+            EBackAndFrontColorType colorType = _Props.pathFillFillType switch
+            {
+                EBackAndFrontColorType.Main => _Props.pathBackgroundFillType switch
+                {
+                    EBackAndFrontColorType.Main        => _Props.pathFillFillType,
+                    EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background2,
+                    EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background1,
+                    _                                  => throw new SwitchExpressionException(_Props.pathBackgroundFillType)
+                },
+                EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background1,
+                EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background2,
+                _                                  => throw new SwitchExpressionException(_Props.pathFillFillType)
+            };
+            return _Props.GetColor(colorType);
         }
     }
 }

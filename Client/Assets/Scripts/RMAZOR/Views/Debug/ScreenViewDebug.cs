@@ -1,10 +1,6 @@
 ﻿#if UNITY_EDITOR
 using System;
-using Common;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.Utils;
+using Common.Constants;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
@@ -45,7 +41,7 @@ namespace RMAZOR.Views.Debug
                 return;
             }
             m_Settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                "configs", "view_settings");
+                CommonPrefabSetNames.Configs, "view_settings");
             m_Converter = CoordinateConverterRmazorInEditor.Create(m_Settings, null, true);
             m_Converter.Init();
             m_Converter.SetMazeSize((V2Int)mazeSize);
@@ -83,7 +79,7 @@ namespace RMAZOR.Views.Debug
     }
 
     [CustomEditor(typeof(ScreenViewDebug))]
-    public class ScreenViewDebugEditor : Editor
+    public class ScreenViewDebugEditor : UnityEditor.Editor
     {
         private ScreenViewDebug m_T;
 

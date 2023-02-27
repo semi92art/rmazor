@@ -415,7 +415,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         private bool GetCanHighlightCommonPredicate()
         {
             return ActivatedInSpawnPool
-                   && PathItem.ItemPathItemMoney.IsCollected
+                   && PathItem.PathItemMoney.IsCollected
                    && HighlightEnabled;
         }
 

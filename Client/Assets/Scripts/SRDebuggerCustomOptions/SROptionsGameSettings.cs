@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Managers;
 using Common.Utils;
 using Firebase.Extensions;
@@ -20,7 +19,6 @@ using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
-using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
@@ -36,6 +34,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
+using static RMAZOR.Models.ComInComArg;
 
 namespace SRDebuggerCustomOptions
 {
@@ -59,7 +58,7 @@ namespace SRDebuggerCustomOptions
 
         private static IColorProvider                      _ColorProvider;
         private static AdditionalColorsSetScriptableObject _AdditionalColorsPropsSetScrObj;
-        private static AdditionalColorsPropsSet            _AdditionalColorsPropsSet;
+        private static AdditionalColorsPropsAssetItemsSet  _AdditionalColorsPropsSet;
         private static int                                 _CurrSetIdx;
 
         private static ModelSettings               _modelSettings;
@@ -72,10 +71,10 @@ namespace SRDebuggerCustomOptions
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void ResetState()
         {
-            _modelSettings = null;
-            _viewSettings = null;
-            _levelStaging = null;
-            _managers = null;
+            _modelSettings  = null;
+            _viewSettings   = null;
+            _levelStaging   = null;
+            _managers       = null;
             _cameraProvider = null;
             SRLauncher.Initialized += SRLauncherOnInitialized;
         }
@@ -93,7 +92,7 @@ namespace SRDebuggerCustomOptions
 
         private static void OnPanelVisibilityChanged(bool _Visible)
         {
-            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
+            var commandsToLock = RmazorUtils.GetCommandsToLockInGameUiMenus();
             if (_Visible)
                 _commandsProceeder.LockCommands(commandsToLock, nameof(SROptions));
             else
@@ -134,25 +133,25 @@ namespace SRDebuggerCustomOptions
             set => _viewSettings.mazeRotationSpeed = value;
         }
 
-        [Category(CategoryCommon)] public int Money { get; set; }
+        // [Category(CategoryCommon)] public int Money { get; set; }
 
-        [Category(CategoryCommon)]
-        public bool Set_Money
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                var savedGame = new SavedGame
-                {
-                    FileName = MazorCommonData.SavedGameFileName,
-                    Money = Money,
-                    Level = _levelStaging.LevelIndex
-                };
-                _managers.ScoreManager.SaveGameProgress(savedGame, false);
-            }
-        }
+        // [Category(CategoryCommon)]
+        // public bool Set_Money
+        // {
+        //     get => false;
+        //     set
+        //     {
+        //         if (!value)
+        //             return;
+        //         var savedGame = new SavedGame
+        //         {
+        //             FileName = MazorCommonData.SavedGameFileName,
+        //             Money = Money,
+        //             Level = _levelStaging.LevelIndex
+        //         };
+        //         _managers.ScoreManager.SaveGameProgress(savedGame, false);
+        //     }
+        // }
 
         #endregion
 
@@ -168,14 +167,12 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                var args = new Dictionary<string, object>()
+                var args = new Dictionary<string, object>
                 {
-                    {CommonInputCommandArg.KeyLevelIndex, Level_Index - 1}
+                    {KeyNextLevelType, ParameterLevelTypeDefault},
+                    {KeyLevelIndex,    Level_Index - 1}
                 };
-                _commandsProceeder.RaiseCommand(
-                    EInputCommand.LoadLevelByIndex,
-                    args,
-                    true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadLevel, args, true);
             }
         }
 
@@ -187,7 +184,12 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                _commandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
+                var args = new Dictionary<string, object>
+                {
+                    {KeyNextLevelType, ParameterLevelTypeDefault},
+                    {KeyLevelIndex,    _levelStaging.LevelIndex + 1}
+                };
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadLevel, args, true);
             }
         }
 
@@ -200,14 +202,12 @@ namespace SRDebuggerCustomOptions
                 if (!value)
                     return;
                 long levelIndex = _levelStaging.LevelIndex;
-                var args = new Dictionary<string, object>()
+                var args = new Dictionary<string, object>
                 {
-                    {CommonInputCommandArg.KeyLevelIndex, levelIndex - 1}
+                    {KeyNextLevelType, ParameterLevelTypeDefault},
+                    {KeyLevelIndex,    levelIndex - 1}
                 };
-                _commandsProceeder.RaiseCommand(
-                    EInputCommand.LoadLevelByIndex,
-                    args,
-                    true);
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadLevel, args, true);
             }
         }
 
@@ -219,7 +219,13 @@ namespace SRDebuggerCustomOptions
             {
                 if (!value)
                     return;
-                _commandsProceeder.RaiseCommand(EInputCommand.LoadCurrentLevel, null, true);
+                long levelIndex = _levelStaging.LevelIndex;
+                var args = new Dictionary<string, object>
+                {
+                    {KeyNextLevelType, ParameterLevelTypeDefault},
+                    {KeyLevelIndex,    levelIndex}
+                };
+                _commandsProceeder.RaiseCommand(EInputCommand.LoadLevel, args, true);
             }
         }
 
@@ -483,23 +489,23 @@ namespace SRDebuggerCustomOptions
             }
         }
 
-        [Category(CategoryCommon)]
-        public bool Sava_Game_Test
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                var savedData = new SavedGame
-                {
-                    FileName = MazorCommonData.SavedGameFileName,
-                    Money = 10000,
-                    Level = _levelStaging.LevelIndex
-                };
-                _managers.ScoreManager.SaveGameProgress(savedData, false);
-            }
-        }
+        // [Category(CategoryCommon)]
+        // public bool Sava_Game_Test
+        // {
+        //     get => false;
+        //     set
+        //     {
+        //         if (!value)
+        //             return;
+        //         var savedData = new SavedGame
+        //         {
+        //             FileName = MazorCommonData.SavedGameFileName,
+        //             Money = 10000,
+        //             Level = _levelStaging.LevelIndex
+        //         };
+        //         _managers.ScoreManager.SaveGameProgress(savedData, false);
+        //     }
+        // }
 
         [Category(CategoryCommon)]
         public bool Show_Advertising_Id
@@ -515,18 +521,6 @@ namespace SRDebuggerCustomOptions
             }
         }
 
-        [Category(CategoryCommon)]
-        public bool Delete_Saved_Game
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                _managers.ScoreManager.DeleteSavedGame(MazorCommonData.SavedGameFileName);
-            }
-        }
-        
         [Category(CategoryCommon)]
         public bool Get_FCM_Token
         {
@@ -545,39 +539,39 @@ namespace SRDebuggerCustomOptions
             }
         }
 
-        [Category(CategoryCommon)]
-        public bool Show_Money
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-
-                static void DisplaySavedGameMoney(bool _FromCache)
-                {
-                    string str = _FromCache ? "server" : "cache";
-                    var entity =
-                        _managers.ScoreManager.GetSavedGameProgress(MazorCommonData.SavedGameFileName, _FromCache);
-                    Cor.Run(Cor.WaitWhile(
-                        () => entity.Result == EEntityResult.Pending,
-                        () =>
-                        {
-                            bool castSuccess = entity.Value.CastTo(out SavedGame savedGame);
-                            if (entity.Result == EEntityResult.Fail || !castSuccess)
-                            {
-                                Dbg.LogWarning($"Failed to load saved game from {str}, entity value: {entity.Value}");
-                                return;
-                            }
-
-                            Dbg.Log($"{str}: Money: {savedGame.Money}, Level: {savedGame.Level}");
-                        }));
-                }
-
-                DisplaySavedGameMoney(false);
-                DisplaySavedGameMoney(true);
-            }
-        }
+        // [Category(CategoryCommon)]
+        // public bool Show_Money
+        // {
+        //     get => false;
+        //     set
+        //     {
+        //         if (!value)
+        //             return;
+        //
+        //         static void DisplaySavedGameMoney(bool _FromCache)
+        //         {
+        //             string str = _FromCache ? "server" : "cache";
+        //             var entity =
+        //                 _managers.ScoreManager.GetSavedGameProgress(MazorCommonData.SavedGameFileName, _FromCache);
+        //             Cor.Run(Cor.WaitWhile(
+        //                 () => entity.Result == EEntityResult.Pending,
+        //                 () =>
+        //                 {
+        //                     bool castSuccess = entity.Value.CastTo(out SavedGame savedGame);
+        //                     if (entity.Result == EEntityResult.Fail || !castSuccess)
+        //                     {
+        //                         Dbg.LogWarning($"Failed to load saved game from {str}, entity value: {entity.Value}");
+        //                         return;
+        //                     }
+        //
+        //                     Dbg.Log($"{str}: Money: {savedGame.Money}, Level: {savedGame.Level}");
+        //                 }));
+        //         }
+        //
+        //         DisplaySavedGameMoney(false);
+        //         DisplaySavedGameMoney(true);
+        //     }
+        // }
 
         [Category(CategoryCommon)]
         public bool Internet_Connection_Available
@@ -793,7 +787,7 @@ namespace SRDebuggerCustomOptions
                 static LevelStageArgs GetNextLevelStageArgsForBackgroundTexture()
                 {
                     var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                        "configs", "view_settings");
+                        CommonPrefabSetNames.Configs, "view_settings");
                     int group = RmazorUtils.GetLevelsGroupIndex(_levelIndex);
                     int levels = RmazorUtils.GetLevelsInGroup(group);
                     _levelIndex = MathUtils.ClampInverse(
@@ -802,7 +796,7 @@ namespace SRDebuggerCustomOptions
                         settings.levelsCountMain - 1);
                     var args = new Dictionary<string, object>()
                     {
-                        { CommonInputCommandArg.KeySetBackgroundFromEditor, true}
+                        { KeySetBackgroundFromEditor, true}
                     };
                     var fakeArgs = new LevelStageArgs(
                         _levelIndex,
@@ -866,7 +860,7 @@ namespace SRDebuggerCustomOptions
 
                     var manager = new PrefabSetManager(new AssetBundleManagerFake());
                     _AdditionalColorsPropsSetScrObj = manager.GetObject<AdditionalColorsSetScriptableObject>(
-                        "configs", "additional_colors_set");
+                        CommonPrefabSetNames.Configs, "additional_colors_set");
                     _AdditionalColorsPropsSet = _AdditionalColorsPropsSetScrObj.set;
                 }
 

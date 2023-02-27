@@ -1,7 +1,4 @@
 ﻿using System;
-using Common.Constants;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Exceptions;
@@ -9,7 +6,6 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
-using RMAZOR.Views.Helpers;
 using Shapes;
 using UnityEngine;
 using Random = System.Random;
@@ -21,9 +17,10 @@ namespace RMAZOR.Views.Common
         #region nonpublic members
 
         protected virtual int PoolSize => 100;
-        protected          Transform Container => ContainersGetter.GetContainer(ContainerNamesCommon.Background);
-        protected readonly Random    RandomGen = new Random();
-        private            Bounds    m_ScreenBounds;
+        protected          Transform Container => 
+            ContainersGetter.GetContainer(ContainerNamesCommon.Background);
+
+        protected readonly Random RandomGen = new Random();
         
         protected readonly Type[] PossibleSourceTypes =
         {
@@ -34,25 +31,24 @@ namespace RMAZOR.Views.Common
             typeof(RegularPolygon)
         };
 
+        protected Bounds ScreenBounds;
+
         #endregion
 
         #region inject
 
         protected IColorProvider              ColorProvider    { get; }
-        protected IRendererAppearTransitioner Transitioner     { get; }
         protected IContainersGetter           ContainersGetter { get; }
         protected IViewGameTicker             GameTicker       { get; }
         protected ICameraProvider             CameraProvider   { get; }
 
         protected ViewMazeBackgroundItemsBase(
             IColorProvider              _ColorProvider,
-            IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             ICameraProvider             _CameraProvider)
         {
             ColorProvider    = _ColorProvider;
-            Transitioner     = _Transitioner;
             ContainersGetter = _ContainersGetter;
             GameTicker       = _GameTicker;
             CameraProvider   = _CameraProvider;
@@ -65,12 +61,13 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             GameTicker.Register(this);
-            m_ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+            CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
+            ScreenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
             ColorProvider.ColorChanged += OnColorChanged;
             InitItems();
             base.Init();
         }
-        
+
         public virtual void UpdateTick()
         {
             if (!Initialized)
@@ -81,6 +78,11 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region nonpublic methods
+        
+        protected virtual void OnActiveCameraChanged(Camera _Camera)
+        {
+            ScreenBounds = GraphicUtils.GetVisibleBounds(_Camera);
+        }
         
         protected abstract void InitItems();
         protected abstract void ProceedItems();
@@ -96,8 +98,8 @@ namespace RMAZOR.Views.Common
             float xDelta, yDelta;
             if (_Inside)
             {
-                xDelta = RandomGen.NextFloatAlt() * m_ScreenBounds.size.x * 0.5f;
-                yDelta = RandomGen.NextFloatAlt() * m_ScreenBounds.size.y * 0.5f;
+                xDelta = RandomGen.NextFloatAlt() * ScreenBounds.size.x * 0.5f;
+                yDelta = RandomGen.NextFloatAlt() * ScreenBounds.size.y * 0.5f;
             }
             else
             {
@@ -106,28 +108,28 @@ namespace RMAZOR.Views.Common
                 switch (posCase)
                 {
                     case 1: // right
-                        xDelta = m_ScreenBounds.size.x * 0.5f + _Padding.Value.x;
-                        yDelta = m_ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
+                        xDelta = ScreenBounds.size.x * 0.5f + _Padding.Value.x;
+                        yDelta = ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
                         break;
                     case 2: // left
-                        xDelta = -m_ScreenBounds.size.x * 0.5f - _Padding.Value.x;
-                        yDelta = m_ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
+                        xDelta = -ScreenBounds.size.x * 0.5f - _Padding.Value.x;
+                        yDelta = ScreenBounds.size.y * 0.5f * RandomGen.NextFloatAlt();
                         break;
                     case 3: // top
-                        xDelta = m_ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
-                        yDelta = m_ScreenBounds.size.y * 0.5f + _Padding.Value.y;
+                        xDelta = ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
+                        yDelta = ScreenBounds.size.y * 0.5f + _Padding.Value.y;
                         break;
                     case 4: // bottom
-                        xDelta = m_ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
-                        yDelta = -m_ScreenBounds.size.y * 0.5f - _Padding.Value.y;
+                        xDelta = ScreenBounds.size.x * 0.5f * RandomGen.NextFloatAlt();
+                        yDelta = -ScreenBounds.size.y * 0.5f - _Padding.Value.y;
                         break;
                     default:
                         throw new SwitchCaseNotImplementedException(posCase);
                 }
             }
             
-            float x = m_ScreenBounds.center.x + xDelta;
-            float y = m_ScreenBounds.center.y + yDelta;
+            float x = ScreenBounds.center.x + xDelta;
+            float y = ScreenBounds.center.y + yDelta;
             return (Vector2)CameraProvider.Camera.transform.position + new Vector2(x, y);
         }
 

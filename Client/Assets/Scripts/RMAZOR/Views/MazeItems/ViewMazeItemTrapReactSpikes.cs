@@ -18,6 +18,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
@@ -77,7 +78,7 @@ namespace RMAZOR.Views.MazeItems
 
         private ModelSettings                       ModelSettings                  { get; }
         private IViewMazeAdditionalBackground       AdditionalBackground           { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemTrapReactSpikes(
             ViewSettings                        _ViewSettings,
@@ -91,7 +92,7 @@ namespace RMAZOR.Views.MazeItems
             IColorProvider                      _ColorProvider,
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewMazeAdditionalBackground       _AdditionalBackground,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher _LevelStageSwitcher)
             : base(
                 _ViewSettings,
                 _Model,
@@ -105,7 +106,7 @@ namespace RMAZOR.Views.MazeItems
         {
             ModelSettings                  = _ModelSettings;
             AdditionalBackground           = _AdditionalBackground;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
         
         #endregion
@@ -136,7 +137,7 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder,
             AdditionalBackground,
-            SwitchLevelStageCommandInvoker);
+            LevelStageSwitcher);
         
         public void UpdateTick()
         {
@@ -363,14 +364,14 @@ namespace RMAZOR.Views.MazeItems
                     return;
                 var args = new Dictionary<string, object>
                 {
-                    {CommonInputCommandArg.KeyDeathPosition, 
+                    {ComInComArg.KeyDeathPosition, 
                         (V2)CoordinateConverter.ToLocalCharacterPosition(itemPos)}
                 };
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter, args);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter, args);
             }
             else if (itemPos == character.Position)
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
             }
         }
 

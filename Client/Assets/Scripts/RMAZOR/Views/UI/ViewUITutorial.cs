@@ -113,6 +113,11 @@ namespace RMAZOR.Views.UI
         {
             switch (_Args.LevelStage)
             {
+                case ELevelStage.None when _Args.PreviousStage != ELevelStage.None:
+                    if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished("movement")))
+                        return;
+                    FinishMovementTutorial();
+                    break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     string tutorialName = CurrentLevelTutorialName();
                     if (string.IsNullOrEmpty(tutorialName))
@@ -157,7 +162,10 @@ namespace RMAZOR.Views.UI
         
         private string CurrentLevelTutorialName()
         {
-            var args = Model.Data.Info.AdditionalInfo.Arguments.Split(';');
+            string addInfoArgs = Model.Data.Info.AdditionalInfo.Arguments;
+            if (string.IsNullOrEmpty(addInfoArgs))
+                return null;
+            var args = addInfoArgs.Split(';');
             return (from arg in args where arg.Contains("tutorial")
                     select arg.Split(':')[1]).FirstOrDefault();
         }
@@ -248,6 +256,8 @@ namespace RMAZOR.Views.UI
 
         private void FinishMovementTutorial()
         {
+            if (!m_MovementTutorialStarted || m_MovementTutorialFinished)
+                return;
             m_Hsm.HidePrompt();
             CommandsProceeder.UnlockCommands(RmazorUtils.MoveCommands, GetGroupName());
             m_MovementTutorialFinished = true;

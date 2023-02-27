@@ -10,8 +10,10 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 
 namespace RMAZOR.Views.Characters.Head
@@ -25,14 +27,13 @@ namespace RMAZOR.Views.Characters.Head
         #endregion
 
         #region nonpublic members
-        
-        private static int _AnimKeyStartJumping2 = Animator.StringToHash("anim5");
 
-        private static int AnimKeyStartMove    => AnimKeys.Anim;
-        private static int AnimKeyStartMove2   => AnimKeys.Anim4;
-        private static int AnimKeyBump         => AnimKeys.Anim2;
-        private static int AnimKeyStartJumping1 => AnimKeys.Anim3;
-        private static int AnimKeyStartJumping2 => _AnimKeyStartJumping2;
+        private static int AnimKeyIdle          => AnimKeys.Stop;
+        private static int AnimKeyStartJumping1 => AnimKeys.Anim;
+        private static int AnimKeyStartMove     => AnimKeys.Anim2;
+        private static int AnimKeyStartMove2    => AnimKeys.Anim3;
+        private static int AnimKeyBump          => AnimKeys.Anim4;
+        private static int AnimKeyMainMenu      => AnimKeys.Anim5;
         
         protected abstract string PrefabName { get; }
 
@@ -58,6 +59,7 @@ namespace RMAZOR.Views.Characters.Head
         private   IPrefabSetManager           PrefabSetManager    { get; }
         private   ICoordinateConverter        CoordinateConverter { get; }
         private   IRendererAppearTransitioner AppearTransitioner  { get; }
+        [Zenject.Inject] private   IViewInputCommandsProceeder CommandsProceeder   { get; }
 
         protected ViewCharacterHeadBase(
             ViewSettings                _ViewSettings,
@@ -90,7 +92,7 @@ namespace RMAZOR.Views.Characters.Head
             {
                 if (value)
                     UpdatePrefab();
-                ActivateShapes(false);
+                ActivateShapes(value);
                 m_Activated = value;
             }
         }
@@ -100,6 +102,7 @@ namespace RMAZOR.Views.Characters.Head
             if (Initialized)
                 return;
             ColorProvider.ColorChanged += OnColorChanged;
+            CommandsProceeder.Command += OnCommand;
             InitPrefab();
             base.Init();
         }
@@ -121,10 +124,13 @@ namespace RMAZOR.Views.Characters.Head
             switch (_Args.LevelStage)
             {
                 case ELevelStage.None:
+                    Activated = true;
+                    m_Animator.SetTrigger(AnimKeyMainMenu);
                     return;
                 case ELevelStage.Loaded:
                     m_LastMazeOrientation = EMazeOrientation.North;
                     SetOrientation(EDirection.Right, false);
+                    m_Animator.SetTrigger(AnimKeyStartJumping1);
                     break;
                 case ELevelStage.ReadyToStart when 
                     _Args.PreviousStage == ELevelStage.Paused 
@@ -162,13 +168,8 @@ namespace RMAZOR.Views.Characters.Head
         public void Appear(bool _Appear)
         {
             if (_Appear)
-            {
                 ActivateShapes(true);
-                m_Animator.SetTrigger(AnimKeyStartJumping1);
-            }
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
-            if (_Appear)
-                m_Animator.SetTrigger(AnimKeyStartJumping1);
             AppearTransitioner.DoAppearTransition(
                 _Appear,
                 GetAppearSets(_Appear),
@@ -182,6 +183,14 @@ namespace RMAZOR.Views.Characters.Head
         #endregion
 
         #region nonpublic methods
+        
+        private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
+        {
+            if (_Command == EInputCommand.SelectCharacter)
+            {
+                m_Animator.SetTrigger(AnimKeyMainMenu);
+            }
+        }
 
         protected abstract void OnColorChanged(int _ColorId, Color _Color);
         
@@ -203,11 +212,13 @@ namespace RMAZOR.Views.Characters.Head
         
         private void UpdatePrefab()
         {
-            var localScale = Vector2.one * CoordinateConverter.Scale * RelativeLocalScale;
+            float scale = CoordinateConverter.Scale;
+            if (MathUtils.Equals(scale, 0f))
+                scale = 1f;
+            var localScale = Vector2.one * scale * RelativeLocalScale;
             m_HeadObj.transform.SetLocalScaleXY(localScale);
             m_BorderObj.transform.SetLocalScaleXY(localScale);
-            SetOrientation(EDirection.Right, false);
-            m_Animator.SetTrigger(AnimKeyStartJumping1);
+            SetOrientation(EDirection.Right, false, EMazeOrientation.North);
         }
         
         private void SetOrientation(
@@ -256,7 +267,10 @@ namespace RMAZOR.Views.Characters.Head
             m_HeadObj.transform.localRotation = localRot;
             m_BorderObj.transform.localRotation = localRot;
             float vertScale = _VerticalInverse ? -1f : 1f;
-            float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
+            float scale = CoordinateConverter.Scale;
+            if (MathUtils.Equals(scale, 0f))
+                scale = 1f;
+            float scaleCoeff = scale * RelativeLocalScale;
             var localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
             m_HeadObj.transform.localScale = localScale;
             m_BorderObj.transform.localScale = localScale;

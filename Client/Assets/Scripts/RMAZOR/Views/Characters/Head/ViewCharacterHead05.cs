@@ -15,15 +15,23 @@ namespace RMAZOR.Views.Characters.Head
 {
     public interface IViewCharacterHead05 : IViewCharacterHead { }
 
-    public class ViewCharacterHead05 
-        : ViewCharacterHeadRectangleWithEyesAndMouthBase, 
+    public class ViewCharacterHead05
+        : ViewCharacterHeadBase,
           IViewCharacterHead05
     {
         #region nonpublic members
 
         protected override string PrefabName => "character_head_05";
+
+        private Rectangle m_Eye;
+
+        private Disc
+            m_HeadShape,
+            m_BorderShape1;
         
-        private Disc m_Arc1, m_Arc2;
+        private Line 
+            m_MouthLine1,
+            m_MouthLine2;
 
         #endregion
 
@@ -50,12 +58,16 @@ namespace RMAZOR.Views.Characters.Head
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            base.OnColorChanged(_ColorId, _Color);
             switch (_ColorId)
             {
+                case ColorIds.Character:
+                    m_HeadShape.SetColor(_Color);
+                    break;
                 case ColorIds.Character2:
-                    m_Arc1.SetColor(_Color);
-                    m_Arc2.SetColor(_Color);
+                    m_BorderShape1.SetColor(_Color);
+                    m_Eye         .SetColor(_Color);
+                    m_MouthLine1  .SetColor(_Color);
+                    m_MouthLine2  .SetColor(_Color);
                     break;
             }
         }
@@ -64,24 +76,44 @@ namespace RMAZOR.Views.Characters.Head
         {
             base.InitPrefab();
             var go = PrefabObj;
-            m_Arc1 = go.GetCompItem<Disc>("arc_1").SetSortingOrder(SortingOrders.Character + 1);
-            m_Arc2 = go.GetCompItem<Disc>("arc_2").SetSortingOrder(SortingOrders.Character + 1);
-            m_Arc1.enabled = m_Arc2.enabled = false;
+            const int sortingOrder = SortingOrders.Character;
+            var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
+            m_HeadShape = go.GetCompItem<Disc>("head")
+                .SetColor(ColorProvider.GetColor(ColorIds.Character))
+                .SetSortingOrder(sortingOrder);
+            m_BorderShape1 = go.GetCompItem<Disc>("border")
+                .SetSortingOrder(sortingOrder + 1)
+                .SetColor(charCol2);
+            m_Eye = go.GetCompItem<Rectangle>("eye")
+                .SetSortingOrder(sortingOrder + 1)
+                .SetColor(charCol2);
+            m_MouthLine1 = go.GetCompItem<Line>("mouth_line_1")
+                .SetSortingOrder(sortingOrder)
+                .SetColor(charCol2);
+            m_MouthLine2 = go.GetCompItem<Line>("mouth_line_2")
+                .SetSortingOrder(sortingOrder)
+                .SetColor(charCol2);
         }
         
         protected override void ActivateShapes(bool _Active)
         {
-            base.ActivateShapes(_Active);
-            m_Arc1.enabled = _Active;
-            m_Arc2.enabled = _Active;
+            m_HeadShape.enabled    = _Active;
+            m_BorderShape1.enabled = _Active;
+            m_Eye.enabled          = _Active;
+            m_MouthLine1.enabled   = _Active;
+            m_MouthLine2.enabled   = _Active;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
+            var charCol = ColorProvider.GetColor(ColorIds.Character);
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
-            var sets = base.GetAppearSets(_Appear);
-            sets.Add(new Component[] {m_Arc1, m_Arc2}, () => charCol2);
-            return base.GetAppearSets(_Appear);
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new Component[] {m_HeadShape}, () => charCol},
+                {new Component[] {m_BorderShape1, m_Eye, m_MouthLine1, m_MouthLine2}, () => charCol2},
+            }; 
+            return sets;
         }
 
         #endregion

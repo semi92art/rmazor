@@ -9,6 +9,7 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.Utils;
@@ -116,7 +117,8 @@ namespace RMAZOR.Views.Characters.Legs
             switch (_Args.LevelStage)
             {
                 case ELevelStage.None:
-                    ActivateShapes(false);
+                    Activated = true;
+                    SetLegsTransform(EDirection.Down);
                     return;
                 case ELevelStage.Loaded:
                     m_LastMazeOrientation = EMazeOrientation.North;
@@ -187,23 +189,26 @@ namespace RMAZOR.Views.Characters.Legs
             m_Leg1Body = go
                 .GetCompItem<Rectangle>("leg_1_body")
                 .SetColor(bodyCol)
-                .SetSortingOrder(SortingOrders.Character - 2);
+                .SetSortingOrder(SortingOrders.Character - 3);
             m_Leg2Body = go
                 .GetCompItem<Rectangle>("leg_2_body")
                 .SetColor(bodyCol)
-                .SetSortingOrder(SortingOrders.Character - 2);
+                .SetSortingOrder(SortingOrders.Character - 3);
             m_Leg1Border = go.GetCompItem<Rectangle>("leg_1_border")
                 .SetColor(borderCol)
-                .SetSortingOrder(SortingOrders.Character - 1);
+                .SetSortingOrder(SortingOrders.Character - 2);
             m_Leg2Border = go.GetCompItem<Rectangle>("leg_2_border")
                 .SetColor(borderCol)
-                .SetSortingOrder(SortingOrders.Character - 1);
+                .SetSortingOrder(SortingOrders.Character - 2);
             Activated = false;
         }
 
         private void UpdatePrefab()
         {
-            var localScale = Vector2.one * CoordinateConverter.Scale * RelativeLocalScale;
+            float scale = CoordinateConverter.Scale;
+            if (MathUtils.Equals(scale, 0f))
+                scale = 1f;
+            var localScale = Vector2.one * scale * RelativeLocalScale;
             m_Leg1Body.transform.SetLocalScaleXY(localScale);
             m_Leg2Body.transform.SetLocalScaleXY(localScale);
             SetLegsTransform(EDirection.Down);
@@ -212,6 +217,8 @@ namespace RMAZOR.Views.Characters.Legs
         private void SetLegsTransform(EDirection _Direction, bool _ByLastOrientation = false)
         {
             float scale = CoordinateConverter.Scale;
+            if (MathUtils.Equals(scale, 0f))
+                scale = 1f;
             Vector2 dir = RmazorUtils.GetDirectionVector(_Direction, Model.MazeRotation.Orientation);
             var a = dir * 0.39f;
             var dirOrth = new Vector2(dir.y, dir.x);

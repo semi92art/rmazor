@@ -1,11 +1,9 @@
-﻿using Common;
-using Common.Helpers;
-using Common.Managers;
-using mazing.common.Runtime.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Utils;
+using UnityEngine;
 
 namespace RMAZOR.Views.Common.FullscreenTextureProviders
 {
@@ -13,7 +11,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         : IFullscreenTransitionTextureProvider { }
     
     public class FullscreenTransitionTextureProviderPlayground
-        : FullscreenTransitionTextureProviderSimpleBase, IFullscreenTransitionTextureProviderPlayground
+        : FullscreenTransitionTextureProviderSimpleBase, 
+          IFullscreenTransitionTextureProviderPlayground
     {
         #region nonpublic members
 
@@ -41,9 +40,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         public override void Activate(bool _Active)
         {
-            Renderer.enabled = true;
-            var col = ColorProvider.GetColor(ColorIds.Character);
-            Material.SetColor(Color1Id, col);
+            Material.SetColor(Color1Id, Color.white);
+            base.Activate(_Active);
         }
 
         public override void SetTransitionValue(float _Value, bool _Appear)

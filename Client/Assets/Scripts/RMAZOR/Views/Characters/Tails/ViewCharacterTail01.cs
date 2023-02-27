@@ -75,6 +75,8 @@ namespace RMAZOR.Views.Characters.Tails
             get => m_Activated;
             set
             {
+                if (Model.LevelStaging.LevelStage == ELevelStage.None)
+                    return;
                 m_Activated = value;
                 if (value) ShowTail();
                 else       HideTail();
@@ -83,7 +85,10 @@ namespace RMAZOR.Views.Characters.Tails
 
         public override void Init()
         {
+            if (Initialized)
+                return;
             ViewGameTicker.Register(this);
+            ColorProvider.ColorChanged += OnColorChanged;
             InitShape();
             base.Init();
         }
@@ -119,7 +124,7 @@ namespace RMAZOR.Views.Characters.Tails
             m_Tail.A = GetStartTailAPosition();
             m_TailBorder.A = GetStartTailAPosition();
             m_CharacterPositionOnMoveStart = GetCharacterObjects().Transform.position;
-            m_Tail.SetColor(ColorProvider.GetColor(ColorIds.CharacterTail));
+            m_Tail.SetColor(ColorProvider.GetColor(ColorIds.Character));
             m_TailBorder.SetColor(ColorProvider.GetColor(ColorIds.Character2));
             m_CurrentMovingArgs = _Args;
             ShowTail(_Args);
@@ -149,14 +154,25 @@ namespace RMAZOR.Views.Characters.Tails
 
         #region nonpublic methods
         
+        private void OnColorChanged(int _ColorId, Color _Color)
+        {
+            switch (_ColorId)
+            {
+                case ColorIds.Character:  m_Tail.SetColor(_Color);       break;
+                case ColorIds.Character2: m_TailBorder.SetColor(_Color); break;
+            }
+        }
+        
         private void ShowTail(CharacterMoveEventArgsBase _Args = null)
         {
+            if (Model.LevelStaging.LevelStage == ELevelStage.None)
+                return;
             if (_Args == null)
             {
                 m_Tail.enabled       = true;
                 m_TailBorder.enabled = true;
-                m_Tail.A       = GetStartTailAPosition();
-                m_TailBorder.A = GetStartTailAPosition();
+                m_Tail.A             = GetStartTailAPosition();
+                m_TailBorder.A       = GetStartTailAPosition();
                 return;
             }
             if (_Args.From == _Args.To)
@@ -186,25 +202,23 @@ namespace RMAZOR.Views.Characters.Tails
             var cont = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
             m_Tail = cont
                 .AddComponentOnNewChild<Triangle>("Character Tail", out _)
-                .SetColor(ColorProvider.GetColor(ColorIds.CharacterTail))
+                .SetColor(ColorProvider.GetColor(ColorIds.Character))
                 .SetRoundness(0.4f)
-                .SetSortingOrder(SortingOrders.Character - 2);
+                .SetSortingOrder(SortingOrders.Character - 4);
             m_TailBorder = cont
                 .AddComponentOnNewChild<Triangle>("Character Tail Border", out _)
                 .SetColor(ColorProvider.GetColor(ColorIds.Character2))
                 .SetRoundness(0.4f)
                 .SetBorder(true)
-                .SetThickness(0.1f)
-                .SetSortingOrder(SortingOrders.Character - 1);
-            m_Tail.enabled = false;
+                .SetThickness(0.15f)
+                .SetSortingOrder(SortingOrders.Character - 3);
+            m_Tail      .enabled = false;
             m_TailBorder.enabled = false;
         }
 
         private IEnumerator HideTailCoroutine(CharacterMovingFinishedEventArgs _Args)
         {
             int moveCount = m_MoveCount;
-            var tailCol = ColorProvider.GetColor(ColorIds.CharacterTail);
-            var tailBorderCol = ColorProvider.GetColor(ColorIds.Character2);
             Vector2 startA = m_Tail.A;
             var finishA = GetStartTailAPosition();
             yield return Cor.Lerp(
@@ -220,8 +234,8 @@ namespace RMAZOR.Views.Characters.Tails
                 {
                     if (_Broken)
                         return;
-                    m_Tail.Color = tailCol.SetA(0f);
-                    m_TailBorder.Color = tailBorderCol.SetA(0f);
+                    m_Tail.Color = Color.black.SetA(0f);
+                    m_TailBorder.Color = Color.black.SetA(0f);
                 },
                 _BreakPredicate: () => moveCount != m_MoveCount || !m_DoShowTailOnMove);
         }

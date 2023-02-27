@@ -1,7 +1,4 @@
-﻿using Common.Entities;
-using Common.Managers;
-using Common.UI;
-using mazing.common.Runtime.Entities;
+﻿using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -13,7 +10,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemOnOff : SimpleUiItemBase
+    public class SettingItemOnOff : SimpleUiItem
     {
         [SerializeField] private TextMeshProUGUI title;
         [SerializeField] private Button          button;
@@ -31,8 +28,8 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         {
             Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Setting";
-            var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, _TitleLocalizationKey);
-            _LocalizationManager.AddTextObject(locInfo);
+            var locInfo = new LocTextInfo(title, ETextType.MenuUI, _TitleLocalizationKey);
+            _LocalizationManager.AddLocalization(locInfo);
             m_IsOn = _IsOn;
             SetToggleObject();
             button.onClick.AddListener(() =>
@@ -40,7 +37,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
                 m_IsOn = !m_IsOn;
                 SetToggleObject();
                 _Action?.Invoke(m_IsOn);
-                SoundOnClick();
+                PlayButtonClickSound();
             });
         }
 

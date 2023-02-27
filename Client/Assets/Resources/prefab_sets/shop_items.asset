@@ -14,19 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
     array:
-    - item: {fileID: 2929232023256113801, guid: e804d55fc9f1c114781f3bcc2237cdaf,
+    - name: shop_money_item
+      item: {fileID: 2929232023256113801, guid: e804d55fc9f1c114781f3bcc2237cdaf,
         type: 3}
-      name: shop_money_item
       bundle: 0
-    - item: {fileID: 21300000, guid: 1f4e95e85e185ef4f8fc3fde12cc6cca, type: 3}
-      name: dark_theme_on
+    - name: dark_theme_on
+      item: {fileID: 21300000, guid: 1f4e95e85e185ef4f8fc3fde12cc6cca, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
-      name: shop_money_icon
+    - name: shop_money_icon
+      item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
       bundle: 0
-    - item: {fileID: 21300000, guid: d9400f11787c40d4d9ff6a2f29623b8a, type: 3}
-      name: shop_no_ads_icon
+    - name: shop_no_ads_icon
+      item: {fileID: 21300000, guid: 52b3f91715249ea499013200789965b1, type: 3}
       bundle: 0
-    - item: {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
-      name: shop_money_items_set
+    - name: shop_money_items_set
+      item: {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
       bundle: 0

@@ -809,7 +809,7 @@ GameObject:
   - component: {fileID: 5063241499148990229}
   - component: {fileID: 3966005475097442336}
   - component: {fileID: 1305265074037459294}
-  - component: {fileID: 2230665507146394276}
+  - component: {fileID: 8355029742800486653}
   m_Layer: 0
   m_Name: Tutorial Panel 1
   m_TagString: Untagged
@@ -848,7 +848,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 0
 --- !u!95 &5063241499148990229
 Animator:
-  serializedVersion: 4
+  serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -865,7 +865,7 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!114 &3966005475097442336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -906,7 +906,7 @@ MonoBehaviour:
       item: {fileID: 4330661753646141120}
     - name: character_icon
       item: {fileID: 1699169412931773514}
---- !u!114 &2230665507146394276
+--- !u!114 &8355029742800486653
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -915,7 +915,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8219298684319459333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cacb2d1dd5b74e3ea744e7ef8f9d2592, type: 3}
+  m_Script: {fileID: 11500000, guid: ee253551952b48bc8ca120ddf5178b29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   background: {fileID: 0}

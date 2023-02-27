@@ -6,11 +6,9 @@ using System.Text;
 using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
-using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
@@ -18,6 +16,7 @@ using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -70,26 +69,28 @@ namespace RMAZOR.UI.Panels
         private Button                  m_ButtonClose;
         private Animator                m_Animator;
         private Image                   m_CharacterIcon;
-        private readonly List<Sprite>   m_CharacterSprites = new List<Sprite>();
+        private SimpleUiItem            m_PanelView;
+
+        private readonly List<Sprite> m_CharacterSprites = new List<Sprite>();
+        
+        protected override string PrefabName => "tutorial_panel";
 
         #endregion
 
         #region inject
-        
-        private IContainersGetter                   ContainersGetter               { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-        private IFontProvider                       FontProvider                   { get; }
+
+        private IContainersGetter       ContainersGetter   { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         public TutorialDialogPanel(
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewTimePauser                     _TimePauser,
-            IContainersGetter                   _ContainersGetter,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IFontProvider                       _FontProvider) 
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IContainersGetter           _ContainersGetter,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewLevelStageSwitcher     _LevelStageSwitcher) 
             : base(
                 _Managers, 
                 _Ticker,
@@ -98,17 +99,16 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            ContainersGetter               = _ContainersGetter;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
-            FontProvider                   = _FontProvider;
+            ContainersGetter   = _ContainersGetter;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
 
         #region api
-
-        public override int      DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
-        public override Animator Animator       => m_Animator;
+        
+        public override    int      DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
+        public override    Animator Animator       => m_Animator;
 
         public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
 
@@ -130,21 +130,9 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            var go = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(
-                    _Container,
-                    RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels,
-                "tutorial_panel");
-            PanelRectTransform = go.RTransform();
-            var panel = go.GetCompItem<SimpleUiDialogPanelView>("panel");
-            panel.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
-            m_Title         = go.GetCompItem<TextMeshProUGUI>("title");
-            m_Description   = go.GetCompItem<TextMeshProUGUI>("description");
-            m_ButtonClose   = go.GetCompItem<Button>("button_close");
-            m_Animator      = go.GetCompItem<Animator>("animator");
-            m_CharacterIcon = go.GetCompItem<Image>("character_icon");
-            m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
+
+            m_PanelView.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
+
             for (int i = 1; i <= CharacterSpritesCount; i++)
             {
                 var charSprite = Managers.PrefabSetManager.GetObject<Sprite>(
@@ -153,10 +141,14 @@ namespace RMAZOR.UI.Panels
             }
         }
 
-        public override void OnDialogStartAppearing()
+        #endregion
+
+        #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
-            var font =  FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
+            var font =  Managers.LocalizationManager.GetFont(ETextType.MenuUI);
             m_Title.font = m_Description.font = font;
             m_Title.text = m_Description.text = string.Empty;
             int currentTutorialNumber = GetNumberOfFinishedTutorials() + 1;
@@ -164,7 +156,7 @@ namespace RMAZOR.UI.Panels
             base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogAppeared()
+        protected override void OnDialogAppeared()
         {
             base.OnDialogAppeared();
             var locMan = Managers.LocalizationManager;
@@ -179,7 +171,7 @@ namespace RMAZOR.UI.Panels
             Cor.Run(PrintTutorialTextCoroutine(titleTextLocalized, descriptionTextLocalized));
         }
 
-        public override void OnDialogDisappeared()
+        protected override void OnDialogDisappeared()
         {
             if (m_Info.TutorialName != "movement")
             {
@@ -190,17 +182,30 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
             base.OnDialogDisappeared();
         }
 
-        #endregion
+        protected override void GetPrefabContentObjects(GameObject _Go)
+        {
+            m_PanelView     = _Go.GetCompItem<SimpleUiItem>("panel");
+            m_Title         = _Go.GetCompItem<TextMeshProUGUI>("title");
+            m_Description   = _Go.GetCompItem<TextMeshProUGUI>("description");
+            m_ButtonClose   = _Go.GetCompItem<Button>("button_close");
+            m_Animator      = _Go.GetCompItem<Animator>("animator");
+            m_CharacterIcon = _Go.GetCompItem<Image>("character_icon");
+        }
 
-        #region nonpublic methods
+        protected override void LocalizeTextObjectsOnLoad() { }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_ButtonClose.onClick.AddListener(OnCloseButtonClick);
+        }
 
         private void OnCloseButtonClick()
         {
-            OnClose(null);
+            OnClose();
         }
 
         private void InitVideoPlayer()
@@ -241,6 +246,7 @@ namespace RMAZOR.UI.Panels
         private static int GetNumberOfFinishedTutorials()
         {
             return SaveKeysRmazor.GetAllTutorialNames()
+                .Except(new [] {"main_menu"})
                 .Select(SaveKeysRmazor.IsTutorialFinished)
                 .Select(SaveUtils.GetValue)
                 .Count(_TutorialFinished => _TutorialFinished);

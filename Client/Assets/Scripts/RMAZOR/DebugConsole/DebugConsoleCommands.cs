@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common;
-using Common.Entities;
 using Lean.Localization;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Utils;
@@ -16,6 +14,7 @@ using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.DebugConsole
 {
@@ -114,7 +113,11 @@ namespace RMAZOR.DebugConsole
                 new DebugCommandArgs(
                     "send_test_analytic",
                     SendTestAnalytic,
-                    "Send test analytic")
+                    "Send test analytic"),
+                new DebugCommandArgs(
+                    "set_character",
+                    SetCharacter,
+                    "Set character by id")
             };
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
@@ -259,30 +262,44 @@ namespace RMAZOR.DebugConsole
                 return;
             }
             levelIndex -= 1;
+            string gameMode = (string) Controller.Model.LevelStaging.Arguments.GetSafe(KeyGameMode, out _);
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeyLevelIndex, levelIndex}
+                {KeyNextLevelType, ParameterLevelTypeDefault},
+                {KeyGameMode, gameMode},
+                {KeyLevelIndex, levelIndex}
             };
             Controller.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadLevelByIndex, 
+                EInputCommand.LoadLevel, 
                 args,
                 true);
         }
 
         private static void LoadNextLevel(string[] _Args)
         {
-            Controller.CommandsProceeder.RaiseCommand(EInputCommand.LoadNextLevel, null, true);
+            long levelIndex = Controller.Model.LevelStaging.LevelIndex + 1;
+            string gameMode = (string) Controller.Model.LevelStaging.Arguments.GetSafe(KeyGameMode, out _);
+            var args = new Dictionary<string, object>
+            {
+                {KeyNextLevelType, ParameterLevelTypeDefault},
+                {KeyGameMode, gameMode},
+                {KeyLevelIndex, levelIndex}
+            };
+            Controller.CommandsProceeder.RaiseCommand(EInputCommand.LoadLevel, args, true);
         }
         
         private static void LoadPreviousLevel(string[] _Args)
         {
             long levelIndex = Controller.Model.LevelStaging.LevelIndex - 1;
+            string gameMode = (string) Controller.Model.LevelStaging.Arguments.GetSafe(KeyGameMode, out _);
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeyLevelIndex, levelIndex}
+                {KeyNextLevelType, ParameterLevelTypeDefault},
+                {KeyGameMode, gameMode},
+                {KeyLevelIndex, levelIndex}
             };
             Controller.CommandsProceeder.RaiseCommand(
-                EInputCommand.LoadLevelByIndex, 
+                EInputCommand.LoadLevel, 
                 args,
                 true);
         }
@@ -294,13 +311,9 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            var entity = new SavedGame
-            {
-                FileName = MazorCommonData.SavedGameFileName,
-                Money = moneyCount,
-                Level = Controller.Model.LevelStaging.LevelIndex
-            };
-            Controller.ScoreManager.SaveGameProgress(entity, false);
+            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            savedGame.Arguments.SetSafe(KeyMoneyCount, moneyCount);
+            Controller.ScoreManager.SaveGame(savedGame);
         }
         
         private static void ShowRateGamePanel(string[] _Args)
@@ -316,26 +329,10 @@ namespace RMAZOR.DebugConsole
 
         private static void ShowMoney(string[] _Args)
         {
-            static void DisplaySavedGameMoney(bool _FromCache)
-            {
-                var entity = Controller.ScoreManager.GetSavedGameProgress(
-                    MazorCommonData.SavedGameFileName, _FromCache);
-                Cor.Run(Cor.WaitWhile(
-                    () => entity.Result == EEntityResult.Pending,
-                    () =>
-                    {
-                        bool castSuccess = entity.Value.CastTo(out SavedGame savedGame);
-                        if (entity.Result == EEntityResult.Fail || !castSuccess)
-                        {
-                            Dbg.LogWarning($"Failed to load saved game, entity value: {entity.Value}");
-                            return;
-                        }
-                        long money = savedGame.Money;
-                        Dbg.Log($"Money {(_FromCache ? "server" : "cache")}: " + money);
-                    }));
-            }
-            DisplaySavedGameMoney(false);
-            DisplaySavedGameMoney(true);
+            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            object bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
+            long money = Convert.ToInt64(bankMoneyCountArg);
+            Dbg.Log("Money: " + money);
         }
         
         private static void GetRunningCoroutinesCount(string[] _Args)
@@ -409,6 +406,20 @@ namespace RMAZOR.DebugConsole
                 {AnalyticIds.Parameter1ForTestAnalytic, Mathf.RoundToInt(UnityEngine.Random.value * 100)}
             };
             Controller.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.TestAnalytic, eventData);
+        }
+        
+        private static void SetCharacter(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int characterId))
+            {
+                Controller.AppendLogLine("Wrong character id format.");
+                return;
+            }
+            var args = new Dictionary<string, object>
+            {
+                {KeyCharacterId, characterId}
+            };
+            Controller.CommandsProceeder.RaiseCommand(EInputCommand.SelectCharacter, args);
         }
     }
 }

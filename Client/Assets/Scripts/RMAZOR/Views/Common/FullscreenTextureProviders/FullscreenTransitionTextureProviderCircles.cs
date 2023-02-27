@@ -1,6 +1,4 @@
-﻿using Common.Helpers;
-using Common.Managers;
-using mazing.common.Runtime.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
@@ -20,9 +18,6 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
         protected override int    SortingOrder      => SortingOrders.GameLogoBackground - 1;
         protected override string MaterialAssetName => "transition_texture_material_circles";
         
-        private static readonly int   EdgesColorId = Shader.PropertyToID("_EdgesColor");
-        private static readonly Color EdgesColor   = new Color(0.72f, 0.72f, 0.72f);
-        
         #endregion
 
         #region inject
@@ -38,13 +33,9 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
                 _CameraProvider,
                 _ColorProvider) { }
 
-        #endregion
-
-        #region api
-
         public override void Activate(bool _Active)
         {
-            Material.SetColor(EdgesColorId, EdgesColor);
+            Material.SetColor(Color1Id, Color.white);
             base.Activate(_Active);
         }
 

@@ -1,5 +1,7 @@
-﻿using Common;
+﻿using System.Collections.Generic;
+using Common;
 using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.CongratulationItems;
@@ -8,21 +10,28 @@ namespace RMAZOR.Views.Common
 {
     public interface IViewBackground : IInit, IOnLevelStageChanged { }
     
-    public class ViewBackground : ViewMazeGroundBase, IViewBackground
+    public class ViewBackground : InitBase, IViewBackground
     {
+        #region nonpublic members
+
+        private IList<AdditionalColorsPropsAssetItem> m_BackAndFrontColorsSetItemsLight;
+
+        #endregion
+        
         #region inject
 
-        private IViewMazeBackgroundCongratItems      FireworkItems     { get; }
-        private IViewMazeBackgroundTextureController TextureController { get; }
+        private IColorProvider                       ColorProvider          { get; }
+        private IViewMazeBackgroundCongratItems      FireworkItems          { get; }
+        private IViewMazeBackgroundTextureController TextureController      { get; }
 
         private ViewBackground(
             IColorProvider                       _ColorProvider,
             IViewMazeBackgroundCongratItems      _FireworkItems,
             IViewMazeBackgroundTextureController _TextureController) 
-            : base(_ColorProvider)
         {
-            FireworkItems     = _FireworkItems;
-            TextureController = _TextureController;
+            ColorProvider          = _ColorProvider;
+            FireworkItems          = _FireworkItems;
+            TextureController      = _TextureController;
         }
         
         #endregion
@@ -38,7 +47,7 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
 
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             FireworkItems    .OnLevelStageChanged(_Args);
             TextureController.OnLevelStageChanged(_Args);

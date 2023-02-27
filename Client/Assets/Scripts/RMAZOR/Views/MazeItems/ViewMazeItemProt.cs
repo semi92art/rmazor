@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Common.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
@@ -46,7 +47,7 @@ namespace RMAZOR.Views.MazeItems
                 {
                     m_PrefabSetManager = new PrefabSetManager(new AssetBundleManagerFake());
                     var settings = m_PrefabSetManager.GetObject<ViewSettings>(
-                        "configs", "view_settings");
+                        CommonPrefabSetNames.Configs, "view_settings");
                     converter = CoordinateConverterRmazorInEditor.Create(settings, null, false);
                     m_ContainersGetter = new ContainersGetterRmazorInEditor(null, converter);
                     converter.GetContainer = m_ContainersGetter.GetContainer;

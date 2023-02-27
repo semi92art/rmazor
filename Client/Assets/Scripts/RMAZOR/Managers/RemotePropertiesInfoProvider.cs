@@ -65,6 +65,9 @@ namespace RMAZOR.Managers
         private const string IdExtraLevelEveryNStage                = "extra_level_every_n_stage";
         private const string IdShowOnlyRewardedAds                  = "show_only_rewarded_ads";
         private const string IdCharacterId                          = "character_id";
+        private const string IdDrawAdditionalMazeNet                = "draw_additional_maze_net";
+        private const string IdPathItemContentShapeType             = "path_item_content_shape_type";
+        private const string IdMazeItemBlockColorEqualsMainColor    = "maze_item_block_color_equals_main_color";
 
         #endregion
         
@@ -200,6 +203,15 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterId,
                     _Value => Execute(
                         _Value, _V => ViewSettings.characterId = ToInt(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdDrawAdditionalMazeNet,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.drawAdditionalMazeNet = ToBool(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdPathItemContentShapeType,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.pathItemContentShapeType = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdMazeItemBlockColorEqualsMainColor,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.mazeItemBlockColorEqualsMainColor = ToBool(_V))),
             };
         }
 
@@ -254,7 +266,7 @@ namespace RMAZOR.Managers
                         _Value, _V =>
                     {
                         RemoteProperties.BackAndFrontColorsSet =
-                            JsonConvert.DeserializeObject<IList<AdditionalColorsProps>>(
+                            JsonConvert.DeserializeObject<IList<AdditionalColorsPropsAssetItem>>(
                                 Convert.ToString(_Value), new ColorJsonConverter());
                     }),
                     true),

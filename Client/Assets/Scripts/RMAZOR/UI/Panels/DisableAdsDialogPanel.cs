@@ -2,26 +2,28 @@
 using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
-using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
-using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface IDisableAdsDialogPanel : IDialogPanel { }
+    public interface IDisableAdsDialogPanel : IDialogPanel
+    {
+        UnityAction OnClosePanelAction { get; set; }
+    }
 
     public class DisableAdsDialogPanel : DialogPanelBase, IDisableAdsDialogPanel
     {
@@ -39,7 +41,8 @@ namespace RMAZOR.UI.Panels
             m_BuyButtonTextDefault;
         private Image       
             m_SalesIcon,
-            m_StrikeoutLine;
+            m_StrikeoutLine,
+            m_BackGlowDark;
         private Animator     m_Animator;
         private Button       m_BuyButton;
         private Button       m_CloseButton;
@@ -48,24 +51,24 @@ namespace RMAZOR.UI.Panels
         private string       m_NewPriceTextString;
         private ShopItemArgs m_DisableAdsShopItemArgs;
         
+        protected override string PrefabName => "disable_ads_panel";
+        
         #endregion
 
         #region inject
 
-        private IModelGame                          Model                          { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-        private IFontProvider                       FontProvider                   { get; }
+        private IModelGame              Model              { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private DisableAdsDialogPanel(
-            IModelGame                          _Model,
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewTimePauser                     _TimePauser,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IFontProvider                       _FontProvider) 
+            IModelGame                  _Model,
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewLevelStageSwitcher     _LevelStageSwitcher) 
             : base(
                 _Managers, 
                 _Ticker, 
@@ -74,41 +77,35 @@ namespace RMAZOR.UI.Panels
                 _TimePauser, 
                 _CommandsProceeder)
         {
-            Model                          = _Model;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
-            FontProvider                   = _FontProvider;
+            Model              = _Model;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
 
         #region api
+        
+        
+        public UnityAction OnClosePanelAction { get; set; }
 
-        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
-        public override Animator Animator       => m_Animator;
+        public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
             Managers.LocalizationManager.LanguageChanged += OnLanguageChanged;
-            var go  = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(_Container, RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "disable_ads_panel");
-            PanelRectTransform = go.RTransform();
-            go.SetActive(false);
-            GetPrefabContentObjects(go);
-            SubscribeButtons();
             m_DisableAdsShopItemArgs = GetDisableAdsShopItemArgs();
+            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, OnButtonCloseClick);
         }
+        
+        #endregion
 
-
-        private void OnLanguageChanged(ELanguage _Language)
+        #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
         {
-            SetBuyButtonText();
-        }
-
-        public override void OnDialogStartAppearing()
-        {
-            var font = FontProvider.GetFont(ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
+            m_BackGlowDark.enabled = Model.LevelStaging.LevelStage == ELevelStage.None;
+            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI);
             m_BuyButtonTextDefault.font  = font;
             m_BuyButtonTextPriceOld.font = font;
             m_BuyButtonTextPriceNew.font = font;
@@ -117,12 +114,13 @@ namespace RMAZOR.UI.Panels
             SetBuyButtonText();
             base.OnDialogStartAppearing();
         }
+        
+        private void OnLanguageChanged(ELanguage _Language)
+        {
+            SetBuyButtonText();
+        }
 
-        #endregion
-
-        #region nonpublic methods
-
-        private void GetPrefabContentObjects(GameObject _Go)
+        protected override void GetPrefabContentObjects(GameObject _Go)
         {
             m_Animator              = _Go.GetCompItem<Animator>("animator");
             m_CloseButton           = _Go.GetCompItem<Button>("close_button");
@@ -132,9 +130,12 @@ namespace RMAZOR.UI.Panels
             m_BuyButtonTextDefault  = _Go.GetCompItem<TextMeshProUGUI>("buy_button_text_default");
             m_SalesIcon             = _Go.GetCompItem<Image>("sales_icon");
             m_StrikeoutLine         = _Go.GetCompItem<Image>("strikeout_line");
+            m_BackGlowDark          = _Go.GetCompItem<Image>("back_glow_dark");
         }
 
-        private void SubscribeButtons()
+        protected override void LocalizeTextObjectsOnLoad() { }
+
+        protected override void SubscribeButtonEvents()
         {
             m_CloseButton.onClick.AddListener(OnButtonCloseClick);
             m_BuyButton.onClick.AddListener(OnButtonBuyClick);
@@ -142,11 +143,12 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonCloseClick()
         {
-            base.OnClose(() =>
+            OnClose(() =>
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
+                OnClosePanelAction?.Invoke();
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
             });
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
         }
 
         private void OnButtonBuyClick()
@@ -187,10 +189,10 @@ namespace RMAZOR.UI.Panels
             m_NewPriceTextString = m_DisableAdsShopItemArgs.LocalizedPriceString;
             m_BuyButtonTextPriceOld.text = m_OldPriceTextString;
             m_BuyButtonTextPriceNew.text = m_NewPriceTextString;
-            var font = FontProvider.GetFont(ETextType.MenuUI, locMan.GetCurrentLanguage());
+            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI);
             m_BuyButtonTextPriceOld.font = font;
             if (m_NewPriceTextString != buyText)
-                font = FontProvider.GetFont(ETextType.MenuUI, ELanguage.English);
+                font = Managers.LocalizationManager.GetFont(ETextType.MenuUI, ELanguage.English);
             m_BuyButtonTextPriceNew.font = font;
         }
 
@@ -202,8 +204,8 @@ namespace RMAZOR.UI.Panels
         private void SendButtonPressedAnalytic()
         {
             string levelType = (string) Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                ComInComArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == ComInComArg.ParameterLevelTypeBonus;
             const string analyticId = "button_buy_no_ads_in_disable_ads_panel_pressed";
             var eventData = new Dictionary<string, object>
             {

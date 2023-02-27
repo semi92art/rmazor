@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -114,7 +112,7 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         #region api
         
-        public          EAppearingState AppearingState { get; protected set; }
+        public EAppearingState AppearingState { get; protected set; }
 
         public abstract void Appear(bool _Appear);
 
@@ -130,7 +128,8 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         public virtual void Disable()
         {
-            NetLinesPool.DeactivateAll();
+            if (ViewSettings.drawAdditionalMazeNet)
+                NetLinesPool.DeactivateAll();
             TextureRendererMasksPool.DeactivateAll();
         }
 
@@ -170,10 +169,12 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         private void InitNetLinesPool()
         {
+            if (!ViewSettings.drawAdditionalMazeNet)
+                return;
             for (int i = 1; i <= NetLinesPoolCount; i++)
             {
                 var line = Container.gameObject.AddComponentOnNewChild<Line>(
-                    "Additional Texture Mask", 
+                    "Additional Net Line", 
                     out GameObject _);
                 line.SetSortingOrder(SortingOrders.Path + 1)
                     .SetEndCaps(LineEndCap.Round)
@@ -205,6 +206,8 @@ namespace RMAZOR.Views.Common.Additional_Background
 
         protected void DrawNetLines(PointsGroupArgs _Group)
         {
+            if (!ViewSettings.drawAdditionalMazeNet)
+                return;
             NetLinesPool.DeactivateAll();
             m_NetLinePairsList.Clear();
             var points = _Group.Points;
@@ -235,7 +238,6 @@ namespace RMAZOR.Views.Common.Additional_Background
                         .SetEnd(CoordinateConverter.ToLocalMazeItemPosition(pointB));
                 }
             }
-
         }
 
         #endregion

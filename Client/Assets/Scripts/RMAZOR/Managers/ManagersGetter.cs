@@ -23,7 +23,6 @@ namespace RMAZOR.Managers
         IScoreManager         ScoreManager         { get; }
         IHapticsManager       HapticsManager       { get; }
         IPrefabSetManager     PrefabSetManager     { get; }
-        IRemoteConfigManager  RemoteConfigManager  { get; }
         IDebugManager         DebugManager         { get; }
         INotificationsManager NotificationsManager { get; }
     }
@@ -46,7 +45,6 @@ namespace RMAZOR.Managers
         public IScoreManager         ScoreManager         { get; }
         public IHapticsManager       HapticsManager       { get; }
         public IPrefabSetManager     PrefabSetManager     { get; }
-        public IRemoteConfigManager  RemoteConfigManager  { get; }
         public IDebugManager         DebugManager         { get; }
         public INotificationsManager NotificationsManager { get; }
 
@@ -59,7 +57,6 @@ namespace RMAZOR.Managers
             IScoreManager         _ScoreManager,
             IHapticsManager       _HapticsManager,
             IPrefabSetManager     _PrefabSetManager,
-            IRemoteConfigManager  _RemoteConfigManager,
             IDebugManager         _DebugManager,
             INotificationsManager _NotificationsManager)
         {
@@ -71,7 +68,6 @@ namespace RMAZOR.Managers
             ScoreManager         = _ScoreManager;
             HapticsManager       = _HapticsManager;
             PrefabSetManager     = _PrefabSetManager;
-            RemoteConfigManager  = _RemoteConfigManager;
             DebugManager         = _DebugManager;
             NotificationsManager = _NotificationsManager;
         }
@@ -93,7 +89,6 @@ namespace RMAZOR.Managers
                 ScoreManager,
                 HapticsManager,
                 PrefabSetManager,
-                RemoteConfigManager,
                 NotificationsManager
             };
             var proceeders = GetInterfaceOfProceeders<IInit>();

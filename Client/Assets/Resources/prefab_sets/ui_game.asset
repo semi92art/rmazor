@@ -58,6 +58,10 @@ MonoBehaviour:
       item: {fileID: 5943621020961091322, guid: 9d3af29492bfe1c49917f7e5e191f480,
         type: 3}
       bundle: 0
+    - name: hint_button
+      item: {fileID: 5943621020961091322, guid: 4e6d3484d419eff4295c517925e0fb77,
+        type: 3}
+      bundle: 0
     - name: level_text
       item: {fileID: 3177347172963282559, guid: b6512af5d924d7e4ab192467be538b23,
         type: 3}
@@ -119,5 +123,17 @@ MonoBehaviour:
       bundle: 0
     - name: skip_level_button
       item: {fileID: 7773209149359177075, guid: 80f86ca963d317d4bbb6e141ed7c0051,
+        type: 3}
+      bundle: 0
+    - name: daily_challenge_panel
+      item: {fileID: 8287434665253828276, guid: fd672ccb5c0a1fa44a8df9320137e293,
+        type: 3}
+      bundle: 0
+    - name: creating_level_message
+      item: {fileID: 3177347172963282559, guid: ff12be6c4849870428f0e1fcd60fbda1,
+        type: 3}
+      bundle: 0
+    - name: hint_playing_message
+      item: {fileID: 3177347172963282559, guid: d9392cbd6a2ce93498cceb0484bdcbd7,
         type: 3}
       bundle: 0

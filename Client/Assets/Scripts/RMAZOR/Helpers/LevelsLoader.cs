@@ -1,41 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Common;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
-using mazing.common.Runtime;
-using mazing.common.Runtime.Extensions;
+﻿using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
-using mazing.common.Runtime.Utils;
+using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using UnityEngine;
 
 namespace RMAZOR.Helpers
 {
     public interface ILevelsLoader : IInit
     {
-        string   GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus);
-        MazeInfo GetLevelInfo(int    _GameId, long _Index, bool _IsBonus);
-        int      GetLevelsCount(int  _GameId, bool _IsBonus);
+        string           GetLevelInfoRaw(LevelInfoArgs _Args);
+        Entity<MazeInfo> GetLevelInfo(LevelInfoArgs _Args);
+        int              GetLevelsCount(LevelInfoArgs _Args);
     }
     
     public abstract class LevelsLoader : InitBase, ILevelsLoader
     {
         #region nonpublic members
 
-        protected string[]
-            SerializedLevelsFromCache  = new string[0],
-            SerializedLevelsFromRemote = new string[0];
-
-        protected bool CachedLevelsLoaded, RemoteLevelsLoaded;
+        protected static string PrefabSetName => $"game_{CommonData.GameId}_levels";
 
         #endregion
-
+        
         #region inject
 
         protected IPrefabSetManager  PrefabSetManager  { get; }
@@ -52,80 +38,20 @@ namespace RMAZOR.Helpers
         #endregion
 
         #region api
-
-        public override void Init()
-        {
-            PreloadLevels(CommonData.GameId, true);
-            PreloadLevels(CommonData.GameId, false);
-            Cor.Run(Cor.WaitWhile(
-                () => !CachedLevelsLoaded || !RemoteLevelsLoaded,
-                () => base.Init()));
-        }
-        
-        public abstract MazeInfo GetLevelInfo(int    _GameId, long _Index, bool _IsBonus);
-        public abstract string   GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus);
-
-        public virtual int GetLevelsCount(int _GameId, bool _IsBonus)
-        {
-            PreloadLevelsIfWereNotLoaded(_GameId);
-            return SerializedLevelsFromRemote.Length > 0
-                ? SerializedLevelsFromRemote.Length
-                : SerializedLevelsFromCache.Length;
-        }
+        public abstract Entity<MazeInfo> GetLevelInfo(LevelInfoArgs    _Args);
+        public abstract string           GetLevelInfoRaw(LevelInfoArgs _Args);
+        public abstract int              GetLevelsCount(LevelInfoArgs  _Args);
 
         #endregion
 
         #region nonpublic methods
         
-        protected virtual void PreloadLevels(int _GameId, bool _Bundle)
-        {
-            int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
-            if (heapIndex <= 0)
-                heapIndex = 1;
-            var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(heapIndex, false), _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
-            string[] serializedLevels;
-            var t = typeof(MazeInfo);
-            var firstProp = t.GetProperties()[0];
-            string levelsText = asset.text;
-            Task.Run(() =>
-            {
-                levelsText = levelsText.Remove(levelsText.Length - 2, 2);
-                string splitter = "{" + "\"" + firstProp.Name + "\"";
-                serializedLevels = levelsText.Split(new[] {splitter, "," + splitter}, StringSplitOptions.None);
-                serializedLevels = serializedLevels
-                    .RemoveRange(new[] {serializedLevels[0]})
-                    .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-                if (_Bundle)
-                {
-                    SerializedLevelsFromRemote = serializedLevels;
-                    RemoteLevelsLoaded = true;
-                }
-                else
-                {
-                    SerializedLevelsFromCache = serializedLevels;
-                    CachedLevelsLoaded = true;
-                }
-            });
-        }
 
-        protected static string PrefabSetName(int _GameId)
-        {
-            return $"game_{_GameId}_levels";
-        }
 
-        protected virtual string LevelsAssetName(int _HeapIndex, bool _IsBonus)
+        protected static string LevelsAssetName(int _HeapIndex)
         {
             string heapName = _HeapIndex <= 0 ? null : $"levels_{_HeapIndex}";
             return heapName ?? $"levels_{_HeapIndex}";
-        }
-
-        protected void PreloadLevelsIfWereNotLoaded(int _GameId)
-        {
-            if (SerializedLevelsFromRemote == null)
-                PreloadLevels(_GameId, true);
-            if (SerializedLevelsFromCache == null)
-                PreloadLevels(_GameId, false);
         }
 
         #endregion

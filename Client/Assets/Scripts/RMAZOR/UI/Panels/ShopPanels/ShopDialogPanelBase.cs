@@ -1,12 +1,11 @@
-﻿using Common;
-using Common.Constants;
+﻿using System;
+using Common;
 using Common.Entities;
 using Common.Managers.PlatformGameServices;
 using Common.ScriptableObjects;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
@@ -14,6 +13,7 @@ using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
+using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Shop_Panel_Items;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.InputConfigurators;
@@ -43,12 +43,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected virtual  Vector2           StartContentPos     =>  Vector2.zero;
         protected abstract string            ItemSetName         { get; }
-        protected abstract string            PanelPrefabName     { get; }
         protected abstract string            PanelItemPrefabName { get; }
         protected abstract RectTransformLite ShopItemRectLite    { get; }
 
         protected RectTransform   Content;
         private   TextMeshProUGUI m_MoneyText;
+        private   Button          m_ButtonClose;
 
         private UnityAction m_OnCloseFinishAction;
 
@@ -79,45 +79,33 @@ namespace RMAZOR.UI.Panels.ShopPanels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(
-                    _Container,
-                    RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels,
-                PanelPrefabName);
-            Content = sp.GetCompItem<RectTransform>("content");
-            var closeButton = sp.GetCompItem<Button>("close_button");
-            m_MoneyText = sp.GetCompItem<TextMeshProUGUI>("mini_panel_money_text");
-            closeButton.onClick.AddListener(OnButtonCloseClick);
-            PanelRectTransform = sp.RTransform();
             Content.gameObject.DestroyChildrenSafe();
             InitItems();
-            PanelRectTransform.SetGoActive(false);
         }
         
         public void SetOnCloseFinishAction(UnityAction _Action)
         {
             m_OnCloseFinishAction = _Action;
         }
-        
-        public override void OnDialogStartAppearing()
-        {
-            TimePauser.PauseTimeInGame();
-            InitMoneyMiniPanel();
-            base.OnDialogStartAppearing();
-        }
 
         #endregion
 
         #region nonpublic methods
         
+        protected override void OnDialogStartAppearing()
+        {
+            TimePauser.PauseTimeInGame();
+            InitMoneyMiniPanel();
+            base.OnDialogStartAppearing();
+        }
+        
         private void OnButtonCloseClick()
         {
-            base.OnClose(() =>
+            OnClose(() =>
             {
                 m_OnCloseFinishAction?.Invoke();
             });
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
         }
 
         protected virtual void InitItems()
@@ -154,24 +142,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void InitMoneyMiniPanel()
         {
-            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                MazorCommonData.SavedGameFileName, 
-                true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to load money entity: " +
-                                       $"_Result: {savedGameEntity.Result}," +
-                                       $" castSuccess: {castSuccess}," +
-                                       $" _Value: {savedGameEntity.Value}");
-                        return;
-                    }
-                    m_MoneyText.text = savedGame.Money.ToString();
-                }));
+            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            object moneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+            long money = Convert.ToInt64(moneyCountArg);
+            m_MoneyText.text = money.ToString("N0");
             Managers.ScoreManager.GameSaved -= OnGameSaved; 
             Managers.ScoreManager.GameSaved += OnGameSaved;
         }
@@ -185,8 +159,22 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 return;
             }
             long score = result.Money;
-            m_MoneyText.text = score.ToString();
+            m_MoneyText.text = score.ToString("N0");
         }
+
+        protected override void GetPrefabContentObjects(GameObject _Go)
+        {
+            Content       = _Go.GetCompItem<RectTransform>("content");
+            m_ButtonClose = _Go.GetCompItem<Button>("close_button");
+            m_MoneyText   = _Go.GetCompItem<TextMeshProUGUI>("mini_panel_money_text");
+        }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_ButtonClose.onClick.AddListener(OnButtonCloseClick);
+        }
+
+        protected override void LocalizeTextObjectsOnLoad() { }
 
         #endregion
     }

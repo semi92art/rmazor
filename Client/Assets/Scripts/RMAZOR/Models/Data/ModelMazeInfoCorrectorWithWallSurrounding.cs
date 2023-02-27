@@ -127,12 +127,12 @@ namespace RMAZOR.Models
         private static MazeInfo SetValidTimeThresholds(MazeInfo _Info)
         {
             var additionalInfo = _Info.AdditionalInfo;
-            if (additionalInfo.Time3Stars < MathUtils.Epsilon)
+            if (MathUtils.Equals(additionalInfo.Time3Stars, 0f))
                 additionalInfo.Time3Stars = 15f;
-            if (additionalInfo.Time2Stars < MathUtils.Epsilon)
+            if (MathUtils.Equals(additionalInfo.Time2Stars, 0f))
                 additionalInfo.Time2Stars = 30f;
-            if (additionalInfo.Time1Star < MathUtils.Epsilon)
-                additionalInfo.Time1Star = 40f;
+            if (MathUtils.Equals(additionalInfo.Time1Star, 0f))
+                additionalInfo.Time1Star = 45f;
             _Info.AdditionalInfo = additionalInfo;
             return _Info;
         }

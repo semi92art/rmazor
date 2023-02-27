@@ -67,7 +67,7 @@ namespace RMAZOR.Views.Characters.Head
             sets.Add(
                 new Component[] {m_Eye1Shape, m_Eye2Shape},
                 () => charCol2);
-            return base.GetAppearSets(_Appear);
+            return sets;
         }
     }
 }

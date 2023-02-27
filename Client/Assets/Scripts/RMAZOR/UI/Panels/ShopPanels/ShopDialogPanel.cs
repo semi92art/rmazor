@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.ScriptableObjects;
 using Common.Utils;
 using mazing.common.Runtime;
@@ -15,7 +15,6 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
-using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Constants;
 using RMAZOR.Managers;
@@ -26,6 +25,7 @@ using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels.ShopPanels
 {
@@ -37,7 +37,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected override Vector2 StartContentPos     => Content.anchoredPosition.SetY(Content.rect.height * 0.5f);
         protected override string  ItemSetName         => "shop_money_items_set";
-        protected override string  PanelPrefabName     => "shop_money_panel";
+        protected override string  PrefabName          => "shop_money_panel";
         protected override string  PanelItemPrefabName => "shop_money_item";
 
         protected override RectTransformLite ShopItemRectLite => new RectTransformLite
@@ -50,17 +50,18 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private readonly Dictionary<int, ShopItemArgs> m_ShopItemArgsDict
             = new Dictionary<int, ShopItemArgs>();
-        private readonly Dictionary<int, ShopMoneyItem> m_Items 
-            = new Dictionary<int, ShopMoneyItem>();
+
+        private TextMeshProUGUI m_Title;
+        private Image           m_BackGlowDark;
 
         #endregion
         
         #region inject
-
+        
         private IModelGame Model { get; }
-
+        
         private ShopDialogPanel(
-            IModelGame                  _Model,
+            IModelGame _Model,
             IManagersGetter             _Managers,
             IUITicker                   _UITicker,
             ICameraProvider             _CameraProvider,
@@ -81,10 +82,10 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #endregion
 
         #region api
-
-        public override int      DialogViewerId => MazorCommonDialogViewerIds.Medium2;
-        public          bool     Initialized    { get; private set; }
-        public event UnityAction Initialize;
+        
+        public override    int    DialogViewerId => MazorCommonDialogViewerIds.Medium2;
+        public             bool   Initialized    { get; private set; }
+        public event UnityAction  Initialize;
         
         public void Init()
         {
@@ -98,18 +99,30 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 }));
         }
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            var title = PanelRectTransform.GetCompItem<TextMeshProUGUI>("title");
-            var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, "shop",
-                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
-            Managers.LocalizationManager.AddTextObject(locInfo);
-        }
-
         #endregion
 
         #region nonpublic methods
+
+        protected override void OnDialogStartAppearing()
+        {
+            m_BackGlowDark.enabled = Model.LevelStaging.LevelStage == ELevelStage.None;
+            base.OnDialogStartAppearing();
+        }
+        
+        protected override void GetPrefabContentObjects(GameObject _Go)
+        {
+            base.GetPrefabContentObjects(_Go);
+            m_Title = PanelRectTransform.GetCompItem<TextMeshProUGUI>("title");
+            m_BackGlowDark = PanelRectTransform.GetCompItem<Image>("back_glow_dark");
+        }
+
+        protected override void LocalizeTextObjectsOnLoad()
+        {
+            base.LocalizeTextObjectsOnLoad();
+            var locInfo = new LocTextInfo(m_Title, ETextType.MenuUI, "shop",
+                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
+            Managers.LocalizationManager.AddLocalization(locInfo);
+        }
 
         private void InitPurchaseActions()
         {
@@ -123,7 +136,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     itemInSet.purchaseKey,
                     () => OnPaid(itemInSet.purchaseKey, itemInSet.reward));
             }
-            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, BuyHideAdsItem);
         }
 
         private void LoadItemInfos()
@@ -163,8 +175,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
         protected override void InitItems()
         {
             LoadItemInfos();
-            m_Items.Clear();
-            bool showAds = Managers.AdsManager.ShowAds;
             var set = Managers.PrefabSetManager.GetObject<ShopPanelMoneyItemsScriptableObject>(
                 PrefabSetName, ItemSetName).set;
             foreach (var itemInSet in set)
@@ -176,39 +186,16 @@ namespace RMAZOR.UI.Panels.ShopPanels
                     : null;
                 var info = new ViewShopItemInfo
                 {
-                    PurchaseKey = itemInSet.purchaseKey,
+                    PurchaseKey      = itemInSet.purchaseKey,
                     BuyForWatchingAd = itemInSet.watchingAds,
-                    Reward = itemInSet.reward,
-                    Icon = itemInSet.icon,
-                    Background = background
+                    Reward           = itemInSet.reward,
+                    Icon             = itemInSet.icon,
+                    Background       = background
                 };
                 var item = InitItem(args, info);
                 if (info.BuyForWatchingAd)
                     item.Highlighted = true;
-                m_Items.Add(info.PurchaseKey, item);
             }
-            if (showAds)
-                InitBuyNoAdsItem();
-        }
-
-        private void InitBuyNoAdsItem()
-        {
-            var argsDisableAds = m_ShopItemArgsDict[PurchaseKeys.NoAds];
-            var infoDisableAds = new ViewShopItemInfo
-            {
-                PurchaseKey = PurchaseKeys.NoAds,
-                Icon = Managers.PrefabSetManager.GetObject<Sprite>(
-                    PrefabSetName, 
-                    "shop_no_ads_icon"),
-                BuyForWatchingAd = false,
-                Reward = 0
-            };
-            var itemDisableAds = InitItem(argsDisableAds, infoDisableAds, BuyHideAdsItem);
-            m_Items.Add(PurchaseKeys.NoAds, itemDisableAds);
-            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
-                itemDisableAds.title,
-                ETextType.MenuUI,
-                "no_ads"));
         }
 
         private ShopMoneyItem InitItem(
@@ -232,7 +219,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {
                     if (_Info.BuyForWatchingAd)
                     {
-                        Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInShopPanelPressed);
+                        Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInShopPanelClick);
                         void OnBeforeAdShown()
                         {
                             Managers.AudioManager.MuteAudio(EAudioClipType.Music);
@@ -286,75 +273,37 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 }));
             return item;
         }
-        
-        private void BuyHideAdsItem()
-        {
-            Managers.AnalyticsManager.SendAnalytic(
-                AnalyticIds.Purchase,
-        new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, "no_ads"}});
-            Managers.AdsManager.ShowAds = false;
-            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
-            string dialogText = Managers.LocalizationManager.GetTranslation("mandatory_ads_disabled");
-            MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-            RemoveItem(PurchaseKeys.NoAds);
-        }
 
         private void OnPaid(int _PurchaseKey, long _Reward)
         {
-            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                MazorCommonData.SavedGameFileName,
-                true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to save new game data");
-                        return;
-                    }
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = MazorCommonData.SavedGameFileName,
-                        Money = savedGame.Money + _Reward,
-                        Level = Model.LevelStaging.LevelIndex
-                    };
-                    Managers.ScoreManager.SaveGameProgress(newSavedGame, false);
-                    string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
-                    string dialogText = _Reward + " " +
-                                        Managers.LocalizationManager
-                                            .GetTranslation("coins_alt")
-                                            .ToLowerInvariant();
-                    MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
-                    if (_PurchaseKey == -1)
-                        return;
-                    string productId = _PurchaseKey switch
-                    {
-                        -1 => "coins_pack_micro",
-                        1  => "coins_pack_small",
-                        2  => "coins_pack_medium",
-                        3  => "coins_pack_large",
-                        _  => null
-                    };
-                    if (productId == null)
-                    {
-                        Dbg.LogError("Analytic Id was not found by Purchase Key");
-                        return;
-                    }
-                    Managers.AnalyticsManager.SendAnalytic(
-                        AnalyticIds.Purchase,
-                        new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, productId}});
-                }));
-        }
-
-        private void RemoveItem(int _Key)
-        {
-            if (!m_Items.ContainsKey(_Key))
+            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+            long money = Convert.ToInt64(bankMoneyCountArg);
+            money += _Reward;
+            savedGame.Arguments.SetSafe(ComInComArg.KeyMoneyCount, money);
+            Managers.ScoreManager.SaveGame(savedGame);
+            string dialogTitle = Managers.LocalizationManager.GetTranslation("purchase") + ":";
+            string dialogText = _Reward + " " +
+                                Managers.LocalizationManager
+                                    .GetTranslation("coins_alt")
+                                    .ToLowerInvariant();
+            MazorCommonUtils.ShowAlertDialog(dialogTitle, dialogText);
+            string productId = _PurchaseKey switch
+            {
+                -1 => "coins_pack_micro",
+                1  => "coins_pack_small",
+                2  => "coins_pack_medium",
+                3  => "coins_pack_large",
+                _  => null
+            };
+            if (productId == null)
+            {
+                Dbg.LogError("Analytic Id was not found by Purchase Key");
                 return;
-            if (m_Items[_Key].IsNotNull())
-                m_Items[_Key].gameObject.DestroySafe();
-            m_Items.Remove(_Key);
+            }
+            Managers.AnalyticsManager.SendAnalytic(
+                AnalyticIds.Purchase,
+                new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, productId}});
         }
 
         #endregion

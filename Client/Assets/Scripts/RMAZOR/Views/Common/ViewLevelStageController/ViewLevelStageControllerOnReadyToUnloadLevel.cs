@@ -11,6 +11,7 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views.Common.Additional_Background;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.MazeItems;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
@@ -29,7 +30,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
         private IViewFullscreenTransitioner         FullscreenTransitioner         { get; }
         private IViewMazeAdditionalBackgroundDrawer AdditionalBackgroundDrawer     { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         public ViewLevelStageControllerOnReadyToUnloadLevel(
             ViewSettings                        _ViewSettings,
@@ -37,14 +38,14 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewBetweenLevelAdShower           _BetweenLevelAdShower,
             IViewFullscreenTransitioner         _FullscreenTransitioner,
             IViewMazeAdditionalBackgroundDrawer _AdditionalBackgroundDrawer,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher             _LevelStageSwitcher)
         {
             ViewSettings                   = _ViewSettings;
             CameraEffectsCustomAnimator    = _CameraEffectsCustomAnimator;
             BetweenLevelAdShower           = _BetweenLevelAdShower;
             FullscreenTransitioner         = _FullscreenTransitioner;
             AdditionalBackgroundDrawer     = _AdditionalBackgroundDrawer;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher             = _LevelStageSwitcher;
         }
 
         public override void Init()
@@ -55,9 +56,9 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnReadyToUnloadLevel(LevelStageArgs _Args, IReadOnlyCollection<IViewMazeItem> _MazeItems)
         {
-            string currentLevelType = (string) _Args.Args.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool currentLevelIsBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            string currentLevelType = (string) _Args.Arguments.GetSafe(
+                ComInComArg.KeyCurrentLevelType, out _);
+            bool currentLevelIsBonus = currentLevelType == ComInComArg.ParameterLevelTypeBonus;
             BetweenLevelAdShower.TryShowAd(
                 _Args.LevelIndex,
                 currentLevelIsBonus, 
@@ -77,7 +78,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 },
                 () =>
                 {
-                    SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnloadLevel);
+                    LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnloadLevel);
                 }));
         }
     }

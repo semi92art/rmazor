@@ -4,7 +4,6 @@ using Common;
 using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
@@ -15,6 +14,7 @@ using RMAZOR.Views.Utils;
 using Shapes;
 using TMPro;
 using UnityEngine;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views.UI
 {
@@ -25,7 +25,6 @@ namespace RMAZOR.Views.UI
     
     public class ViewUICongratsMessage : IViewUICongratsMessage
     {
-
         #region nonpublic members
 
         private static int AnimKeyCongratsAnim => AnimKeys.Anim;
@@ -34,8 +33,8 @@ namespace RMAZOR.Views.UI
         private readonly List<Component> m_Renderers = new List<Component>();
 
         private GameObject  m_CongratsGo;
-        private TextMeshPro m_CongratsText;
-        private TextMeshPro m_CompletedText;
+        private TextMeshPro m_BottomText;
+        private TextMeshPro m_TopText;
         private Line        m_CongratsLine;
         private Animator    m_CongratsAnim;
         private float       m_TopOffset;
@@ -83,12 +82,12 @@ namespace RMAZOR.Views.UI
             {
                 case ELevelStage.Loaded:
                     ConsiderCongratsPanelWhileAppearing(false);
-                    ShowCongratsPanel(false);
+                    HideCongratsPanel();
                     break;
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused: 
                     ConsiderCongratsPanelWhileAppearing(true);
-                    SetCongratsString();
-                    ShowCongratsPanel(true);
+                    SetTexts();
+                    ShowCongratsPanel(_Args);
                     break;
                 case ELevelStage.Unloaded:
                     m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
@@ -115,32 +114,37 @@ namespace RMAZOR.Views.UI
             var parent = CameraProvider.Camera.transform;
             var goCongrads = Managers.PrefabSetManager.InitPrefab(
                 parent, CommonPrefabSetNames.UiGame, "congratulations_panel");
-            m_CongratsGo = goCongrads;
-            m_CompletedText = m_CongratsGo.GetCompItem<TextMeshPro>("text_completed");
-            m_CongratsText  = m_CongratsGo.GetCompItem<TextMeshPro>("text_congrats");
-            m_CongratsLine  = m_CongratsGo.GetCompItem<Line>("line");
-            m_CongratsAnim  = m_CongratsGo.GetCompItem<Animator>("animator");
-            m_CompletedText.sortingOrder = SortingOrders.GameUI;
-            m_CongratsText .sortingOrder = SortingOrders.GameUI;
-            m_CongratsLine .SortingOrder = SortingOrders.GameUI;
+            m_CongratsGo                 = goCongrads;
+            m_TopText                    = m_CongratsGo.GetCompItem<TextMeshPro>("text_completed");
+            m_BottomText                 = m_CongratsGo.GetCompItem<TextMeshPro>("text_congrats");
+            m_CongratsLine               = m_CongratsGo.GetCompItem<Line>("line");
+            m_CongratsAnim               = m_CongratsGo.GetCompItem<Animator>("animator");
+            m_TopText.sortingOrder       = SortingOrders.GameUI;
+            m_BottomText.sortingOrder    = SortingOrders.GameUI;
+            m_CongratsLine.SortingOrder  = SortingOrders.GameUI;
         }
         
-        private void SetCongratsString()
+        private void SetTexts()
         {
-            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
-                m_CompletedText, 
-                ETextType.GameUI,
-                "completed"));
-            string congradsKey = GetCongratulationsMessageLocalizationKey();
-            Managers.LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(
-                m_CongratsText, 
-                ETextType.GameUI,
-                congradsKey,
-                _Text => _Text.ToUpperInvariant()));
+            var locMan = Managers.LocalizationManager;
+            m_TopText.font       = m_BottomText.font = Managers.LocalizationManager.GetFont(ETextType.GameUI);
+            string keyTopText    = GetTopTextLocalizationKey(); 
+            m_TopText.text       = locMan.GetTranslation(keyTopText).ToUpperInvariant();
+            string keyBottomText = GetBottomTextLocalizationKey();
+            m_BottomText.text    = locMan.GetTranslation(keyBottomText).ToUpperInvariant();
         }
 
-        private string GetCongratulationsMessageLocalizationKey()
+        private string GetTopTextLocalizationKey()
         {
+            const string defaultKey = "completed"; 
+            var levelStagingArgs = Model.LevelStaging.Arguments;
+            string gameMode = (string) levelStagingArgs.GetSafe(KeyGameMode, out _);
+            return gameMode != ParameterGameModeDailyChallenge ? defaultKey : "challenge";
+        }
+
+        private string GetBottomTextLocalizationKey()
+        {
+            var levelStagingArgs = Model.LevelStaging.Arguments;
             float levelTime = Model.LevelStaging.LevelTime;
             var mazeAdditionalInfo = Model.Data.Info.AdditionalInfo;
             string key;
@@ -152,15 +156,19 @@ namespace RMAZOR.Views.UI
                 key = "not_bad";
             else 
                 key = "could_be_better";
-            return key;
+            string gameMode = (string) levelStagingArgs.GetSafe(KeyGameMode, out _);
+            if (gameMode != ParameterGameModeDailyChallenge) 
+                return key;
+            bool isSuccess = (bool)levelStagingArgs.GetSafe(KeyIsDailyChallengeSuccess, out _);
+            return isSuccess ? "completed" : "failed_1";
         }
 
         private void ConsiderCongratsPanelWhileAppearing(bool _Consider)
         {
             var congratRenderers = new Behaviour[]
             {
-                m_CompletedText,
-                m_CongratsText,
+                m_TopText,
+                m_BottomText,
                 m_CongratsLine
             };
 
@@ -176,13 +184,25 @@ namespace RMAZOR.Views.UI
             }
         }
         
-        private void ShowCongratsPanel(bool _Show)
+        private void ShowCongratsPanel(LevelStageArgs _Args)
         {
+            if (!CanShowCongratsPanel(_Args))
+                return;
             var col = ColorProvider.GetColor(ColorIds.UI);
-            if (!_Show)
-                col = col.SetA(0f);
-            m_CompletedText.color = m_CongratsText.color = m_CongratsLine.Color = col;
-            m_CongratsAnim.SetTrigger(_Show ? AnimKeyCongratsAnim : AnimKeyCongratsIdle);
+            m_TopText.color = m_BottomText.color = m_CongratsLine.Color = col;
+            m_CongratsAnim.SetTrigger(AnimKeyCongratsAnim);
+        }
+
+        private void HideCongratsPanel()
+        {
+            m_TopText.color = m_BottomText.color = m_CongratsLine.Color = Color.white.SetA(0f);
+            m_CongratsAnim.SetTrigger(AnimKeyCongratsIdle);
+        }
+
+        private static bool CanShowCongratsPanel(LevelStageArgs _Args)
+        {
+            return (string) _Args.Arguments[KeyGameMode] != ParameterGameModePuzzles 
+                   || !_Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint);
         }
 
         #endregion

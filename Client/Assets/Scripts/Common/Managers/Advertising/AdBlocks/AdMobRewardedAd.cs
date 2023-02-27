@@ -5,6 +5,8 @@ using System.Text;
 using Common.Helpers;
 using UnityEngine.Events;
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Api.Mediation.AdColony;
+using GoogleMobileAds.Api.Mediation.Vungle;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Ticker;
@@ -68,7 +70,17 @@ namespace Common.Managers.Advertising.AdBlocks
 
         public override void LoadAd()
         {
-            var adRequest = new AdRequest.Builder().Build();
+            var vungleExtras = new VungleRewardedVideoMediationExtras();
+            var adColonyExtras = new AdColonyMediationExtras();
+            adColonyExtras.SetShowPrePopup(false);
+            adColonyExtras.SetShowPostPopup(false);
+#if UNITY_ANDROID
+            vungleExtras.SetAllPlacements(new [] { "REWARDED_DEFAULT-7468017", "DEFAULT-9492930" });
+#endif
+            var adRequest = new AdRequest.Builder()
+                .AddMediationExtras(vungleExtras)
+                .AddMediationExtras(adColonyExtras)
+                .Build();
             m_RewardedAd.LoadAd(adRequest);
         }
 

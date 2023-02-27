@@ -1,7 +1,6 @@
 ﻿Shader "RMAZOR/Transition/Circles" {
     Properties {
-        _Color1 ("Color 1", Color) = (0,0,0,1)
-        _EdgesColor("Edges Color", Color) = (1,1,1,1)
+        _Color1 ("Color", Color) = (0,0,0,1)
         _MainTex ("Texture", 2D) = "white" {}
         _TransitionValue("Transition Value", Range(0, 1)) = 0
     	_C1("C1", Range(-1, 1)) = -0.4
@@ -35,7 +34,7 @@
 				return vert_default(v);
 			}
 
-			fixed4 _Color1, _EdgesColor;
+			fixed4 _Color1;
 			float _TransitionValue;
 			float _C1, _C2, _C3, _C4, _C5, _C6, _C7;
 
@@ -45,16 +44,13 @@
 				p.y -= .5;
 				float d = length(p) - _C1;
 			    float c = 1. - _TransitionValue;
+				c *=c;
 			    float3 frag_color = float_3(1.);
 				frag_color *= _C2 * cos(_C5 * d - d * pow(d, .1)) * _C3 + _C2 * d * cos(abs(c * _C6) + _C7) * _C4; 
 				float a_raw = frag_color.r;
 				float a = a_raw < .95 ? 0. : 1.;
 				frag_color.rgb = _Color1.rgb;
 				frag_color.rgb *= a;
-				if (a_raw > .001 && a_raw < .95) {
-					frag_color.rgb = _EdgesColor.rgb;
-					a = 1;
-				}
 				return fixed4(frag_color, a);
 			}
 			ENDCG

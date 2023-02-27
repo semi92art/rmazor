@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 4536645813358866010}
   - component: {fileID: 3014867984373478654}
   - component: {fileID: 4619979381846009570}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Eye 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ MonoBehaviour:
     - name: border
       item: {fileID: 4971899311667763340}
     - name: collider
-      item: {fileID: 4053558951622077852}
+      item: {fileID: 1839994444082005202}
     - name: mouth_line_1
       item: {fileID: 8440902065601667208}
     - name: mouth_line_2
@@ -308,6 +308,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58e7e6ea26c64411b1296bdbf50a4b43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &1839994444082005202
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2090407036019388522}
+  - component: {fileID: 4529477793988103785}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2090407036019388522
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839994444082005202}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3240111073717642776}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &4529477793988103785
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1839994444082005202}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &2752184959085603666
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,7 +368,7 @@ GameObject:
   - component: {fileID: 2982025678280033291}
   - component: {fileID: 3696296593934953037}
   - component: {fileID: 2479152174452614751}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Mouth Line 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -447,8 +495,7 @@ GameObject:
   - component: {fileID: 8961204445542969580}
   - component: {fileID: 7863594798523661652}
   - component: {fileID: 5181235751006683254}
-  - component: {fileID: 6724646232953849711}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -469,6 +516,7 @@ Transform:
   m_Children:
   - {fileID: 1415947551976137637}
   - {fileID: 4121453142084383194}
+  - {fileID: 2090407036019388522}
   m_Father: {fileID: 8953946778060036843}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -575,22 +623,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!58 &6724646232953849711
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4053558951622077852}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.5
 --- !u!1 &4137207480606080037
 GameObject:
   m_ObjectHideFlags: 0
@@ -603,7 +635,7 @@ GameObject:
   - component: {fileID: 5240776939241511930}
   - component: {fileID: 2945347188852157647}
   - component: {fileID: 6649849065959592262}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Hair 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -736,7 +768,7 @@ GameObject:
   - component: {fileID: 4753890129097605305}
   - component: {fileID: 7490176300837449963}
   - component: {fileID: 4335072680159073814}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Hair 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -869,7 +901,7 @@ GameObject:
   - component: {fileID: 4051876002812908512}
   - component: {fileID: 1508442816418329533}
   - component: {fileID: 4467151644747189836}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Eye 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1041,7 +1073,7 @@ GameObject:
   - component: {fileID: 8804755645536649838}
   - component: {fileID: 5086300963717396382}
   - component: {fileID: 5756184471461623911}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1178,7 +1210,7 @@ GameObject:
   - component: {fileID: 6801272004785810315}
   - component: {fileID: 1626561031053528250}
   - component: {fileID: 296632732464965533}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Mouth Line 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}

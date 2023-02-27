@@ -430,7 +430,6 @@ MonoBehaviour:
   level1Item: {fileID: 876399011311194386}
   level2Item: {fileID: 7870373676736736848}
   level3Item: {fileID: 3733778687152267527}
-  levelBonusItem: {fileID: 6432989596940663906}
 --- !u!1 &3312045088165989929
 GameObject:
   m_ObjectHideFlags: 0
@@ -570,6 +569,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a941afdf5c6e40bcbc641b987d4704b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  texts: []
   title: {fileID: 2490357102238703188}
   bestTimeText: {fileID: 8615188287921560925}
   button: {fileID: 5370607678838867783}
@@ -851,6 +852,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a941afdf5c6e40bcbc641b987d4704b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  texts: []
   title: {fileID: 6857283402665313338}
   bestTimeText: {fileID: 1000378205031842519}
   button: {fileID: 8737514232939048284}
@@ -1420,6 +1423,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a941afdf5c6e40bcbc641b987d4704b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  texts: []
   title: {fileID: 4803112427165333317}
   bestTimeText: {fileID: 7874704096802614428}
   button: {fileID: 4200641360103300425}
@@ -2324,6 +2329,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a941afdf5c6e40bcbc641b987d4704b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  background: {fileID: 0}
+  texts: []
   title: {fileID: 1522806757935402910}
   bestTimeText: {fileID: 6651727776364968872}
   button: {fileID: 3858965243148399314}

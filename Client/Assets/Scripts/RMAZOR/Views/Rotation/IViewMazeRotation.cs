@@ -1,15 +1,16 @@
-﻿using Common;
-using mazing.common.Runtime;
+﻿using mazing.common.Runtime;
 using RMAZOR.Models;
 using UnityEngine.Events;
 
 namespace RMAZOR.Views.Rotation
 {
-    public interface IViewMazeRotation : IInit, IOnLevelStageChanged
+    public interface IViewMazeRotation :
+        IInit,
+        IOnLevelStageChanged, 
+        IMazeRotationStarted,
+        IMazeRotationFinished
     {
         event UnityAction<float>     RotationContinued;
         event MazeOrientationHandler RotationFinished;
-        void                         OnRotationStarted(MazeRotationEventArgs _Args);
-        void                         OnRotationFinished(MazeRotationEventArgs _Args);
     }
 }

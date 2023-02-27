@@ -1,5 +1,5 @@
 ﻿using System;
-using Common.Helpers;
+using System.Collections.Generic;
 using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Helpers.Attributes;
@@ -18,16 +18,17 @@ namespace RMAZOR
     [Serializable]
     public class AdditionalColorPropsAdditionalInfo
     {
-        [JsonProperty("A0")]               public bool   dark;
-        [JsonProperty("A1"), Range(0, 1)]  public float  neonStreamColorCoefficient1;
-        [JsonProperty("A2"), Range(0, 3)]  public float  swirlForPlanetColorCoefficient1;
-        [JsonProperty("A3"), Range(0, 10)] public float  wormHoleColorCoefficient1;
-        [JsonProperty("A4")]               public string backgroundName;
-        [JsonProperty("A5")]               public string additionalBackgroundName;
+        [JsonProperty("A0")]               public bool         dark;
+        [JsonProperty("A1"), Range(0, 1)]  public float        neonStreamColorCoefficient1;
+        [JsonProperty("A2"), Range(0, 3)]  public float        swirlForPlanetColorCoefficient1;
+        [JsonProperty("A3"), Range(0, 10)] public float        wormHoleColorCoefficient1;
+        [JsonProperty("A4")]               public string       backgroundName;
+        [JsonProperty("A5")]               public string       additionalBackgroundName;
+        [JsonProperty("A6")]               public List<string> arguments;
     }
     
     [Serializable]
-    public class AdditionalColorsProps
+    public class AdditionalColorsPropsAssetItem
     {
         public Color main;
         public Color bacground1;
@@ -40,7 +41,7 @@ namespace RMAZOR
         [JsonProperty("F4")] public EBackAndFrontColorType characterBorderFillType;
         [JsonProperty("F5")] public EBackAndFrontColorType uiBackgroundFillType;
 
-        public BloomPropsArgs                      bloom;
+        public BloomPropsArgs                     bloom;
         public AdditionalColorPropsAdditionalInfo additionalInfo;
 
         public Color GetColor(EBackAndFrontColorType _Type)
@@ -56,12 +57,12 @@ namespace RMAZOR
     }
     
     [Serializable]
-    public class AdditionalColorsPropsSet : ReorderableArray<AdditionalColorsProps> { }
+    public class AdditionalColorsPropsAssetItemsSet : ReorderableArray<AdditionalColorsPropsAssetItem> { }
     
     [CreateAssetMenu(fileName = "back_and_front_colors_set", menuName = "Configs and Sets/Additional Colors Set", order = 0)]
     public class AdditionalColorsSetScriptableObject : ScriptableObject
     {
         [Header("Set"), Reorderable(paginate = true, pageSize = 50)]
-        public AdditionalColorsPropsSet set;
+        public AdditionalColorsPropsAssetItemsSet set;
     }
 }

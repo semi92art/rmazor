@@ -17,6 +17,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using UnityEngine;
@@ -68,7 +69,7 @@ namespace RMAZOR.Views.UI
         private IViewInputCommandsProceeder         CommandsProceeder              { get; }
         private IViewInputTouchProceeder            TouchProceeder                 { get; }
         private IViewGameTicker                     GameTicker                     { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewUIRotationControlsButtons(
             IModelGame                          _Model,
@@ -80,7 +81,7 @@ namespace RMAZOR.Views.UI
             IViewInputCommandsProceeder         _CommandsProceeder,
             IViewInputTouchProceeder            _TouchProceeder,
             IViewGameTicker                     _GameTicker,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher _LevelStageSwitcher)
         {
             Model                          = _Model;
             ColorProvider                  = _ColorProvider;
@@ -91,7 +92,7 @@ namespace RMAZOR.Views.UI
             CommandsProceeder              = _CommandsProceeder;
             TouchProceeder                 = _TouchProceeder;
             GameTicker                     = _GameTicker;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
@@ -203,7 +204,7 @@ namespace RMAZOR.Views.UI
             LockCommandsOnRotationStarted();
             if (Model.LevelStaging.LevelStage != ELevelStage.ReadyToStart)
                 return;
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+            LevelStageSwitcher.SwitchLevelStage(
                 EInputCommand.StartOrContinueLevel);
         }
         

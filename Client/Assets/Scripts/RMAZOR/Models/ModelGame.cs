@@ -109,7 +109,7 @@ namespace RMAZOR.Models
             if (LevelStaging.LevelStage == ELevelStage.ReadyToStart 
                 && LevelStaging.PrevLevelStage == ELevelStage.Loaded)
             {
-                LevelStaging.StartOrContinueLevel();
+                LevelStaging.StartOrContinueLevel(LevelStaging.Arguments);
             }
             InputScheduler.LockRotation(true);
             InputScheduler.LockMovement(true);

@@ -18,7 +18,19 @@ MonoBehaviour:
       item: {fileID: 1560829925993726868, guid: ee937365bf423e547b339a44bddc2f15,
         type: 3}
       bundle: 0
+    - name: character_head_02
+      item: {fileID: 1560829925993726868, guid: b9fafbc4a15a791418b6ff40d375eeff,
+        type: 3}
+      bundle: 0
     - name: character_head_03
       item: {fileID: 1560829925993726868, guid: 5b4ca2ac8bf377342a3168f80d37ec5d,
+        type: 3}
+      bundle: 0
+    - name: character_head_04
+      item: {fileID: 1560829925993726868, guid: 2d68a274acd3438479edfdddeb2eb23a,
+        type: 3}
+      bundle: 0
+    - name: character_head_05
+      item: {fileID: 1560829925993726868, guid: 7851245a2d589c84884625469f9483f0,
         type: 3}
       bundle: 0

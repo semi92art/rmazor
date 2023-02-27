@@ -3,14 +3,10 @@ using System.Globalization;
 using System.Linq;
 using Common.Constants;
 using Common.Utils;
-using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
-using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
@@ -21,23 +17,25 @@ using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.UI.PanelItems.Levels_Panel_Items;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface ILevelsDialogPanel : IDialogPanel { }
+    public interface ILevelsDialogPanelMain : IDialogPanel { }
     
-    public class LevelsDialogPanelFake : 
-        DialogPanelFake, ILevelsDialogPanel { }
+    public class LevelsDialogPanelMainFake : 
+        DialogPanelFake, ILevelsDialogPanelMain { }
      
-    public class LevelsDialogPanel : DialogPanelBase, ILevelsDialogPanel
+    public class LevelsDialogPanelMain : DialogPanelBase, ILevelsDialogPanelMain
     {
         #region constants
 
-        private const int LevelGroupItemsCount = 4;
+        private const int LevelGroupItemsCountOnPage = 4;
 
         #endregion
         
@@ -56,37 +54,37 @@ namespace RMAZOR.UI.Panels
             m_SpriteLevelGroupItemStarEnabled,
             m_SpriteLevelGroupItemStarDisabled;
         
-        private readonly Dictionary<int, LevelsPanelGroupItem> m_LevelPanelGroupItems 
+        private readonly Dictionary<int, LevelsPanelGroupItem> m_LevelPanelGroupItemsDict 
             = new Dictionary<int, LevelsPanelGroupItem>();
 
         private int m_SelectedLevelGroupGroupIndex = -1;
+        
+        protected override string PrefabName => "levels_panel";
 
         #endregion
         
         #region inject
 
-        private ILevelsLoader                       LevelsLoader                   { get; }
-        private IRawLevelInfoGetter                 RawLevelInfoGetter             { get; }
-        private IModelGame                          Model                          { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-        private IConfirmLoadLevelDialogPanel        ConfirmLoadLevelDialogPanel    { get; }
-        private IDialogViewersController            DialogViewersController        { get; }
-        private IFontProvider                       FontProvider                   { get; }
+        private ILevelsLoader                LevelsLoader                { get; }
+        private IRawLevelInfoGetter          RawLevelInfoGetter          { get; }
+        private IModelGame                   Model                       { get; }
+        private IViewLevelStageSwitcher      LevelStageSwitcher          { get; }
+        private IConfirmLoadLevelDialogPanel ConfirmLoadLevelDialogPanel { get; }
+        private IDialogViewersController     DialogViewersController     { get; }
 
-        private LevelsDialogPanel(
-            ILevelsLoader                       _LevelsLoader,
-            IRawLevelInfoGetter                 _RawLevelInfoGetter,
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewTimePauser                     _TimePauser,
-            IModelGame                          _Model,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IConfirmLoadLevelDialogPanel        _ConfirmLoadLevelDialogPanel,
-            IDialogViewersController            _DialogViewersController,
-            IFontProvider                       _FontProvider)
+        private LevelsDialogPanelMain(
+            IManagersGetter              _Managers,
+            IUITicker                    _Ticker,
+            ICameraProvider              _CameraProvider,
+            IColorProvider               _ColorProvider,
+            IViewTimePauser              _TimePauser,
+            IViewInputCommandsProceeder  _CommandsProceeder,
+            ILevelsLoader                _LevelsLoader,
+            IRawLevelInfoGetter          _RawLevelInfoGetter,
+            IModelGame                   _Model,
+            IViewLevelStageSwitcher      _LevelStageSwitcher,
+            IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel,
+            IDialogViewersController     _DialogViewersController)
             : base(
                 _Managers,
                 _Ticker,
@@ -95,38 +93,32 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            LevelsLoader                   = _LevelsLoader;
-            RawLevelInfoGetter             = _RawLevelInfoGetter;
-            Model                          = _Model;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
-            ConfirmLoadLevelDialogPanel    = _ConfirmLoadLevelDialogPanel;
-            DialogViewersController        = _DialogViewersController;
-            FontProvider = _FontProvider;
+            LevelsLoader                = _LevelsLoader;
+            RawLevelInfoGetter          = _RawLevelInfoGetter;
+            Model                       = _Model;
+            LevelStageSwitcher          = _LevelStageSwitcher;
+            ConfirmLoadLevelDialogPanel = _ConfirmLoadLevelDialogPanel;
+            DialogViewersController     = _DialogViewersController;
         }
 
         #endregion
 
         #region api
-
-        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
-        public override Animator Animator       => m_PanelAnimator;
+        
+        public override    int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override    Animator Animator       => m_PanelAnimator;
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            var go  = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(_Container, RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "levels_panel");
-            PanelRectTransform = go.RTransform();
-            PanelRectTransform.SetGoActive(false);
             LoadLevelGroupButtonSprites();
-            GetPrefabContentObjects(go);
-            LocalizeTexts();
-            SubscribeButtonEvents();
         }
 
+        #endregion
 
-        public override void OnDialogStartAppearing()
+        #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
         {
             if (m_SelectedLevelGroupGroupIndex == -1)
                 m_SelectedLevelGroupGroupIndex = GetCurrentLevelGroupGroupIndex();
@@ -134,10 +126,6 @@ namespace RMAZOR.UI.Panels
             UpdateLevelGroupItems();
             base.OnDialogStartAppearing();
         }
-
-        #endregion
-
-        #region nonpublic methods
         
         private void OnButtonPrevClick()
         {
@@ -155,14 +143,14 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonCloseClick()
         {
-            base.OnClose(() =>
+            OnClose(() =>
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
             });
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
         }
         
-        private void GetPrefabContentObjects(GameObject _GameObject)
+        protected override void GetPrefabContentObjects(GameObject _GameObject)
         {
             var go = _GameObject;
             m_PanelAnimator        = go.GetCompItem<Animator>("animator");
@@ -170,7 +158,7 @@ namespace RMAZOR.UI.Panels
             m_ButtonPreviousGroups = go.GetCompItem<Button>("button_previous_stages");
             m_ButtonNextGroups     = go.GetCompItem<Button>("button_next_stages");
             m_ButtonClose          = go.GetCompItem<Button>("button_close");
-            for (int i = 1; i <= LevelGroupItemsCount; i++)
+            for (int i = 1; i <= LevelGroupItemsCountOnPage; i++)
             {
                 var levelGroupItem = go.GetCompItem<LevelsPanelGroupItem>($"stage_item_{i}");
                 levelGroupItem.Init(
@@ -180,20 +168,19 @@ namespace RMAZOR.UI.Panels
                     Ticker,
                     Managers.AudioManager,
                     Managers.LocalizationManager,
-                    FontProvider,
                     m_SpriteLevelGroupItemEnabled, 
                     m_SpriteLevelGroupItemDisabled,
                     m_SpriteLevelGroupItemSelected,
                     m_SpriteLevelGroupItemStarEnabled,
                     m_SpriteLevelGroupItemStarDisabled);
-                m_LevelPanelGroupItems.Add(i, levelGroupItem);
+                m_LevelPanelGroupItemsDict.Add(i, levelGroupItem);
             }
         }
 
-        private void LocalizeTexts()
+        protected override void LocalizeTextObjectsOnLoad()
         {
             var locMan = Managers.LocalizationManager;
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
+            locMan.AddLocalization(new LocTextInfo(
                 m_TitleText,
                 ETextType.MenuUI, 
                 "stages",
@@ -220,7 +207,7 @@ namespace RMAZOR.UI.Panels
                 "level_stage_item_star_disabled_sprite");
         }
 
-        private void SubscribeButtonEvents()
+        protected override void SubscribeButtonEvents()
         {
             m_ButtonPreviousGroups.onClick.AddListener(OnButtonPrevClick);
             m_ButtonNextGroups    .onClick.AddListener(OnButtonNextClick);
@@ -243,21 +230,21 @@ namespace RMAZOR.UI.Panels
             long maxLevelFinishedOnce = levelsFinishedOnce.Max();
             int maxLevelGroup = RmazorUtils.GetLevelsGroupIndex(maxLevelFinishedOnce);
             string currentLevelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                KeyCurrentLevelType, out _);
+            bool isCurrentLevelBonus = currentLevelType == ParameterLevelTypeBonus;
             int currentLevelGroupIdx = isCurrentLevelBonus ? 
                 (int)Model.LevelStaging.LevelIndex + 1 
                 : RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
             int currentLevelsGroupGroupIndex = GetCurrentLevelGroupGroupIndex();
-            int startLevelGroupIndexInGroup = m_SelectedLevelGroupGroupIndex * LevelGroupItemsCount;
+            int startLevelGroupIndexInGroup = m_SelectedLevelGroupGroupIndex * LevelGroupItemsCountOnPage;
             bool isUnknownStage = m_SelectedLevelGroupGroupIndex > currentLevelsGroupGroupIndex + 1;
-            for (int i = 1; i <= LevelGroupItemsCount; i++)
+            for (int i = 1; i <= LevelGroupItemsCountOnPage; i++)
             {
                 bool? stageEnabled = null;
                 int iLevelsGroup = startLevelGroupIndexInGroup + i;
                 if (!isUnknownStage)
                     stageEnabled = iLevelsGroup <= maxLevelGroup;
-                m_LevelPanelGroupItems[i].UpdateItem(
+                m_LevelPanelGroupItemsDict[i].UpdateItem(
                     iLevelsGroup,
                     currentLevelGroupIdx,
                     stageEnabled, 
@@ -281,10 +268,17 @@ namespace RMAZOR.UI.Panels
 
         private void LoadLevel(int _LevelGroupIndex, int _LevelInGroupIndex)
         {
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
             long levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(_LevelGroupIndex) + _LevelInGroupIndex;
-            bool isLevelExist = levelIndex < LevelsLoader.GetLevelsCount(
-                CommonData.GameId, _LevelGroupIndex == -1);
+            string levelType = _LevelGroupIndex == -1
+                ? ParameterLevelTypeBonus
+                : ParameterLevelTypeDefault;
+            var args = new LevelInfoArgs
+            {
+                GameMode = ParameterGameModeMain,
+                LevelType = levelType
+            };
+            bool isLevelExist = levelIndex < LevelsLoader.GetLevelsCount(args);
             if (isLevelExist)
             {
                 OnButtonCloseClick();
@@ -302,23 +296,23 @@ namespace RMAZOR.UI.Panels
             long levelIndex;
             if (_LevelInGroupIndex == -1)
             {
-                args.SetSafe(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
+                args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
                 levelIndex = _LevelGroupIndex - 1;
             }
             else
             {
-                args.SetSafe(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeMain);
+                args.SetSafe(KeyNextLevelType, ParameterLevelTypeDefault);
                 levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(_LevelGroupIndex) + _LevelInGroupIndex;
             }
-            args.SetSafe(CommonInputCommandArg.KeyLevelIndex, levelIndex);
-            args.SetSafe(CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterLevelsPanel);
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
+            args.SetSafe(KeyLevelIndex, levelIndex);
+            args.SetSafe(KeySource, ParameterSourceLevelsPanel);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
 
         private int GetCurrentLevelGroupGroupIndex()
         {
             int levelGroupIndex = RmazorUtils.GetLevelsGroupIndex(Model.LevelStaging.LevelIndex);
-            return Mathf.FloorToInt(levelGroupIndex / (float)LevelGroupItemsCount);
+            return Mathf.FloorToInt(levelGroupIndex / (float)LevelGroupItemsCountOnPage);
         }
 
         #endregion

@@ -154,18 +154,20 @@ namespace RMAZOR.Views.MazeItems
 
         private Line CreateLine(Vector2 _Start, Vector2 _End, Transform _Container)
         {
+            var end = _Container.TransformVector(_End - _Start);
             return new GameObject(ObjectName + " Line")
                 .SetParent(_Container)
-                .transform.SetLocalPosXY(Vector2.zero)
+                .transform.SetLocalPosXY(_Start)
                 .gameObject.AddComponent<Line>()
                 .SetSortingOrder(SortingOrders.PathLine)
-                .SetStart(_Start)
-                .SetEnd(_End)
+                .SetStart(Vector3.zero)
+                .SetEnd(end)
                 .SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale * 0.5f)
                 .SetDashed(true)
                 .SetDashType(DashType.Rounded)
                 .SetDashSize(1f)
                 .SetDashSpacing(2f);
+            
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)

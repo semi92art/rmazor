@@ -133,3 +133,5 @@ MonoBehaviour:
     array:
     - name: button
       item: {fileID: 5943621020961091322}
+    - name: button_sprite
+      item: {fileID: 5943621020961091322}

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Entities.UI;
@@ -33,15 +32,17 @@ namespace RMAZOR.UI.Panels
     {
         #region private members
 
+        private RectTransform                  m_Content, m_Blackout;
+        private Button                         m_ButtonClose;
+        private TextMeshProUGUI                m_Title;
         private List<ELanguage>                m_Languages;
         private UnityAction<ELanguage>         m_OnSelect;
-        private RectTransform                  m_Content;
         private System.Func<ELanguage, Sprite> m_GetIconFunc;
-        private TextMeshProUGUI                m_Title;
-        private RectTransform                  m_Blackout;
         
         private readonly Dictionary<ELanguage, SettingLanguageItem> m_Items 
             = new Dictionary<ELanguage, SettingLanguageItem>();
+        
+        protected override string PrefabName => "settings_language_panel";
 
         #endregion
 
@@ -66,7 +67,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
         
         public void PreInit(
             List<ELanguage>                _Languages,
@@ -81,38 +82,43 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            var sp = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(
-                    _Container,
-                    RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "settings_language_panel");
-            m_Content   = sp.GetCompItem<RectTransform>("content");
-            m_Title     = sp.GetCompItem<TextMeshProUGUI>("title");
-            m_Blackout  = sp.GetCompItem<RectTransform>("blackout");
-            var locInfo = new LocalizableTextObjectInfo(m_Title, ETextType.MenuUI, "Language");
-            Managers.LocalizationManager.AddTextObject(locInfo);
             m_Content.gameObject.DestroyChildrenSafe();
-            var closeButton = sp.GetCompItem<Button>("close_button");
-            closeButton.onClick.AddListener(() => base.OnClose(null));
             InitItems();
-            PanelRectTransform = sp.RTransform();
-            PanelRectTransform.SetGoActive(false);
         }
         
         #endregion
 
         #region nonpublic methods
 
-        public override void OnDialogStartAppearing()
+        protected override void OnDialogStartAppearing()
         {
             base.OnDialogStartAppearing();
             EnableCurrentLanguageGraphic();
             m_Blackout.SetParent(Container.parent);
             m_Blackout.anchoredPosition = Vector2.zero;
-            m_Blackout.pivot = Vector2.one * 0.5f;
-            m_Blackout.sizeDelta = Vector2.zero;
+            m_Blackout.pivot            = Vector2.one * 0.5f;
+            m_Blackout.sizeDelta        = Vector2.zero;
             m_Blackout.SetParent(PanelRectTransform);
             m_Blackout.SetAsFirstSibling();
+        }
+
+        protected override void GetPrefabContentObjects(GameObject _Go)
+        {
+            m_Content     = _Go.GetCompItem<RectTransform>("content");
+            m_Title       = _Go.GetCompItem<TextMeshProUGUI>("title");
+            m_Blackout    = _Go.GetCompItem<RectTransform>("blackout");
+            m_ButtonClose = _Go.GetCompItem<Button>("close_button");
+        }
+
+        protected override void LocalizeTextObjectsOnLoad()
+        {
+            var locInfo = new LocTextInfo(m_Title, ETextType.MenuUI, "Language");
+            Managers.LocalizationManager.AddLocalization(locInfo);
+        }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_ButtonClose.onClick.AddListener(() => OnClose());
         }
 
         private void InitItems()

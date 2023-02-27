@@ -95,7 +95,7 @@ Material:
     - _StepY: 0.085
     - _Tiling: 1
     - _TransitionSpeed: 0.32
-    - _TransitionValue: 0.441
+    - _TransitionValue: 0
     - _TransitionValue1: 0
     - _TransitionValue2: 0
     - _TwoSide: 1
@@ -108,7 +108,7 @@ Material:
     m_Colors:
     - _BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
     - _Color: {r: 0.6509804, g: 0.5372549, b: 0.32156864, a: 0}
-    - _Color1: {r: 0, g: 0, b: 0, a: 1}
+    - _Color1: {r: 1, g: 1, b: 1, a: 1}
     - _Color2: {r: 1, g: 1, b: 1, a: 1}
     - _EdgesColor: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}

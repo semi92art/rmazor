@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
-using Common.Entities;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
@@ -18,10 +13,13 @@ using mazing.common.Runtime.Ticker;
 using RMAZOR.Models;
 using Shapes;
 using UnityEngine;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views.Common.CongratulationItems
 {
-    public class ViewMazeBackgroundCongratItems2 : ViewMazeBackgroundItemsBase, IViewMazeBackgroundCongratItems
+    public class ViewMazeBackgroundCongratItems2
+        : ViewMazeBackgroundItemsBase,
+          IViewMazeBackgroundCongratItems
     {
         #region nonpublic members
         
@@ -41,7 +39,6 @@ namespace RMAZOR.Views.Common.CongratulationItems
 
         private ViewMazeBackgroundCongratItems2(
             IColorProvider              _ColorProvider,
-            IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             ICameraProvider             _CameraProvider,
@@ -49,7 +46,6 @@ namespace RMAZOR.Views.Common.CongratulationItems
             IAudioManager               _AudioManager)
             : base(
                 _ColorProvider,
-                _Transitioner,
                 _ContainersGetter,
                 _GameTicker,
                 _CameraProvider)
@@ -67,8 +63,12 @@ namespace RMAZOR.Views.Common.CongratulationItems
             m_DoAnimateCongrats = false;
             switch (_Args.LevelStage)
             {
-                case ELevelStage.Finished: m_DoAnimateCongrats = true;              break;
-                case ELevelStage.Unloaded: m_BackCongratsItemsPool.DeactivateAll(); break;
+                case ELevelStage.Finished:
+                    m_DoAnimateCongrats = AreCongratItemsAvailableOnThisLevel(_Args);  
+                    break;
+                case ELevelStage.Unloaded: 
+                    m_BackCongratsItemsPool.DeactivateAll();
+                    break;
             }
         }
         
@@ -129,6 +129,15 @@ namespace RMAZOR.Views.Common.CongratulationItems
         {
             int idx = m_AudioClipIndices[_Firework];
             return new AudioClipArgs($"firework_{idx}", EAudioClipType.GameSound, _Id: _Firework.GetInstanceID().ToString());
+        }
+
+        private bool AreCongratItemsAvailableOnThisLevel(LevelStageArgs _Args)
+        {
+            string gameMode = (string) _Args.Arguments.GetSafe(KeyGameMode, out _);
+            if (gameMode != ParameterGameModeDailyChallenge)
+                return true;
+            bool isChallengeSuccessfullyFinished = (bool) _Args.Arguments.GetSafe(KeyIsDailyChallengeSuccess, out _);
+            return isChallengeSuccessfullyFinished;
         }
 
         #endregion

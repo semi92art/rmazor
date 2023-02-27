@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 {
-    public class ViewMazeItemPathItemIdleSquare : ViewMazeItemPathItemIdleBase
+    public interface IViewMazeItemPathItemIdleSquare : IViewMazeItemPathItemIdle { }
+    
+    public class ViewMazeItemPathItemIdleSquare : ViewMazeItemPathItemIdleBase, IViewMazeItemPathItemIdleSquare
     {
         #region nonpublic members
         

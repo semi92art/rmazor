@@ -1,43 +1,100 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using Common;
-using Common.Extensions;
-using Common.Managers;
-using Common.Utils;
+using Common.Constants;
 using mazing.common.Runtime;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
+using RMAZOR.Enitities;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views;
 using UnityEngine;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Helpers
 {
     public class LevelsLoaderRmazor : LevelsLoader
     {
+        #region types
+
+        private class GameModeAndLevelTypePair
+        {
+            private readonly string m_GameMode;
+            private readonly string m_LevelType;
+
+            public GameModeAndLevelTypePair(string _GameMode, string _LevelType)
+            {
+                m_GameMode  = _GameMode;
+                m_LevelType = _LevelType;
+            }
+
+            public override bool Equals(object _Obj)
+            {
+                return Equals(_Obj as GameModeAndLevelTypePair);
+            }
+
+            private bool Equals(GameModeAndLevelTypePair _Obj)
+            {
+                return m_GameMode == _Obj.m_GameMode && m_LevelType == _Obj.m_LevelType;
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int hash = 17;
+                    hash = hash * 23 + m_GameMode.GetHashCode();
+                    hash = hash * 23 + m_LevelType.GetHashCode();
+                    return hash;
+                }
+            }
+
+            public override string ToString()
+            {
+                return "Game Mode: " + m_GameMode + ", Level Type: " + m_LevelType;
+            }
+        }
+
+        private class SerializedLevelsAndLoadedPair
+        {
+            public string[] SerializedLevelsBundle { get; set; }
+            public string[] SerializedLevelsLocal  { get; set; }
+            public bool     BundleLevelsLoaded     { get; set; }
+            public bool     LocalLevelsLoaded      { get; set; }
+        }
+
+        #endregion
+        
         #region nonpublic members
+        
+        private readonly Dictionary<GameModeAndLevelTypePair, SerializedLevelsAndLoadedPair> m_SerializedLevelsDict
+            = new Dictionary<GameModeAndLevelTypePair,SerializedLevelsAndLoadedPair>();
 
-        private string[]
-            m_SerializedBonusLevelsFromCache  = new string[0],
-            m_SerializedBonusLevelsFromRemote = new string[0];
-
-        private bool m_CachedBonusLevelsLoaded, m_RemoteBonusLevelsLoaded;
+        private IList<LevelGenerationParams> m_GenerationParamsForRandomLevels;
 
         #endregion
 
         #region inject
+        
+        private ILevelGeneratorRmazor LevelGeneratorRmazor { get; }
 
         protected LevelsLoaderRmazor(
-            IPrefabSetManager  _PrefabSetManager,
-            IMazeInfoValidator _MazeInfoValidator) 
+            IPrefabSetManager     _PrefabSetManager,
+            IMazeInfoValidator    _MazeInfoValidator,
+            ILevelGeneratorRmazor _LevelGeneratorRmazor) 
             : base(
                 _PrefabSetManager,
-                _MazeInfoValidator) { }
+                _MazeInfoValidator)
+        {
+            LevelGeneratorRmazor = _LevelGeneratorRmazor;
+        }
 
         #endregion
 
@@ -45,113 +102,116 @@ namespace RMAZOR.Helpers
 
         public override void Init()
         {
-            PreloadLevels(CommonData.GameId, true);
-            PreloadLevels(CommonData.GameId, false);
-            bool InitializationPredicate()
-            {
-                bool mainLevelsLoaded  = CachedLevelsLoaded        || RemoteLevelsLoaded;
-                bool bonusLevelsLoaded = m_CachedBonusLevelsLoaded || m_RemoteBonusLevelsLoaded;
-                return !mainLevelsLoaded || !bonusLevelsLoaded;
-            }
-            Cor.Run(Cor.WaitWhile(
-                InitializationPredicate,
-                RaiseInitialization));
+            PreloadLevelsIfWereNotLoaded();
+            Cor.Run(Cor.WaitWhile(InitializationPredicate, RaiseInitialization));
+            LoadGenerationParamsForRandomLevels();
         }
 
-        public override MazeInfo GetLevelInfo(int _GameId, long _Index, bool _IsBonus)
+        public override Entity<MazeInfo> GetLevelInfo(LevelInfoArgs _Args)
         {
-            PreloadLevelsIfWereNotLoaded(_GameId);
-            MazeInfo GetInfo(IReadOnlyList<string> _Levels)
+            var entyty = new Entity<MazeInfo>();
+            if (_Args.GameMode == ParameterGameModeRandom)
             {
-                string level = _Levels[(int)_Index];
-                return _Index < _Levels.Count ? 
-                    JsonConvert.DeserializeObject<MazeInfo>(level) : null;
+                float levelSize = (float) _Args.Arguments.GetSafe(KeyRandomLevelSize, out _);
+                var genParams = GetLevelGenerationParams(levelSize);
+                entyty = LevelGeneratorRmazor.GetLevelInfoRandomAsync(genParams);
+                return entyty;
             }
-            var dicRemote  = _IsBonus ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
-            var dictCached = _IsBonus ? m_SerializedBonusLevelsFromCache  : SerializedLevelsFromCache;
-            var mazeInfo = GetInfo(dicRemote);
+            PreloadLevelsIfWereNotLoaded();
+            string[] bundleLevels = GetLevelsCollection(_Args, false);
+            string[] localLevels  = GetLevelsCollection(_Args, true);
+            var mazeInfo = GetLevelInfoCore(_Args, bundleLevels);
             bool valid = MazeInfoValidator.Validate(mazeInfo, out string error);
             if (!valid)
             {
                 Dbg.LogError("Remote maze info is not valid: " + error);
-                mazeInfo = GetInfo(dictCached);
+                mazeInfo = GetLevelInfoCore(_Args, localLevels);
             }
             valid = MazeInfoValidator.Validate(mazeInfo, out error);
-            if (valid)
-                return mazeInfo;
-            var sb = new StringBuilder();
-            sb.AppendLine("Local maze info is not valid: " + error);
-            sb.AppendLine("Game Id: " + _GameId);
-            sb.AppendLine("Level index: " + _Index);
-            sb.AppendLine("Is bonus level: " + _IsBonus);
-            sb.AppendLine("Remote levels list count: " + dicRemote.Length);
-            sb.AppendLine("Local levels list count: " + dictCached.Length);
-            throw new Exception(sb.ToString());
+            if (!valid) 
+                throw GetLevelLoadException(_Args, error, bundleLevels, localLevels);
+            entyty.Value = mazeInfo;
+            entyty.Result = EEntityResult.Success;
+            return entyty;
         }
 
-        public override string GetLevelInfoRaw(int _GameId, long _Index, bool _IsBonus)
+        public override string GetLevelInfoRaw(LevelInfoArgs _Args)
         {
-            var dicRemote  = _IsBonus ? m_SerializedBonusLevelsFromRemote : SerializedLevelsFromRemote;
-            var dictCached = _IsBonus ? m_SerializedBonusLevelsFromCache  : SerializedLevelsFromCache;
-            string GetInfo(IReadOnlyList<string> _Levels) => _Levels[(int)_Index];
-            string mazeInfoRaw = GetInfo(dicRemote);
+            string[] bundleLevels = GetLevelsCollection(_Args, false);
+            string[] localLevels  = GetLevelsCollection(_Args, true);
+            string GetInfo(IReadOnlyList<string> _Levels) => _Levels[(int)_Args.LevelIndex];
+            string mazeInfoRaw = GetInfo(bundleLevels);
             bool valid = MazeInfoValidator.ValidateRaw(mazeInfoRaw, out string error);
             if (!valid)
             {
                 Dbg.LogError("Remote maze info is not valid: " + error);
-                mazeInfoRaw = GetInfo(dictCached);
+                mazeInfoRaw = GetInfo(localLevels);
             }
             if (valid)
                 return mazeInfoRaw;
-            var sb = new StringBuilder();
-            sb.AppendLine("Local maze info is not valid: " + error);
-            sb.AppendLine("Game Id: " + _GameId);
-            sb.AppendLine("Level index: " + _Index);
-            sb.AppendLine("Is bonus level: " + _IsBonus);
-            sb.AppendLine("Remote levels list count: " + dicRemote.Length);
-            sb.AppendLine("Local levels list count: " + dictCached.Length);
-            throw new Exception(sb.ToString());
+            throw GetLevelLoadException(_Args, error, bundleLevels, localLevels);
         }
 
-        public override int GetLevelsCount(int _GameId, bool _IsBonus)
+        public override int GetLevelsCount(LevelInfoArgs _Args)
         {
-            PreloadLevelsIfWereNotLoaded(_GameId);
-            if (_IsBonus)
-            {
-                return m_SerializedBonusLevelsFromRemote.Length > 0
-                    ? m_SerializedBonusLevelsFromRemote.Length
-                    : m_SerializedBonusLevelsFromCache.Length;
-            }
-            return SerializedLevelsFromRemote.Length > 0
-                ? SerializedLevelsFromRemote.Length
-                : SerializedLevelsFromCache.Length;
+            PreloadLevelsIfWereNotLoaded();
+            var key = new GameModeAndLevelTypePair(_Args.GameMode, _Args.LevelType);
+            var sb = new StringBuilder();
+            sb.AppendLine("GetLevelsCount key: " + _Args.GameMode + ", " + _Args.LevelType);
+            foreach (var key1 in m_SerializedLevelsDict.Keys)
+                sb.AppendLine(key1.ToString());
+            Dbg.Log(sb.ToString());
+            var val = m_SerializedLevelsDict[key];
+            var levels =  val.BundleLevelsLoaded ? val.SerializedLevelsBundle : val.SerializedLevelsLocal;
+            return levels.Length;
         }
 
         #endregion
 
         #region nonpublic methods
 
-        protected override void PreloadLevels(int _GameId, bool _Bundle)
+        private bool InitializationPredicate()
         {
-            PreloadLevels(_GameId, _Bundle, true);
-            PreloadLevels(_GameId, _Bundle, false);
+            var dictKeys = new[]
+            {
+                new GameModeAndLevelTypePair(ParameterGameModeMain,    ParameterLevelTypeDefault),
+                new GameModeAndLevelTypePair(ParameterGameModeMain,    ParameterLevelTypeBonus),
+                new GameModeAndLevelTypePair(ParameterGameModePuzzles, ParameterLevelTypeDefault),
+            };
+            bool allLevelsLoaded = dictKeys.All(_Key =>
+            {
+                if (m_SerializedLevelsDict == null)
+                    return false;
+                if (!m_SerializedLevelsDict.ContainsKey(_Key))
+                    return false;
+                var value = m_SerializedLevelsDict[_Key];
+                return value.BundleLevelsLoaded || value.LocalLevelsLoaded;
+            });
+            return !allLevelsLoaded;
+        }
+
+        private string[] GetLevelsCollection(LevelInfoArgs _Args, bool _Local)
+        {
+            if (_Args.GameMode == ParameterGameModeDailyChallenge)
+                _Args.GameMode = ParameterGameModeMain;
+            var key = new GameModeAndLevelTypePair(_Args.GameMode, _Args.LevelType);
+            var val = m_SerializedLevelsDict[key];
+            var levels = _Local ? val.SerializedLevelsLocal : val.SerializedLevelsBundle;
+            return levels;
+        }
+
+        protected void PreloadLevels(bool _FromCache)
+        {
+            PreloadLevels(_FromCache, ParameterGameModeMain,    ParameterLevelTypeDefault);
+            PreloadLevels(_FromCache, ParameterGameModeMain,    ParameterLevelTypeBonus);
+            PreloadLevels(_FromCache, ParameterGameModePuzzles, ParameterLevelTypeDefault);
         }
         
-        private void PreloadLevels(int _GameId, bool _Bundle, bool _Bonus)
+        private void PreloadLevels(bool _FromCache, string _GameMode, string _LevelType)
         {
-            if (!_Bonus)
-            {
-                base.PreloadLevels(_GameId, _Bundle);
-                return;
-            }
-            int heapIndex = Application.isEditor ? SaveUtilsInEditor.GetValue(SaveKeysInEditor.StartHeapIndex) : 1;
-            var args = new Dictionary<string, object>
-            {
-                {CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus}
-            };
-            var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName(_GameId),
-                LevelsAssetName(heapIndex, true),
-                _Bundle ? EPrefabSource.Bundle : EPrefabSource.Asset);
+            var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName,
+                LevelsAssetName(_GameMode, _LevelType),
+                _FromCache ? EPrefabSource.Asset : EPrefabSource.Bundle);
             string[] serializedLevels;
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
@@ -164,22 +224,117 @@ namespace RMAZOR.Helpers
                 serializedLevels = serializedLevels
                     .RemoveRange(new[] {serializedLevels[0]})
                     .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-                if (_Bundle)
+                var key = new GameModeAndLevelTypePair(_GameMode, _LevelType);
+                if (!m_SerializedLevelsDict.ContainsKey(key))
                 {
-                    m_SerializedBonusLevelsFromRemote = serializedLevels;
-                    m_RemoteBonusLevelsLoaded = true;
+                    var newVal = new SerializedLevelsAndLoadedPair();
+                    m_SerializedLevelsDict.Add(key, newVal);
                 }
+                var val = m_SerializedLevelsDict[key];
+                if (!_FromCache)
+                    (val.SerializedLevelsBundle, val.BundleLevelsLoaded) = (serializedLevels, true);
                 else
-                {
-                    m_SerializedBonusLevelsFromCache = serializedLevels;
-                    m_CachedBonusLevelsLoaded = true;
-                }
+                    (val.SerializedLevelsLocal, val.LocalLevelsLoaded) = (serializedLevels, true);
             });
         }
-        
-        protected override string LevelsAssetName(int _HeapIndex, bool _IsBonus)
+
+        private static string LevelsAssetName(
+            string _GameMode,
+            string _LevelType,
+            int?   _HeapIndexForced = null)
         {
-            return base.LevelsAssetName(_HeapIndex, false) + (!_IsBonus ? string.Empty : "_bonus");
+            if (_HeapIndexForced != null)
+                return LevelsAssetName(_HeapIndexForced.Value);
+            int heapIndex = _GameMode switch
+            {
+                ParameterGameModeMain => _LevelType switch
+                {
+                    ParameterLevelTypeDefault  => 1,
+                    ParameterLevelTypeBonus    => 2,
+                    _                          => throw new SwitchExpressionException(_LevelType)
+                },
+                ParameterGameModePuzzles => 3,
+                _                        => throw new SwitchExpressionException(_GameMode)
+            };
+            return LevelsAssetName(heapIndex);
+        }
+
+        private static Exception GetLevelLoadException(
+            LevelInfoArgs               _Args,
+            string                      _Error,
+            IReadOnlyCollection<string> _BundleLevelsCollection,
+            IReadOnlyCollection<string> _LocalLevelsCollection)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Local maze info is not valid: " + _Error);
+            sb.AppendLine("Level index: "                  + _Args.LevelIndex);
+            sb.AppendLine("Game mode: "                    + _Args.GameMode);
+            sb.AppendLine("Level type: "                   + _Args.LevelType);
+            sb.AppendLine("Bundle levels list count: "     + _BundleLevelsCollection?.Count);
+            sb.AppendLine("Local levels list count: "      + _LocalLevelsCollection?.Count);
+            return new Exception(sb.ToString());
+        }
+
+        private LevelGenerationParams GetLevelGenerationParams(float _LevelSizeArg)
+        {
+            int paramsSetCount = m_GenerationParamsForRandomLevels.Count;
+            int idx = Mathf.FloorToInt(paramsSetCount * _LevelSizeArg - 0.001f);
+            return m_GenerationParamsForRandomLevels[idx];
+        }
+
+        private void LoadGenerationParamsForRandomLevels()
+        {
+            var genParamsScrObj = PrefabSetManager.GetObject<LevelGenerationParamsSetScriptableObject>(
+                CommonPrefabSetNames.Configs, 
+                "random_levels_gen_params");
+            m_GenerationParamsForRandomLevels = genParamsScrObj.set
+                .Where(_Item => _Item.inUse)
+                .ToList();
+        }
+        
+        private static MazeInfo GetLevelInfoCore(LevelInfoArgs _Args, IReadOnlyList<string> _Levels)
+        {
+            string level = _Levels[(int)_Args.LevelIndex];
+            if (_Args.LevelIndex >= _Levels.Count)
+                return null;
+            var levelInfo = JsonConvert.DeserializeObject<MazeInfo>(level);
+            if (_Args.Arguments.ContainsKey(KeyRemoveTrapsFromLevel))
+                RemoveTrapsFromLevelInfo(levelInfo);
+            return levelInfo;
+        }
+
+        private static void RemoveTrapsFromLevelInfo(MazeInfo _LevelInfo)
+        {
+            var trapTypesToRemoveWithBlock = new[]
+            {
+                EMazeItemType.Hammer,
+                EMazeItemType.Turret,
+                EMazeItemType.TrapIncreasing,
+                EMazeItemType.TrapReact
+            };
+            var trapTypesToRemoveWithPath = new[]
+            {
+                EMazeItemType.Spear,
+                EMazeItemType.GravityTrap,
+                EMazeItemType.TrapMoving
+            };
+            foreach (var mazeItem in _LevelInfo.MazeItems.ToList())
+            {
+                if (trapTypesToRemoveWithBlock.Contains(mazeItem.Type))
+                    mazeItem.Type = EMazeItemType.Block;
+                else if (trapTypesToRemoveWithPath.Contains(mazeItem.Type))
+                {
+                    _LevelInfo.MazeItems.Remove(mazeItem);
+                    var pathItem = new PathItem {Blank = false, Position = mazeItem.Position};
+                    _LevelInfo.PathItems.Add(pathItem);
+                }
+            }
+        }
+        
+        private void PreloadLevelsIfWereNotLoaded()
+        {
+            PreloadLevels(true);
+            PreloadLevels(false);
         }
 
         #endregion

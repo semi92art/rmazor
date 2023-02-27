@@ -1,10 +1,5 @@
 ﻿using System.Collections;
 using Common;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -138,7 +133,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
             Color _ColorTo1,
             Color _ColorTo2)
         {
-            if (_Time < MathUtils.Epsilon)
+            if (MathUtils.Equals(_Time, 0f))
             {
                 Material.SetColor(Color1Id, _ColorTo1);
                 Material.SetColor(Color2Id, _ColorTo2);

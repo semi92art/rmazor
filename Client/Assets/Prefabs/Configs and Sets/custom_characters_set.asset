@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68022477f10d4df3b48f1a519451cea9, type: 3}
+  m_Name: custom_characters_set
+  m_EditorClassIdentifier: 
+  set:
+    array:
+    - purchaseKey: 101
+      gameMoneyCoast: 0
+      characterLevelToOpen: 0
+      icon: {fileID: 21300000, guid: ff9c6866d1c20fb4ca3183bb2291140b, type: 3}
+      characterId: 1
+    - purchaseKey: 102
+      gameMoneyCoast: 500
+      characterLevelToOpen: 0
+      icon: {fileID: 21300000, guid: d7640e1f9e7321b46a8cc2aeacfe0bcd, type: 3}
+      characterId: 2
+    - purchaseKey: 103
+      gameMoneyCoast: 800
+      characterLevelToOpen: 5
+      icon: {fileID: 21300000, guid: 018c0600e85dfde4c8476d09750af723, type: 3}
+      characterId: 3
+    - purchaseKey: 104
+      gameMoneyCoast: 1500
+      characterLevelToOpen: 10
+      icon: {fileID: 21300000, guid: 5607907c99614d3458764bfae802ca67, type: 3}
+      characterId: 4
+    - purchaseKey: 105
+      gameMoneyCoast: 3000
+      characterLevelToOpen: 10
+      icon: {fileID: 21300000, guid: ab69516cdecf6aa428fd2a3293dab3b8, type: 3}
+      characterId: 15

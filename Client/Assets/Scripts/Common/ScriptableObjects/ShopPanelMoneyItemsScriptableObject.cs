@@ -10,7 +10,7 @@ namespace Common.ScriptableObjects
     public class ShopPanelMoneyItemsScriptableObject : ScriptableObject
     {
         [Serializable]
-        public class ShopMoneyItem
+        public class ShopMoneyAssetItem
         {
             public Sprite icon;
             public int    purchaseKey;
@@ -19,9 +19,9 @@ namespace Common.ScriptableObjects
         }
         
         [Serializable]
-        public class ShopMoneyItemSet : ReorderableArray<ShopMoneyItem> { }
+        public class ShopMoneyAssetItemSet : ReorderableArray<ShopMoneyAssetItem> { }
 
         [Header("Set"), Reorderable(paginate = true, pageSize = 10)]
-        public ShopMoneyItemSet set;
+        public ShopMoneyAssetItemSet set;
     }
 }

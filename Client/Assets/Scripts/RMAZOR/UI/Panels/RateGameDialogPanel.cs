@@ -1,10 +1,8 @@
 using System.Globalization;
-using Common.Constants;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
@@ -15,6 +13,7 @@ using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -28,33 +27,39 @@ namespace RMAZOR.UI.Panels
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
     {
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-
         #region nonpublic members
 
         private Button       
             m_ButtonRate,
             m_ButtonLater,
             m_ButtonNever;
+        
         private TextMeshProUGUI
             m_TextTitle,
-            m_TextMessage;
+            m_TextMessage,
+            m_ButtonRateText,
+            m_ButtonLaterText,
+            m_ButtonNeverText;
+        
         private Animator m_StarsAnimator;
         private bool     m_Disappeared;
+        
+        protected override string PrefabName => "rate_game_panel";
 
         #endregion
 
         #region inject
         
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         public RateGameDialogPanel(
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewTimePauser                     _TimePauser,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewTimePauser             _TimePauser,
+            IViewLevelStageSwitcher     _LevelStageSwitcher)
             : base(
                 _Managers, 
                 _Ticker, 
@@ -63,7 +68,7 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
@@ -72,49 +77,11 @@ namespace RMAZOR.UI.Panels
 
         public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
         
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            var go = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(
-                    _Container,
-                    RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "rate_game_panel");
-            PanelRectTransform = go.RTransform();
-            go.SetActive(false);
-            m_TextTitle   = go.GetCompItem<TextMeshProUGUI>("title");
-            m_TextMessage = go.GetCompItem<TextMeshProUGUI>("message");
-            m_ButtonRate  = go.GetCompItem<Button>("rate_button");
-            m_ButtonLater = go.GetCompItem<Button>("later_button");
-            m_ButtonNever = go.GetCompItem<Button>("never_button");
-            m_StarsAnimator = go.GetCompItem<Animator>("stars_animator");
+        #endregion
 
-            var rateButtonText = go.GetCompItem<TextMeshProUGUI>("rate_button_text");
-            var laterButtonText = go.GetCompItem<TextMeshProUGUI>("later_button_text");
-            var neverButtonText = go.GetCompItem<TextMeshProUGUI>("never_button_text");
-            
-            m_ButtonRate.onClick.AddListener(OnRateButtonClick);
-            m_ButtonLater.onClick.AddListener(OnLaterButtonClick);
-            m_ButtonNever.onClick.AddListener(OnNeverButtonClick);
-            
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextTitle, ETextType.MenuUI, "rate_game_panel_title",
-                    _T => _T.ToUpper(CultureInfo.CurrentUICulture)));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(m_TextMessage, ETextType.MenuUI, "rate_game_panel_text",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(rateButtonText, ETextType.MenuUI, "leave_feedback",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(laterButtonText, ETextType.MenuUI, "later",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
-            Managers.LocalizationManager.AddTextObject(
-                new LocalizableTextObjectInfo(neverButtonText, ETextType.MenuUI, "never",
-                    _T => _T.FirstCharToUpper(CultureInfo.CurrentUICulture)));
-        }
+        #region nonpublic methods
         
-        public override void OnDialogStartAppearing()
+        protected override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
             Cor.Run(Cor.Delay(
@@ -136,20 +103,52 @@ namespace RMAZOR.UI.Panels
             base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogDisappeared()
+        protected override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
             m_Disappeared = true;
             base.OnDialogDisappeared();
         }
 
-        #endregion
+        protected override void GetPrefabContentObjects(GameObject _Go)
+        {
+            m_TextTitle       = _Go.GetCompItem<TextMeshProUGUI>("title");
+            m_TextMessage     = _Go.GetCompItem<TextMeshProUGUI>("message");
+            m_ButtonRate      = _Go.GetCompItem<Button>("rate_button");
+            m_ButtonLater     = _Go.GetCompItem<Button>("later_button");
+            m_ButtonNever     = _Go.GetCompItem<Button>("never_button");
+            m_StarsAnimator   = _Go.GetCompItem<Animator>("stars_animator");
+            m_ButtonRateText  = _Go.GetCompItem<TextMeshProUGUI>("rate_button_text");
+            m_ButtonLaterText = _Go.GetCompItem<TextMeshProUGUI>("later_button_text");
+            m_ButtonNeverText = _Go.GetCompItem<TextMeshProUGUI>("never_button_text");
+        }
 
-        #region nonpublic methods
+        protected override void LocalizeTextObjectsOnLoad()
+        {
+            static string TextFormula1(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
+            static string TextFormula2(string _Text) => _Text.FirstCharToUpper(CultureInfo.CurrentUICulture);
+            var locTextInfos = new []
+            {
+                new LocTextInfo(m_TextTitle,       ETextType.MenuUI, "rate_game_panel_title", TextFormula1),
+                new LocTextInfo(m_TextMessage,     ETextType.MenuUI, "rate_game_panel_text",  TextFormula2),
+                new LocTextInfo(m_ButtonRateText,  ETextType.MenuUI, "leave_feedback",        TextFormula2),
+                new LocTextInfo(m_ButtonLaterText, ETextType.MenuUI, "later",                 TextFormula2),
+                new LocTextInfo(m_ButtonNeverText, ETextType.MenuUI, "never",                 TextFormula2)
+            };
+            foreach (var locTextInfo in locTextInfos)
+                Managers.LocalizationManager.AddLocalization(locTextInfo);
+        }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_ButtonRate.onClick.AddListener(OnRateButtonClick);
+            m_ButtonLater.onClick.AddListener(OnLaterButtonClick);
+            m_ButtonNever.onClick.AddListener(OnNeverButtonClick);
+        }
 
         private void OnRateButtonClick()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameButton2Pressed);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.RateGameButton2Click);
             Managers.ShopManager.RateGame();
             SaveUtils.PutValue(SaveKeysCommon.GameWasRated, true);
             OnClose(UnpauseLevel);
@@ -169,7 +168,7 @@ namespace RMAZOR.UI.Panels
         private void UnpauseLevel()
         {
             Cor.Run(Cor.WaitNextFrame(
-                () => SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel),
+                () => LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel),
                 false,
                 3U));
         }

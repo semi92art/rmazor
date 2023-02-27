@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
@@ -19,7 +15,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingLanguageSelectorItem : SimpleUiItemBase
+    public class SettingLanguageSelectorItem : SimpleUiItem
     {
         public                   Image           languageIcon;
         [SerializeField] private TextMeshProUGUI title;
@@ -40,13 +36,13 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             var currentLang = _LocalizationManager.GetCurrentLanguage();
             languageIcon.sprite = _GetIconFunc(currentLang);
-            var locInfo = new LocalizableTextObjectInfo(title, ETextType.MenuUI, "Language",
+            var locInfo = new LocTextInfo(title, ETextType.MenuUI, "Language",
                 _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture));
             bool langPanelLoaded = false;
-            _LocalizationManager.AddTextObject(locInfo);
+            _LocalizationManager.AddLocalization(locInfo);
             void OnClick()
             {
-                SoundOnClick();
+                PlayButtonClickSound();
                 var items = _Languages?.Invoke();
                 if (!langPanelLoaded)
                 {

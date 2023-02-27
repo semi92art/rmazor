@@ -16,22 +16,22 @@ namespace Editor
 {
     public partial class ViewMazeItemProtEditor
     {
-        private static void AddRow(ViewMazeItemProt _ProtItem, bool _Up)
+        private static void AddRow(IViewMazeItem _ProtItem, bool _Up)
         {
             AddOrRemoveRowOrColumn(_ProtItem, _Up, false, true);
         }
 
-        private static void RemoveRow(ViewMazeItemProt _ProtItem, bool _Up)
+        private static void RemoveRow(IViewMazeItem _ProtItem, bool _Up)
         {
             AddOrRemoveRowOrColumn(_ProtItem, _Up, true, true);
         }
 
-        private static void AddColumn(ViewMazeItemProt _ProtItem, bool _Right)
+        private static void AddColumn(IViewMazeItem _ProtItem, bool _Right)
         {
             AddOrRemoveRowOrColumn(_ProtItem, _Right, false, false);
         }
         
-        private static void RemoveColumn(ViewMazeItemProt _ProtItem, bool _Right)
+        private static void RemoveColumn(IViewMazeItem _ProtItem, bool _Right)
         {
             AddOrRemoveRowOrColumn(_ProtItem, _Right, true, false);
         }
@@ -50,7 +50,6 @@ namespace Editor
                 mazeItemsToAdd = CreateMazeItemsToAdd(mazeInfo, pos, _Row, _RightOrUp);
             else
                 protItems = DestroyMazeItemsToRemove(protItems, mazeInfo, pos, _Row);
-
             V2Int GetAddict()
             {
                 if (_Remove) 
@@ -96,7 +95,11 @@ namespace Editor
             LevelDesignerEditorWindow.Instance.LoadLevel(mazeInfo1);
         }
 
-        private static List<MazeItem> CreateMazeItemsToAdd(MazeInfo _Info, V2Int _Position, bool _Row, bool _RightOrUp)
+        private static List<MazeItem> CreateMazeItemsToAdd(
+            MazeInfo _Info,
+            V2Int    _Position,
+            bool     _Row,
+            bool     _RightOrUp)
         {
             var mazeItemsToAdd = new List<MazeItem>();
             if (_Row)
@@ -141,12 +144,12 @@ namespace Editor
                     var pos1 = new V2Int(_Position.X, i);
                     protItemsToRemove.AddRange(_ProtItems.Where(_I => _I.Props.Position == pos1));
                 }
-            if (protItemsToRemove.Any())
-            {
-                _ProtItems.RemoveRange(protItemsToRemove);
-                foreach (var protItem in protItemsToRemove)
-                    DestroyImmediate(protItem.gameObject);
-            }
+
+            if (!protItemsToRemove.Any()) 
+                return _ProtItems;
+            _ProtItems.RemoveRange(protItemsToRemove);
+            foreach (var protItem in protItemsToRemove)
+                DestroyImmediate(protItem.gameObject);
             return _ProtItems;
         }
     }

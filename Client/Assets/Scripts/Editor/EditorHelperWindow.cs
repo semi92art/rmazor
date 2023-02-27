@@ -146,13 +146,13 @@ namespace Editor
                 GUILayout.Label("Previous Level Stage: " + lastLevelStageArgs.PreviousStage);
                 GUILayout.Label("PrePrevious Level Stage: " + lastLevelStageArgs.PrePreviousStage);
                 GUILayout.Label("PrePrePrevious Level Stage: " + lastLevelStageArgs.PrePrePreviousStage);
-                if (lastLevelStageArgs.Args == null)
+                if (lastLevelStageArgs.Arguments == null)
                 {
                     GUILayout.Label("Args is null");
                 }
                 else
                 {
-                    foreach ((string key, var value) in lastLevelStageArgs.Args)
+                    foreach ((string key, var value) in lastLevelStageArgs.Arguments)
                         GUILayout.Label(key + ": " + value);
                 }
             });
@@ -198,7 +198,6 @@ namespace Editor
 
         private static void RemoteTabPage()
         {
-            const string setName = "configs";
             static IPrefabSetManager GetPrefLoader() => new PrefabSetManager(new AssetBundleManagerFake());
             GUILayout.Label("Copy to clipboard:");
             EditorUtilsEx.GuiButtonAction("Main Colors Set", () =>
@@ -215,7 +214,7 @@ namespace Editor
             EditorUtilsEx.GuiButtonAction("Additional Colors Set", () =>
             {
                 var backAndFrontColorsSetScrObj = GetPrefLoader().GetObject<AdditionalColorsSetScriptableObject>(
-                    "configs", "additional_colors_set");
+                    CommonPrefabSetNames.Configs, "additional_colors_set");
                 var converter = new ColorJsonConverter();
                 string json = JsonConvert.SerializeObject(
                     backAndFrontColorsSetScrObj.set,
@@ -226,7 +225,7 @@ namespace Editor
             EditorUtilsEx.GuiButtonAction("Background Triangles 2 Texture Parameters Set", () =>
             {
                 var set = GetPrefLoader().GetObject<Triangles2TexturePropsSetScriptableObject>
-                    (setName, "triangles2_texture_set");
+                    (CommonPrefabSetNames.Configs, "triangles2_texture_set");
                 string json = JsonConvert.SerializeObject(set.set);
                 CommonUtils.CopyToClipboard(json);
             });
@@ -319,21 +318,21 @@ namespace Editor
         private void ModelSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ModelSettings>(
-                "configs", "model_settings");
+                CommonPrefabSetNames.Configs, "model_settings");
             SettingsTabPageCore(settings, typeof(ModelSettings));
         }
     
         private void ViewSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                "configs", "view_settings");
+                CommonPrefabSetNames.Configs, "view_settings");
             SettingsTabPageCore(settings, typeof(ViewSettings));
         }
 
         private void ViewCommonGameSettingsTabPage()
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<GlobalGameSettings>(
-                "configs", "common_game_settings");
+                CommonPrefabSetNames.Configs, "common_game_settings");
             SettingsTabPageCore(settings, typeof(GlobalGameSettings));
         }
 

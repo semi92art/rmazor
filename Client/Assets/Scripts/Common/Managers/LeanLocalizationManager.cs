@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Entities;
-using Common.Extensions;
-using Common.Helpers;
 using Lean.Localization;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
@@ -29,8 +27,8 @@ namespace Common.Managers
         #region nonpublic members
 
         private LeanLocalization m_Localization;
-        private readonly Dictionary<string, List<LocalizableTextObjectInfo>> m_TextObjectsDict =
-            new Dictionary<string, List<LocalizableTextObjectInfo>>(); 
+        private readonly Dictionary<string, List<LocTextInfo>> m_LocInfosDict =
+            new Dictionary<string, List<LocTextInfo>>(); 
 
         #endregion
 
@@ -64,16 +62,7 @@ namespace Common.Managers
             var go = new GameObject("Localization");
             Object.DontDestroyOnLoad(go);
             m_Localization = go.AddComponent<LeanLocalization>();
-            var culturesDict = new Dictionary<ELanguage, string[]>
-            {
-                {ELanguage.English,   new[] {"en",  "en-GB"}},
-                {ELanguage.German,    new[] {"ger", "ger-GER"}},
-                {ELanguage.Spanish,   new[] {"sp",  "sp-SP"}},
-                {ELanguage.Portugal,  new[] {"por", "por-POR"}},
-                {ELanguage.Russian,   new[] {"ru",  "ru-RUS"}},
-                {ELanguage.Japanese,  new[] {"ja",  "ja-JAP"}},
-                {ELanguage.Korean,    new[] {"ko",  "ko-KOR"}},
-            };
+            var culturesDict = GetCultures();
             foreach (var (key, value) in culturesDict)
                 m_Localization.AddLanguage(key.ToString(), value);
             foreach (var (key, _) in culturesDict)
@@ -97,16 +86,15 @@ namespace Common.Managers
         public void SetLanguage(ELanguage _Language)
         {
             m_Localization.SetCurrentLanguage(_Language.ToString());
-            foreach (var (_, value) in m_TextObjectsDict)
+            foreach (var locInfos in m_LocInfosDict.Values)
             {
-                var destroyed = value.ToArray()
+                var destroyed = locInfos.ToArray()
                     .Where(_Args => _Args == null || _Args.TextObject.IsNull());
-                value.RemoveRange(destroyed);
+                locInfos.RemoveRange(destroyed);
             }
-            foreach (var (_, value) in m_TextObjectsDict)
+            foreach (var args in m_LocInfosDict.Values.SelectMany(_LocInfos => _LocInfos))
             {
-                foreach (var args in value)
-                    UpdateText(args);
+                UpdateLocalization(args);
             }
         }
 
@@ -116,62 +104,71 @@ namespace Common.Managers
             return lang;
         }
 
-        public void AddTextObject(LocalizableTextObjectInfo _Info)
+        public void AddLocalization(LocTextInfo _Info)
         {
             if (_Info.TextObject.IsNull())
                 return;
             if (string.IsNullOrEmpty(_Info.LocalizationKey))
                 _Info.LocalizationKey = KeyEmpty;
-            foreach (var (_, value) in m_TextObjectsDict)
+            foreach (var locInfo in m_LocInfosDict.Values)
             {
-                var destroyed = value
+                var destroyed = locInfo
                     .Where(_Args => _Args == null || _Args.TextObject.IsNull());
-                value.RemoveRange(destroyed);
+                locInfo.RemoveRange(destroyed);
             }
-            if (!m_TextObjectsDict.ContainsKey(_Info.LocalizationKey))
-                m_TextObjectsDict.Add(_Info.LocalizationKey, new List<LocalizableTextObjectInfo>());
-            var args = m_TextObjectsDict[_Info.LocalizationKey]
+            if (!m_LocInfosDict.ContainsKey(_Info.LocalizationKey))
+                m_LocInfosDict.Add(_Info.LocalizationKey, new List<LocTextInfo>());
+            var args = m_LocInfosDict[_Info.LocalizationKey]
                 .FirstOrDefault(_Args => _Args.TextObject == _Info.TextObject);
             if (args != null)
             {
                 args.TextFormula = _Info.TextFormula;
                 args.TextType = _Info.TextType;
-                UpdateText(args);
+                UpdateLocalization(args);
             }
             else
             {
-                var newArgs = _Info.Clone() as LocalizableTextObjectInfo;
-                m_TextObjectsDict[_Info.LocalizationKey].Add(newArgs);
-                UpdateText(newArgs);
+                args = _Info.Clone() as LocTextInfo;
+                m_LocInfosDict[_Info.LocalizationKey].Add(args);
             }
+            UpdateLocalization(args);
         }
 
-        public void RemoveTextObject(LocalizableTextObjectInfo _Info)
+        public TMP_FontAsset GetFont(ETextType _TextType, ELanguage? _Language = null)
         {
-            m_TextObjectsDict.RemoveSafe(_Info.LocalizationKey, out _);
-        }
-
-        public TMP_FontAsset GetFont(ETextType _TextType, ELanguage _Language)
-        {
-            return FontProvider.GetFont(_TextType, _Language);
+            var language = _Language ?? GetCurrentLanguage();
+            return FontProvider.GetFont(_TextType, language);
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void UpdateText(LocalizableTextObjectInfo _Info)
+        private void UpdateLocalization(LocTextInfo _Info)
         {
             if (!(_Info.TextObject is TMP_Text tmpText))
                 return;
-            if (_Info.LocalizationKey != KeyEmpty)
+            switch (_Info.TextLocalizationType)
             {
-                string translation = GetTranslation(_Info.LocalizationKey);
-                string Formula(string _Text) => _Info.TextFormula == null ? _Text : _Info.TextFormula(_Text);
-                tmpText.text = Formula(translation);
+                case ETextLocalizationType.TextAndFont:
+                {
+                    string translation = GetTranslation(_Info.LocalizationKey);
+                    tmpText.text = _Info.TextFormula == null ? translation : _Info.TextFormula(translation);
+                    tmpText.font = GetFont(_Info.TextType);
+                }
+                    break;
+                case ETextLocalizationType.OnlyText:
+                {
+                    string translation = GetTranslation(_Info.LocalizationKey);
+                    tmpText.text = _Info.TextFormula == null ? translation : _Info.TextFormula(translation);
+                }
+                    break;
+                case ETextLocalizationType.OnlyFont:
+                    tmpText.font = GetFont(_Info.TextType);
+                    break;
+                default:
+                    throw new SwitchCaseNotImplementedException(_Info.TextLocalizationType);
             }
-            if (_Info.AutoFont)
-                tmpText.font = GetFont(_Info.TextType, GetCurrentLanguage());
         }
 
         private void InvokeLanguageChangedEvent()
@@ -182,6 +179,20 @@ namespace Common.Managers
         ~LeanLocalizationManager()
         {
             LeanLocalization.OnLocalizationChanged -= InvokeLanguageChangedEvent;
+        }
+
+        private static Dictionary<ELanguage, string[]> GetCultures()
+        {
+            return new Dictionary<ELanguage, string[]>
+            {
+                {ELanguage.English,   new[] {"en",  "en-GB"}},
+                {ELanguage.German,    new[] {"ger", "ger-GER"}},
+                {ELanguage.Spanish,   new[] {"sp",  "sp-SP"}},
+                {ELanguage.Portugal,  new[] {"por", "por-POR"}},
+                {ELanguage.Russian,   new[] {"ru",  "ru-RUS"}},
+                {ELanguage.Japanese,  new[] {"ja",  "ja-JAP"}},
+                {ELanguage.Korean,    new[] {"ko",  "ko-KOR"}},
+            };
         }
 
         #endregion

@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Common;
-using Common.Entities;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
@@ -116,20 +113,36 @@ namespace RMAZOR.Editor
                 if (!items.Any())
                     continue;
                 bool errorsOnLevel = false;
-                foreach (var item in items)
+                // foreach (var item in items)
+                // {
+                //     var path = item.Path;
+                //     int count = path.Count;
+                //     if (path.Count < 2)
+                //         continue;
+                //     if (path.Last() == path[count - 2])
+                //         continue;
+                //     bool predicate = path.Last() == path[count - 2] 
+                //                      || (count == 3 
+                //                          && (path[0].X == path[1].X || path[0].Y == path[1].Y)
+                //                          && path[0] == path[2]);
+                //     if (!predicate)
+                //         continue;
+                //     errorsOnLevel = true;
+                // }
+                foreach (bool _ in from item in items
+                                           select item.Path
+                                           into path
+                                           let count = path.Count
+                                           where path.Count >= 2
+                                           where path.Last() != path[count - 2]
+                                           select path.Last() == path[count - 2]
+                                                  || (count == 3
+                                                      && (path[0].X == path[1].X || path[0].Y == path[1].Y)
+                                                      && path[0] == path[2])
+                                           into predicate
+                                           where predicate
+                                           select predicate)
                 {
-                    var path = item.Path;
-                    int count = path.Count;
-                    if (path.Count < 2)
-                        continue;
-                    if (path.Last() == path[count - 2])
-                        continue;
-                    bool predicate = path.Last() == path[count - 2] 
-                                     || (count == 3 
-                                         && (path[0].X == path[1].X || path[0].Y == path[1].Y)
-                                         && path[0] == path[2]);
-                    if (!predicate)
-                        continue;
                     errorsOnLevel = true;
                 }
                 if (!errorsOnLevel)
@@ -185,9 +198,26 @@ namespace RMAZOR.Editor
                 Dbg.LogError($"Level {i + 1} has invalid maze size.");
                 errors = true;
             }
-            
             if (!errors)
                 Dbg.Log("All levels have valid maze size.");
+        }
+
+        [FixUtil]
+        private void FindLevelsWithEmptyPassInputCommandsRecord()
+        {
+            bool errors = false;
+            var levels = LevelsList.Levels;
+            for (int i = 0; i < levels.Count; i++)
+            {
+                var l = levels[i];
+                var record = l.AdditionalInfo.PassCommandsRecord;
+                if (record != null && record.Records.Any())
+                    continue;
+                Dbg.LogError($"Level {i + 1} has empty pass input commands record.");
+                errors = true;
+            }
+            if (!errors)
+                Dbg.Log("All levels have pass input commands record.");
         }
         
         [FixUtil(FixUtilColor.Blue)]
@@ -252,9 +282,9 @@ namespace RMAZOR.Editor
                 var mazeItems = level.MazeItems.ToList();
                 var pathItems = level.PathItems;
                 int maxX = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.X + 1) : 0;
-                maxX = System.Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
+                maxX = Math.Max(maxX, pathItems.Max(_Item => _Item.Position.X + 1));
                 int maxY = mazeItems.Any() ? mazeItems.Max(_Item => _Item.Position.Y + 1) : 0;
-                maxY = System.Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
+                maxY = Math.Max(maxY, pathItems.Max(_Item => _Item.Position.Y + 1));
                 level.Size = new V2Int(maxX, maxY);
             }
             LevelsList.Levels = levels;
@@ -265,14 +295,13 @@ namespace RMAZOR.Editor
         private void FixStarTimes()
         {
             var levels = LevelsList.Levels;
-            foreach (var level in levels)
+            foreach (var additionalInfo in levels.Select(_Level => _Level.AdditionalInfo))
             {
-                var additionalInfo = level.AdditionalInfo;
-                if (additionalInfo.Time3Stars < MathUtils.Epsilon)
+                if (MathUtils.Equals(additionalInfo.Time3Stars, 0f))
                     additionalInfo.Time3Stars = 15f;
-                if (additionalInfo.Time2Stars < MathUtils.Epsilon)
+                if (MathUtils.Equals(additionalInfo.Time2Stars, 0f))
                     additionalInfo.Time2Stars = 30f;
-                if (additionalInfo.Time1Star < MathUtils.Epsilon)
+                if (MathUtils.Equals(additionalInfo.Time1Star, 0f))
                     additionalInfo.Time1Star = 45f;
             }
             LevelsList.Levels = levels;
@@ -283,12 +312,11 @@ namespace RMAZOR.Editor
         private void SetStarTimesForBonusLevels()
         {
             var levels = LevelsList.Levels;
-            foreach (var level in levels)
+            foreach (var additionalInfo in levels.Select(_Level => _Level.AdditionalInfo))
             {
-                var additionalInfo = level.AdditionalInfo;
-                    additionalInfo.Time3Stars = 30f;
-                    additionalInfo.Time2Stars = 60f;
-                    additionalInfo.Time1Star  = 90f;
+                additionalInfo.Time3Stars = 30f;
+                additionalInfo.Time2Stars = 60f;
+                additionalInfo.Time1Star  = 90f;
             }
             LevelsList.Levels = levels;
             LevelsList.Save();
@@ -297,7 +325,7 @@ namespace RMAZOR.Editor
         [FixUtil]
         private void FindDuplicatedMazes()
         {
-            var duplicatedLevelIndicesList = new List<System.Tuple<int, int>>();
+            var duplicatedLevelIndicesList = new List<Tuple<int, int>>();
             var levels = LevelsList.Levels;
             for (int i = 0; i < levels.Count; i++)
             {
@@ -307,7 +335,7 @@ namespace RMAZOR.Editor
                     var jLevel = levels[j];
                     if (iLevel != jLevel)
                         continue;
-                    duplicatedLevelIndicesList.Add(new System.Tuple<int, int>(i, j));
+                    duplicatedLevelIndicesList.Add(new Tuple<int, int>(i, j));
                 }
             }
             if (!duplicatedLevelIndicesList.Any())
@@ -317,8 +345,8 @@ namespace RMAZOR.Editor
             }
             var sb = new StringBuilder();
             sb.AppendLine("Found duplicated levels:");
-            foreach (var duplIndices in duplicatedLevelIndicesList)
-                sb.AppendLine($"{duplIndices.Item1} and {duplIndices.Item2}");
+            foreach ((int level1, int level2) in duplicatedLevelIndicesList)
+                sb.AppendLine($"{level1} and {level2}");
             Dbg.LogWarning(sb.ToString());
         }
     }

@@ -1,10 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Linq;
 using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.UI.DialogViewers;
+using UnityEngine;
 
 namespace Common
 {
@@ -29,10 +33,5 @@ namespace Common
 
         public override int    Id         => MazorCommonDialogViewerIds.Fullscreen2;
         public override string CanvasName => CommonCanvasNames.CommonCameraSpace;
-
-        protected override IEnumerator DoTranslucentBackgroundTransition(bool _Disappear, float _Time)
-        {
-            yield return null;
-        }
     }
 }

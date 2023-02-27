@@ -273,10 +273,15 @@ namespace Common.Extensions
             _Triangle.Thickness = _Thickness;
             return _Triangle;
         }
+
+        public static Triangle SetColor(this Triangle _Triangle, Color _Color)
+        {
+            _Triangle.Color = _Color;
+            return _Triangle;
+        }
         
         #endregion
-
-
+        
         #region regular polygon
 
         public static RegularPolygon SetSides(this RegularPolygon _RegularPolygon, int _Sides)
@@ -303,9 +308,12 @@ namespace Common.Extensions
             return _RegularPolygon;
         }
 
-        #endregion
-        
-        
+        public static RegularPolygon SetColor(this RegularPolygon _RegularPolygon, Color _Color)
+        {
+            _RegularPolygon.Color = _Color;
+            return _RegularPolygon;
+        }
 
+        #endregion
     }
 }

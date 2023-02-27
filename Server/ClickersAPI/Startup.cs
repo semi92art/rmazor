@@ -12,7 +12,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Specialized;
 using System.Text;
+using ClickersAPI.Helpers;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using Quartz;
+using Quartz.Impl;
 
 namespace ClickersAPI
 {
@@ -20,9 +26,14 @@ namespace ClickersAPI
     {
         private static string ConnectionString => "ReleaseMySQLConnection"; // "DebugMySqlConnection";
 
+        private readonly IScheduler  m_Scheduler;
+        private readonly FirebaseApp m_FirebaseApp;
+        
         public Startup(IConfiguration _Configuration)
         {
             Configuration = _Configuration;
+            m_Scheduler = ConfigureQuartz();
+            m_FirebaseApp = ConfigureFirebase();
         }
 
         public IConfiguration Configuration { get; }
@@ -46,18 +57,20 @@ namespace ClickersAPI
                 .AddDefaultTokenProviders();
 
             _Services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            _Services.AddSingleton(_Provider => m_Scheduler);
+            _Services.AddSingleton(_Provider => m_FirebaseApp);
 
             _Services.AddControllers().AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
 
             _Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(_Options =>
                 _Options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
+                    ValidateIssuer           = false,
+                    ValidateAudience         = false,
+                    ValidateLifetime         = true,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
-                    ClockSkew = TimeSpan.Zero
+                    IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["jwt:key"])),
+                    ClockSkew                = TimeSpan.Zero
                 });
         }
 
@@ -76,6 +89,35 @@ namespace ClickersAPI
             {
                 _Endpoints.MapControllers();
             });
+        }
+
+        public IScheduler ConfigureQuartz()
+        {
+            var props = new NameValueCollection
+            {
+                {"quarts.serializer.type", "binary"}
+            };
+            var factory = new StdSchedulerFactory(props);
+            var scheduler = factory.GetScheduler().Result;
+            scheduler.Start().Wait();
+            return scheduler;
+        }
+
+        public FirebaseApp ConfigureFirebase()
+        {
+            var credential = GoogleCredential.FromJson(Credentials.FirebaseAdmin);
+            var appOptions = new AppOptions
+            {
+                Credential = credential, 
+                ProjectId = "minigames-collection-299814"
+            };
+            return FirebaseApp.Create(appOptions);
+        }
+
+        private void OnShutdown()
+        {
+            if (!m_Scheduler.IsShutdown)
+                m_Scheduler.Shutdown();
         }
     }
 }

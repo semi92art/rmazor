@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using ClickersAPI.DTO;
+using ClickersAPI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -74,7 +75,7 @@ namespace ClickersAPI.Controllers
             if (_AppEventDto.EventData != null)
             {
                 foreach ((string key, var value) in _AppEventDto.EventData)
-                    sb.AppendLine(key + ": " + value);
+                    sb.AppendLine(key + ": " + AnalyticIds.GetGameParameterValueByAnalyticIdParameterValue(key, value));
             }
             string messageText = sb.ToString();
             await _telegramBotClient.SendTextMessageAsync(AdminChatId, messageText);

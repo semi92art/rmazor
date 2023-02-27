@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common;
 using Common.Extensions;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -78,7 +77,7 @@ namespace RMAZOR.Views.MazeItems
             ColorProvider,
             CommandsProceeder);
 
-        protected override int LinesAndJointsColorId => ColorIds.MazeItem2;
+        protected override int LinesAndJointsColorId => GetMazeItemBlockColorId();
 
         public override void OnMoveStarted(MazeItemMoveEventArgs _Args)
         {
@@ -111,11 +110,11 @@ namespace RMAZOR.Views.MazeItems
             m_Border = Object.AddComponentOnNewChild<Rectangle>("Block", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedBorder)
-                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
+                .SetColor(ColorProvider.GetColor(GetMazeItemBlockColorId()));
             m_Shape = Object.AddComponentOnNewChild<Rectangle>("Joint", out _)
                 .SetSortingOrder(GetSortingOrder())
                 .SetType(Rectangle.RectangleType.RoundedSolid)
-                .SetColor(ColorProvider.GetColor(ColorIds.MazeItem2));
+                .SetColor(ColorProvider.GetColor(GetMazeItemBlockColorId()));
         }
 
         protected override void UpdateShape()
@@ -135,7 +134,7 @@ namespace RMAZOR.Views.MazeItems
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             base.OnColorChanged(_ColorId, _Color);
-            if (_ColorId != ColorIds.MazeItem2) 
+            if (_ColorId != GetMazeItemBlockColorId()) 
                 return;
             m_Border.Color = _Color;
             m_Shape.Color = _Color.SetA(0.3f);
@@ -144,8 +143,8 @@ namespace RMAZOR.Views.MazeItems
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
             var sets = base.GetAppearSets(_Appear);
-            sets.Add(new [] {m_Shape},  () => ColorProvider.GetColor(ColorIds.MazeItem2).SetA(0.3f));
-            sets.Add(new [] {m_Border}, () => ColorProvider.GetColor(ColorIds.MazeItem2));
+            sets.Add(new [] {m_Shape},  () => ColorProvider.GetColor(GetMazeItemBlockColorId()).SetA(0.3f));
+            sets.Add(new [] {m_Border}, () => ColorProvider.GetColor(GetMazeItemBlockColorId()));
             return sets;
         }
 

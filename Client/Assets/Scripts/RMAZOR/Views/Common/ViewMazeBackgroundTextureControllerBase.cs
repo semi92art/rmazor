@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
+using System.Runtime.CompilerServices;
+using Common.Constants;
 using Common.Helpers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
@@ -11,6 +12,8 @@ using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
 using UnityEngine;
+using static RMAZOR.Models.ComInComArg;
+using static Common.ColorIds;
 
 namespace RMAZOR.Views.Common
 {
@@ -38,7 +41,7 @@ namespace RMAZOR.Views.Common
     {
         #region nonpublic members
         
-        private IList<AdditionalColorsProps> m_AdditionalBackgorundColorsSetItems;
+        private IList<AdditionalColorsPropsAssetItem> m_ColorPropsList;
 
         protected Color
             BackCol1Current,
@@ -55,17 +58,20 @@ namespace RMAZOR.Views.Common
         #region inject
 
         private   GlobalGameSettings      GlobalGameSettings { get; }
+        private   ViewSettings            ViewSettings       { get; }
         protected IRemotePropertiesRmazor RemoteProperties   { get; }
         protected IColorProvider          ColorProvider      { get; }
         protected IPrefabSetManager       PrefabSetManager   { get; }
 
         protected ViewMazeBackgroundTextureControllerBase(
             GlobalGameSettings      _GlobalGameSettings,
+            ViewSettings            _ViewSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager)
         {
             GlobalGameSettings = _GlobalGameSettings;
+            ViewSettings       = _ViewSettings;
             RemoteProperties   = _RemoteProperties;
             ColorProvider      = _ColorProvider;
             PrefabSetManager   = _PrefabSetManager;
@@ -85,8 +91,8 @@ namespace RMAZOR.Views.Common
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            object setBackgroundFromEditorArg = _Args.Args.GetSafe(
-                CommonInputCommandArg.KeySetBackgroundFromEditor, out bool keyExist);
+            object setBackgroundFromEditorArg = _Args.Arguments.GetSafe(
+                KeySetBackgroundFromEditor, out bool keyExist);
             if (keyExist && (bool)setBackgroundFromEditorArg)
                 return;
             SetColorsOnNewLevel(_Args);
@@ -105,49 +111,60 @@ namespace RMAZOR.Views.Common
         
         protected virtual void LoadSets()
         {
-            m_AdditionalBackgorundColorsSetItems = RemoteProperties.BackAndFrontColorsSet
+            m_ColorPropsList = RemoteProperties.BackAndFrontColorsSet
                 .Where(_Item => _Item.inUse)
                 .ToList();
-            if (!m_AdditionalBackgorundColorsSetItems.NullOrEmpty())
+            if (!m_ColorPropsList.NullOrEmpty())
                 return;
-            var additionalBackgroundColorsSet = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>
-                ("configs", "additional_colors_set");
-            m_AdditionalBackgorundColorsSetItems = additionalBackgroundColorsSet.set
+            var additionalBackgroundColorsSet = PrefabSetManager.GetObject<AdditionalColorsSetScriptableObject>(
+                CommonPrefabSetNames.Configs, "additional_colors_set");
+            m_ColorPropsList = additionalBackgroundColorsSet.set
                 .Where(_Item => _Item.inUse)
                     .ToList();
         }
 
-
-
         private void SetColorsOnNewLevel(LevelStageArgs _Args)
         {
             var setItemCurrent = GetAdditionalColorsSetItemIndexForLevel(_Args);
+            BackCol1Current = GetAdditionalColor(Background1, setItemCurrent);
+            BackCol2Current = GetAdditionalColor(Background2, setItemCurrent);
+            var colorIdsSetItemCurrent = new[]
+                {Main, PathItem, PathFill, PathBackground, UiBackground, GameUiAlternative, Background1, Background2};
+            foreach (int colorId in colorIdsSetItemCurrent)
+                ColorProvider.SetColor(colorId, GetAdditionalColor(colorId, setItemCurrent));
             var setItemPrev = GetAdditionalColorsSetItemIndexForLevel(_Args, true);
+            BackCol1Prev = GetAdditionalColor(Background1, setItemPrev);
+            BackCol2Prev = GetAdditionalColor(Background2, setItemPrev);
             m_BloomPropsArgs = setItemCurrent.bloom;
             AdditionalInfo = setItemCurrent.additionalInfo;
-            ColorProvider.SetColor(ColorIds.PathItem,          GetBackgroundColor(ColorIds.PathItem,       setItemCurrent));
-            ColorProvider.SetColor(ColorIds.PathFill,          GetBackgroundColor(ColorIds.PathFill,       setItemCurrent));
-            ColorProvider.SetColor(ColorIds.PathBackground,    GetBackgroundColor(ColorIds.PathBackground, setItemCurrent));
-            ColorProvider.SetColor(ColorIds.Character2,        GetBackgroundColor(ColorIds.Character2,     setItemCurrent));
-            ColorProvider.SetColor(ColorIds.UiBackground,      GetBackgroundColor(ColorIds.UiBackground,   setItemCurrent));
-            ColorProvider.SetColor(ColorIds.GameUiAlternative, GetBackgroundColor(ColorIds.UiBackground,   setItemCurrent));
-            const int idx1 = ColorIds.Background1;
-            const int idx2 = ColorIds.Background2;
-            BackCol1Current = GetBackgroundColor(idx1, setItemCurrent);
-            BackCol2Current = GetBackgroundColor(idx2, setItemCurrent);
-            BackCol1Prev = GetBackgroundColor(idx1, setItemPrev);
-            BackCol2Prev = GetBackgroundColor(idx2, setItemPrev);
-            ColorProvider.SetColor(ColorIds.Background1, BackCol1Current);
-            ColorProvider.SetColor(ColorIds.Background2, BackCol2Current);
         }
 
-        private AdditionalColorsProps GetAdditionalColorsSetItemIndexForLevel(
+        private AdditionalColorsPropsAssetItem GetAdditionalColorsSetItemIndexForLevel(
             LevelStageArgs _Args,
             bool           _ForPreviousLevel = false,
             bool           _ForNextLevel     = false)
         {
-            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
-            bool isBonusLevel = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            string gameMode = (string) _Args.Arguments[KeyGameMode];
+            return gameMode switch
+            {
+                ParameterGameModeMain =>
+                    GetAdditionalColorPropsForGameModeMain(_Args, _ForPreviousLevel, _ForNextLevel),
+                ParameterGameModeRandom         => GetAdditionalColorPropsForGameModeRandom(),
+                ParameterGameModeDailyChallenge => GetAdditionalColorPropsForGameModeDailyChallenge(),
+                ParameterGameModePuzzles        => GetAdditionalColorPropsForGameModePuzzles(_Args),
+                ParameterGameModeBigLevels      => GetAdditionalColorPropsForGameModeBigLevels(),
+                _                               => throw new SwitchExpressionException(gameMode)
+            };
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeMain(
+            LevelStageArgs _Args,
+            bool           _ForPreviousLevel,
+            bool           _ForNextLevel)
+        {
+            string levelType = (string) _Args.Arguments.GetSafe(KeyNextLevelType, out _);
+            var colorPropsListForMainGameMode = GetColorPropsList(true);
+            bool isBonusLevel = levelType == ParameterLevelTypeBonus;
             int levelIndex = (int)_Args.LevelIndex;
             if (_ForPreviousLevel && !isBonusLevel)
                 levelIndex = (int) _Args.LevelIndex - 1;
@@ -156,26 +173,88 @@ namespace RMAZOR.Views.Common
             int setItemIdx = isBonusLevel ?
                 levelIndex * GlobalGameSettings.extraLevelEveryNStage
                 : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
-            setItemIdx %= m_AdditionalBackgorundColorsSetItems.Count;
+            setItemIdx %= colorPropsListForMainGameMode.Count;
             if (setItemIdx < 0) setItemIdx = 0;
-            var colorsSet = m_AdditionalBackgorundColorsSetItems[setItemIdx];
+            var colorsSet = colorPropsListForMainGameMode[setItemIdx];
             return colorsSet;
         }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeRandom()
+        {
+            var colorPropsListForMainGameMode = GetColorPropsList(false);
+            int setItemIdx = Mathf.FloorToInt(colorPropsListForMainGameMode.Count * Random.value);
+            var colorsSet = colorPropsListForMainGameMode[setItemIdx];
+            return colorsSet;
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeDailyChallenge()
+        {
+            return GetAdditionalColorPropsWithConcreteArgument("daily_challenge");
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModePuzzles(LevelStageArgs _Args)
+        {
+            object showHintArg1 = _Args.Arguments.GetSafe(KeyShowPuzzleLevelHint, out bool showHintArgKeyExist);
+            string puzzlesArgName = showHintArgKeyExist && (bool) showHintArg1
+                ? "puzzle_hint"
+                : "puzzle_default";
+            return GetAdditionalColorPropsWithConcreteArgument(puzzlesArgName);
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeBigLevels()
+        {
+            return GetAdditionalColorPropsWithConcreteArgument("big_levels");
+        }
+
+        private IList<AdditionalColorsPropsAssetItem> GetColorPropsList(bool _OnlyForMainGameMode)
+        {
+            return !_OnlyForMainGameMode? m_ColorPropsList : m_ColorPropsList
+                .Where(_Props => !_Props.additionalInfo.arguments.Contains("disable_for_main"))
+                .ToList();
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsWithConcreteArgument(string _Argument)
+        {
+            return m_ColorPropsList
+                .FirstOrDefault(_Props =>
+                    _Props.additionalInfo.arguments.Contains(_Argument));
+        }
         
-        private static Color GetBackgroundColor(int _ColorId, AdditionalColorsProps _Props)
+        private Color GetAdditionalColor(int _ColorId, AdditionalColorsPropsAssetItem _Props)
         {
             return _ColorId switch
             {
-                ColorIds.Background1       => _Props.bacground1,
-                ColorIds.Background2       => _Props.bacground2,
-                ColorIds.PathItem          => _Props.GetColor(_Props.pathItemFillType),
-                ColorIds.PathBackground    => _Props.GetColor(_Props.pathBackgroundFillType),
-                ColorIds.PathFill          => _Props.GetColor(_Props.pathFillFillType),
-                ColorIds.Character2        => _Props.GetColor(_Props.characterBorderFillType),
-                ColorIds.UiBackground      => _Props.GetColor(_Props.uiBackgroundFillType),
-                ColorIds.GameUiAlternative => _Props.GetColor(_Props.uiBackgroundFillType),
-                _                          => Color.magenta
+                Main              => _Props.main,
+                Background1       => _Props.bacground1,
+                Background2       => _Props.bacground2,
+                PathItem          => _Props.GetColor(_Props.pathItemFillType),
+                PathBackground    => _Props.GetColor(_Props.pathBackgroundFillType),
+                PathFill          => GetAdditionalColorPathItemFill(_Props),
+                Character2        => _Props.GetColor(_Props.characterBorderFillType),
+                UiBackground      => _Props.GetColor(_Props.uiBackgroundFillType),
+                GameUiAlternative => _Props.GetColor(_Props.uiBackgroundFillType),
+                _                 => Color.magenta
             };
+        }
+
+        private Color GetAdditionalColorPathItemFill(AdditionalColorsPropsAssetItem _Props)
+        {
+            if (!ViewSettings.mazeItemBlockColorEqualsMainColor)
+                return _Props.GetColor(_Props.pathFillFillType);
+            EBackAndFrontColorType colorType = _Props.pathFillFillType switch
+            {
+                EBackAndFrontColorType.Main => _Props.pathBackgroundFillType switch
+                {
+                    EBackAndFrontColorType.Main        => _Props.pathFillFillType,
+                    EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background2,
+                    EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background1,
+                    _                                  => throw new SwitchExpressionException(_Props.pathBackgroundFillType)
+                },
+                EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background1,
+                EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background2,
+                _                                  => throw new SwitchExpressionException(_Props.pathFillFillType)
+            };
+            return _Props.GetColor(colorType);
         }
 
         #endregion
@@ -187,12 +266,14 @@ namespace RMAZOR.Views.Common
 
         public ViewMazeBackgroundTextureControllerFake(
             GlobalGameSettings      _GlobalGameSettings,
+            ViewSettings            _ViewSettings,
             IRemotePropertiesRmazor _RemoteProperties,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager,
             ICameraProvider         _CameraProvider)
             : base(
                 _GlobalGameSettings,
+                _ViewSettings,
                 _RemoteProperties,
                 _ColorProvider,
                 _PrefabSetManager)
@@ -208,7 +289,7 @@ namespace RMAZOR.Views.Common
 
         private void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId == ColorIds.Background1)
+            if (_ColorId == Background1)
                 CameraProvider.Camera.backgroundColor = _Color;
         }
     }

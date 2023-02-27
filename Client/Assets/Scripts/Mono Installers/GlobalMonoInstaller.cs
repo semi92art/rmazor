@@ -13,7 +13,6 @@ using Common.Managers.PlatformGameServices.Achievements;
 using Common.Managers.PlatformGameServices.GameServiceAuth;
 using Common.Managers.PlatformGameServices.Leaderboards;
 using Common.Managers.PlatformGameServices.SavedGames;
-using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Debugging;
@@ -33,6 +32,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.InputSchedulers;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Settings;
+using RMAZOR.Views;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.ContainerGetters;
 using RMAZOR.Views.Coordinate_Converters;
@@ -160,7 +160,6 @@ namespace Mono_Installers
             
             Container.Bind<IScoreManager>()             .To<ScoreManager>()                 .AsSingle();
             Container.Bind<IAchievementsProvider>()     .To<AchievementsProvider>()         .AsSingle();
-            Container.Bind<IRemoteSavedGameProvider>()  .To<FakeRemoteSavedGameProvider>()  .AsSingle();
             Container.Bind<ILeaderboardsSet>()          .To<LeaderboardsSetRmazor>()        .AsSingle();
             Container.Bind<IAchievementsSet>()          .To<AchievementsSetRmazor>()        .AsSingle();
         }
@@ -229,23 +228,20 @@ namespace Mono_Installers
         private void BindOther()
         {
             if (!MazorCommonData.Release)
-            {
-                Container.Bind<IViewUIGameLogo>()       .To<ViewUIGameLogoFake>()     .AsSingle();
-            }
+                Container.Bind<IViewUIGameLogo>() .To<ViewUIGameLogoFake>()     .AsSingle();
             else
-            {
-                Container.Bind<IViewUIGameLogo>()       .To<ViewUIGameLogoBladyMaze2>().AsSingle();
-            }
-            
-            Container.Bind<IGameClient>()                  .To<GameClient>()                    .AsSingle();
-            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()            .AsSingle();
-            Container.Bind<ILocalizationManager>()         .To<LeanLocalizationManager>()       .AsSingle();
-            Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()              .AsSingle();
-            Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()            .AsSingle();
-            Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()             .AsSingle();
-            Container.Bind<IFontProvider>()                .To<FontProviderMazor>()             .AsSingle();
-            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()  .AsSingle();
-            Container.Bind<IPushNotificationsProvider>().To<PushNotificationsProviderFirebase>().AsSingle();
+                Container.Bind<IViewUIGameLogo>().To<ViewUIGameLogoBladyMaze2>().AsSingle();
+            Container.Bind<IGameClient>()                  .To<GameClient>()                       .AsSingle();
+            Container.Bind<ISavedGameProvider>()           .To<SavedGamesProvider>()               .AsSingle();
+            Container.Bind<ILocalizationManager>()         .To<LeanLocalizationManager>()          .AsSingle();
+            Container.Bind<IPrefabSetManager>()            .To<PrefabSetManager>()                 .AsSingle();
+            Container.Bind<ILevelsLoader>()                .To<LevelsLoaderRmazor>()               .AsSingle();
+            Container.Bind<ILevelAnalyzerRmazor>()         .To<LevelAnalyzerRmazor>()              .AsSingle();
+            Container.Bind<ILevelGeneratorRmazor>()        .To<LevelGeneratorRmazor>()             .AsSingle();
+            Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()                .AsSingle();
+            Container.Bind<IFontProvider>()                .To<FontProviderMazor>()                .AsSingle();
+            Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()     .AsSingle();
+            Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFirebase>().AsSingle();
             
             if (Application.isEditor)
             {

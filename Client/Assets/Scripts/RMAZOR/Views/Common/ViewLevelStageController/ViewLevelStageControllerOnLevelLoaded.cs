@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using Common;
-using Common.Entities;
 using Common.Managers.PlatformGameServices;
-using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Extensions;
-using mazing.common.Runtime.Utils;
+using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.MazeItemGroups;
@@ -20,20 +17,31 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
     
     public class ViewLevelStageControllerOnLevelLoaded : IViewLevelStageControllerOnLevelLoaded
     {
+        #region nonpublic members
+
+        private static AudioClipArgs AudioClipArgsMainTheme =>
+            new AudioClipArgs("main_theme", EAudioClipType.Music, 0.25f, true);
+
+        private bool m_MainThemeSoundPlayFirstTime;
+
+        #endregion
+        
         #region inject
         
         private ViewSettings                     ViewSettings                { get; }
         private IModelGame                       Model                       { get; }
         private IScoreManager                    ScoreManager                { get; }
+        private IAudioManager                    AudioManager                { get; }
         private IViewCharacter                   Character                   { get; }
         private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
         private IViewMazePathItemsGroup          PathItemsGroup              { get; }
         private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
 
-        public ViewLevelStageControllerOnLevelLoaded(
+        private ViewLevelStageControllerOnLevelLoaded(
             ViewSettings                     _ViewSettings,
             IModelGame                       _Model,
             IScoreManager                    _ScoreManager,
+            IAudioManager                    _AudioManager,
             IViewCharacter                   _Character,
             IViewFullscreenTransitioner      _FullscreenTransitioner,
             IViewMazePathItemsGroup          _PathItemsGroup,
@@ -42,6 +50,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             ViewSettings                = _ViewSettings;
             Model                       = _Model;
             ScoreManager                = _ScoreManager;
+            AudioManager                = _AudioManager;
             Character                   = _Character;
             FullscreenTransitioner      = _FullscreenTransitioner;
             PathItemsGroup              = _PathItemsGroup;
@@ -55,8 +64,30 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         public void OnLevelLoaded(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems)
         {
-            SaveGame(_Args);
+            ProceedAudio();
+            ViewLevelStageControllerUtils.SaveGame(_Args, ScoreManager);
             Character.Appear(true);
+            ProceedPathAndMazeItems(_MazeItems);
+            ProceedBetweenLevelTransition();
+        }
+        
+        #endregion
+
+        #region nonpublic methods
+
+        private void ProceedAudio()
+        {
+            if (AudioManager.IsPlaying(AudioClipArgsMainTheme)) return;
+            if (!m_MainThemeSoundPlayFirstTime)
+            {
+                AudioManager.PlayClip(AudioClipArgsMainTheme);
+                m_MainThemeSoundPlayFirstTime = true;
+            }
+            else AudioManager.UnpauseClip(AudioClipArgsMainTheme);
+        }
+
+        private void ProceedPathAndMazeItems(IEnumerable<IViewMazeItem> _MazeItems)
+        {
             foreach (var pathItem in PathItemsGroup.PathItems)
             {
                 bool collect = Model.PathItemsProceeder.PathProceeds[pathItem.Props.Position];
@@ -64,44 +95,15 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             }
             foreach (var mazeItem in _MazeItems)
                 mazeItem.Appear(true);
+        }
+
+        private void ProceedBetweenLevelTransition()
+        {
             FullscreenTransitioner.Enabled = true;
             FullscreenTransitioner.DoTextureTransition(false, ViewSettings.betweenLevelTransitionTime);
             CameraEffectsCustomAnimator.AnimateCameraEffectsOnBetweenLevelTransition(true);
         }
-        
-        #endregion
 
-        #region nonpublic methods
-
-        private void SaveGame(LevelStageArgs _Args)
-        {
-            var savedGameEntity = ScoreManager.GetSavedGameProgress(
-                MazorCommonData.SavedGameFileName, true);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                    if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Failed to load saved game: " +
-                                       $"_Result: {savedGameEntity.Result}, " +
-                                       $"castSuccess: {castSuccess}, " +
-                                       $"_Value: {savedGameEntity.Value}");
-                        return;
-                    }
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = MazorCommonData.SavedGameFileName,
-                        Money = savedGame.Money,
-                        Level = _Args.LevelIndex,
-                        Args = _Args.Args
-                    };
-                    ScoreManager.SaveGameProgress(
-                        newSavedGame, false);
-                }));
-        }
-        
         #endregion
     }
 }

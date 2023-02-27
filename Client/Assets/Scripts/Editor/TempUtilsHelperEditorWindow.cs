@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Common;
+using Common.Constants;
 using Common.Managers;
 using Common.Utils;
 using mazing.common.Runtime;
@@ -54,7 +55,7 @@ namespace Editor
         private LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Current)
         {
             var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
-                "configs", "view_settings");
+                CommonPrefabSetNames.Configs, "view_settings");
             int group = RmazorUtils.GetLevelsGroupIndex(m_LevelIndex);
             int levels = (_Current ? 0 : 1) * RmazorUtils.GetLevelsInGroup(group);
             m_LevelIndex = MathUtils.ClampInverse(
@@ -63,7 +64,7 @@ namespace Editor
                 settings.levelsCountMain - 1);
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeySetBackgroundFromEditor, true}
+                {ComInComArg.KeySetBackgroundFromEditor, true}
             };
             var fakeArgs = new LevelStageArgs(
                 m_LevelIndex, 

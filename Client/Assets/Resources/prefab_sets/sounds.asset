@@ -122,3 +122,6 @@ MonoBehaviour:
     - name: daily_reward
       item: {fileID: 8300000, guid: 6747072602598924a829d410c0a4a35c, type: 3}
       bundle: 0
+    - name: sound_fail
+      item: {fileID: 8300000, guid: ce85fce984f126743bc312d2ba628980, type: 3}
+      bundle: 0

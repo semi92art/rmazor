@@ -20,6 +20,7 @@ using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.Additional_Background;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Additional;
@@ -76,7 +77,7 @@ namespace RMAZOR.Views.MazeItems
         private IViewTurretBody                     TurretBody                     { get; }
         private IViewParticlesThrower               ParticlesThrower               { get; }
         private IViewCharacter                      Character                      { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemTurret(
             ViewSettings                        _ViewSettings,
@@ -94,7 +95,7 @@ namespace RMAZOR.Views.MazeItems
             IViewTurretBody                     _TurretBody,
             IViewParticlesThrower               _ParticlesThrower,
             IViewCharacter                      _Character,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher _LevelStageSwitcher)
             : base(
                 _ViewSettings,
                 _Model,
@@ -112,7 +113,7 @@ namespace RMAZOR.Views.MazeItems
             TurretBody           = _TurretBody;
             ParticlesThrower     = _ParticlesThrower;
             Character            = _Character;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
             ProjectileFake       = Projectile.Clone() as IViewTurretProjectile;
         }
         
@@ -138,7 +139,7 @@ namespace RMAZOR.Views.MazeItems
             TurretBody.Clone()       as IViewTurretBody,
             ParticlesThrower.Clone() as IViewParticlesThrower,
             Character,
-            SwitchLevelStageCommandInvoker);
+            LevelStageSwitcher);
 
         public override bool ActivatedInSpawnPool
         {
@@ -278,7 +279,7 @@ namespace RMAZOR.Views.MazeItems
             }
             if (Character.GetObjects().Colliders.Contains(_Collider))
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
                 StopProjectile();
                 return;
             }

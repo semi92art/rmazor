@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
-using Common.Extensions;
-using Common.Managers;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
@@ -12,9 +9,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace Common.UI
+namespace RMAZOR.Views.Helpers
 {
-    public class MultiplyMoneyWheelPanelView : SimpleUiItemBase, IFixedUpdateTick
+    public class MultiplyMoneyWheelPanelView : SimpleUiItem, IFixedUpdateTick
     {
         #region serialized fields
 

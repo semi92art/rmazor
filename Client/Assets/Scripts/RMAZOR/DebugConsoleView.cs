@@ -169,7 +169,7 @@ namespace RMAZOR
         {
             Dbg.Log("Set Debug Console visibility: " + _Visible);
             VisibilityChanged?.Invoke(_Visible);
-            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
+            var commandsToLock = RmazorUtils.GetCommandsToLockInGameUiMenus();
             if (_Visible)
                 m_CommandsProceeder.LockCommands(commandsToLock, nameof(DebugConsoleView));
             else

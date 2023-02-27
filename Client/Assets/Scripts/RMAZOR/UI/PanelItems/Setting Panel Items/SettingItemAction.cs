@@ -1,7 +1,6 @@
 ﻿using System;
 using Common.Extensions;
 using Common.Managers;
-using Common.UI;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -13,7 +12,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingItemAction : SimpleUiItemBase
+    public class SettingItemAction : SimpleUiItem
     {
         [SerializeField] private Image           icon;
         [SerializeField] private Button          button;
@@ -31,7 +30,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Setting";
-            button.onClick.AddListener(SoundOnClick);
+            button.onClick.AddListener(PlayButtonClickSound);
             button.onClick.AddListener(_Select);
             var titleRectTr = title.rectTransform;
             if (_Icon.IsNotNull())

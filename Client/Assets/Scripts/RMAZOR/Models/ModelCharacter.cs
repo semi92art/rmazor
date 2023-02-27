@@ -151,7 +151,7 @@ namespace RMAZOR.Models
             if (!Alive)
                 return;
             if (LevelStaging.LevelStage == ELevelStage.ReadyToStart)
-                LevelStaging.StartOrContinueLevel();
+                LevelStaging.StartOrContinueLevel(LevelStaging.Arguments);
             
             var from = Position;
             var to = GetNewPosition(from, _Direction, out var blockPositionWhoStopped);

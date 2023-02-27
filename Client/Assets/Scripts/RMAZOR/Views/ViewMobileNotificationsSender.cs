@@ -32,7 +32,7 @@ namespace RMAZOR.Views
         
         public override void Init()
         {
-            SendNotificationsOnInit();
+            CommonUtils.DoOnInitializedEx(NotificationsManager, SendNotificationsOnInit);
             base.Init();
         }
         

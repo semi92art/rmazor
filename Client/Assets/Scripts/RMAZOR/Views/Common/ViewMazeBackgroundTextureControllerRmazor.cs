@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Common.Constants;
 using Common.Helpers;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -44,6 +45,7 @@ namespace RMAZOR.Views.Common
         
         private ViewMazeBackgroundTextureControllerRmazor(
             GlobalGameSettings            _GlobalGameSettings,
+            ViewSettings                  _ViewSettings,
             ICameraProvider               _CameraProvider,
             IContainersGetter             _ContainersGetter,
             IRemotePropertiesRmazor       _RemoteProperties,
@@ -52,6 +54,7 @@ namespace RMAZOR.Views.Common
             IBackgroundTextureProviderSet _TextureProviderSet)
             : base(
                 _GlobalGameSettings,
+                _ViewSettings,
                 _RemoteProperties,
                 _ColorProvider, 
                 _PrefabSetManager)
@@ -185,12 +188,11 @@ namespace RMAZOR.Views.Common
         protected override void LoadSets()
         {
             base.LoadSets();
-            const string set = "configs";
             m_Triangles2TextureSetItems = RemoteProperties.Tria2TextureSet;
             if (m_Triangles2TextureSetItems.NullOrEmpty())
             {
                 var triangles2TextureSet = PrefabSetManager.GetObject<Triangles2TexturePropsSetScriptableObject>
-                    (set, "triangles2_texture_set");
+                    (CommonPrefabSetNames.Configs, "triangles2_texture_set");
                 m_Triangles2TextureSetItems = triangles2TextureSet.set;
             }
             static int CalculateTextureHash(string _Value)

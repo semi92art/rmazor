@@ -3,7 +3,7 @@
     public enum EInputCommand
     {
         // move commands
-        MoveUp,
+        MoveUp = 0,
         MoveDown,
         MoveLeft,
         MoveRight,
@@ -11,8 +11,7 @@
         RotateClockwise,
         RotateCounterClockwise,
         // level staging commands
-        LoadLevelByIndex,
-        LoadNextLevel,
+        LoadLevel,
         ReadyToStartLevel,
         StartOrContinueLevel,
         FinishLevel,
@@ -34,10 +33,18 @@
         TutorialPanel,
         MainMenuPanel,
         RateGameFromGameUi,
-        // debug commands
+        DailyChallengePanel,
+        HintPanel,
+        CustomizeCharacterPanel,
+        ConfirmGoToMainMenuPanel,
+        // debug and prototyping commands
         EnableDebug,
         DisableDebug,
-        // debug load level commands
-        LoadCurrentLevel,
+        StartRecordCommands,
+        StopRecordCommands,
+        GetRecordedCommands,
+        PlayRecordedCommands,
+        SetRecordCommadsFromClipboard,
+        SelectCharacter
     }
 }

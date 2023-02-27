@@ -9,6 +9,7 @@ using RMAZOR.Models;
 using RMAZOR.Views.Common.ViewUILevelSkippers;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
+using RMAZOR.Views.UI.Game_UI_Top_Buttons;
 using Shapes;
 using TMPro;
 using UnityEngine;
@@ -33,45 +34,54 @@ namespace RMAZOR.Views.UI
         
         #region inject
 
-        private IRendererAppearTransitioner AppearTransitioner { get; }
-        private IColorProvider              ColorProvider      { get; }
-        private IViewUIPrompt               Prompt             { get; }
-        private IViewUICongratsMessage      CongratsMessage    { get; }
-        private IViewUIGameLogo             GameLogo           { get; }
-        private IViewUILevelsPanel          LevelsPanel        { get; }
-        private IViewUIRotationControls     RotationControls   { get; }
-        private IViewUITopButtons           TopButtons         { get; }
-        private IViewUITutorial             Tutorial           { get; }
-        private IViewUILevelSkipper         LevelSkipper       { get; }
-        private IViewUIStarsAndTimePanel    StarsAndTimePanel  { get; }
+        private IRendererAppearTransitioner     AppearTransitioner   { get; }
+        private IColorProvider                  ColorProvider        { get; }
+        private IViewGameUIPrompt               Prompt               { get; }
+        private IViewUICongratsMessage          CongratsMessage      { get; }
+        private IViewUIGameLogo                 GameLogo             { get; }
+        private IViewGameUILevelsPanel          LevelsPanel          { get; }
+        private IViewUIRotationControls         RotationControls     { get; }
+        private IViewGameUIButtons              Buttons              { get; }
+        private IViewUITutorial                 Tutorial             { get; }
+        private IViewGameUiLevelSkipper             LevelSkipper         { get; }
+        private IViewUIStarsAndTimePanel        StarsAndTimePanel    { get; }
+        private IViewGameUIDailyChallengePanel  DailyChallengePanel  { get; }
+        private IViewGameUiCreatingLevelMessage CreatingLevelMessage { get; }
+        private IViewGameUiHintPlayingMessage   HintPlayingMessage   { get; }
 
         public ViewUIGameControls(
-            IModelGame                  _Model,
-            IViewInputCommandsProceeder _CommandsProceeder,
-            IRendererAppearTransitioner _AppearTransitioner,
-            IColorProvider              _ColorProvider,
-            IViewUIPrompt               _Prompt,
-            IViewUICongratsMessage      _CongratsMessage,
-            IViewUIGameLogo             _GameLogo,
-            IViewUILevelsPanel          _LevelsPanel,
-            IViewUIRotationControls     _RotationControls,
-            IViewUITopButtons           _TopButtons,
-            IViewUITutorial             _Tutorial,
-            IViewUILevelSkipper         _LevelSkipper,
-            IViewUIStarsAndTimePanel    _StarsAndTimePanel)
+            IModelGame                      _Model,
+            IViewInputCommandsProceeder     _CommandsProceeder,
+            IRendererAppearTransitioner     _AppearTransitioner,
+            IColorProvider                  _ColorProvider,
+            IViewGameUIPrompt               _Prompt,
+            IViewUICongratsMessage          _CongratsMessage,
+            IViewUIGameLogo                 _GameLogo,
+            IViewGameUILevelsPanel          _LevelsPanel,
+            IViewUIRotationControls         _RotationControls,
+            IViewGameUIButtons              _Buttons,
+            IViewUITutorial                 _Tutorial,
+            IViewGameUiLevelSkipper             _LevelSkipper,
+            IViewUIStarsAndTimePanel        _StarsAndTimePanel,
+            IViewGameUIDailyChallengePanel  _DailyChallengePanel,
+            IViewGameUiCreatingLevelMessage _CreatingLevelMessage,
+            IViewGameUiHintPlayingMessage   _HintPlayingMessage)
             : base(_Model, _CommandsProceeder)
         {
             AppearTransitioner   = _AppearTransitioner;
-            ColorProvider            = _ColorProvider;
-            Prompt                   = _Prompt;
-            CongratsMessage          = _CongratsMessage;
-            GameLogo                 = _GameLogo;
-            LevelsPanel              = _LevelsPanel;
-            RotationControls         = _RotationControls;
-            TopButtons               = _TopButtons;
-            Tutorial                 = _Tutorial;
-            LevelSkipper             = _LevelSkipper;
-            StarsAndTimePanel        = _StarsAndTimePanel;
+            ColorProvider        = _ColorProvider;
+            Prompt               = _Prompt;
+            CongratsMessage      = _CongratsMessage;
+            GameLogo             = _GameLogo;
+            LevelsPanel          = _LevelsPanel;
+            RotationControls     = _RotationControls;
+            Buttons              = _Buttons;
+            Tutorial             = _Tutorial;
+            LevelSkipper         = _LevelSkipper;
+            StarsAndTimePanel    = _StarsAndTimePanel;
+            DailyChallengePanel  = _DailyChallengePanel;
+            CreatingLevelMessage = _CreatingLevelMessage;
+            HintPlayingMessage   = _HintPlayingMessage;
         }
 
         #endregion
@@ -86,11 +96,14 @@ namespace RMAZOR.Views.UI
                 GameLogo,
                 RotationControls,
                 Prompt,
-                TopButtons,
+                Buttons,
                 StarsAndTimePanel,
                 LevelsPanel,
                 Tutorial,
-                LevelSkipper
+                LevelSkipper,
+                DailyChallengePanel,
+                CreatingLevelMessage,
+                HintPlayingMessage
             };
             InitGameUI();
             base.Init();
@@ -102,25 +115,17 @@ namespace RMAZOR.Views.UI
             var allOnLevelStageChangedItems = GetInterfaceOfProceeders<IOnLevelStageChanged>();
             foreach (var uiItem in allOnLevelStageChangedItems)
                 uiItem?.OnLevelStageChanged(_Args);
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.Loaded:
-                    ShowControls(m_ControlsShownFirstTime, !m_ControlsShownFirstTime);
-                    break;
-                case ELevelStage.StartedOrContinued when 
-                    _Args.PreviousStage == ELevelStage.ReadyToStart
-                    && _Args.PrePrePreviousStage != ELevelStage.CharacterKilled:
-                    if (!m_ControlsShownFirstTime)
-                    {
-                        ShowControls(true, true);
-                        m_ControlsShownFirstTime = true;
-                    }
-                    break;
-                // case ELevelStage.ReadyToUnloadLevel: 
-                case ELevelStage.Unloaded: 
-                    ShowControls(false, false); 
-                    break;
-            }
+            ShowControls(_Args);
+        }
+
+        public override void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args)
+        {
+            DailyChallengePanel.OnCharacterMoveFinished(_Args);
+        }
+
+        public override void OnMazeRotationFinished(MazeRotationEventArgs _Args)
+        {
+            DailyChallengePanel.OnMazeRotationFinished(_Args);
         }
 
         #endregion
@@ -157,34 +162,62 @@ namespace RMAZOR.Views.UI
             var allRenderers = 
                 CongratsMessage.GetRenderers()
                     .Concat(LevelsPanel.GetRenderers())
-                    .Concat(TopButtons.GetRenderers());
+                    .Concat(Buttons.GetRenderers());
             foreach (var rendComp in allRenderers)
             {
                 switch (rendComp)
                 {
-                    case ShapeRenderer rend1:  rend1.Color = _Color; break;
+                    case ShapeRenderer  rend1: rend1.Color = _Color; break;
                     case SpriteRenderer rend2: rend2.color = _Color; break;
-                    case TMP_Text rend3:       rend3.color = _Color; break;
+                    case TMP_Text       rend3: rend3.color = _Color; break;
                 }
             }
         }
         
-        private void ShowControls(bool _Show, bool _Instantly)
+        private void ShowControls(LevelStageArgs _Args)
         {
-            LevelsPanel      .ShowControls(_Show, _Instantly);
-            TopButtons       .ShowControls(_Show, _Instantly);
-            StarsAndTimePanel.ShowControls(_Show, _Instantly);
-            if (_Instantly)
+            bool? doShowNullable = MustShowControls(_Args, out bool instantly);
+            if (!doShowNullable.HasValue)
+                return;
+            bool doShow = doShowNullable.Value;
+            foreach (var iShowControls in GetInterfaceOfProceeders<IShowControls>())
+                iShowControls.ShowControls(doShow, instantly);
+            if (instantly)
                 return;
             var allRenderers = GetInterfaceOfProceeders<IViewUIGetRenderers>()
                 .Where(_R => _R != null)
                 .SelectMany(_Item => _Item.GetRenderers());
             AppearTransitioner.DoAppearTransition(
-                _Show, 
+                doShow, 
                 new Dictionary<IEnumerable<Component>, Func<Color>>
                 {
                     {allRenderers, () => ColorProvider.GetColor(ColorIds.UI)}
                 }, 0f);
+        }
+
+        private bool? MustShowControls(LevelStageArgs _Args, out bool _Instantly)
+        {
+            bool? doShow;
+            switch (_Args.LevelStage)
+            {
+                case ELevelStage.Loaded:
+                    (doShow, _Instantly) = (true, !m_ControlsShownFirstTime);
+                    break;
+                case ELevelStage.StartedOrContinued when 
+                    _Args.PreviousStage == ELevelStage.ReadyToStart
+                    && _Args.PrePrePreviousStage != ELevelStage.CharacterKilled
+                    && !m_ControlsShownFirstTime:
+                    (doShow, _Instantly) = (true, true);
+                    m_ControlsShownFirstTime = true;
+                    break;
+                case ELevelStage.Unloaded:
+                    (doShow, _Instantly) = (false, false);
+                    break;
+                default:
+                    (_Instantly, doShow) = (false, null);
+                    break;
+            }
+            return doShow;
         }
 
         private void LockCommands(LevelStageArgs _Args)
@@ -194,6 +227,8 @@ namespace RMAZOR.Views.UI
             {
                 case ELevelStage.None:
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
+                    CommandsProceeder.UnlockCommands(GetUiCommands(), group);
+                    CommandsProceeder.UnlockCommand(EInputCommand.SelectCharacter, group);
                     break;
                 case ELevelStage.Loaded:
                 case ELevelStage.Paused:
@@ -202,34 +237,13 @@ namespace RMAZOR.Views.UI
                 case ELevelStage.CharacterKilled:
                 {
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    var commandsToUnlock = new[]
-                    {
-                        EInputCommand.ShopPanel,
-                        EInputCommand.SettingsPanel,
-                        EInputCommand.DailyGiftPanel,
-                        EInputCommand.LevelsPanel,
-                        EInputCommand.StartUnloadingLevel,
-                        EInputCommand.UnloadLevel,
-                        EInputCommand.PauseLevel,
-                        EInputCommand.UnPauseLevel,
-                    };
-                    CommandsProceeder.UnlockCommands(commandsToUnlock, group);
+                    CommandsProceeder.UnlockCommands(GetUiAndLevelStagingCommands(), group);
                 }
                     break;
                 case ELevelStage.Finished:
                 {
                     CommandsProceeder.LockCommands(CommandsProceeder.GetAllCommands(), group);
-                    var commandsToUnlock = new[]
-                    {
-                        EInputCommand.ShopPanel,
-                        EInputCommand.SettingsPanel,
-                        EInputCommand.DailyGiftPanel,
-                        EInputCommand.LevelsPanel,
-                        EInputCommand.StartUnloadingLevel,
-                        EInputCommand.PauseLevel,
-                        EInputCommand.UnPauseLevel,
-                    };
-                    CommandsProceeder.UnlockCommands(commandsToUnlock, group);
+                    CommandsProceeder.UnlockCommands(GetUiAndLevelStagingCommands(), group);
                 }
                     break;
                 case ELevelStage.ReadyToStart:
@@ -253,7 +267,37 @@ namespace RMAZOR.Views.UI
 
         private T[] GetInterfaceOfProceeders<T>() where T : class
         {
-            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
+            return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T)
+                .Where(_I => _I != null)
+                .ToArray();
+        }
+
+        private static IEnumerable<EInputCommand> GetUiCommands()
+        {
+            return new[]
+            {
+                EInputCommand.ShopPanel,
+                EInputCommand.SettingsPanel,
+                EInputCommand.DailyGiftPanel,
+                EInputCommand.LevelsPanel,
+                EInputCommand.MainMenuPanel
+            };
+        }
+
+        private static IEnumerable<EInputCommand> GetLevelStagingCommands()
+        {
+            return new[]
+            {
+                EInputCommand.StartUnloadingLevel,
+                EInputCommand.PauseLevel,
+                EInputCommand.UnloadLevel,
+                EInputCommand.UnPauseLevel
+            };
+        }
+        
+        private static IEnumerable<EInputCommand> GetUiAndLevelStagingCommands()
+        {
+            return GetUiCommands().Concat(GetLevelStagingCommands());
         }
         
         #endregion

@@ -2,13 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Common;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime;
-using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -22,17 +16,16 @@ using UnityEngine.Events;
 
 namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 {
-    public class LevelsPanelGroupItem : SimpleUiItemBase
+    public class LevelsPanelGroupItem : SimpleUiItem
     {
         #region serialized fields
         
         [SerializeField] private TextMeshProUGUI titleText;
-        
-        [SerializeField] private LevelPanelGroupItemLevelItem
+
+        [SerializeField] private LevelsPanelGroupItemLevelItem
             level1Item,
             level2Item,
-            level3Item,
-            levelBonusItem;
+            level3Item;
 
         #endregion
 
@@ -43,12 +36,9 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             m_ButtonEnabledSprite,
             m_ButtonSelectedSprite;
         
-        private readonly CultureInfo m_FloatValueCultureInfo = new CultureInfo("en-US");
-
         private ILevelsLoader       LevelsLoader       { get; set; }
         private IRawLevelInfoGetter RawLevelInfoGetter { get; set; }
         private IModelGame          Model              { get; set; }
-        private IFontProvider       FontProvider       { get; set; }
 
         #endregion
 
@@ -61,22 +51,20 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             IUITicker            _UiTicker,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
-            IFontProvider        _FontProvider,
             Sprite               _ButtonEnabledSprite,
             Sprite               _ButtonDisabledSprite,
             Sprite               _ButtonSelectedSprite,
             Sprite               _StarEnabledSprite,
             Sprite               _StarDisabledSprite)
         {
-            LevelsLoader       = _LevelsLoader;
-            RawLevelInfoGetter = _RawLevelInfoGetter;
-            Model              = _Model;
-            FontProvider       = _FontProvider;
-            InitLevelItems(_StarEnabledSprite, _StarDisabledSprite);
             base.Init(_UiTicker, _AudioManager, _LocalizationManager);
+            LevelsLoader           = _LevelsLoader;
+            RawLevelInfoGetter     = _RawLevelInfoGetter;
+            Model                  = _Model;
             m_ButtonEnabledSprite  = _ButtonEnabledSprite;
             m_ButtonDisabledSprite = _ButtonDisabledSprite;
             m_ButtonSelectedSprite = _ButtonSelectedSprite;
+            InitLevelItems(_StarEnabledSprite, _StarDisabledSprite);
         }
 
         public void UpdateItem(
@@ -100,10 +88,14 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         
         private void InitLevelItems(Sprite _StarEnabledSprite, Sprite _StarDisabledSprite)
         {
-            level1Item    .Init(_StarEnabledSprite, _StarDisabledSprite);
-            level2Item    .Init(_StarEnabledSprite, _StarDisabledSprite);
-            level3Item    .Init(_StarEnabledSprite, _StarDisabledSprite);
-            levelBonusItem.Init(_StarEnabledSprite, _StarDisabledSprite);
+            var levelItems = GetLevelItems();
+            foreach (var levelItem in levelItems)
+                levelItem.Init(
+                    Ticker,
+                    AudioManager, 
+                    LocalizationManager, 
+                    _StarEnabledSprite, 
+                    _StarDisabledSprite);
         }
 
         private void SetLevelItemButtonsInteractable(
@@ -115,14 +107,13 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                 SetLevelItemButtonInteractable(level1Item, true, false);
                 SetLevelItemButtonInteractable(level2Item, true, false);
                 SetLevelItemButtonInteractable(level3Item, true, false);
-                SetLevelItemButtonInteractable(levelBonusItem, true, false);
             }
             else if (_LevelGroupIndex == _CurrentLevelGroupIndex)
             {
                 long firsLevelInCurrentGroupIdx = RmazorUtils.GetFirstLevelInGroupIndex(_LevelGroupIndex);
                 string currentLevelType = (string) Model.LevelStaging.Arguments.GetSafe(
-                    CommonInputCommandArg.KeyCurrentLevelType, out _);
-                bool isCurrentLevelBonus = currentLevelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                    ComInComArg.KeyCurrentLevelType, out _);
+                bool isCurrentLevelBonus = currentLevelType == ComInComArg.ParameterLevelTypeBonus;
                 long currentLevelIndex = Model.LevelStaging.LevelIndex;
                 bool levelGroupWasFinishedBefore = RmazorUtils.WasLevelGroupFinishedBefore(_LevelGroupIndex);
                 SetLevelItemButtonInteractable(
@@ -137,10 +128,6 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                     level3Item, 
                     levelGroupWasFinishedBefore || currentLevelIndex >= firsLevelInCurrentGroupIdx + 2 || isCurrentLevelBonus, 
                     currentLevelIndex == firsLevelInCurrentGroupIdx + 2 && !isCurrentLevelBonus);
-                SetLevelItemButtonInteractable(
-                    levelBonusItem, 
-                    levelGroupWasFinishedBefore || isCurrentLevelBonus,
-                    isCurrentLevelBonus);
             }
             else
             {
@@ -149,7 +136,6 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                     SetLevelItemButtonInteractable(level1Item, true, false);
                     SetLevelItemButtonInteractable(level2Item, true, false);
                     SetLevelItemButtonInteractable(level3Item, true, false);
-                    SetLevelItemButtonInteractable(levelBonusItem, true, false);
                 }
                 else
                 {
@@ -157,19 +143,18 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
                     SetLevelItemButtonInteractable(level1Item, firstLevelEnabled, false);
                     SetLevelItemButtonInteractable(level2Item, false, false);
                     SetLevelItemButtonInteractable(level3Item, false, false);
-                    SetLevelItemButtonInteractable(levelBonusItem, false, false);
                 }
             }
         }
 
         private void SetLevelItemButtonInteractable(
-            LevelPanelGroupItemLevelItem _Item,
+            LevelsPanelGroupItemLevelItem _Item,
             bool                         _Interactable,
             bool                         _IsCurrentLevel)
         {
-            _Item.button.interactable = _IsCurrentLevel || _Interactable;
-            _Item.button.image.sprite = _IsCurrentLevel ? m_ButtonSelectedSprite :
-                _Interactable ? m_ButtonEnabledSprite : m_ButtonDisabledSprite;
+            _Item.SetInteractable(_IsCurrentLevel || _Interactable);
+            _Item.SetButtonImageSprite(_IsCurrentLevel ? m_ButtonSelectedSprite :
+                _Interactable ? m_ButtonEnabledSprite : m_ButtonDisabledSprite);
         }
         
         private void ActivateLevelItems(bool _Active)
@@ -177,7 +162,6 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             level1Item.gameObject    .SetActive(_Active);
             level2Item.gameObject    .SetActive(_Active);
             level3Item.gameObject    .SetActive(_Active);
-            levelBonusItem.gameObject.SetActive(_Active);
         }
 
         private void SetLevelItemStars(int _LevelsGroupIndex)
@@ -203,35 +187,36 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
             float bestTime = _TimeRecordsDict.GetSafe(levelIdx, out bool containsKey);
             if (!containsKey)
                 bestTime = float.PositiveInfinity;
-            int starsCount = GetStarsCountForLevel(levelIdx, false, bestTime);
+            int starsCount = GetStarsCountForLevel(levelIdx, ComInComArg.ParameterLevelTypeDefault, bestTime);
             var levelItem = _LevelIndexInGroup switch
             {
                 0  => level1Item,
                 1  => level2Item,
                 2  => level3Item,
-                -1 => levelBonusItem,
                 _  => throw new SwitchExpressionException(_LevelIndexInGroup)
             };
             levelItem.SetStarsCount(starsCount);
-            levelItem.bestTimeText.font =
-                FontProvider.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
-            levelItem.bestTimeText.text = float.IsInfinity(bestTime) ?
-                "-" : bestTime.ToString("F3", m_FloatValueCultureInfo) + "s";
+            levelItem.SetBestTimeText(bestTime);
         }
 
-        private int GetStarsCountForLevel(long _LevelIndex, bool _IsBonus, float _TimeRecord)
+        private int GetStarsCountForLevel(long _LevelIndex, string _LevelType, float _TimeRecord)
         {
-            int levelsCount = LevelsLoader.GetLevelsCount(CommonData.GameId, _IsBonus);
+            var args = new LevelInfoArgs
+            {
+                LevelType = _LevelType,
+                LevelIndex = _LevelIndex
+            };
+            int levelsCount = LevelsLoader.GetLevelsCount(args);
             if (levelsCount <= _LevelIndex)
                 return 0;
             string levelInfoRaw = null;
             try
             {
-                levelInfoRaw = LevelsLoader.GetLevelInfoRaw(CommonData.GameId, _LevelIndex, _IsBonus);
+                levelInfoRaw = LevelsLoader.GetLevelInfoRaw(args);
             }
             catch
             {
-                Dbg.LogError(_LevelIndex + " " + _IsBonus);
+                Dbg.LogError(_LevelIndex + " " + _LevelType);
             }
             
             (float time3Stars, float time2Stars, float time1Star) = RawLevelInfoGetter.GetStarTimeRecords(levelInfoRaw);
@@ -246,48 +231,29 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 
         private void SetButtonActions(UnityAction<int> _LoadLevelByIndexAction)
         {
-            var onClickEvents = new[]
+            var levelItems = GetLevelItems();
+            for (int i = 0; i < levelItems.Length; i++)
             {
-                level1Item.button.onClick,
-                level2Item.button.onClick,
-                level3Item.button.onClick,
-                levelBonusItem.button.onClick
-            };
-            foreach (var onClickEvent in onClickEvents)
-                onClickEvent.RemoveAllListeners();
-            level1Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(0));
-            level2Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(1));
-            level3Item.button.onClick    .AddListener(() => _LoadLevelByIndexAction(2));
-            levelBonusItem.button.onClick.AddListener(() => _LoadLevelByIndexAction(-1));
+                int i1 = i;
+                levelItems[i].SetOnClickEvent(() => _LoadLevelByIndexAction(i1));
+            }
         }
         
         private void SetLevelItemTitles(int _LevelsGroupIndex, bool _IsUnknown)
         {
-            var font = FontProvider.GetFont(ETextType.MenuUI, LocalizationManager.GetCurrentLanguage());
-            level1Item.title.font     = font;
-            level2Item.title.font     = font;
-            level3Item.title.font     = font;
-            levelBonusItem.title.font = font;
-            titleText.font = font;
-            if (_IsUnknown)
-            {
-                const string questionSigns = "???";
-                titleText.text            = questionSigns;
-                level1Item.title.text     = questionSigns;
-                level2Item.title.text     = questionSigns;
-                level3Item.title.text     = questionSigns;
-                levelBonusItem.title.text = questionSigns;
-                return;
-            }
             long firstLevelInGroup = RmazorUtils.GetFirstLevelInGroupIndex(_LevelsGroupIndex);
             titleText.text = LocalizationManager.GetTranslation("stage").FirstCharToUpper(
                 CultureInfo.CurrentUICulture) + " " + _LevelsGroupIndex;
             string levelText = LocalizationManager.GetTranslation("level").FirstCharToUpper(
                 CultureInfo.CurrentUICulture);
-            level1Item.title.text     = levelText + " " + (firstLevelInGroup + 1);
-            level2Item.title.text     = levelText + " " + (firstLevelInGroup + 2);
-            level3Item.title.text     = levelText + " " + (firstLevelInGroup + 3);
-            levelBonusItem.title.text = levelText + " " + $"E{_LevelsGroupIndex}";
+            var levelItems = GetLevelItems();
+            for (int i = 0; i < levelItems.Length; i++)
+                levelItems[i].SetTitle(_IsUnknown ? "???" : levelText + " " + (firstLevelInGroup + i + 1));
+        }
+
+        private LevelsPanelGroupItemLevelItem[] GetLevelItems()
+        {
+            return new[] {level1Item, level2Item, level3Item};
         }
 
         #endregion

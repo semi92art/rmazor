@@ -10,6 +10,7 @@ using RMAZOR.Constants;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.MazeItems;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
@@ -26,7 +27,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private IModelGame                          Model                          { get; }
         private IMazeShaker                         MazeShaker                     { get; }
         private IContainersGetter                   ContainersGetter               { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
         private IDialogPanelsSet                    DialogPanelsSet                { get; }
         private IDialogViewersController            DialogViewersController        { get; }
         private IAnalyticsManager                   AnalyticsManager               { get; }
@@ -35,7 +36,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IModelGame                          _Model,
             IMazeShaker                         _MazeShaker,
             IContainersGetter                   _ContainersGetter,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
+            IViewLevelStageSwitcher _LevelStageSwitcher,
             IDialogPanelsSet                    _DialogPanelsSet,
             IDialogViewersController            _DialogViewersController,
             IAnalyticsManager                   _AnalyticsManager)
@@ -43,7 +44,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             Model                          = _Model;
             MazeShaker                     = _MazeShaker;
             ContainersGetter               = _ContainersGetter;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
             DialogPanelsSet                = _DialogPanelsSet;
             DialogViewersController        = _DialogViewersController;
             AnalyticsManager               = _AnalyticsManager;
@@ -69,13 +70,13 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                         _Info =>
                             _Info.CurrentPosition == Model.PathItemsProceeder.PathProceeds.First().Key))
                     {
-                        InvokeStartUnloadingLevel(CommonInputCommandArg.ParameterCharacterDiedPanel);
+                        InvokeStartUnloadingLevel(ComInComArg.ParameterSourceCharacterDiedPanel);
                     }
                     else
                     {
                         var panel = DialogPanelsSet.GetPanel<ICharacterDiedDialogPanel>();
                         var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
-                        SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.PauseLevel);
+                        LevelStageSwitcher.SwitchLevelStage(EInputCommand.PauseLevel);
                         dv.Show(panel, 3f);
                     }
                 });
@@ -87,8 +88,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         private void InvokeStartUnloadingLevel(string _Source)
         {
-            var args = new Dictionary<string, object> {{CommonInputCommandArg.KeySource, _Source}};
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
+            var args = new Dictionary<string, object> {{ComInComArg.KeySource, _Source}};
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
         
         private void SendLevelAnalyticEvent(LevelStageArgs _Args)

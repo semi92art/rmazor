@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Common;
-using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
@@ -10,7 +9,6 @@ using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
-using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Utils;
 using TMPro;
@@ -21,10 +19,8 @@ namespace RMAZOR.Views.UI
     public interface IViewUIStarsAndTimePanel :
         IInitViewUIItem,
         IOnLevelStageChanged,
-        IViewUIGetRenderers
-    {
-        void ShowControls(bool _Show, bool _Instantly);
-    }
+        IViewUIGetRenderers,
+        IShowControls { }
 
     public class ViewUIStarsAndTimePanelFake : IViewUIStarsAndTimePanel
     {
@@ -52,8 +48,8 @@ namespace RMAZOR.Views.UI
 
         private bool CanShowPanel => Model.LevelStaging.LevelIndex >= m_TimerTutorialIndexCached
                                      || (string) Model.LevelStaging.Arguments.GetSafe(
-                                         CommonInputCommandArg.KeyNextLevelType, out _) ==
-                                     CommonInputCommandArg.ParameterLevelTypeBonus; 
+                                         ComInComArg.KeyNextLevelType, out _) ==
+                                     ComInComArg.ParameterLevelTypeBonus; 
 
         private float 
             m_TimeThreshold3Stars, 
@@ -77,28 +73,22 @@ namespace RMAZOR.Views.UI
         private IPrefabSetManager    PrefabSetManager    { get; }
         private IViewGameTicker      ViewGameTicker      { get; }
         private IColorProvider       ColorProvider       { get; }
-        private IFontProvider        FontProvider        { get; }
         private ILocalizationManager LocalizationManager { get; }
-        private ILevelsLoader        LevelsLoader        { get; }
-
+        
         public ViewUIStarsAndTimePanel(
             IModelGame           _Model,
             ICameraProvider      _CameraProvider,
             IPrefabSetManager    _PrefabSetManager,
             IViewGameTicker      _ViewGameTicker,
             IColorProvider       _ColorProvider,
-            IFontProvider        _FontProvider,
-            ILocalizationManager _LocalizationManager,
-            ILevelsLoader        _LevelsLoader)
+            ILocalizationManager _LocalizationManager)
         {
             Model               = _Model;
             CameraProvider      = _CameraProvider;
             PrefabSetManager    = _PrefabSetManager;
             ViewGameTicker      = _ViewGameTicker;
             ColorProvider       = _ColorProvider;
-            FontProvider        = _FontProvider;
             LocalizationManager = _LocalizationManager;
-            LevelsLoader        = _LevelsLoader;
         }
 
         #endregion
@@ -107,7 +97,6 @@ namespace RMAZOR.Views.UI
         
         public void Init(Vector4 _Offsets)
         {
-            CacheTimerTutorialLevelIndex();
             InitStarRenderers();
             InitTimeTexts();
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
@@ -161,7 +150,7 @@ namespace RMAZOR.Views.UI
         
         private void OnLanguageChanged(ELanguage _Language)
         {
-            var font = FontProvider.GetFont(ETextType.GameUI, _Language);
+            var font = LocalizationManager.GetFont(ETextType.GameUI, _Language);
             m_TimeText.font = font;
             m_TimeThresholdText.font = font;
             m_TimeThresholdText.text = LocalizationManager.GetTranslation("goal") + ": " +
@@ -215,7 +204,7 @@ namespace RMAZOR.Views.UI
         {
             var colUi = ColorProvider.GetColor(ColorIds.UI);
             var go1 = new GameObject("Current Level Time Text");
-            var font =  FontProvider.GetFont(ETextType.GameUI, LocalizationManager.GetCurrentLanguage());
+            var font =  LocalizationManager.GetFont(ETextType.GameUI);
             m_TimeText = go1.AddComponent<TextMeshPro>();
             m_TimeText.color = colUi;
             m_TimeText.sortingOrder = SortingOrders.GameUI;
@@ -288,25 +277,6 @@ namespace RMAZOR.Views.UI
                 m_TimeThresholdText.text = LocalizationManager.GetTranslation("goal") + ": " +
                                            m_CurrentTimeThreshold.ToString("F1", m_FloatValueCultureInfo);
             }
-        }
-
-        private void CacheTimerTutorialLevelIndex()
-        {
-            for (int i = 0; i < 50; i++)
-            {
-                var levelInfo = LevelsLoader.GetLevelInfo(CommonData.GameId, i, false);
-                string args = levelInfo.AdditionalInfo.Arguments;
-                if (string.IsNullOrEmpty(args))
-                    continue;
-                if (!args.Contains("tutorial") || !args.Contains(":"))
-                    continue;
-                string tutorialType = args.Split(':')[1];
-                if (tutorialType != "timer")
-                    continue;
-                m_TimerTutorialIndexCached = i;
-                return;
-            }
-            m_TimerTutorialIndexCached = long.MaxValue;
         }
 
         #endregion

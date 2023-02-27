@@ -45,7 +45,7 @@ namespace Editor
             {
                 EditorGUI.DrawRect(
                     new Rect(20f + AreaWidth * 0.5f, 20f, AreaWidth * 0.5f + 4f, 
-                        EditorGUIUtility.singleLineHeight * 6f),
+                        EditorGUIUtility.singleLineHeight * 8f),
                     new Color(0.18f, 0.17f, 0.18f));
             }
             EditorUtilsEx.AreaZone(() => EditorUtilsEx.VerticalZone(DrawMazeControls),
@@ -102,21 +102,21 @@ namespace Editor
             if (m_TargetsCopy.Length != 1)
                 return;
             var protItem = m_TargetsCopy[0];
-            GUILayout.Label("Row:", GetHeader1Style());
+            GUILayout.Label("Column/Row:", GetHeader1Style());
+            GUILayout.Label("Add:");
+            EditorUtilsEx.GuiButtonAction("Up", () => AddRow(protItem, true));
             EditorUtilsEx.HorizontalZone(() =>
             {
-                EditorUtilsEx.GuiButtonAction("Remove", () => RemoveRow(protItem, false));
-                GUILayout.Label("Add:");
-                EditorUtilsEx.GuiButtonAction("Down", () => AddRow(protItem, false));
-                EditorUtilsEx.GuiButtonAction("Up", () => AddRow(protItem, true));
-            });
-            GUILayout.Label("Column:", GetHeader1Style());
-            EditorUtilsEx.HorizontalZone(() =>
-            {
-                EditorUtilsEx.GuiButtonAction("Remove", () => RemoveColumn(protItem, false));
-                GUILayout.Label("Add:");
                 EditorUtilsEx.GuiButtonAction("Left", () => AddColumn(protItem, false));
                 EditorUtilsEx.GuiButtonAction("Right", () => AddColumn(protItem, true));
+            });
+            
+            EditorUtilsEx.GuiButtonAction("Down", () => AddRow(protItem, false));
+            GUILayout.Label("Remove:");
+            EditorUtilsEx.HorizontalZone(() =>
+            {
+                EditorUtilsEx.GuiButtonAction("Column", () => RemoveColumn(protItem, false));
+                EditorUtilsEx.GuiButtonAction("Row", () => RemoveRow(protItem, false));
             });
         }
     }

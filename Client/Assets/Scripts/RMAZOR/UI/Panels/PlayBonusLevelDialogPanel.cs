@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Common.Constants;
+using System.Globalization;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
@@ -13,6 +12,7 @@ using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -22,8 +22,7 @@ namespace RMAZOR.UI.Panels
 {
     public interface IPlayBonusLevelDialogPanel : IDialogPanel { }
 
-    public class PlayBonusLevelDialogPanelFake
-        : DialogPanelFake, IPlayBonusLevelDialogPanel { }
+    public class PlayBonusLevelDialogPanelFake : DialogPanelFake, IPlayBonusLevelDialogPanel { }
     
     public class PlayBonusLevelDialogPanel : DialogPanelBase, IPlayBonusLevelDialogPanel
     {
@@ -36,27 +35,29 @@ namespace RMAZOR.UI.Panels
         private Button 
             m_PlayButton,
             m_SkipButton;
+        
+        protected override string PrefabName => "play_bonus_level_panel";
 
         #endregion
 
         #region inject
-        
-        private IModelGame                          Model                          { get; }
-        private IViewBetweenLevelAdShower           BetweenLevelAdShower           { get; }
-        private IMoneyCounter                       MoneyCounter                   { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+
+        private IModelGame                Model                { get; }
+        private IViewBetweenLevelAdShower BetweenLevelAdShower { get; }
+        private IRewardCounter            RewardCounter        { get; }
+        private IViewLevelStageSwitcher   LevelStageSwitcher   { get; }
 
         private PlayBonusLevelDialogPanel(
-            IModelGame                          _Model,
-            IViewBetweenLevelAdShower           _BetweenLevelAdShower,
-            IMoneyCounter                       _MoneyCounter,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewTimePauser                     _TimePauser,
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IModelGame                  _Model,
+            IViewBetweenLevelAdShower   _BetweenLevelAdShower,
+            IRewardCounter               _RewardCounter,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewTimePauser             _TimePauser,
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewLevelStageSwitcher     _LevelStageSwitcher)
             : base(
                 _Managers, 
                 _Ticker, 
@@ -65,50 +66,33 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            Model                          = _Model;
-            BetweenLevelAdShower           = _BetweenLevelAdShower;
-            MoneyCounter                   = _MoneyCounter;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            Model                = _Model;
+            BetweenLevelAdShower = _BetweenLevelAdShower;
+            RewardCounter         = _RewardCounter;
+            LevelStageSwitcher   = _LevelStageSwitcher;
         }
         
         #endregion
 
         #region api
-        
+
         public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            var go = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(
-                    _Container,
-                    RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "play_bonus_level_panel");
-            PanelRectTransform = go.RTransform();
-            PanelRectTransform.SetGoActive(false);
-            GetPrefabContentObjects(go);
-            LocalizeTextObjectsOnLoad();
-            m_PlayButton.onClick.AddListener(OnPlayButtonClick);
-            m_SkipButton.onClick.AddListener(OnSkipButtonClick);
-        }
+        #endregion
 
-
-        public override void OnDialogStartAppearing()
+        #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
             base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogDisappeared()
+        protected override void OnDialogDisappeared()
         {
             TimePauser.UnpauseTimeInGame();
             base.OnDialogDisappeared();
         }
-
-        #endregion
-
-        #region nonpublic methods
 
         private void OnPlayButtonClick()
         {
@@ -123,7 +107,7 @@ namespace RMAZOR.UI.Panels
             }));
         }
         
-        private void GetPrefabContentObjects(GameObject _GameObject)
+        protected override void GetPrefabContentObjects(GameObject _GameObject)
         {
             var go = _GameObject;
             m_TitleText      = go.GetCompItem<TextMeshProUGUI>("title_text");
@@ -133,27 +117,32 @@ namespace RMAZOR.UI.Panels
             m_SkipButton     = go.GetCompItem<Button>("button_skip");
         }
         
-        private void LocalizeTextObjectsOnLoad()
+        protected override void LocalizeTextObjectsOnLoad()
         {
-            var locMan = Managers.LocalizationManager;
-            locMan.AddTextObject(
-                new LocalizableTextObjectInfo(m_TitleText, ETextType.MenuUI, "play_bonus_level_title",
-                    _T => _T.ToUpper()));
-            locMan.AddTextObject(
-                new LocalizableTextObjectInfo(m_PlayButtonText, ETextType.MenuUI, "Play",
-                    _T => _T.ToUpper()));
-            locMan.AddTextObject(
-                new LocalizableTextObjectInfo(m_SkipButtonText, ETextType.MenuUI, "skip",
-                    _T => _T.ToUpper()));
+            static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
+            var locTextInfos = new[]
+            {
+                new LocTextInfo(m_TitleText, ETextType.MenuUI, "play_bonus_level_title", TextFormula),
+                new LocTextInfo(m_PlayButtonText, ETextType.MenuUI, "Play", TextFormula),
+                new LocTextInfo(m_SkipButtonText, ETextType.MenuUI, "skip", TextFormula)
+            };
+            foreach (var locTextInfo in locTextInfos)
+                Managers.LocalizationManager.AddLocalization(locTextInfo);
+        }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_PlayButton.onClick.AddListener(OnPlayButtonClick);
+            m_SkipButton.onClick.AddListener(OnSkipButtonClick);
         }
 
         private void LoadBonusLevel()
         {
             var args = new Dictionary<string, object>
             {
-                {CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterPlayBonusLevelPanel},
+                {ComInComArg.KeySource, ComInComArg.ParameterSourcePlayBonusLevelPanel},
             };
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(
+            LevelStageSwitcher.SwitchLevelStage(
                 EInputCommand.StartUnloadingLevel, 
                 args);
         }
@@ -164,7 +153,7 @@ namespace RMAZOR.UI.Panels
             if (!RmazorUtils.IsLastLevelInGroup(levelIndex))
                 return;
             BetweenLevelAdShower.ShowAdEnabled = false;
-            if (MoneyCounter.CurrentLevelGroupMoney <= 0) return;
+            if (RewardCounter.CurrentLevelGroupMoney <= 0) return;
             CommandsProceeder.RaiseCommand(
                 EInputCommand.FinishLevelGroupPanel, 
                 null, 

@@ -1,23 +1,22 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
-using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.UI.Panels
 {
@@ -49,11 +48,13 @@ namespace RMAZOR.UI.Panels
 
         private int  m_LevelGroupIndex, m_LevelIndexInGroup;
         
+        protected override string PrefabName => "confirm_load_level_panel";
+        
         #endregion
         
         #region inject
 
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ConfirmLoadLevelDialogPanel(
             IManagersGetter                     _Managers,
@@ -62,7 +63,7 @@ namespace RMAZOR.UI.Panels
             IColorProvider                      _ColorProvider,
             IViewTimePauser                     _TimePauser,
             IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker)
+            IViewLevelStageSwitcher _LevelStageSwitcher)
             : base(
                 _Managers,
                 _Ticker,
@@ -71,29 +72,15 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
 
         #region api
-        
+
         public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
-
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            var go  = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(_Container, RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "confirm_load_level_panel");
-            PanelRectTransform = go.RTransform();
-            PanelRectTransform.SetGoActive(false);
-            GetPrefabContentObjects(go);
-            LocalizeTexts();
-            SubscribeButtonEvents();
-        }
-
-
+        
         public void SetLevelGroupAndIndex(
             int         _LevelGroupIndex,
             int         _LevelIndexInGroup)
@@ -106,33 +93,29 @@ namespace RMAZOR.UI.Panels
 
         #region nonpublic methods
 
-        private void GetPrefabContentObjects(GameObject _GameObject)
+        protected override void GetPrefabContentObjects(GameObject _Go)
         {
-            var go = _GameObject;
-            m_ButtonYes     = go.GetCompItem<Button>("button_yes");
-            m_ButtonNo      = go.GetCompItem<Button>("button_no");
-            m_TitleText     = go.GetCompItem<TextMeshProUGUI>("title_text");
-            m_ButtonYesText = go.GetCompItem<TextMeshProUGUI>("button_yes_text");
-            m_ButtonNoText  = go.GetCompItem<TextMeshProUGUI>("button_no_text");
+            m_ButtonYes     = _Go.GetCompItem<Button>("button_yes");
+            m_ButtonNo      = _Go.GetCompItem<Button>("button_no");
+            m_TitleText     = _Go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_ButtonYesText = _Go.GetCompItem<TextMeshProUGUI>("button_yes_text");
+            m_ButtonNoText  = _Go.GetCompItem<TextMeshProUGUI>("button_no_text");
         }
 
-        private void LocalizeTexts()
+        protected override void LocalizeTextObjectsOnLoad()
         {
-            var locMan = Managers.LocalizationManager;
-            var locInfo = new LocalizableTextObjectInfo(
-                m_TitleText, ETextType.MenuUI, "load_level_warning");
-            locMan.AddTextObject(locInfo);
-            locInfo = new LocalizableTextObjectInfo(
-                m_ButtonNoText, ETextType.MenuUI, "back", 
-                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
-            locMan.AddTextObject(locInfo);
-            locInfo = new LocalizableTextObjectInfo(
-                m_ButtonYesText, ETextType.MenuUI, "Play",
-                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
-            locMan.AddTextObject(locInfo);
+            static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
+            var locTextInfos = new[]
+            {
+                new LocTextInfo(m_TitleText, ETextType.MenuUI, "load_level_warning"),
+                new LocTextInfo(m_ButtonNoText, ETextType.MenuUI, "back", TextFormula),
+                new LocTextInfo(m_ButtonYesText, ETextType.MenuUI, "Play", TextFormula)
+            };
+            foreach (var locTextInfo in locTextInfos)
+                Managers.LocalizationManager.AddLocalization(locTextInfo);
         }
 
-        private void SubscribeButtonEvents()
+        protected override void SubscribeButtonEvents()
         {
             m_ButtonYes.onClick.AddListener(OnButtonYesClick);
             m_ButtonNo.onClick.AddListener(OnButtonNoClick);
@@ -140,22 +123,25 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonYesClick()
         {
-            base.OnClose(LoadLevel);
+            OnClose(LoadLevel);
         }
 
         private void OnButtonNoClick()
         {
-            base.OnClose(null);
+            OnClose(() =>
+            {
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
+            });
         }
 
         private void LoadLevel()
         {
-            base.OnClose(() =>
+            OnClose(() =>
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
             });
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
+            PlayButtonClickSound();
             InvokeStartUnloadingLevel(m_LevelGroupIndex, m_LevelIndexInGroup);
         }
         
@@ -165,17 +151,17 @@ namespace RMAZOR.UI.Panels
             long levelIndex;
             if (_LevelInGroupIndex == -1)
             {
-                args.SetSafe(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeBonus);
+                args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
                 levelIndex = _LevelGroupIndex - 1;
             }
             else
             {
-                args.SetSafe(CommonInputCommandArg.KeyNextLevelType, CommonInputCommandArg.ParameterLevelTypeMain);
+                args.SetSafe(KeyNextLevelType, ParameterLevelTypeDefault);
                 levelIndex = RmazorUtils.GetFirstLevelInGroupIndex(_LevelGroupIndex) + _LevelInGroupIndex;
             }
-            args.SetSafe(CommonInputCommandArg.KeyLevelIndex, levelIndex);
-            args.SetSafe(CommonInputCommandArg.KeySource, CommonInputCommandArg.ParameterLevelsPanel);
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
+            args.SetSafe(KeyLevelIndex, levelIndex);
+            args.SetSafe(KeySource, ParameterSourceLevelsPanel);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
 
         #endregion

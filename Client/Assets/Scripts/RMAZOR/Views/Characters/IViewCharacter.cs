@@ -20,5 +20,6 @@ namespace RMAZOR.Views.Characters
     {
         ViewCharacterInfo GetObjects();
         void              OnRotationFinished(MazeRotationEventArgs _Args);
+        void              SetCharacter(int                         _Id);
     }
 }

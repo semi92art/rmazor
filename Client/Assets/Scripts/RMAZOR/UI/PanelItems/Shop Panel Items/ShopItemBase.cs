@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections;
-using Common.Entities;
-using Common.Extensions;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
@@ -31,7 +26,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
         public int    Reward           { get; set; }
     }
     
-    public abstract class ShopItemBase : SimpleUiItemBase
+    public abstract class ShopItemBase : SimpleUiItem
     {
         #region serialized fields
         
@@ -62,12 +57,12 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             m_Info = _Info;
-            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(title, ETextType.MenuUI));
-            LocalizationManager.AddTextObject(new LocalizableTextObjectInfo(price, ETextType.MenuUI));
+            LocalizationManager.AddLocalization(new LocTextInfo(title, ETextType.MenuUI));
+            LocalizationManager.AddLocalization(new LocTextInfo(price, ETextType.MenuUI));
             watchAdImage.SetGoActive(true);
             loadingAnim.SetGoActive(true);
             name = "Shop Item";
-            buyButton.onClick.AddListener(SoundOnClick);
+            buyButton.onClick.AddListener(PlayButtonClickSound);
             buyButton.onClick.AddListener(_Click);
             itemIcon.sprite = _Info.Icon;
             if (_Info.Background.IsNotNull())

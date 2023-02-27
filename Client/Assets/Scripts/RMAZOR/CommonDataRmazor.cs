@@ -7,6 +7,8 @@ namespace RMAZOR
 {
     public static class CommonDataRmazor
     {
+        public const int CharacterLevelOnStart = 1;
+        
         public static int[] LevelsInGroupArray = {3, 3, 3};
 
         public static ViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator;

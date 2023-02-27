@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common.Helpers;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Helpers;
 using RMAZOR.Models.MazeInfos;
 using UnityEngine.Events;
@@ -40,7 +40,7 @@ namespace RMAZOR.Models.InputSchedulers
         
         #region api
 
-        public Func<int, long, bool, MazeInfo> LoadMazeInfo
+        public Func<LevelInfoArgs, Entity<MazeInfo>> LoadMazeInfo
         {
             set => InputSchedulerUiProceeder.LoadMazeInfo = value;
         }

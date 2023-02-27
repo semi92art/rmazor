@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Exceptions;
@@ -38,15 +34,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         #region nonpublic members
 
         protected override int PoolSize => 30;
-        
-        private            Color                                          m_BackItemsColor;
-        private            SpawnPool<IViewMazeBackgroundIdleItemDisc>     m_DiscsPool;
-        private            SpawnPool<IViewMazeBackgroundIdleItemSquare>   m_SquaresPool;
-        private            SpawnPool<IViewMazeBackgroundIdleItemTriangle> m_TrianglesPool;
 
-        private SpawnPool<IViewMazeBackgroundIdleItem> m_CurrentPool;
+        private SpawnPool<IViewMazeBackgroundIdleItemDisc>     m_DiscsPool;
+        private SpawnPool<IViewMazeBackgroundIdleItemSquare>   m_SquaresPool;
+        private SpawnPool<IViewMazeBackgroundIdleItemTriangle> m_TrianglesPool;
+        private SpawnPool<IViewMazeBackgroundIdleItem>         m_CurrentPool;
 
-        private bool m_CurrentLevelIsBonus;
+        private bool   m_CurrentLevelIsBonus;
+        private Color  m_BackItemsColor;
+        private Bounds m_MazeBounds;
         
         #endregion
 
@@ -60,7 +56,6 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         private ViewMazeBackgroundIdleItems(
             IColorProvider                      _ColorProvider,
-            IRendererAppearTransitioner         _Transitioner,
             IContainersGetter                   _ContainersGetter,
             IViewGameTicker                     _GameTicker,
             ICameraProvider                     _CameraProvider,
@@ -71,7 +66,6 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             ICoordinateConverter                _CoordinateConverter)
             : base(
                 _ColorProvider,
-                _Transitioner,
                 _ContainersGetter,
                 _GameTicker,
                 _CameraProvider)
@@ -112,14 +106,20 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
         {
             if (_Args.LevelStage != ELevelStage.Loaded)
                 return;
-            string levelType = (string) _Args.Args.GetSafe(CommonInputCommandArg.KeyNextLevelType, out _);
-            m_CurrentLevelIsBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+            string levelType = (string) _Args.Arguments.GetSafe(ComInComArg.KeyNextLevelType, out _);
+            m_CurrentLevelIsBonus = levelType == ComInComArg.ParameterLevelTypeBonus;
         }
         
         #endregion
 
         #region nonpublic methods
-        
+
+        protected override void OnActiveCameraChanged(Camera _Camera)
+        {
+            SetMazeSpaceBounds();
+            base.OnActiveCameraChanged(_Camera);
+        }
+
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId != ColorIds.Main)
@@ -176,7 +176,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
                 return;
             foreach (var item in m_CurrentPool)
             {
-                if (GetMazeSpaceBounds().Contains(item.Position))
+                if (m_MazeBounds.Contains(item.Position))
                     continue;
                 item.Position = RandomPositionOnMazeSpace(false);
                 item.SetVelocity(RandomVelocity(), RandomAngularVelocity());
@@ -207,7 +207,7 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
 
         private Vector2 RandomPositionOnMazeSpace(bool _Inside)
         {
-            var bounds = GetMazeSpaceBounds();
+            var bounds = m_MazeBounds;
             float xDelta, yDelta;
             if (_Inside)
             {
@@ -244,15 +244,15 @@ namespace RMAZOR.Views.Common.BackgroundIdleItems
             return (Vector2)CameraProvider.Camera.transform.position + new Vector2(x, y);
         }
         
-        private Bounds GetMazeSpaceBounds()
+        private void SetMazeSpaceBounds()
         {
-            var screenBounds = GraphicUtils.GetVisibleBounds(CameraProvider.Camera);
+            var screenBounds = ScreenBounds;
             var mazeBounds = CoordinateConverter.GetMazeBounds();
             screenBounds.size += 6f * Vector3.one;
             var bounds = m_CurrentLevelIsBonus
                 ? new Bounds(mazeBounds.center, mazeBounds.size + screenBounds.size)
                 : screenBounds;
-            return bounds;
+            m_MazeBounds = bounds;
         }
 
         #endregion

@@ -67,9 +67,10 @@ namespace RMAZOR.Controllers
             Model.PathItemsProceeder.PathCompleted += View.LevelStageController.OnPathCompleted;
             Model.PathItemsProceeder.PathCompleted += View.PathItemsGroup.OnPathCompleted;
             Model.PathItemsProceeder.PathProceeded += View.PathItemsGroup.OnPathProceed;
-            Model.MazeRotation.RotationStarted     += View.MazeRotation.OnRotationStarted;
-            Model.MazeRotation.RotationFinished    += View.MazeRotation.OnRotationFinished;
+            Model.MazeRotation.RotationStarted     += View.OnMazeRotationStarted;
+            Model.MazeRotation.RotationFinished    += View.OnMazeRotationFinished;
             Model.MazeRotation.RotationFinished    += View.TouchProceeder.OnRotationFinished;
+            Model.MazeRotation.RotationFinished    += View.UI.OnMazeRotationFinished;
             
             var mItemProcs = Model.ModelItemsProceedersSet;
             var vItemGrps   = View.MazeItemsGroupSet;

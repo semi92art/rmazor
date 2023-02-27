@@ -14,7 +14,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         IOnLevelStageChanged 
     {
         bool                       IsCollected { get; }
-        IViewMazeItemPathItemMoney ItemPathItemMoney { get; }
+        IViewMazeItemPathItemMoney PathItemMoney { get; }
         Component[]                Renderers         { get; }
         void                       InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent);
         void                       UpdateShape();
@@ -24,35 +24,49 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
     
     public class ViewMazeItemPathItem : IViewMazeItemPathItem
     {
-        private IViewMazeItemPathItemIdle PathItemIdle { get; }
+        #region nonpublic members
 
-        public bool                       IsCollected       => PathItemIdle.IsCollected;
-        public IViewMazeItemPathItemMoney ItemPathItemMoney { get; }
+        private IViewMazeItemPathItemIdle  PathItemIdle => PathItemIdleGetter.GetItem();
+        
+        #endregion
+        
+        #region inject
 
+        private IViewMazeItemPathItemIdleGetter  PathItemIdleGetter  { get; }
+        private IViewMazeItemPathItemMoneyGetter PathItemMoneyGetter { get; }
+        
         private ViewMazeItemPathItem(
-            IViewMazeItemPathItemIdle _PathItemIdle,
-            IViewMazeItemPathItemMoney _ItemPathItemMoney)
+            IViewMazeItemPathItemIdleGetter  _PathItemIdleGetter,
+            IViewMazeItemPathItemMoneyGetter _PathItemMoneyGetter)
         {
-            PathItemIdle = _PathItemIdle;
-            ItemPathItemMoney    = _ItemPathItemMoney;
+            PathItemIdleGetter  = _PathItemIdleGetter;
+            PathItemMoneyGetter = _PathItemMoneyGetter;
         }
 
+        #endregion
+
+        #region api
+        
+        public IViewMazeItemPathItemMoney PathItemMoney => PathItemMoneyGetter.GetItem();
+        
+        public bool IsCollected => PathItemIdle.IsCollected;
+        
         public EAppearingState AppearingState => PathItemIdle.AppearingState;
         
         public object Clone() =>
             new ViewMazeItemPathItem(
-                PathItemIdle.Clone() as IViewMazeItemPathItemIdle,
-                ItemPathItemMoney.Clone() as IViewMazeItemPathItemMoney);
+                PathItemIdleGetter.Clone() as IViewMazeItemPathItemIdleGetter,
+                PathItemMoneyGetter.Clone() as IViewMazeItemPathItemMoneyGetter);
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
-            ItemPathItemMoney.OnLevelStageChanged(_Args);
+            PathItemMoney.OnLevelStageChanged(_Args);
         }
 
         public void Appear(bool _Appear)
         {
             PathItemIdle.Appear(_Appear);
-            ItemPathItemMoney.Appear(_Appear);
+            PathItemMoney.Appear(_Appear);
         }
         
         public Component[] Renderers => PathItemIdle.Renderers;
@@ -60,25 +74,27 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent)
         {
             PathItemIdle.InitShape(_GetProps, _Parent);
-            ItemPathItemMoney.InitShape(_GetProps, _Parent);
+            PathItemMoney.InitShape(_GetProps, _Parent);
         }
 
         public void UpdateShape()
         {
             PathItemIdle.UpdateShape();
-            ItemPathItemMoney.UpdateShape();
+            PathItemMoney.UpdateShape();
         }
 
         public void Collect(bool _Collect)
         {
             PathItemIdle.Collect(_Collect);
-            ItemPathItemMoney.Collect(_Collect);
+            PathItemMoney.Collect(_Collect);
         }
 
         public void EnableInitializedShapes(bool _Enable)
         {
             PathItemIdle.EnableInitializedShapes(_Enable);
-            ItemPathItemMoney.EnableInitializedShapes(_Enable);
+            PathItemMoney.EnableInitializedShapes(_Enable);
         }
+
+        #endregion
     }
 }

@@ -10,6 +10,8 @@ using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
 using RMAZOR.Models.ProceedInfos;
 using UnityEngine;
+using UnityEngine.Events;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR
 {
@@ -19,9 +21,8 @@ namespace RMAZOR
 
         public static bool IsBigMaze(V2Int _Size)
         {
-            const int bigMazeSideThreshold = 21; 
-            return _Size.X > bigMazeSideThreshold
-                   || _Size.Y > bigMazeSideThreshold;
+            return _Size.X > 16
+                   || _Size.Y > 21;
         }
         
         public static Tuple<float, float> GetRightAndLeftScreenOffsets()
@@ -34,7 +35,7 @@ namespace RMAZOR
             return new Tuple<float, float>(leftScreenOffset, rightScreenOffset);
         }
         
-        public static IEnumerable<EInputCommand> GetCommandsToLockInUiMenues()
+        public static IEnumerable<EInputCommand> GetCommandsToLockInGameUiMenus()
         {
             return new[]
                 {
@@ -73,7 +74,7 @@ namespace RMAZOR
             EMazeItemType.GravityBlockFree,
             EMazeItemType.GravityTrap
         };
-        
+
         public static V2Int GetDropDirection(EMazeOrientation _Orientation)
         {
             return _Orientation switch
@@ -198,7 +199,7 @@ namespace RMAZOR
         public static V2Int[] GetFullPath(V2Int _From, V2Int _To)
         {
             int min, max;
-            V2Int[] res = null;
+            V2Int[] res;
             if (_From.X == _To.X)
             {
                 min = Math.Min(_From.Y, _To.Y);
@@ -348,6 +349,110 @@ namespace RMAZOR
             long lastLevelInGroup = firsLevelInCurrentGroupIdx + levelsInGroup - 1;
             var levelsFinishedOnceIndicesList = SaveUtils.GetValue(SaveKeysRmazor.LevelsFinishedOnce);
             return levelsFinishedOnceIndicesList.Max() >= lastLevelInGroup;
+        }
+
+        public static int GetCharacterLevel(
+            int     _TotalXpGot,
+            out int _XpToNextLevelTotal,
+            out int _XpGotOnThisLevel)
+        {
+            int xpLeft = _TotalXpGot;
+            int nextCharacterLevel = 2;
+            _XpToNextLevelTotal = 0;
+            while (xpLeft >= 0)
+            {
+                _XpToNextLevelTotal = GetXpToTheNextCharacterLevel(nextCharacterLevel++);
+                xpLeft -= _XpToNextLevelTotal;
+            }
+            xpLeft += _XpToNextLevelTotal;
+            _XpGotOnThisLevel = xpLeft;
+            return nextCharacterLevel - 2;
+        }
+
+        private static int GetXpToTheNextCharacterLevel(int _CharacterLevel)
+        {
+            return Mathf.RoundToInt(_CharacterLevel * 1000);
+        }
+
+        public static int CalculateLevelXp(long _LevelIndex, string _GameMode, string _LevelType)
+        {
+            float multiplyer1 = _GameMode switch
+            {
+                ParameterGameModeMain => _LevelType switch
+                {
+                    ParameterLevelTypeDefault => 100f,
+                    ParameterLevelTypeBonus   => 200f,
+                    _ => 0f
+                },
+                ParameterGameModeRandom         => 0,
+                ParameterGameModePuzzles        => 300f,
+                ParameterGameModeDailyChallenge => 0,
+                ParameterGameModeBigLevels      => 300f,
+                _                               => 0
+            };
+            float multiplyer2 = 1f + _LevelIndex * 0.1f;
+            return Mathf.RoundToInt(multiplyer1 * multiplyer2);
+        }
+        
+        public static void RemoveMethodArgs(Dictionary<string, object> _Args)
+        {
+            var keysToRemove = new List<string>();
+            foreach ((string key, var value) in _Args.ToList())
+            {
+                var type = value.GetType();
+                if (IsAction(type) || IsFunc(type) || IsUnityAction(type))
+                    keysToRemove.Add(key);
+            }
+            foreach (string key in keysToRemove)
+                _Args.RemoveSafe(key, out _);
+        }
+        
+        private static bool IsAction(Type _Type)
+        {
+            if (_Type == typeof(Action)) return true;
+            Type generic = null;
+            if (_Type.IsGenericTypeDefinition) generic = _Type;
+            else if (_Type.IsGenericType) generic = _Type.GetGenericTypeDefinition();
+            var genericTypes = new[]
+            {
+                typeof(Action<>), typeof(Action<,>), typeof(Action<,,>), typeof(Action<,,,>),
+                typeof(Action<,,,,>), typeof(Action<,,,,,>), typeof(Action<,,,,,,>), typeof(Action<,,,,,,,>),
+                typeof(Action<,,,,,,,,>), typeof(Action<,,,,,,,,,>), typeof(Action<,,,,,,,,,,>),
+                typeof(Action<,,,,,,,,,,,>), typeof(Action<,,,,,,,,,,,,>), typeof(Action<,,,,,,,,,,,,,>),
+                typeof(Action<,,,,,,,,,,,,,,>), typeof(Action<,,,,,,,,,,,,,,,>)
+            };
+            return genericTypes.Contains(generic);
+        }
+        
+        private static bool IsFunc(Type _Type)
+        {
+            if (_Type == typeof(Func<>)) return true;
+            Type generic = null;
+            if (_Type.IsGenericTypeDefinition) generic = _Type;
+            else if (_Type.IsGenericType) generic = _Type.GetGenericTypeDefinition();
+            var genericTypes = new[]
+            {
+                typeof(Func<,>), typeof(Func<,,>), typeof(Func<,,,>),
+                typeof(Func<,,,,>), typeof(Func<,,,,,>), typeof(Func<,,,,,,>), typeof(Func<,,,,,,,>),
+                typeof(Func<,,,,,,,,>), typeof(Func<,,,,,,,,,>), typeof(Func<,,,,,,,,,,>),
+                typeof(Func<,,,,,,,,,,,>), typeof(Func<,,,,,,,,,,,,>), typeof(Func<,,,,,,,,,,,,,>),
+                typeof(Func<,,,,,,,,,,,,,,>), typeof(Func<,,,,,,,,,,,,,,,>), typeof(Func<,,,,,,,,,,,,,,,,>),
+                typeof(Func<,,,,,,,,,,,,,,,,>), typeof(Func<,,,,,,,,,,,,,,,,>)
+            };
+            return genericTypes.Contains(generic);
+        }
+        
+        private static bool IsUnityAction(Type _Type)
+        {
+            if (_Type == typeof(UnityAction)) return true;
+            Type generic = null;
+            if (_Type.IsGenericTypeDefinition) generic = _Type;
+            else if (_Type.IsGenericType) generic = _Type.GetGenericTypeDefinition();
+            var genericTypes = new[]
+            {
+                typeof(UnityAction<>), typeof(UnityAction<,>), typeof(UnityAction<,,>), typeof(UnityAction<,,,>),
+            };
+            return genericTypes.Contains(generic);
         }
 
         #endregion

@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
@@ -65,6 +62,10 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             BottomRightCornerInited,
             TopLeftCornerInited, 
             TopRightCornerInited;
+        private bool
+            m_BlankHatch1Inited,
+            m_BlankHatch2Inited;
+        
         protected bool
             IsBottomLeftCornerInner,
             IsBottomRightCornerInner,
@@ -115,7 +116,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public override Component[] Renderers => new Component[]
         {
             m_LeftBorder, m_RightBorder, m_BottomBorder, m_TopBorder,
-            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner
+            m_BottomLeftCorner, m_BottomRightCorner, m_TopLeftCorner, m_TopRightCorner, m_BlankHatch1, m_BlankHatch2
         }.Concat(PathItem.Renderers)
             .ToArray();
         
@@ -136,8 +137,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             if (!Initialized)
                 Managers.AudioManager.InitClip(AudioClipArgsCollectMoneyItem);
-            PathItem.ItemPathItemMoney.Collected -= RaiseMoneyItemCollected;
-            PathItem.ItemPathItemMoney.Collected += RaiseMoneyItemCollected;
+            PathItem.PathItemMoney.Collected -= RaiseMoneyItemCollected;
+            PathItem.PathItemMoney.Collected += RaiseMoneyItemCollected;
             base.UpdateState(_Props);
         }
         
@@ -200,8 +201,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         protected virtual void HighlightBordersAndCorners()
         {
-            // if (OverrideHighlightingOnCharacterMoveFinished)
-            //     return;
             var col = Informer.GetHighlightColor();
             if (m_LeftBorderInited)      m_LeftBorder.Color        = col;
             if (m_RightBorderInited)     m_RightBorder.Color       = col;
@@ -216,7 +215,15 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         protected override void InitShape()
         {
             PathItem.InitShape(() => Props, Object.transform);
-            m_BlankHatch1 = Object.AddComponentOnNewChild<Line>("Blank Hatch 1", out _)
+            m_BlankHatch1 = InitBlankHatch(1);
+            m_BlankHatch1Inited = true;
+            m_BlankHatch2 = InitBlankHatch(2);
+            m_BlankHatch2Inited = true;
+        }
+
+        private Line InitBlankHatch(int _Index)
+        {
+            return Object.AddComponentOnNewChild<Line>($"Blank Hatch {_Index}", out _)
                 .SetEndCaps(LineEndCap.None)
                 .SetDashed(true)
                 .SetDashSnap(DashSnapping.Off)
@@ -224,17 +231,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 .SetDashType(DashType.Angled)
                 .SetDashSpace(DashSpace.FixedCount)
                 .SetDashSize(6f)
-                .SetDashShapeModifier(-1f)
-                .SetSortingOrder(SortingOrders.Path);
-            m_BlankHatch2 = Object.AddComponentOnNewChild<Line>("Blank Hatch 2", out _)
-                .SetEndCaps(LineEndCap.None)
-                .SetDashed(true)
-                .SetDashSnap(DashSnapping.Off)
-                .SetMatchDashSpacingToDashSize(true)
-                .SetDashType(DashType.Angled)
-                .SetDashSpace(DashSpace.FixedCount)
-                .SetDashSize(6f)
-                .SetDashShapeModifier(1f)
+                .SetDashShapeModifier(_Index == 1 ? 1f : -1f)
                 .SetSortingOrder(SortingOrders.Path);
         }
 
@@ -289,7 +286,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             DrawBorders();
             DrawCorners();
-            // AdjustBorders();
             EnableInitializedShapes(false);
         }
 
@@ -435,29 +431,13 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 .PlusLocalPosXY(GetCornerCenter(_Right, _Up, _Inner));
             corner!.enabled = false;
             if (!_Right && !_Up)
-            {
-                m_BottomLeftCorner = corner;
-                BottomLeftCornerInited = true;
-                IsBottomLeftCornerInner = _Inner;
-            }
+                (m_BottomLeftCorner, BottomLeftCornerInited, IsBottomLeftCornerInner)    = (corner, true, _Inner);
             else if (_Right && !_Up)
-            {
-                m_BottomRightCorner = corner;
-                BottomRightCornerInited = true;
-                IsBottomRightCornerInner = _Inner;
-            }
+                (m_BottomRightCorner, BottomRightCornerInited, IsBottomRightCornerInner) = (corner, true, _Inner);
             else if (!_Right)
-            {
-                m_TopLeftCorner = corner;
-                TopLeftCornerInited = true;
-                IsTopLeftCornerInner = _Inner;
-            }
+                (m_TopLeftCorner, TopLeftCornerInited, IsTopLeftCornerInner)             = (corner, true, _Inner);
             else
-            {
-                m_TopRightCorner = corner;
-                TopRightCornerInited = true;
-                IsTopRightCornerInner = _Inner;
-            }
+                (m_TopRightCorner, TopRightCornerInited, IsTopRightCornerInner)          = (corner, true, _Inner);
         }
         
         private Tuple<Vector2, Vector2, bool> GetBorderPointsAndDashed(
@@ -500,7 +480,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         protected override void OnAppearStart(bool _Appear)
         {
-            if (!_Appear && (!Props.Blank && PathItem.ItemPathItemMoney.IsCollected) 
+            if (!_Appear && (!Props.Blank && PathItem.PathItemMoney.IsCollected) 
                 || _Appear && (Props.Blank || Props.IsStartNode))
             {
                 PathItem.EnableInitializedShapes(false);
@@ -511,12 +491,11 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         protected override void OnAppearFinish(bool _Appear)
         {
-            if (!_Appear && Props.Blank)
-            {
-                m_BlankHatch1.enabled = false;
-                m_BlankHatch2.enabled = false;
-            }
             base.OnAppearFinish(_Appear);
+            if (_Appear)
+                return;
+            m_BlankHatch1.enabled = false;
+            m_BlankHatch2.enabled = false;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
@@ -573,6 +552,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             if (BottomRightCornerInited) m_BottomRightCorner.enabled = _Enable;
             if (TopLeftCornerInited)     m_TopLeftCorner    .enabled = _Enable;
             if (TopRightCornerInited)    m_TopRightCorner   .enabled = _Enable;
+            if (m_BlankHatch1Inited)     m_BlankHatch1      .enabled = _Enable && Props.Blank;
+            if (m_BlankHatch2Inited)     m_BlankHatch2      .enabled = _Enable && Props.Blank;
         }
 
         protected Color GetBorderColor()

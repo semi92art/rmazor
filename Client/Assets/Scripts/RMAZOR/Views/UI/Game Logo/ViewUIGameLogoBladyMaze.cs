@@ -233,7 +233,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void LockGameplayAndUiCommands(bool _Lock)
         {
-            var commandsToLock = RmazorUtils.GetCommandsToLockInUiMenues();
+            var commandsToLock = RmazorUtils.GetCommandsToLockInGameUiMenus();
             const string lockGroup = nameof(IViewUIGameLogo); 
             if (_Lock)
                 CommandsProceeder.LockCommands(commandsToLock, lockGroup);

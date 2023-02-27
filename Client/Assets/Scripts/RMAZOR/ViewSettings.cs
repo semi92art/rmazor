@@ -48,6 +48,9 @@ namespace RMAZOR
         public int    additionalBackgroundType;
         public bool   showPathItems;
         public int    characterId;
+        public bool   drawAdditionalMazeNet;
+        public string pathItemContentShapeType;
+        public bool   mazeItemBlockColorEqualsMainColor;
 
 
         public float LineThickness

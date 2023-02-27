@@ -17,44 +17,36 @@ namespace Common.Managers.IAP
         
         private readonly Dictionary<int, ShopItemArgs> m_ShopItems = new Dictionary<int, ShopItemArgs>
         {
-            {PurchaseKeys.Money1, new ShopItemArgs
-            {
-                Currency             = "RUB",
-                LocalizedPrice       = 100m,
-                LocalizedPriceString = "RUB 100",
-                Result               = () => Result
-            }},
-            {PurchaseKeys.Money2, new ShopItemArgs
-            {
-                Currency             = "RUB",
-                LocalizedPrice       = 200m,
-                LocalizedPriceString = "RUB 200",
-                Result               = () => Result
-            }},
-            {PurchaseKeys.Money3, new ShopItemArgs
-            {
-                Currency             = "RUB",
-                LocalizedPrice       = 300m,
-                LocalizedPriceString = "RUB 300",
-                Result               = () => Result
-            }},
-            {PurchaseKeys.NoAds, new ShopItemArgs
-            {
-                Currency             = "RUB",
-                LocalizedPrice       = 100m,
-                LocalizedPriceString = "RUB 100",
-                Result               = () => Result
-            }},
-            {PurchaseKeys.DarkTheme, new ShopItemArgs
-            {
-                Currency             = "RUB",
-                LocalizedPrice       = 100m,
-                LocalizedPriceString = "RUB 100",
-                Result               = () => Result
-            }}
+            {PurchaseKeys.Money1,    new ShopItemArgs(100m, "RUB 100", "RUB", false, () => Result)},
+            {PurchaseKeys.Money2,    new ShopItemArgs(200m, "RUB 200", "RUB", false, () => Result)},
+            {PurchaseKeys.Money3,    new ShopItemArgs(300m, "RUB 300", "RUB", false, () => Result)},
+            {PurchaseKeys.NoAds,     new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.DarkTheme, new ShopItemArgs(400m, "RUB 400", "RUB", true, () => Result)},
+            
+            {PurchaseKeys.Character01, new ShopItemArgs(400m, "RUB 400", "RUB", true, () => Result)},
+            {PurchaseKeys.Character02, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character03, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character04, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character05, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character06, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character07, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character08, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character09, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.Character10, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            
+            {PurchaseKeys.CharacterColorSet01, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet02, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet03, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet04, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet05, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet06, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet07, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet08, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet09, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
+            {PurchaseKeys.CharacterColorSet10, new ShopItemArgs(400m, "RUB 400", "RUB", false, () => Result)},
         };
         
-        private readonly   Dictionary<int, UnityAction> m_PurchaseActions = new Dictionary<int, UnityAction>();
+        private readonly Dictionary<int, UnityAction> m_PurchaseActions = new Dictionary<int, UnityAction>();
 
         public override void RestorePurchases()
         {

@@ -24,14 +24,14 @@ namespace RMAZOR.Views.MazeItemGroups
             ModelSettings      _ModelSettings,
             IModelGame         _Model,
             IMazeItemsCreator  _MazeItemsCreator,
-            IMoneyCounter      _MoneyCounter)
+            IRewardCounter      _RewardCounter)
             : base(
                 _GlobalGameSettings, 
                 _ViewSettings, 
                 _ModelSettings, 
                 _Model,
                 _MazeItemsCreator,
-                _MoneyCounter) { }
+                _RewardCounter) { }
 
         public override void OnLevelStageChanged(LevelStageArgs _Args)
         {

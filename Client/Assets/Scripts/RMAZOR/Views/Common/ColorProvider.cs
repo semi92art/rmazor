@@ -42,8 +42,8 @@ namespace RMAZOR.Views.Common
         #endregion
 
         #region api
-        
-        public event UnityAction<int, Color>  ColorChanged;
+
+        public event UnityAction<int, Color> ColorChanged;
 
         public override void Init()
         {
@@ -98,6 +98,14 @@ namespace RMAZOR.Views.Common
                 return;
             m_ColorsDict.SetSafe(_Id, _Color);
             ColorChanged?.Invoke(_Id, _Color);
+        }
+        
+        public void UpdateColor(int _Id)
+        {
+            if (!Initialized)
+                return;
+            var col = m_ColorsDict.GetSafe(_Id, out _);
+            ColorChanged?.Invoke(_Id, col);
         }
 
         #endregion

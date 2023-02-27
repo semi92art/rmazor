@@ -112,7 +112,7 @@ namespace RMAZOR.Views.Characters
             float   _ThrowTime)
         {
             Transform.position = _Position;
-            Transform.SetLocalScaleXY(Vector2.one * _Scale);
+            Transform.SetLocalScaleXY(Vector2.one * _Scale * CoordinateConverter.Scale);
             Rb.velocity = _Speed;
             ActivatedInSpawnPool = true;
             Cor.Run(SetColorsOnThrowCoroutine(_ThrowTime)

@@ -1,12 +1,16 @@
-﻿using Common;
-using Common.Helpers;
-using mazing.common.Runtime;
+﻿using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using RMAZOR.Models;
+using RMAZOR.Models.ItemProceeders.Additional;
+using RMAZOR.Views.Rotation;
 
 namespace RMAZOR.Views.UI
 {
-    public interface IViewUI : IInit, IOnLevelStageChanged
+    public interface IViewUI
+        : IInit, 
+          IOnLevelStageChanged, 
+          ICharacterMoveFinished, 
+          IMazeRotationFinished
     {
         IViewUIGameControls GameControls { get; }
     }
@@ -26,8 +30,11 @@ namespace RMAZOR.Views.UI
         
         #region api
 
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
+        public abstract void OnLevelStageChanged(LevelStageArgs                       _Args);
+        public abstract void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs _Args);
+        public abstract void OnMazeRotationFinished(MazeRotationEventArgs _Args);
 
         #endregion
+
     }
 }

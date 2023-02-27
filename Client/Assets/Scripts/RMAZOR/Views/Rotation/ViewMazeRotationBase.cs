@@ -19,8 +19,8 @@ namespace RMAZOR.Views.Rotation
             Initialized = true;
         }
 
-        public abstract void OnRotationStarted(MazeRotationEventArgs _Args);
-        public abstract void OnRotationFinished(MazeRotationEventArgs _Args);
+        public abstract void OnMazeRotationStarted(MazeRotationEventArgs _Args);
+        public abstract void OnMazeRotationFinished(MazeRotationEventArgs _Args);
         public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
 

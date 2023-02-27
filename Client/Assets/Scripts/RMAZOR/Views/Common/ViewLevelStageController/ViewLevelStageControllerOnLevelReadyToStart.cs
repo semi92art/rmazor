@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
+using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
-using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using RMAZOR.Models;
-using RMAZOR.Views.UI.Game_Logo;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
@@ -24,15 +23,18 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         
         private IAudioManager     AudioManager     { get; }
         private IAnalyticsManager AnalyticsManager { get; }
+        private IScoreManager     ScoreManager     { get; }
         private IModelGame        Model            { get; }
         
         public ViewLevelStageControllerOnLevelReadyToStart(
             IAudioManager     _AudioManager,
             IAnalyticsManager _AnalyticsManager,
+            IScoreManager     _ScoreManager,
             IModelGame        _Model)
         {
             AudioManager     = _AudioManager;
             AnalyticsManager = _AnalyticsManager;
+            ScoreManager     = _ScoreManager;
             Model            = _Model;
         }
 
@@ -42,6 +44,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnLevelReadyToStart(LevelStageArgs _Args)
         {
+            if (_Args.PreviousStage == ELevelStage.Loaded)
+                ViewLevelStageControllerUtils.SaveGame(_Args, ScoreManager);
             ProceedSounds(_Args);
         }
 
@@ -52,8 +56,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private void SendAnalyticLevelReadyToStart()
         {
             string levelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                CommonInputCommandArg.KeyCurrentLevelType, out _);
-            bool isThisLevelBonus = levelType == CommonInputCommandArg.ParameterLevelTypeBonus;
+                ComInComArg.KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == ComInComArg.ParameterLevelTypeBonus;
             var args = new Dictionary<string, object>
             {
                 {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex},

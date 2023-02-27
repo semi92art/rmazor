@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Common;
 using Common.Constants;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
@@ -181,7 +182,7 @@ namespace RMAZOR.Views.MazeItems
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             if (_Appear)
-                ActivateRenderers(true);
+                ActivateRenderers(ActivatedInSpawnPool);
         }
 
         protected abstract Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear);
@@ -213,6 +214,13 @@ namespace RMAZOR.Views.MazeItems
         protected int GetSortingOrder()
         {
             return SortingOrders.GetBlockSortingOrder(Props.Type);
+        }
+
+        protected int GetMazeItemBlockColorId()
+        {
+            return ViewSettings.mazeItemBlockColorEqualsMainColor
+                ? ColorIds.Main
+                : ColorIds.MazeItem2;
         }
 
         #endregion

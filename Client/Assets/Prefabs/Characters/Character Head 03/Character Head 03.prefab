@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 4536645813358866010}
   - component: {fileID: 3014867984373478654}
   - component: {fileID: 4619979381846009570}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Eye 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -267,7 +267,7 @@ MonoBehaviour:
     - name: border
       item: {fileID: 4971899311667763340}
     - name: collider
-      item: {fileID: 4053558951622077852}
+      item: {fileID: 8900344895325003415}
     - name: mouth_line_1
       item: {fileID: 8440902065601667208}
     - name: mouth_line_2
@@ -316,7 +316,7 @@ GameObject:
   - component: {fileID: 2982025678280033291}
   - component: {fileID: 3696296593934953037}
   - component: {fileID: 2479152174452614751}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Mouth Line 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -443,8 +443,7 @@ GameObject:
   - component: {fileID: 8961204445542969580}
   - component: {fileID: 7863594798523661652}
   - component: {fileID: 5181235751006683254}
-  - component: {fileID: 6724646232953849711}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,6 +464,7 @@ Transform:
   m_Children:
   - {fileID: 1415947551976137637}
   - {fileID: 4121453142084383194}
+  - {fileID: 6408694108801460973}
   m_Father: {fileID: 8953946778060036843}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -571,22 +571,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!58 &6724646232953849711
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4053558951622077852}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.5
 --- !u!1 &4212089789563415148
 GameObject:
   m_ObjectHideFlags: 0
@@ -599,7 +583,7 @@ GameObject:
   - component: {fileID: 4051876002812908512}
   - component: {fileID: 1508442816418329533}
   - component: {fileID: 4467151644747189836}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Eye 2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -769,7 +753,7 @@ GameObject:
   - component: {fileID: 8804755645536649838}
   - component: {fileID: 5086300963717396382}
   - component: {fileID: 5756184471461623911}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Border
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -906,7 +890,7 @@ GameObject:
   - component: {fileID: 6801272004785810315}
   - component: {fileID: 1626561031053528250}
   - component: {fileID: 296632732464965533}
-  m_Layer: 0
+  m_Layer: 22
   m_Name: Mouth Line 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1021,3 +1005,51 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 23
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &8900344895325003415
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6408694108801460973}
+  - component: {fileID: 3576793217627213449}
+  m_Layer: 0
+  m_Name: Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6408694108801460973
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8900344895325003415}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3240111073717642776}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &3576793217627213449
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8900344895325003415}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

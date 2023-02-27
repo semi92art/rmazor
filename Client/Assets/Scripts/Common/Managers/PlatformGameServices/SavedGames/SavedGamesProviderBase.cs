@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using Common.Entities;
-using Common.Helpers;
-using Common.Managers.PlatformGameServices.SavedGames.RemoteSavedGameProviders;
 using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
@@ -11,7 +9,6 @@ using mazing.common.Runtime.Network;
 using mazing.common.Runtime.Network.DataFieldFilters;
 using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
-using UnityEngine.Events;
 
 namespace Common.Managers.PlatformGameServices.SavedGames
 {
@@ -19,15 +16,12 @@ namespace Common.Managers.PlatformGameServices.SavedGames
     {
         #region inject
 
-        private IGameClient              GameClient              { get; }
-        private IRemoteSavedGameProvider RemoteSavedGameProvider { get; }
+        private IGameClient GameClient { get; }
 
         protected SavedGamesProvider(
-            IGameClient              _GameClient,
-            IRemoteSavedGameProvider _RemoteSavedGameProvider)
+            IGameClient _GameClient)
         {
-            GameClient              = _GameClient;
-            RemoteSavedGameProvider = _RemoteSavedGameProvider;
+            GameClient = _GameClient;
         }
 
         #endregion
@@ -36,29 +30,24 @@ namespace Common.Managers.PlatformGameServices.SavedGames
         
         public event GameSavedAction GameSaved;
 
-        public void FetchSavedGames()
+        public void SaveGame(SavedGameV2 _SavedGame)
         {
-            RemoteSavedGameProvider.FetchSavedGames();
+            SaveGameProgressToCache(_SavedGame);
         }
         
-        public virtual void DeleteSavedGame(string _FileName)
+        public SavedGameV2 GetSavedGame(string _FileName)
         {
-            RemoteSavedGameProvider.DeleteSavedGame(_FileName);
+            return GetSavedGameFromCacheSync(_FileName);
         }
 
-        public void SaveGameProgress<T>(T _Data, bool _OnlyToCache) where T : FileNameArgs
+        public void SaveGameProgress<T>(T _Data) where T : FileNameArgs
         {
             SaveGameProgressToCache(_Data);
-            if (_OnlyToCache)
-                return;
-            RemoteSavedGameProvider.SaveGame(_Data);
         }
-
-        public Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache)
+        
+        public Entity<object> GetSavedGameProgress(string _FileName)
         {
-            return _FromCache
-                ? GetSavedGameProgressFromCache(_FileName)
-                : RemoteSavedGameProvider.GetSavedGame(_FileName);
+            return GetSavedGameProgressFromCache(_FileName);
         }
 
         #endregion
@@ -123,6 +112,18 @@ namespace Common.Managers.PlatformGameServices.SavedGames
                 }
             });
             return entity;
+        }
+        
+        private SavedGameV2 GetSavedGameFromCacheSync(string _FileName)
+        {
+            var gdff = new GameDataFieldFilter(
+                    GameClient,
+                    GameClientUtils.AccountId, 
+                    CommonData.GameId,
+                    (ushort)MazorCommonUtils.StringToHash(_FileName))
+                {OnlyLocal = true};
+            var res = gdff.Filter();
+            return res.FirstOrDefault()?.GetValue() as SavedGameV2;
         }
 
         #endregion

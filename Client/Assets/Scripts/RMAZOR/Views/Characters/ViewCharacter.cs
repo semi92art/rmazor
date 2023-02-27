@@ -4,6 +4,7 @@ using Common.Constants;
 using Common.Managers;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
@@ -109,15 +110,20 @@ namespace RMAZOR.Views.Characters
                 var args = GetCharacterEndMoveAudioClipArgs(i);
                 Managers.AudioManager.InitClip(args);
             }
-
-            var setItem = CharactersSet.GetItem(ViewSettings.characterId);
-            (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
-            
-            Tail.GetCharacterObjects = GetObjects;
-            Head.Init();
-            Tail.Init();
-            Legs.Init();
+            foreach (var setItem in CharactersSet.GetAllItems())
+            {
+                setItem.Head.Init();
+                setItem.Head.Activated = false;
+                setItem.Legs.Init();
+                setItem.Legs.Activated = false;
+                setItem.Tail.Init();
+                setItem.Tail.Activated = false;
+                setItem.Tail.GetCharacterObjects = GetObjects;
+            }
+            var defaultItem = CharactersSet.GetItem(ViewSettings.characterId);
+            (Head, Tail, Legs) = (defaultItem.Head, defaultItem.Tail, defaultItem.Legs);
             MazeShaker.Init();
+            Effector.Init();
             base.Init();
         }
 
@@ -132,11 +138,19 @@ namespace RMAZOR.Views.Characters
             Legs.OnRotationFinished(_Args);
         }
 
+        public override void SetCharacter(int _Id)
+        {
+            Head.Activated = Legs.Activated = Tail.Activated = false;
+            var setItem = CharactersSet.GetItem(_Id);
+            (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
+            Head.Activated = Legs.Activated = Tail.Activated = true;
+        }
+
         public override void OnPathCompleted(V2Int _LastPath)
         {
-            Head.OnPathCompleted(_LastPath);
-            Tail.OnPathCompleted(_LastPath);
-            Legs.OnPathCompleted(_LastPath);
+            Head    .OnPathCompleted(_LastPath);
+            Tail    .OnPathCompleted(_LastPath);
+            Legs    .OnPathCompleted(_LastPath);
             Effector.OnPathCompleted(_LastPath);
         }
 
@@ -147,9 +161,9 @@ namespace RMAZOR.Views.Characters
             var pos = CoordinateConverter.ToLocalCharacterPosition(_Args.From);
             SetPosition(pos);
             m_IsMoving = true;
-            Head.OnCharacterMoveStarted(_Args);
-            Tail.OnCharacterMoveStarted(_Args);
-            Legs.OnCharacterMoveStarted(_Args);
+            Head    .OnCharacterMoveStarted(_Args);
+            Tail    .OnCharacterMoveStarted(_Args);
+            Legs    .OnCharacterMoveStarted(_Args);
             Effector.OnCharacterMoveStarted(_Args);
             CommandsProceeder.LockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
         }
@@ -193,6 +207,7 @@ namespace RMAZOR.Views.Characters
             switch (_Args.LevelStage)
             {
                 case ELevelStage.None:
+                    // Activated = true;
                     break;
                 case ELevelStage.Loaded:
                     SetStartOrRevivePosition();
@@ -241,9 +256,16 @@ namespace RMAZOR.Views.Characters
 
         private void OnCommand(EInputCommand _Command, Dictionary<string, object> _Args)
         {
-            if (_Command != EInputCommand.KillCharacter)
-                return;
-            m_EnableMoving = false;
+            switch (_Command)
+            {
+                case EInputCommand.KillCharacter:
+                    m_EnableMoving = false;
+                    break;
+                case EInputCommand.SelectCharacter:
+                    int id = (int) _Args.GetSafe(ComInComArg.KeyCharacterId, out _);
+                    SetCharacter(id);
+                    break;
+            }
         }
         
         private void SetStartOrRevivePosition()

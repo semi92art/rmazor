@@ -1,10 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
@@ -57,14 +52,12 @@ namespace RMAZOR.Views.Common.CongratulationItems
 
         private ViewMazeBackgroundCongratItems(
             IColorProvider              _ColorProvider,
-            IRendererAppearTransitioner _Transitioner,
             IContainersGetter           _ContainersGetter,
             IViewGameTicker             _GameTicker,
             ICameraProvider             _CameraProvider,
             IPrefabSetManager           _PrefabSetManager)
             : base(
                 _ColorProvider,
-                _Transitioner,
                 _ContainersGetter,
                 _GameTicker,
                 _CameraProvider)

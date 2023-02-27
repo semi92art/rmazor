@@ -1,7 +1,5 @@
 ﻿using System.Collections;
 using Common.Constants;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
@@ -42,8 +40,8 @@ namespace RMAZOR.Views.Rotation
         #endregion
 
         #region api
-        
-        public sealed override event  UnityAction<float>     RotationContinued;
+
+        public sealed override event UnityAction<float>     RotationContinued;
         public sealed override event MazeOrientationHandler RotationFinished;
 
         public override void Init()
@@ -55,7 +53,7 @@ namespace RMAZOR.Views.Rotation
             base.Init();
         }
 
-        public override void OnRotationStarted(MazeRotationEventArgs _Args)
+        public override void OnMazeRotationStarted(MazeRotationEventArgs _Args)
         {
             if (_Args.Instantly)
                 m_Rb.transform.eulerAngles = Vector3.zero;
@@ -64,7 +62,7 @@ namespace RMAZOR.Views.Rotation
             m_Rb.constraints = RigidbodyConstraints2D.FreezeAll;
         }
 
-        public override void OnRotationFinished(MazeRotationEventArgs _Args)
+        public override void OnMazeRotationFinished(MazeRotationEventArgs _Args)
         {
             m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
         }

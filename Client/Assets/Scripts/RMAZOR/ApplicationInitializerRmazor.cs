@@ -30,6 +30,7 @@ using UnityEngine.Events;
 using UnityEngine.Purchasing;
 using UnityEngine.SceneManagement;
 using Zenject;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR
 {
@@ -37,8 +38,8 @@ namespace RMAZOR
     {
         #region inject
 
-        private IRemotePropertiesCommon    RemoteProperties          { get; set; }
         private GlobalGameSettings         GlobalGameSettings        { get; set; }
+        private IRemotePropertiesCommon    RemoteProperties          { get; set; }
         private IGameClient                GameClient                { get; set; }
         private IAdsManager                AdsManager                { get; set; }
         private ILocalizationManager       LocalizationManager       { get; set; }
@@ -55,12 +56,10 @@ namespace RMAZOR
         private IApplicationVersionUpdater ApplicationVersionUpdater { get; set; }
         private IPushNotificationsProvider PushNotificationsProvider { get; set; }
         private IViewUIGameLogo            GameLogo                  { get; set; }
+        private IFirebaseInitializer       FirebaseInitializer       { get; set; }
         
 #if UNITY_ANDROID
         [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
-#endif
-#if FIREBASE
-        [Inject] private IFirebaseInitializer FirebaseInitializer { get; set; }
 #endif
 
         [Inject] 
@@ -83,7 +82,8 @@ namespace RMAZOR
             IApplicationVersionUpdater _ApplicationVersionUpdater,
             IAnalyticsManager          _AnalyticsManager,
             IPushNotificationsProvider _PushNotificationsProvider,
-            IViewUIGameLogo            _GameLogo)
+            IViewUIGameLogo            _GameLogo,
+            IFirebaseInitializer       _FirebaseInitializer)
         {
             GlobalGameSettings        = _GameSettings;
             RemoteProperties          = _RemoteProperties;
@@ -103,6 +103,7 @@ namespace RMAZOR
             AnalyticsManager          = _AnalyticsManager;
             PushNotificationsProvider = _PushNotificationsProvider;
             GameLogo                  = _GameLogo;
+            FirebaseInitializer       = _FirebaseInitializer;
         }
         
         #endregion
@@ -111,23 +112,16 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
-            UpdateTodaySessionsCount();
-            ApplicationVersionUpdater.UpdateToCurrentVersion();
-#if UNITY_ANDROID
-            InitAndroidPerformanceClient();
-#endif
-#if FIREBASE
             FirebaseInitializer.Init();
-#endif
-            var scene = SceneManager.GetActiveScene();
-            if (scene.name == SceneNames.Preload)
-                CommonData.GameId = GameIds.RMAZOR;
-            LogAppInfo();
+            yield return UpdateTodaySessionsCountCoroutine();
+            ApplicationVersionUpdater.UpdateToCurrentVersion();
+            yield return InitAndroidPerformanceClient();
+            yield return SetGameId();
+            yield return LogAppInfoCoroutine();
             yield return PermissionsRequestCoroutine();
-            yield return InitStartData();
-            InitGameManagers();
-            InitDefaultData();
-            yield return LoadSceneLevel();
+            yield return InitStartDataCoroutine();
+            yield return InitGameManagersCoroutine();
+            yield return LoadSceneLevelCoroutine();
         }
 
         private IEnumerator PermissionsRequestCoroutine()
@@ -137,14 +131,23 @@ namespace RMAZOR
                 yield return new WaitForEndOfFrame();
         }
 
-#if UNITY_ANDROID
-        private void InitAndroidPerformanceClient()
+        private IEnumerator InitAndroidPerformanceClient()
         {
+#if UNITY_ANDROID
             AndroidPerformanceTunerClient.Init();
-        }
 #endif
+            yield return null;
+        }
 
-        private static void LogAppInfo()
+        private static IEnumerator SetGameId()
+        {
+            var scene = SceneManager.GetActiveScene();
+            if (scene.name == SceneNames.Preload)
+                CommonData.GameId = GameIds.RMAZOR;
+            yield return null;
+        }
+
+        private static IEnumerator LogAppInfoCoroutine()
         {
             var sb = new StringBuilder();
             sb.AppendLine("Application started");
@@ -161,23 +164,28 @@ namespace RMAZOR
             sb.AppendLine("Temporary cache path: "  + Application.temporaryCachePath);
             sb.AppendLine("Absolute url: "          + Application.absoluteURL);
             Dbg.Log(sb.ToString());
+            yield return null;
         }
 
-        private IEnumerator LoadSceneLevel()
+        private IEnumerator LoadSceneLevelCoroutine()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
-            var @params = new LoadSceneParameters(LoadSceneMode.Single);
-            var op = SceneManager.LoadSceneAsync(SceneNames.Level, @params);
-            while (!op.isDone)
-                yield return null;
+            yield return WaitWhile(
+                () => !FirebaseInitializer.Initialized,
+                () =>
+                {
+                    SceneManager.LoadScene(SceneNames.Level);
+                    // var @params = new LoadSceneParameters(LoadSceneMode.Single);
+                    // SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+                }, 3f);
         }
 
         #endregion
     
         #region nonpublic methods
 
-        private void UpdateTodaySessionsCount()
+        private IEnumerator UpdateTodaySessionsCountCoroutine()
         {
             var today = DateTime.Now.Date;
             var dict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays) 
@@ -186,15 +194,17 @@ namespace RMAZOR
             sessionsCount++;
             dict.SetSafe(today, sessionsCount);
             SaveUtils.PutValue(SaveKeysRmazor.SessionCountByDays, dict);
+            yield return null;
         }
         
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
+            Dbg.Log("Application Initializer: " + 5);
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GameLogo.Init();
             Cor.Run(InitGameControllerCoroutine());
         }
-
+        
         private IEnumerator InitGameControllerCoroutine()
         {
             const float waitingTime = 3f;
@@ -202,13 +212,26 @@ namespace RMAZOR
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
                 {
-                    LevelsLoader.Initialize += InitGameController;
+                    LevelsLoader.Initialize += GameControllerMVC.CreateInstance().Init;
                     LevelsLoader.Init();
                 }, _Seconds: waitingTime);
         }
-    
-        private void InitGameManagers()
+
+        private static IEnumerator WaitWhile(
+            Func<bool>  _Predicate,
+            UnityAction _Action,
+            float       _Seconds)
         {
+            float time = Time.time;
+            bool FinalPredicate() => _Predicate() && (time + _Seconds > Time.time);
+            while (FinalPredicate())
+                yield return null;
+            _Action();
+        }
+    
+        private IEnumerator InitGameManagersCoroutine()
+        {
+            yield return null;
             AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic(AnalyticIds.SessionStart);
             InitRemoteConfigManager();
             InitAssetBundleManager();
@@ -221,10 +244,13 @@ namespace RMAZOR
 
         private void InitRemoteConfigManager()
         {
-            RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
-            RemoteConfigManager.Initialize += AdsManager.Init;
-            RemoteConfigManager.Initialize += HapticsManager.Init;
-            RemoteConfigManager.Init();
+            TryExecute(() =>
+            {
+                RemoteConfigManager.Initialize += () => RemoteProperties.DebugEnabled |= GlobalGameSettings.debugAnyway;
+                RemoteConfigManager.Initialize += AdsManager.Init;
+                RemoteConfigManager.Initialize += HapticsManager.Init;
+                RemoteConfigManager.Init();
+            });
         }
 
         private void InitAssetBundleManager()
@@ -247,7 +273,6 @@ namespace RMAZOR
             {
                 ScoreManager.RegisterLeaderboardsSet(LeaderboardsSet.GetSet());
                 ScoreManager.RegisterAchievementsSet(AchievementsSet.GetSet());
-                ScoreManager.Initialize += OnScoreManagerInitialize;
                 ScoreManager.Init();
             });
         }
@@ -279,58 +304,39 @@ namespace RMAZOR
             }
         }
 
-        private static void InitGameController()
-        {
-            var controller = GameControllerMVC.CreateInstance();
-            controller.Init();
-        }
-
         private void OnScoreManagerInitialize()
         {
-            var savedGameServerEntity = ScoreManager.GetSavedGameProgress(
-                MazorCommonData.SavedGameFileName, 
-                false);
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameServerEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    bool castSuccess = savedGameServerEntity.Value.CastTo(out SavedGame savedGameServer);
-                    if (savedGameServerEntity.Result == EEntityResult.Fail || !castSuccess)
-                    {
-                        Dbg.LogWarning("Saved game from server is null");
-                        return;
-                    }
-                    Dbg.Log("getting saved game from server");
-                    var newSavedGame = new SavedGame
-                    {
-                        FileName = MazorCommonData.SavedGameFileName,
-                        Money = savedGameServer.Money,
-                        Level = savedGameServer.Level
-                    };
-                    ScoreManager.SaveGameProgress(newSavedGame, true);
-                }));
-            
-        }
-
-        private void InitDefaultData()
-        {
-            if (SaveUtils.GetValue(SaveKeysMazor.NotFirstLaunch))
+            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            if (savedGame != null)
                 return;
-            SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn,         true);
-            SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn,         true);
-            SaveUtils.PutValue(SaveKeysCommon.SettingNotificationsOn, true);
-            SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn,       true);
-            SaveUtils.PutValue(SaveKeysMazor.NotFirstLaunch,         true);
-            SetDefaultLanguage();
+            savedGame = new SavedGameV2
+            {
+                Arguments = new Dictionary<string, object>
+                {
+                    {KeyLevelIndexMainLevels,   0},
+                    {KeyLevelIndexPuzzleLevels, 0},
+                    {KeyLevelIndexBigLevels,    0},
+                    {KeyMoneyCount,             0}
+                }
+            };
+            ScoreManager.SaveGame(savedGame);
         }
-
-        private IEnumerator InitStartData()
+        
+        private IEnumerator InitStartDataCoroutine()
         {
+            ScoreManager.Initialize += OnScoreManagerInitialize;
             MazorCommonData.Release = true;
             SaveUtils.PutValue(SaveKeysMazor.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             Dbg.LogLevel = GlobalGameSettings.logLevel;
-            yield return null;
+            if (SaveUtils.GetValue(SaveKeysMazor.NotFirstLaunch))
+                yield break;
+            SaveUtils.PutValue(SaveKeysCommon.SettingSoundOn,         true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingMusicOn,         true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingNotificationsOn, true);
+            SaveUtils.PutValue(SaveKeysCommon.SettingHapticsOn,       true);
+            SaveUtils.PutValue(SaveKeysMazor .NotFirstLaunch,         true);
+            CommonUtils.DoOnInitializedEx(LocalizationManager, SetDefaultLanguage);
         }
 
         private void SetDefaultLanguage()
@@ -358,14 +364,27 @@ namespace RMAZOR
         private static List<ProductInfo> GetProductInfos()
         {
             string suffix = CommonUtils.Platform == RuntimePlatform.Android ? string.Empty : "_2";
-            const ProductType ptCons = ProductType.Consumable;
-            const ProductType ptNonCons = ProductType.NonConsumable;
+            const ProductType cons    = ProductType.Consumable;
+            const ProductType nonCons = ProductType.NonConsumable;
             return new List<ProductInfo>
             {
-                new ProductInfo(PurchaseKeys.Money1,    $"small_pack_of_coins{suffix}",           ptCons),
-                new ProductInfo(PurchaseKeys.Money2,    $"medium_pack_of_coins{suffix}",          ptCons),
-                new ProductInfo(PurchaseKeys.Money3,    $"big_pack_of_coins{suffix}",             ptCons),
-                new ProductInfo(PurchaseKeys.NoAds,     $"disable_mandatory_advertising{suffix}", ptNonCons),
+                new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",  cons),
+                new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{suffix}", cons),
+                new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{suffix}",    cons),
+                
+                new ProductInfo(PurchaseKeys.Character01, "character_1", nonCons),
+                new ProductInfo(PurchaseKeys.Character02, "character_2", nonCons),
+                new ProductInfo(PurchaseKeys.Character03, "character_3", nonCons),
+                new ProductInfo(PurchaseKeys.Character04, "character_4", nonCons),
+                new ProductInfo(PurchaseKeys.Character05, "character_5", nonCons),
+                
+                new ProductInfo(PurchaseKeys.CharacterColorSet01, "character_color_set_1", nonCons),
+                new ProductInfo(PurchaseKeys.CharacterColorSet02, "character_color_set_2", nonCons),
+                new ProductInfo(PurchaseKeys.CharacterColorSet03, "character_color_set_3", nonCons),
+                new ProductInfo(PurchaseKeys.CharacterColorSet04, "character_color_set_4", nonCons),
+                new ProductInfo(PurchaseKeys.CharacterColorSet05, "character_color_set_5", nonCons),
+                
+                new ProductInfo(PurchaseKeys.NoAds, $"disable_mandatory_advertising{suffix}", nonCons),
             };
         }
 

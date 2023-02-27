@@ -105,8 +105,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
-      key1: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 1, g: 0.9058824, b: 0.6392157, a: 1}
+      key1: {r: 1, g: 0.9058824, b: 0.6392157, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -188,8 +188,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content:
     array:
-    - item: {fileID: 1836343524033045069}
-      name: hsm
+    - name: hsm
+      item: {fileID: 1836343524033045069}
 --- !u!114 &7485298242281642375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -302,7 +302,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: 8dbe85d08b27850478f0837efd9b267a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 47908fa137cf6b84699196b46065e436, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

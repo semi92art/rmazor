@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using Common;
 using Common.Constants;
-using Common.Entities;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Managers;
-using Common.Utils;
-using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
-using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
@@ -27,23 +21,9 @@ using UnityEngine.Events;
 
 namespace RMAZOR.Views.Common.ViewMazeMoneyItems
 {
-    public interface IViewMazeItemPathItemMoney : 
-        IInit, 
-        IOnLevelStageChanged,
-        ICloneable,
-        IAppear
-    {
-        event UnityAction       Collected;
-        bool                    IsCollected { get; set; }
-        Func<ViewMazeItemProps> GetProps    { set; }
-        Transform               Parent      { set; }
-        void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent);
-        void Collect(bool                 _Collect);
-        void UpdateShape();
-        void EnableInitializedShapes(bool _Enable);
-    }
-
-    public class ViewMazeItemPathItemMoneyDisc : InitBase, IViewMazeItemPathItemMoney
+    public interface IViewMazeItemPathItemMoneyDisc : IViewMazeItemPathItemMoney { }
+    
+    public class ViewMazeItemPathItemMoneyDisc : InitBase, IViewMazeItemPathItemMoneyDisc
     {
         #region nonpublic members
 
@@ -133,7 +113,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
         public void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent)
         {
             GetProps = _GetProps;
-            Parent = _Parent;
+            Parent   = _Parent;
             Init();
             InitShape();
         }

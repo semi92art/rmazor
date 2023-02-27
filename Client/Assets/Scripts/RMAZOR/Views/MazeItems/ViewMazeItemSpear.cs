@@ -20,6 +20,7 @@ using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders;
 using RMAZOR.Views.Characters;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItems.Props;
@@ -97,7 +98,7 @@ namespace RMAZOR.Views.MazeItems
         
         private IPrefabSetManager                   PrefabSetManager               { get; }
         private ICameraProvider                     CameraProvider                 { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
         private ViewMazeItemSpear(
             ViewSettings                        _ViewSettings,
@@ -111,7 +112,7 @@ namespace RMAZOR.Views.MazeItems
             IViewInputCommandsProceeder         _CommandsProceeder,
             IPrefabSetManager                   _PrefabSetManager,
             ICameraProvider                     _CameraProvider,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker) 
+            IViewLevelStageSwitcher _LevelStageSwitcher) 
             : base(
                 _ViewSettings,
                 _Model,
@@ -125,7 +126,7 @@ namespace RMAZOR.Views.MazeItems
         {
             PrefabSetManager = _PrefabSetManager;
             CameraProvider   = _CameraProvider;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
@@ -149,7 +150,7 @@ namespace RMAZOR.Views.MazeItems
                 CommandsProceeder,
                 PrefabSetManager,
                 CameraProvider,
-                SwitchLevelStageCommandInvoker);
+                LevelStageSwitcher);
 
         public override void UpdateState(ViewMazeItemProps _Props)
         {
@@ -353,7 +354,7 @@ namespace RMAZOR.Views.MazeItems
             {
                 if (_Collider != charColls[i])
                     continue;
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.KillCharacter);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.KillCharacter);
                 break;
             }
         }

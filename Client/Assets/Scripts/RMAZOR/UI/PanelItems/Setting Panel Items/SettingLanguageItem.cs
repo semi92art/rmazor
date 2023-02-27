@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Common.Managers;
-using Common.UI;
-using Common.Utils;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -16,7 +13,7 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
-    public class SettingLanguageItem : SimpleUiItemBase
+    public class SettingLanguageItem : SimpleUiItem
     {
         #region serialized fields
 
@@ -79,7 +76,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
         {
             if (!m_Initialized || !m_ReadyToSelect()) 
                 return;
-            SoundOnClick();
+            PlayButtonClickSound();
             m_Select?.Invoke(m_Language);
 
             foreach (var item in m_Items.ToArray())

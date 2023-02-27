@@ -235,7 +235,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.MazeItem2) 
+            if (_ColorId != GetMazeItemBlockColorId()) 
                 return;
             m_ClosedBlock.Color = _Color;
             foreach (var item in m_OpenedCorners)
@@ -305,8 +305,8 @@ namespace RMAZOR.Views.MazeItems
             m_ClosedBlock.enabled = _Close;
             shapesOpen1.ForEach(_Shape => _Shape.enabled = !_Close);
             m_IsBlockClosed = _Close;
-            shapesOpen1.ForEach(_Shape => _Shape.Color = ColorProvider.GetColor(ColorIds.MazeItem2));
-            m_ClosedBlock.Color = ColorProvider.GetColor(ColorIds.MazeItem2);
+            shapesOpen1.ForEach(_Shape => _Shape.Color = ColorProvider.GetColor(GetMazeItemBlockColorId()));
+            m_ClosedBlock.Color = ColorProvider.GetColor(GetMazeItemBlockColorId());
         }
         
         private IEnumerator CheckForAlreadyRunningOppositeCoroutine(bool _Close)
@@ -349,7 +349,7 @@ namespace RMAZOR.Views.MazeItems
                 {
                     float cAppear = 1f - (_P - 1f) * (_P - 1f);
                     float cDissapear = 1f - _P * _P;
-                    var col = ColorProvider.GetColor(ColorIds.MazeItem2);
+                    var col = ColorProvider.GetColor(GetMazeItemBlockColorId());
                     var partsOpenColor = col.SetA(_Close ? cDissapear : cAppear);
                     var partsClosedColor = col.SetA(_Close ? cAppear : cDissapear);
                     shapesOpen.ForEach(_Shape => _Shape.Color = partsOpenColor);
@@ -379,7 +379,7 @@ namespace RMAZOR.Views.MazeItems
             var shapes = !_Appear && BlockClosed ?
                 new Component[] {m_ClosedBlock} :
                 m_OpenedLines.Cast<Component>().Concat(m_OpenedCorners);
-            var col = ColorProvider.GetColor(ColorIds.MazeItem2);
+            var col = ColorProvider.GetColor(GetMazeItemBlockColorId());
             return new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {shapes, () => col}

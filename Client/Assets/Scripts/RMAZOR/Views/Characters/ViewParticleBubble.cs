@@ -63,15 +63,14 @@ namespace RMAZOR.Views.Characters
             var cont = ContainersGetter.GetContainer(ContainerNamesCommon.Background);
             var obj = new GameObject("Bubble Particle");
             obj.SetParent(cont);
-            float scale = CoordinateConverter.Scale;
             m_InnerDisc = obj.AddComponentOnNewChild<Disc>("Inner Disc", out _)
                 .SetType(DiscType.Disc)
-                .SetRadius(scale * Radius);
+                .SetRadius(Radius);
             m_InnerDisc.enabled = false;
             m_OuterDisc = obj.AddComponentOnNewChild<Disc>("Outer Disc", out _)
                 .SetType(DiscType.Ring)
-                .SetRadius(scale * Radius)
-                .SetThickness(scale * BoardThickness);
+                .SetRadius(Radius)
+                .SetThickness(BoardThickness);
             m_OuterDisc.enabled = false;
             Transform = obj.transform;
             Rb = obj.AddComponent<Rigidbody2D>();

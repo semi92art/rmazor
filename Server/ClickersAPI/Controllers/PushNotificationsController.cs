@@ -14,46 +14,51 @@ namespace ClickersAPI.Controllers
     [Route("api/notifications")]
     public class PushNotificationsController : ControllerBaseImpl
     {
-        private static FirebaseApp _firebaseApp;
-        
+        private FirebaseApp FirebaseApp { get; set; }
+
         public PushNotificationsController(
             ApplicationDbContext _Context,
             IMapper              _Mapper,
-            IServiceProvider     _Provider) 
-            : base(_Context, _Mapper, _Provider) { }
-
+            IServiceProvider     _Provider,
+            FirebaseApp          _FirebaseApp) 
+            : base(_Context, _Mapper, _Provider)
+        {
+            FirebaseApp = _FirebaseApp;
+        }
+        
         [HttpPost("init_firebase_admin_sdk")]
         public IActionResult InitFirebaseAdminSdk()
         {
+            FirebaseApp?.Delete();
             var credential = GoogleCredential.FromJson(Credentials.FirebaseAdmin);
             var appOptions = new AppOptions
             {
                 Credential = credential, 
                 ProjectId = "minigames-collection-299814"
             };
-            _firebaseApp = FirebaseApp.Create(appOptions);
+            FirebaseApp = FirebaseApp.Create(appOptions);
             const string message = "firebase admin sdk initialized";
             return Ok(new {message, DateTime.Now});
         }
 
         [HttpPost("send_notification")]
-        public async Task<ActionResult<string>> SendNotification([FromBody] FirebaseNotificationDto _NotificationDto)
+        public async Task<ActionResult<string>> SendNotification([FromBody] NotificationDto _NotificationDto)
         {
-            if (_firebaseApp == null)
+            if (FirebaseApp == null)
                 return Problem("firebase admin sdk was not initialized!");
-            var messaging = FirebaseMessaging.GetMessaging(_firebaseApp);
+            var messaging = FirebaseMessaging.GetMessaging(FirebaseApp);
             var androidNotification = new AndroidNotification
             {
                 Title          = _NotificationDto.Title,
                 Body           = _NotificationDto.Body,
                 Icon           = _NotificationDto.SmallIcon,
-                Priority       = NotificationPriority.LOW,
+                Priority       = NotificationPriority.HIGH,
                 ImageUrl       = _NotificationDto.LargeIcon,
                 LocalOnly      = false,
                 Sticky         = false,
                 Tag            = null,
                 Ticker         = _NotificationDto.Title,
-                Visibility     = NotificationVisibility.SECRET,
+                Visibility     = NotificationVisibility.PUBLIC,
             };
             if (_NotificationDto.TimeStampSpan.HasValue)
                 androidNotification.EventTimestamp = DateTime.Now + _NotificationDto.TimeStampSpan.Value;

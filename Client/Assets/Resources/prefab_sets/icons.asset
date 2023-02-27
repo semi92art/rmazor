@@ -24,7 +24,7 @@ MonoBehaviour:
       item: {fileID: 21300000, guid: 9a904a687ee585e4186a5da154c76196, type: 3}
       bundle: 0
     - name: icon_coin_ui
-      item: {fileID: 21300000, guid: 35098d338c85cf749b90a19f0846c363, type: 3}
+      item: {fileID: 21300000, guid: 33effd6735e414dc7b70ded5e8bb47f8, type: 3}
       bundle: 0
     - name: icon_coin_ui_multiplied
       item: {fileID: 21300000, guid: 8222ee04859dd4fe5b07c16b5439f249, type: 3}
@@ -37,4 +37,16 @@ MonoBehaviour:
       bundle: 0
     - name: star
       item: {fileID: 21300000, guid: d30e06e89c54a3a4e9a22d868e51f98b, type: 3}
+      bundle: 0
+    - name: icon_timer_game
+      item: {fileID: 21300000, guid: 37e8fb9d011d06e449dd9cb761af7fe0, type: 3}
+      bundle: 0
+    - name: icon_steps_game
+      item: {fileID: 21300000, guid: 0f172ea41a2bc9b4eb38ec6b933d4774, type: 3}
+      bundle: 0
+    - name: icon_fail_game
+      item: {fileID: 21300000, guid: fd5f1361c54dee64e9968a1299ccac90, type: 3}
+      bundle: 0
+    - name: icon_success_game
+      item: {fileID: 21300000, guid: 5c5d615cb6a5149478ec531ed6c47c81, type: 3}
       bundle: 0

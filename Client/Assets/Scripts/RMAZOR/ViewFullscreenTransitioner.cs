@@ -5,13 +5,16 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Models;
+using RMAZOR.Views;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using UnityEngine;
 using UnityEngine.Events;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR
 {
-    public interface IViewFullscreenTransitioner : IInit
+    public interface IViewFullscreenTransitioner : IInit, IOnLevelStageChanged, ISendMessage
     {
         event UnityAction<bool> TransitionFinished;
         void                    DoTextureTransition(bool _Appear, float _Duration);
@@ -25,22 +28,24 @@ namespace RMAZOR
         private IEnumerator  m_TextureCoroutine;
         private int          m_TransitionsCount;
 
+        private IFullscreenTransitionTextureProvider CurrentProvider { get; set; }
+
         #endregion
 
         #region inject
 
-        private ICameraProvider                      CameraProvider  { get; }
-        private IViewGameTicker                      GameTicker      { get; }
-        private IFullscreenTransitionTextureProvider TextureProvider { get; }
+        private ICameraProvider                          CameraProvider      { get; }
+        private IViewGameTicker                          GameTicker          { get; }
+        private IFullscreenTransitionTextureProvidersSet TextureProvidersSet { get; }
 
         private ViewFullscreenTransitioner(
-            ICameraProvider                      _CameraProvider,
-            IViewGameTicker                      _GameTicker,
-            IFullscreenTransitionTextureProvider _TextureProvider)
+            ICameraProvider                          _CameraProvider,
+            IViewGameTicker                          _GameTicker,
+            IFullscreenTransitionTextureProvidersSet _TextureProvidersSet)
         {
-            CameraProvider  = _CameraProvider;
-            GameTicker      = _GameTicker;
-            TextureProvider = _TextureProvider;
+            CameraProvider      = _CameraProvider;
+            GameTicker          = _GameTicker;
+            TextureProvidersSet = _TextureProvidersSet;
         }
 
         #endregion
@@ -52,7 +57,8 @@ namespace RMAZOR
         public override void Init()
         {
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
-            TextureProvider.Init();
+            TextureProvidersSet.Init();
+            CurrentProvider = TextureProvidersSet.GetTextureProvider("playground");
             Enabled = false;
             base.Init();
         }
@@ -67,8 +73,34 @@ namespace RMAZOR
 
         public bool Enabled
         {
-            get => TextureProvider.Renderer.enabled;
-            set => TextureProvider.Renderer.enabled = value;
+            get => CurrentProvider.Renderer.enabled;
+            set => CurrentProvider.Renderer.enabled = value;
+        }
+        
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            string gameMode = (string)_Args.Arguments.GetSafe(KeyGameMode, out _);
+            string providerName = _Args.LevelStage switch
+            {
+                ELevelStage.None when _Args.PreviousStage == ELevelStage.None       => "playground",
+                ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused => "playground",
+                ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused =>
+                    gameMode != ParameterGameModePuzzles || !_Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint)
+                        ? "playground"
+                        : "circles",
+                _ => null
+            };
+            if (string.IsNullOrEmpty(providerName))
+                return;
+            CurrentProvider.Activate(false);
+            CurrentProvider = TextureProvidersSet.GetTextureProvider(providerName);
+        }
+        
+        public void SendMessage(string _Message)
+        {
+            CurrentProvider.Activate(false);
+            if (_Message == "puzzle_hint")
+                CurrentProvider = TextureProvidersSet.GetTextureProvider("circles");
         }
 
         #endregion
@@ -77,15 +109,15 @@ namespace RMAZOR
         
         private void OnActiveCameraChanged(Camera _Camera)
         {
-            TextureProvider.Renderer.transform.SetParent(_Camera.transform);
-            TextureProvider.Renderer.transform.SetLocalPosXY(Vector2.zero);
+            CurrentProvider.Renderer.transform.SetParent(_Camera.transform);
+            CurrentProvider.Renderer.transform.SetLocalPosXY(Vector2.zero);
         }
 
         private IEnumerator DoTextureTransitionCoroutine(bool _Appear, float _Duration)
         {
             int transitionsCount = m_TransitionsCount;
             if (_Appear)
-                TextureProvider.Activate(true);
+                CurrentProvider.Activate(true);
             yield return Cor.Lerp(
                 GameTicker,
                 _Duration,
@@ -93,13 +125,13 @@ namespace RMAZOR
                 _Appear ? 1f : 0f,
                 _P =>
                 {
-                    TextureProvider.SetTransitionValue(_P, _Appear);
+                    CurrentProvider.SetTransitionValue(_P, _Appear);
                 },
                 () =>
                 {
                     TransitionFinished?.Invoke(_Appear);
                     if (!_Appear)
-                        TextureProvider.Activate(false);
+                        CurrentProvider.Activate(false);
                 },
                 () => transitionsCount != m_TransitionsCount,
                 _P =>
@@ -111,6 +143,5 @@ namespace RMAZOR
         }
 
         #endregion
-        
     }
 }

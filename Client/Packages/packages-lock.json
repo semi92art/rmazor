@@ -14,11 +14,11 @@
       "dependencies": {
         "com.unity.inputsystem": "1.4.4",
         "com.unity.textmeshpro": "3.0.6",
-        "com.unity.purchasing": "4.5.1",
-        "com.unity.mobile.notifications": "2.1.0",
+        "com.unity.purchasing": "4.5.2",
+        "com.unity.mobile.notifications": "2.1.1",
         "com.unity.modules.androidjni": "1.0.0"
       },
-      "hash": "19c997859fd6dc3ccb633819235f67212b86d6ea"
+      "hash": "ddbab15407a5c0f5cac40eb33923751d540e4ed0"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -60,7 +60,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.16",
+      "version": "3.0.18",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -69,7 +69,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.16",
+      "version": "2.0.17",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -108,7 +108,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.mobile.notifications": {
-      "version": "2.1.0",
+      "version": "2.1.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -124,7 +124,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.purchasing": {
-      "version": "4.5.1",
+      "version": "4.5.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {

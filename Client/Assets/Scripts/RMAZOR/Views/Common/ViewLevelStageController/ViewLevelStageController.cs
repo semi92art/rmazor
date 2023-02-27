@@ -8,9 +8,9 @@ using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Utils;
-using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
@@ -40,16 +40,14 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         #region inject
 
-        private IModelGame                                    Model                                  { get; }
         private IManagersGetter                               Managers                               { get; }
         private IViewMazeItemsGroupSet                        MazeItemsGroupSet                      { get; }
         private IViewMazePathItemsGroup                       PathItemsGroup                         { get; }
         private IViewFullscreenTransitioner                   FullscreenTransitioner                 { get; }
         private IViewCameraEffectsCustomAnimator              CameraEffectsCustomAnimator            { get; }
-        private IMoneyCounter                                 MoneyCounter                           { get; }
         private ICameraProvider                               CameraProvider                         { get; }
         private ICoordinateConverter                          CoordinateConverter                    { get; }
-        private IViewSwitchLevelStageCommandInvoker           SwitchLevelStageCommandInvoker         { get; }
+        private IViewLevelStageSwitcher                       LevelStageSwitcher                     { get; }
         private IViewLevelStageControllerOnLevelFinished      StageControllerOnLevelFinished         { get; }
         private IViewLevelStageControllerOnLevelUnloaded      StageControllerOnLevelUnloaded         { get; }
         private IViewLevelStageControllerOnCharacterKilled    StageControllerOnCharacterKilled       { get; }
@@ -59,16 +57,14 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private IViewLevelStageControllerOnExitLevelStaging   LevelStageControllerOnExitLevelStaging { get; }
 
         private ViewLevelStageController(
-            IModelGame                                    _Model,
             IManagersGetter                               _Managers,
             IViewMazeItemsGroupSet                        _MazeItemsGroupSet,
             IViewMazePathItemsGroup                       _PathItemsGroup,
             IViewFullscreenTransitioner                   _FullscreenTransitioner,
             IViewCameraEffectsCustomAnimator              _CameraEffectsCustomAnimator,
-            IMoneyCounter                                 _MoneyCounter,
             ICameraProvider                               _CameraProvider,
             ICoordinateConverter                          _CoordinateConverter,
-            IViewSwitchLevelStageCommandInvoker           _SwitchLevelStageCommandInvoker,
+            IViewLevelStageSwitcher                       _LevelStageSwitcher,
             IViewLevelStageControllerOnLevelFinished      _StageControllerOnLevelFinished,
             IViewLevelStageControllerOnLevelUnloaded      _StageControllerOnLevelUnloaded,
             IViewLevelStageControllerOnCharacterKilled    _StageControllerOnCharacterKilled,
@@ -77,23 +73,21 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewLevelStageControllerOnLevelReadyToStart  _StageControllerOnLevelReadyToStart,
             IViewLevelStageControllerOnExitLevelStaging   _LevelStageControllerOnExitLevelStaging)
         {
-            Model                            = _Model;
-            Managers                         = _Managers;
-            MazeItemsGroupSet                = _MazeItemsGroupSet;
-            PathItemsGroup                   = _PathItemsGroup;
-            FullscreenTransitioner           = _FullscreenTransitioner;
-            CameraEffectsCustomAnimator      = _CameraEffectsCustomAnimator;
-            CameraProvider                   = _CameraProvider;
-            CoordinateConverter              = _CoordinateConverter;
-            SwitchLevelStageCommandInvoker   = _SwitchLevelStageCommandInvoker;
-            StageControllerOnLevelFinished   = _StageControllerOnLevelFinished;
-            StageControllerOnLevelUnloaded   = _StageControllerOnLevelUnloaded;
-            StageControllerOnCharacterKilled = _StageControllerOnCharacterKilled;
-            StageControllerOnLevelLoaded     = _StageControllerOnLevelLoaded;
-            StageControllerOnReadyToUnload   = _StageControllerOnReadyToUnload;
-            StageControllerOnLevelReadyToStart = _StageControllerOnLevelReadyToStart;
+            Managers                               = _Managers;
+            MazeItemsGroupSet                      = _MazeItemsGroupSet;
+            PathItemsGroup                         = _PathItemsGroup;
+            FullscreenTransitioner                 = _FullscreenTransitioner;
+            CameraEffectsCustomAnimator            = _CameraEffectsCustomAnimator;
+            CameraProvider                         = _CameraProvider;
+            CoordinateConverter                    = _CoordinateConverter;
+            LevelStageSwitcher                     = _LevelStageSwitcher;
+            StageControllerOnLevelFinished         = _StageControllerOnLevelFinished;
+            StageControllerOnLevelUnloaded         = _StageControllerOnLevelUnloaded;
+            StageControllerOnCharacterKilled       = _StageControllerOnCharacterKilled;
+            StageControllerOnLevelLoaded           = _StageControllerOnLevelLoaded;
+            StageControllerOnReadyToUnload         = _StageControllerOnReadyToUnload;
+            StageControllerOnLevelReadyToStart     = _StageControllerOnLevelReadyToStart;
             LevelStageControllerOnExitLevelStaging = _LevelStageControllerOnExitLevelStaging;
-            MoneyCounter                     = _MoneyCounter;
         }
 
         #endregion
@@ -102,7 +96,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public override void Init()
         {
-            MoneyCounter                      .Init();
             CameraProvider                    .Init();
             StageControllerOnLevelReadyToStart.Init();
             StageControllerOnReadyToUnload    .Init();
@@ -126,7 +119,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             if (!MazorCommonData.Release)
                 return;
-            Model.LevelStaging.FinishLevel(Model.LevelStaging.Arguments);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.FinishLevel);
         }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
@@ -178,7 +171,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             if (_Appear)
                 return;
-            SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.ReadyToStartLevel);
+            LevelStageSwitcher.SwitchLevelStage(EInputCommand.ReadyToStartLevel);
         }
 
         private void SetCameraProviderProps(LevelStageArgs _Args)

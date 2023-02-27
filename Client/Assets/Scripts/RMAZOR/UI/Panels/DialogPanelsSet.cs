@@ -14,6 +14,12 @@ namespace RMAZOR.UI.Panels
 
     public class DialogPanelsSet : InitBase, IDialogPanelsSet
     {
+        #region nonpublic members
+
+        private IDialogPanel[] m_PanelsCached;
+
+        #endregion
+        
         #region inject
 
         private IDialogViewersController     DialogViewersController     { get; }
@@ -26,10 +32,16 @@ namespace RMAZOR.UI.Panels
         private IFinishLevelGroupDialogPanel FinishLevelGroupDialogPanel { get; }
         private IPlayBonusLevelDialogPanel   PlayBonusLevelDialogPanel   { get; }
         private IDailyGiftPanel              DailyGiftPanel              { get; }
-        private ILevelsDialogPanel           LevelsDialogPanel           { get; }
+        private ILevelsDialogPanelMain       LevelsDialogPanelMain       { get; }
+        private ILevelsDialogPanelPuzzles    LevelsDialogPanelPuzzles    { get; }
         private IConfirmLoadLevelDialogPanel ConfirmLoadLevelDialogPanel { get; }
         private IDisableAdsDialogPanel       DisableAdsDialogPanel       { get; }
         private IMainMenuPanel               MainMenuPanel               { get; }
+        private IDailyChallengePanel         DailyChallengePanel         { get; }
+        private IHintDialogPanel             HintDialogPanel             { get; }
+        private IRandomGenerationParamsPanel RandomGenerationParamsPanel { get; }
+        private ICustomizeCharacterPanel     CustomizeCharacterPanel     { get; }
+        private IConfirmGoToMainMenuPanel    ConfirmGoToMainMenuPanel    { get; }
 
 
         public DialogPanelsSet(
@@ -43,10 +55,16 @@ namespace RMAZOR.UI.Panels
             IFinishLevelGroupDialogPanel _FinishLevelGroupDialogPanel,
             IPlayBonusLevelDialogPanel   _PlayBonusLevelDialogPanel,
             IDailyGiftPanel              _DailyGiftPanel,
-            ILevelsDialogPanel           _LevelsDialogPanel,
+            ILevelsDialogPanelMain       _LevelsDialogPanelMain,
+            ILevelsDialogPanelPuzzles    _LevelsDialogPanelPuzzles,
             IConfirmLoadLevelDialogPanel _ConfirmLoadLevelDialogPanel,
             IDisableAdsDialogPanel       _DisableAdsDialogPanel,
-            IMainMenuPanel               _MainMenuPanel)
+            IMainMenuPanel               _MainMenuPanel,
+            IDailyChallengePanel         _DailyChallengePanel,
+            IHintDialogPanel             _HintDialogPanel,
+            IRandomGenerationParamsPanel _RandomGenerationParamsPanel,
+            ICustomizeCharacterPanel     _CustomizeCharacterPanel,
+            IConfirmGoToMainMenuPanel    _ConfirmGoToMainMenuPanel)
         {
             DialogViewersController     = _DialogViewersController;
             SettingDialogPanel          = _SettingDialogPanel;
@@ -58,10 +76,16 @@ namespace RMAZOR.UI.Panels
             FinishLevelGroupDialogPanel = _FinishLevelGroupDialogPanel;
             PlayBonusLevelDialogPanel   = _PlayBonusLevelDialogPanel;
             DailyGiftPanel              = _DailyGiftPanel;
-            LevelsDialogPanel           = _LevelsDialogPanel;
+            LevelsDialogPanelMain       = _LevelsDialogPanelMain;
+            LevelsDialogPanelPuzzles    = _LevelsDialogPanelPuzzles;
             ConfirmLoadLevelDialogPanel = _ConfirmLoadLevelDialogPanel;
             DisableAdsDialogPanel       = _DisableAdsDialogPanel;
             MainMenuPanel               = _MainMenuPanel;
+            DailyChallengePanel         = _DailyChallengePanel;
+            HintDialogPanel             = _HintDialogPanel;
+            RandomGenerationParamsPanel = _RandomGenerationParamsPanel;
+            CustomizeCharacterPanel     = _CustomizeCharacterPanel;
+            ConfirmGoToMainMenuPanel    = _ConfirmGoToMainMenuPanel;
         }
 
         #endregion
@@ -71,15 +95,27 @@ namespace RMAZOR.UI.Panels
         public override void Init()
         {
             ShopDialogPanel.Init();
+            CachePanels();
             LoadDialogPanels();
             base.Init();
         }
 
         public T GetPanel<T>() where T : IDialogPanel
         {
-            var panels = new[]
+            var result = m_PanelsCached.FirstOrDefault(_Panel => _Panel is T);
+            return (T)result;
+        }
+
+        #endregion
+
+        #region nonpublic methods
+
+        private void CachePanels()
+        {
+            m_PanelsCached = new IDialogPanel[]
             {
-                (IDialogPanel) SettingDialogPanel,
+                MainMenuPanel,
+                SettingDialogPanel,
                 SettingLanguageDialogPanel,
                 ShopDialogPanel,
                 CharacterDiedDialogPanel,
@@ -88,38 +124,23 @@ namespace RMAZOR.UI.Panels
                 FinishLevelGroupDialogPanel,
                 PlayBonusLevelDialogPanel,
                 DailyGiftPanel,
-                LevelsDialogPanel,
+                LevelsDialogPanelMain,
+                LevelsDialogPanelPuzzles,
                 ConfirmLoadLevelDialogPanel,
                 DisableAdsDialogPanel,
-                MainMenuPanel
+                DailyChallengePanel,
+                HintDialogPanel,
+                RandomGenerationParamsPanel,
+                CustomizeCharacterPanel,
+                ConfirmGoToMainMenuPanel
             };
-            var result = panels.FirstOrDefault(_Panel => _Panel is T);
-            return (T)result;
         }
-
-        #endregion
-
-        #region nonpublic methods
         
         private void LoadDialogPanels()
         {
-            var panelsToLoad = new[]
-            {
-                CharacterDiedDialogPanel,
-                (IDialogPanel)SettingDialogPanel, 
-                // SettingLanguageDialogPanel, // инициализировать на старте не нужно
-                ShopDialogPanel,
-                RateGameDialogPanel,
-                // TutorialDialogPanel, // инициализировать на старте не нужно
-                FinishLevelGroupDialogPanel,
-                PlayBonusLevelDialogPanel,
-                DailyGiftPanel,
-                LevelsDialogPanel,
-                ConfirmLoadLevelDialogPanel,
-                DisableAdsDialogPanel,
-                MainMenuPanel
-            };
-            foreach (var panel in panelsToLoad)
+            var pansToLoad = m_PanelsCached
+                .Except(new IDialogPanel[] {SettingLanguageDialogPanel, TutorialDialogPanel});
+            foreach (var panel in pansToLoad)
             {
                 var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
                 panel.LoadPanel(dv.Container, dv.Back);

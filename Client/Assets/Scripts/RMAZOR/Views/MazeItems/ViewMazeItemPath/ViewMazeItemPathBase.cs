@@ -1,12 +1,9 @@
-﻿using Common;
-using Common.Helpers;
-using mazing.common.Runtime.Helpers;
+﻿using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
-using RMAZOR.Views.Common.ViewMazeMoneyItems;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine.Events;

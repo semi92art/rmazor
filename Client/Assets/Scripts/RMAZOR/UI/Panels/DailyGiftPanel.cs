@@ -3,17 +3,12 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Globalization;
 using Common;
-using Common.Constants;
-using Common.Entities;
-using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
-using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
@@ -22,6 +17,7 @@ using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
@@ -32,14 +28,14 @@ namespace RMAZOR.UI.Panels
 {
     public interface IDailyGiftPanel : IDialogPanel
     {
-        UnityAction OnClose { set; }
+        UnityAction OnClose                   { get; set; }
+        bool        IsDailyGiftAvailableToday { get; }
     }
     
     public class DailyGiftPanelFake : DialogPanelFake, IDailyGiftPanel
     {
-        public UnityAction     OnClose            { get; set; }
-        
-        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose) { }
+        public UnityAction OnClose                   { get; set; }
+        public bool        IsDailyGiftAvailableToday => default;
     }
      
     public class DailyGiftPanel : DialogPanelBase, IDailyGiftPanel
@@ -60,7 +56,7 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI
             m_TodayGiftMoneyCountText,
             m_DailyGiftText,
-            m_TomorrowText,
+            m_TomorrowGiftMoneyCountText,
             m_GetButtonText,
             m_MultiplyButtonText;  
         private Button        
@@ -76,24 +72,28 @@ namespace RMAZOR.UI.Panels
         private long m_TomorrowGiftMoneyCount;
         private long m_MultiplyCoefficient;
         
+        private LocTextInfo TodayGiftMoneyCountLocTextInfo => 
+            new LocTextInfo(m_TodayGiftMoneyCountText, ETextType.MenuUI, "empty_key", 
+                _T => m_TodayGiftMoneyCount.ToString());
+        
+        protected override string PrefabName => "daily_gift_panel";
+        
         #endregion
         
         #region inject
-        
-        private IModelGame                          Model                          { get; }
-        private IViewSwitchLevelStageCommandInvoker SwitchLevelStageCommandInvoker { get; }
-        private IFontProvider                       FontProvider                   { get; }
 
-        public DailyGiftPanel(
-            IManagersGetter                     _Managers,
-            IUITicker                           _Ticker,
-            ICameraProvider                     _CameraProvider,
-            IColorProvider                      _ColorProvider,
-            IViewTimePauser                     _TimePauser,
-            IModelGame                          _Model,
-            IViewInputCommandsProceeder         _CommandsProceeder,
-            IViewSwitchLevelStageCommandInvoker _SwitchLevelStageCommandInvoker,
-            IFontProvider                       _FontProvider)
+        private IModelGame              Model              { get; }
+        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
+
+        private DailyGiftPanel(
+            IManagersGetter             _Managers,
+            IUITicker                   _Ticker,
+            ICameraProvider             _CameraProvider,
+            IColorProvider              _ColorProvider,
+            IViewTimePauser             _TimePauser,
+            IModelGame                  _Model,
+            IViewInputCommandsProceeder _CommandsProceeder,
+            IViewLevelStageSwitcher     _LevelStageSwitcher)
             : base(
                 _Managers,
                 _Ticker,
@@ -102,31 +102,34 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            Model                          = _Model;
-            SwitchLevelStageCommandInvoker = _SwitchLevelStageCommandInvoker;
-            FontProvider                   = _FontProvider;
+            Model              = _Model;
+            LevelStageSwitcher = _LevelStageSwitcher;
         }
 
         #endregion
 
         #region api
 
-        public UnityAction OnClose { private get; set; }
+        public          UnityAction OnClose        { get; set; }
+        public override int         DialogViewerId => DialogViewerIdsCommon.MediumCommon;
+        public override Animator    Animator       => m_PanelAnimator;
 
-        public override int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
-        public override Animator Animator       => m_PanelAnimator;
+        public bool IsDailyGiftAvailableToday
+        {
+            get
+            {
+                var today = DateTime.Now.Date;
+                var dailyRewardGotDict = SaveUtils.GetValue(SaveKeysRmazor.DailyRewardGot)
+                                         ?? new Dictionary<DateTime, bool>();
+                bool dailyRewardGotToday = dailyRewardGotDict.GetSafe(today, out _);
+                return !dailyRewardGotToday;
+            }
+        }
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel(_Container, _OnClose);
-            var go  = Managers.PrefabSetManager.InitUiPrefab(
-                UIUtils.UiRectTransform(_Container, RectTransformLite.FullFill),
-                CommonPrefabSetNames.DialogPanels, "daily_gift_panel");
-            PanelRectTransform = go.RTransform();
-            PanelRectTransform.SetGoActive(false);
-            GetPrefabContentObjects(go);
             GetTodayAndTomorrowGiftMoneyCount();
-            LocalizeTexts();
+            base.LoadPanel(_Container, _OnClose);
             var psm = Managers.PrefabSetManager;
             m_SpriteMoney = psm.GetObject<Sprite>(
                 "icons", 
@@ -134,23 +137,13 @@ namespace RMAZOR.UI.Panels
             m_SpriteMoneyMultiplied = psm.GetObject<Sprite>(
                 "icons", 
                 "icon_coin_ui_multiplied");
-
-            m_TodayGiftMoneyCountText.font = FontProvider.GetFont(
-                ETextType.MenuUI, Managers.LocalizationManager.GetCurrentLanguage());
-            Managers.LocalizationManager.LanguageChanged += OnLanguageChanged;
-            m_TodayGiftMoneyCountText.text = m_TodayGiftMoneyCount.ToString();
-            m_GetButton.onClick.AddListener(OnGetButtonClick);
-            m_MultiplyButton.onClick .AddListener(OnMultiplyButtonClick);
-            m_TriggererMoneyIcon.Trigger1 += () => Cor.Run(OnMoneyIconStartDisappearingCoroutine());
-            m_TriggererMoneyIcon.Trigger2 += OnMoneyItemAnimTrigger2;
         }
 
-        private void OnLanguageChanged(ELanguage _Language)
-        {
-            m_TodayGiftMoneyCountText.font = FontProvider.GetFont(ETextType.MenuUI, _Language);
-        }
+        #endregion
 
-        public override void OnDialogStartAppearing()
+        #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
         {
             Managers.AudioManager.PlayClip(AudioClipArgsDailyReward);
             Cor.Run(StartIndicatingAdLoadingCoroutine());
@@ -158,57 +151,51 @@ namespace RMAZOR.UI.Panels
             base.OnDialogStartAppearing();
         }
 
-        public override void OnDialogDisappeared()
+        protected override void OnDialogDisappeared()
         {
             OnClose?.Invoke();
             base.OnDialogDisappeared();
         }
 
-        #endregion
-
-        #region nonpublic methods
-        
-        private void GetPrefabContentObjects(GameObject _GameObject)
+        protected override void GetPrefabContentObjects(GameObject _Go)
         {
-            var go = _GameObject;
-            m_PanelAnimator           = go.GetCompItem<Animator>("animator");
-            m_TodayGiftMoneyCountText = go.GetCompItem<TextMeshProUGUI>("money_count_text");
-            m_GetButton               = go.GetCompItem<Button>("get_button");
-            m_MultiplyButton          = go.GetCompItem<Button>("multiply_button");
-            m_DailyGiftText           = go.GetCompItem<TextMeshProUGUI>("daily_gift_text");
-            m_TomorrowText            = go.GetCompItem<TextMeshProUGUI>("tomorrow");
-            m_GetButtonText           = go.GetCompItem<TextMeshProUGUI>("get_button_text");
-            m_MultiplyButtonText      = go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
-            m_AnimMoneyIcon           = go.GetCompItem<Animator>("money_icon");
-            m_TriggererMoneyIcon      = go.GetCompItem<AnimationTriggerer>("money_icon");
-            m_IconWatchAds            = go.GetCompItem<Image>("watch_ads_icon");
-            m_MoneyIcon               = go.GetCompItem<Image>("money_icon");
-            m_AnimLoadingAds          = go.GetCompItem<Animator>("loading_ads_anim");
+            m_PanelAnimator              = _Go.GetCompItem<Animator>("animator");
+            m_TodayGiftMoneyCountText    = _Go.GetCompItem<TextMeshProUGUI>("money_count_text");
+            m_GetButton                  = _Go.GetCompItem<Button>("get_button");
+            m_MultiplyButton             = _Go.GetCompItem<Button>("multiply_button");
+            m_DailyGiftText              = _Go.GetCompItem<TextMeshProUGUI>("daily_gift_text");
+            m_TomorrowGiftMoneyCountText = _Go.GetCompItem<TextMeshProUGUI>("tomorrow");
+            m_GetButtonText              = _Go.GetCompItem<TextMeshProUGUI>("get_button_text");
+            m_MultiplyButtonText         = _Go.GetCompItem<TextMeshProUGUI>("multiply_button_text");
+            m_AnimMoneyIcon              = _Go.GetCompItem<Animator>("money_icon");
+            m_TriggererMoneyIcon         = _Go.GetCompItem<AnimationTriggerer>("money_icon");
+            m_IconWatchAds               = _Go.GetCompItem<Image>("watch_ads_icon");
+            m_MoneyIcon                  = _Go.GetCompItem<Image>("money_icon");
+            m_AnimLoadingAds             = _Go.GetCompItem<Animator>("loading_ads_anim");
         }
 
-        private void LocalizeTexts()
+        protected override void LocalizeTextObjectsOnLoad()
         {
-            var locMan = Managers.LocalizationManager;
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_DailyGiftText,
-                ETextType.MenuUI, 
-                "daily_gift",
-                _Text => _Text.ToUpper(CultureInfo.CurrentUICulture)));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_TomorrowText,
-                ETextType.MenuUI, 
-                "tomorrow",
-                _Text => _Text.ToUpper(CultureInfo.CurrentUICulture) + ": " + m_TomorrowGiftMoneyCount));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_GetButtonText,
-                ETextType.MenuUI, 
-                "get",
-                _Text => _Text.ToUpper(CultureInfo.CurrentUICulture)));
-            locMan.AddTextObject(new LocalizableTextObjectInfo(
-                m_MultiplyButtonText,
-                ETextType.MenuUI, 
-                "multiply",
-                _Text => _Text.ToUpper(CultureInfo.CurrentUICulture) + " x2"));
+            static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
+            var locTextInfos = new[]
+            {
+                new LocTextInfo(m_DailyGiftText, ETextType.MenuUI, "daily_gift", TextFormula),
+                new LocTextInfo(m_TodayGiftMoneyCountText, ETextType.MenuUI, "empty_key", _T => m_TodayGiftMoneyCount.ToString()), 
+                new LocTextInfo(m_TomorrowGiftMoneyCountText, ETextType.MenuUI, "tomorrow", _T => TextFormula(_T) + ": " + m_TomorrowGiftMoneyCount),
+                new LocTextInfo(m_GetButtonText, ETextType.MenuUI, "get", TextFormula),
+                new LocTextInfo(m_MultiplyButtonText, ETextType.MenuUI, "multiply", _T => TextFormula(_T) + " x2"),
+                TodayGiftMoneyCountLocTextInfo
+            };
+            foreach (var locTextInfo in locTextInfos)
+                Managers.LocalizationManager.AddLocalization(locTextInfo);
+        }
+
+        protected override void SubscribeButtonEvents()
+        {
+            m_GetButton.onClick     .AddListener(OnGetButtonClick);
+            m_MultiplyButton.onClick.AddListener(OnMultiplyButtonClick);
+            m_TriggererMoneyIcon.Trigger1 += () => Cor.Run(OnMoneyIconStartDisappearingCoroutine());
+            m_TriggererMoneyIcon.Trigger2 += OnMoneyItemAnimTrigger2;
         }
 
         private void GetTodayAndTomorrowGiftMoneyCount()
@@ -241,9 +228,9 @@ namespace RMAZOR.UI.Panels
             SaveUtils.PutValue(SaveKeysRmazor.DailyRewardGot, dailyRewardGotDict);
             base.OnClose(() =>
             {
-                SwitchLevelStageCommandInvoker.SwitchLevelStage(EInputCommand.UnPauseLevel);
+                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
             });
-            Managers.AudioManager.PlayClip(CommonAudioClipArgs.UiButtonClick);
+            PlayButtonClickSound();
         }
 
         private void OnMultiplyButtonClick()
@@ -303,10 +290,7 @@ namespace RMAZOR.UI.Panels
             IndicateAdsLoading(true);
             yield return Cor.WaitWhile(
                 () => !Managers.AdsManager.RewardedAdNonSkippableReady,
-                () =>
-                {
-                    IndicateAdsLoading(false);
-                });
+                () => IndicateAdsLoading(false));
         }
         
         private void IndicateAdsLoading(bool _Indicate)
@@ -328,44 +312,17 @@ namespace RMAZOR.UI.Panels
         
         private void Multiply()
         {
-            var savedGameEntity = Managers.ScoreManager.GetSavedGameProgress(
-                MazorCommonData.SavedGameFileName,
-                true);
-            void SendAnalytic()
-            {
-                var eventData = new Dictionary<string, object>
-                {
-                    {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}
-                };
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInFinishGroupPanelPressed, eventData);
-            }
-            void SetMoneyInBank()
-            {
-                bool castSuccess = savedGameEntity.Value.CastTo(out SavedGame savedGame);
-                if (savedGameEntity.Result == EEntityResult.Fail || !castSuccess)
-                {
-                    Dbg.LogWarning("Failed to save new game data");
-                    return;
-                }
-                long reward = m_TodayGiftMoneyCount * m_MultiplyCoefficient;
-                var newSavedGame = new SavedGame
-                {
-                    FileName = MazorCommonData.SavedGameFileName,
-                    Money = savedGame.Money + reward,
-                    Level = Model.LevelStaging.LevelIndex,
-                    Args = Model.LevelStaging.Arguments
-                };
-                Managers.ScoreManager.SaveGameProgress(newSavedGame, false);
-            }
-            Cor.Run(Cor.WaitWhile(
-                () => savedGameEntity.Result == EEntityResult.Pending,
-                () =>
-                {
-                    SendAnalytic();
-                    SetMoneyInBank();
-                }));
+            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+            long money = Convert.ToInt64(bankMoneyCountArg);
+            long reward = m_TodayGiftMoneyCount * m_MultiplyCoefficient;
+            money += reward;
+            savedGame.Arguments.SetSafe(ComInComArg.KeyMoneyCount, money);
+            Managers.ScoreManager.SaveGame(savedGame);
+            var eventData = new Dictionary<string, object> {{AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex}};
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInFinishGroupPanelClick, eventData);
         }
-
+        
         #endregion
     }
 }

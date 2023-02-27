@@ -92,8 +92,8 @@ namespace RMAZOR.Views.Common.Additional_Background
         
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
-            object setBackgroundFromEditorArg = _Args.Args.GetSafe(
-                CommonInputCommandArg.KeySetBackgroundFromEditor, out bool keyExist);
+            object setBackgroundFromEditorArg = _Args.Arguments.GetSafe(
+                ComInComArg.KeySetBackgroundFromEditor, out bool keyExist);
             if (keyExist && (bool)setBackgroundFromEditorArg)
                 return;
             IdleItems.SetSpawnPool(_Args.LevelIndex);

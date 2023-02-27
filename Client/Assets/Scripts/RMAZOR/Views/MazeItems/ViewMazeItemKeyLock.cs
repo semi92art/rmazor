@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Common;
 using Common.Extensions;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -69,7 +68,7 @@ namespace RMAZOR.Views.MazeItems
 
         #region api
 
-        public override Component[] Renderers => new Component[0];
+        public override Component[] Renderers => new Component[] {m_KeyLine, m_LockShape};
 
         public void OnKeyLockStateChanged(IMazeItemProceedInfo _ProceedInfo, bool _ProceedAsLock)
         {
@@ -139,29 +138,15 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            if (IsThisItemLock())
-                UpdateShapeAsLock();
-            else 
-                UpdateShapeAsKey();
-        }
-
-        private void UpdateShapeAsKey()
-        {
-            m_KeyLine.enabled = true;
-            m_LockShape.enabled = false;
+            bool isThisItemLock = IsThisItemLock();
+            m_KeyLine  .enabled = !isThisItemLock;
+            m_LockShape.enabled = isThisItemLock;
             float scale = CoordinateConverter.Scale;
             (Vector2 start, Vector2 end) = GetKeyLineStartEndPositions(false);
             m_KeyLine
                 .SetThickness(scale * ViewSettings.LineThickness)
                 .SetStart(start)
                 .SetEnd(end);
-        }
-
-        private void UpdateShapeAsLock()
-        {
-            m_KeyLine.enabled = false;
-            m_LockShape.enabled = true;
-            float scale = CoordinateConverter.Scale;
             m_LockShape
                 .SetCornerRadius(scale * ViewSettings.LineThickness)
                 .SetWidth(scale * 0.9f)
@@ -170,7 +155,7 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            if (_ColorId != ColorIds.MazeItem2)
+            if (_ColorId != GetMazeItemBlockColorId())
                 return;
             m_KeyLine.SetColor(_Color);
             m_LockShape.SetColor(_Color);
@@ -178,22 +163,19 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnAppearFinish(bool _Appear)
         {
-            if (!_Appear)
-            {
-                m_LockShape.enabled = false;
-                m_KeyLine.enabled = false;
-            }
             base.OnAppearFinish(_Appear);
+            if (!_Appear) 
+                return;
+            bool isThisItemLock = IsThisItemLock();
+            m_KeyLine.enabled   = !isThisItemLock;
+            m_LockShape.enabled = isThisItemLock;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
-            var col = ColorProvider.GetColor(ColorIds.MazeItem2);
-            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>();
-            if (IsThisItemLock())
-                sets.Add(new [] {m_LockShape}, () => col);
-            else
-                sets.Add(new [] {m_KeyLine}, () => col);
+            var col = ColorProvider.GetColor(GetMazeItemBlockColorId());
+            var sets = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {{new[] {(IsThisItemLock() ? (Component) m_LockShape : m_KeyLine)}, () => col}};
             return sets;
         }
 

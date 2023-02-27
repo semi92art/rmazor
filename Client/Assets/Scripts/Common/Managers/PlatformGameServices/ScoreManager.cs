@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Common.Entities;
-using Common.Helpers;
 using Common.Managers.PlatformGameServices.Achievements;
 using Common.Managers.PlatformGameServices.GameServiceAuth;
 using Common.Managers.PlatformGameServices.Leaderboards;
@@ -9,6 +8,7 @@ using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Ticker;
+using UnityEngine;
 using UnityEngine.SocialPlatforms;
 
 namespace Common.Managers.PlatformGameServices
@@ -80,6 +80,11 @@ namespace Common.Managers.PlatformGameServices
             if (Initialized)
                 return;
             Ticker.Register(this);
+            if (Application.isEditor)
+            {
+                base.Init();
+                return;
+            }
             Authenticator.AuthenticatePlatformGameService(_Success =>
             {
                 if (!_Success)
@@ -95,24 +100,24 @@ namespace Common.Managers.PlatformGameServices
             });
         }
 
-        public Entity<object> GetSavedGameProgress(string _FileName, bool _FromCache)
+        public Entity<object> GetSavedGameProgress(string _FileName)
         {
-            return SavedGameProvider.GetSavedGameProgress(_FileName, _FromCache);
+            return SavedGameProvider.GetSavedGameProgress(_FileName);
         }
 
-        public void SaveGameProgress<T>(T _Data, bool _OnlyToCache) where T : FileNameArgs
+        public void SaveGameProgress<T>(T _Data) where T : FileNameArgs
         {
-            SavedGameProvider.SaveGameProgress(_Data, _OnlyToCache);
+            SavedGameProvider.SaveGameProgress(_Data);
         }
 
-        public void DeleteSavedGame(string _FileName)
+        public SavedGameV2 GetSavedGame(string _FileName)
         {
-            SavedGameProvider.DeleteSavedGame(_FileName);
+            return SavedGameProvider.GetSavedGame(_FileName);
         }
 
-        public void FetchSavedGames()
+        public void SaveGame(SavedGameV2 _SavedGame)
         {
-            SavedGameProvider.FetchSavedGames();
+            SavedGameProvider.SaveGame(_SavedGame);
         }
 
         public void RegisterLeaderboardsSet(Dictionary<ushort, string> _Map)

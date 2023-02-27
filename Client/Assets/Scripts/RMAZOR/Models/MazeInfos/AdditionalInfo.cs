@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using RMAZOR.Views.Controllers;
 using UnityEngine;
 
 namespace RMAZOR.Models.MazeInfos
@@ -10,8 +11,9 @@ namespace RMAZOR.Models.MazeInfos
         [JsonIgnore] [SerializeField] private string arguments;
         [JsonIgnore] [SerializeField] private string comment;
         [JsonIgnore] [SerializeField] private float  time3Stars, time2Stars, time1Star;
+            
+        [JsonIgnore] [SerializeField] private InputCommandsRecord passCommandsRecord;
         
-    
         [JsonProperty(PropertyName = "C1")]
         public string Arguments
         {
@@ -45,6 +47,13 @@ namespace RMAZOR.Models.MazeInfos
         {
             get => time1Star;
             set => time1Star = value;
+        }
+
+        [JsonProperty(PropertyName = "PR")]
+        public InputCommandsRecord PassCommandsRecord
+        {
+            get => passCommandsRecord;
+            set => passCommandsRecord = value;
         }
     }
 }
