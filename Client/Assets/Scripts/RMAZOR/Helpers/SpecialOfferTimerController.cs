@@ -12,8 +12,8 @@ namespace RMAZOR.Helpers
     {
         event UnityAction<TimeSpan> TimerValueChanged;
         event UnityAction           TimeIsGone;
-        bool                        SpecialOfferShownThisSession { set; }
-        bool                        IsTimeGone                   { get; }
+        bool                        ShownThisSession { get;  set; }
+        bool                        IsTimeGone       { get; }
     }
     
     public class SpecialOfferTimerController : InitBase, ISpecialOfferTimerController, IUpdateTick
@@ -47,8 +47,9 @@ namespace RMAZOR.Helpers
         public event UnityAction<TimeSpan> TimerValueChanged;
         public event UnityAction           TimeIsGone;
 
-        public bool SpecialOfferShownThisSession
+        public bool ShownThisSession
         {
+            get => m_SpecialOfferShownThisSession;
             set
             {
                 if (!m_SpecialOfferShownThisSession)

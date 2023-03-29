@@ -124,7 +124,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected override void OnDialogStartAppearing()
         {
-            SpecialOfferTimerController.SpecialOfferShownThisSession = true;
+            SpecialOfferTimerController.ShownThisSession = true;
             m_ItemSpecialOffer     .UpdateState();
             m_ItemCoins1           .UpdateState();
             m_ItemCoins2           .UpdateState();
