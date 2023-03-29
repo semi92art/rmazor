@@ -160,6 +160,7 @@ namespace Mono_Installers
             Container.Bind<IViewMazeItemPathItemMoneySquare>().To<ViewMazeItemPathItemMoneySquare>() .AsSingle();
             Container.Bind<IViewMazeItemPathItemMoneyGetter>().To<ViewMazeItemPathItemMoneyGetter>() .AsSingle();
             Container.Bind<IViewMazeItemPathItemIdleSquare>() .To<ViewMazeItemPathItemIdleSquare>()  .AsSingle();
+            Container.Bind<IViewMazeItemPathItemIdleEmpty>()  .To<ViewMazeItemPathItemIdleEmpty>()   .AsSingle();
             Container.Bind<IViewMazeItemPathItemIdleDisc>()   .To<ViewMazeItemPathItemIdleDisc>()    .AsSingle();
             Container.Bind<IViewMazeItemPathItemIdleGetter>().To<ViewMazeItemPathItemIdleGetter>()   .AsSingle();
             
@@ -221,9 +222,31 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterHead03>().To<ViewCharacterHead03>().AsSingle();
             Container.Bind<IViewCharacterHead04>().To<ViewCharacterHead04>().AsSingle();
             Container.Bind<IViewCharacterHead05>().To<ViewCharacterHead05>().AsSingle();
-            // Container.Bind<IViewCharacterHead06>().To<ViewCharacterHead06>().AsSingle();
-            // Container.Bind<IViewCharacterHead07>().To<ViewCharacterHead07>().AsSingle();
-            // Container.Bind<IViewCharacterHead08>().To<ViewCharacterHead08>().AsSingle();
+            Container.Bind<IViewCharacterHead06>().To<ViewCharacterHead06>().AsSingle();
+            Container.Bind<IViewCharacterHead07>().To<ViewCharacterHead07>().AsSingle();
+            Container.Bind<IViewCharacterHead08>().To<ViewCharacterHead08>().AsSingle();
+            Container.Bind<IViewCharacterHead09>().To<ViewCharacterHead09>().AsSingle();
+            Container.Bind<IViewCharacterHead10>().To<ViewCharacterHead10>().AsSingle();
+
+            Container.Bind<IViewCharacterHeadBatman>()    .To<ViewCharacterHeadBatman>()    .AsSingle();
+            Container.Bind<IViewCharacterHeadBunny>()     .To<ViewCharacterHeadBunny>()     .AsSingle();
+            Container.Bind<IViewCharacterHeadDartVaider>().To<ViewCharacterHeadDartVaider>().AsSingle();
+            Container.Bind<IViewCharacterHeadDeadpool>()  .To<ViewCharacterHeadDeadpool>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadDog>()       .To<ViewCharacterHeadDog>()       .AsSingle();
+            Container.Bind<IViewCharacterHeadElephant>()  .To<ViewCharacterHeadElephant>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadFlash>()     .To<ViewCharacterHeadFlash>()     .AsSingle();
+            Container.Bind<IViewCharacterHeadFroggy>()    .To<ViewCharacterHeadFroggy>()    .AsSingle();
+            Container.Bind<IViewCharacterHeadFriday13>()  .To<ViewCharacterHeadFriday13>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadIronMan1>()  .To<ViewCharacterHeadIronMan1>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadIronMan2>()  .To<ViewCharacterHeadIronMan2>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadIronMan3>()  .To<ViewCharacterHeadIronMan3>()  .AsSingle();
+            Container.Bind<IViewCharacterHeadJoker>()     .To<ViewCharacterHeadJoker>()     .AsSingle();
+            Container.Bind<IViewCharacterHeadKitty>()     .To<ViewCharacterHeadKitty>()     .AsSingle();
+            Container.Bind<IViewCharacterHeadSpiderMan>() .To<ViewCharacterHeadSpiderMan>() .AsSingle();
+
+            Container.Bind<IViewCharacterHeadBodyCommon>() .To<ViewCharacterHeadBodyCommon>() .AsTransient();
+            Container.Bind<IViewCharacterHeadEyesCommon>() .To<ViewCharacterHeadEyesCommon>() .AsTransient();
+            Container.Bind<IViewCharacterHeadMouthCommon>().To<ViewCharacterHeadMouthCommon>().AsTransient();
         }
 
         private void BindUiCommon()
@@ -240,7 +263,7 @@ namespace Mono_Installers
                 Container.Bind<IViewUI>()                    .To<ViewUI>()                    .AsSingle();
                 Container.Bind<IViewUIInputCommandsInvoker>().To<ViewUIInputCommandsInvoker>().AsSingle();
                 Container.Bind<IViewUIGameControls>()        .To<ViewUIGameControls>()        .AsSingle();
-                Container.Bind<IViewGameUIPrompt>()              .To<ViewGameUIPrompt>()              .AsSingle();
+                Container.Bind<IViewGameUIPrompt>()          .To<ViewGameUIPrompt>()          .AsSingle();
                 Container.Bind<IViewUICongratsMessage>()     .To<ViewUICongratsMessage>()     .AsSingle();
                 Container.Bind<IViewGameUILevelsPanel>()     .To<ViewGameUILevelsPanel>()     .AsSingle();
                 Container.Bind<IViewUITutorial>()            .To<ViewUITutorial>()            .AsSingle();
@@ -312,6 +335,8 @@ namespace Mono_Installers
                 Container.Bind<ITutorialDialogPanel>()        .To<TutorialDialogPanel>()            .AsSingle();
                 Container.Bind<ISettingLanguageDialogPanel>() .To<SettingsLanguagePanel>()          .AsSingle();
                 Container.Bind<IShopDialogPanel>()            .To<ShopDialogPanel>()                .AsSingle();
+                Container.Bind<IShopMoneyDialogPanel>()       .To<ShopMoneyDialogPanel>()           .AsSingle();
+                Container.Bind<ISpecialOfferDialogPanel>()    .To<SpecialOfferDialogPanel>()        .AsSingle();
                 Container.Bind<IDisableAdsDialogPanel>()      .To<DisableAdsDialogPanel>()          .AsSingle();
                 Container.Bind<ISettingDialogPanel>()         .To<SettingsDialogPanel>()            .AsSingle();
                 Container.Bind<ICharacterDiedDialogPanel>()   .To<CharacterDiedDialogPanel>()       .AsSingle();
@@ -341,14 +366,23 @@ namespace Mono_Installers
             Container.Bind<IFullscreenTextureProviderTriangles2>()
                 .To<FullscreenTextureProviderTriangles2>()
                 .AsSingle();
+            Container.Bind<IFullscreenTextureProviderSynthwave>()
+                .To<FullscreenTextureProviderSynthwave>()
+                .AsSingle();
             Container.Bind<IFullscreenTextureProviderEmpty>()
                 .To<FullscreenTextureProviderEmpty>()
                 .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderCircles>()
                 .To<FullscreenTransitionTextureProviderCircles>()
                 .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProviderCircles2>()
+                .To<FullscreenTransitionTextureProviderCircles2>()
+                .AsSingle();
             Container.Bind<IFullscreenTransitionTextureProviderPlayground>()
                 .To<FullscreenTransitionTextureProviderPlayground>()
+                .AsSingle();
+            Container.Bind<IFullscreenTransitionTextureProviderCirclesToSquares>()
+                .To<FullscreenTransitionTextureProviderCirclesToSquares>()
                 .AsSingle();
             Container.Bind<IBackgroundTextureProviderSet>()
                 .To<BackgroundTextureProviderSetImpl>()
@@ -360,12 +394,14 @@ namespace Mono_Installers
         
         private void BindOther()
         {
+            Container.Bind<IShopBuyActionsProvider>()       .To<ShopBuyActionsProvider>()       .AsSingle();
+            Container.Bind<ISpecialOfferTimerController>()  .To<SpecialOfferTimerController>()  .AsSingle();
             Container.Bind<IRawLevelInfoGetter>()           .To<RawLevelInfoGetter>()           .AsSingle();
             Container.Bind<IGameController>()               .To<GameControllerMVC>()            .AsSingle();
             Container.Bind<IDebugManager>()                 .To<DebugManager>()                 .AsSingle();
             Container.Bind<IManagersGetter>()               .To<ManagersGetter>()               .AsSingle();
             Container.Bind<IViewBetweenLevelAdShower>()     .To<ViewBetweenLevelAdShower>()     .AsSingle();
-            Container.Bind<IRewardCounter>()                 .To<RewardCounter>()                 .AsSingle();
+            Container.Bind<IRewardCounter>()                 .To<RewardCounter>()               .AsSingle();
             Container.Bind<IViewTimePauser>()               .To<ViewTimePauser>()               .AsSingle();
             Container.Bind<IViewIdleAdsPlayer>()            .To<ViewIdleAdsPlayer>()            .AsSingle();
             Container.Bind<IViewGameIdleQuitter>()          .To<ViewGameIdleQuitter>()          .AsSingle();
@@ -375,7 +411,7 @@ namespace Mono_Installers
                 .To<AudioManagerRmazor>()
                 .AsSingle();
 
-            Container.Bind<IViewInputCommandsPlayer>()          .To<ViewInputCommandsPlayer>()          .AsSingle();
+            Container.Bind<IViewInputCommandsReplayer>()          .To<ViewInputCommandsReplayer>()          .AsSingle();
             Container.Bind<IViewInputCommandsRecorder>()        .To<ViewInputCommandsRecorder>()        .AsSingle();
             Container.Bind<IViewGameUiCreatingLevelMessage>()   .To<ViewGameUiCreatingLevelMessage>()   .AsSingle();
             Container.Bind<IViewGameUiHintPlayingMessage>()     .To<ViewGameUiHintPlayingMessage>()     .AsSingle();

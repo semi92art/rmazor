@@ -34,3 +34,76 @@ MonoBehaviour:
       item: {fileID: 1560829925993726868, guid: 7851245a2d589c84884625469f9483f0,
         type: 3}
       bundle: 0
+    - name: character_head_06
+      item: {fileID: 1560829925993726868, guid: faeec76242126574b89b86d18ee70aff,
+        type: 3}
+      bundle: 0
+    - name: character_head_07
+      item: {fileID: 1560829925993726868, guid: 3822f9a491a2fdd4ebafad51496b0edf,
+        type: 3}
+      bundle: 0
+    - name: character_head_08
+      item: {fileID: 1560829925993726868, guid: 55b1c038100e3e84bb04272327aba381,
+        type: 3}
+      bundle: 0
+    - name: character_head_09
+      item: {fileID: 1560829925993726868, guid: 383ce2f83710c32429a4da2569ebed0e,
+        type: 3}
+      bundle: 0
+    - name: character_head_10
+      item: {fileID: 1560829925993726868, guid: a270993bc651d0148b7c02ece7964258,
+        type: 3}
+      bundle: 0
+    - name: character_head_11
+      item: {fileID: 1560829925993726868, guid: fb408d1ee7ad5964ea6dcdd722d932ef,
+        type: 3}
+      bundle: 0
+    - name: character_head_one_sprite
+      item: {fileID: 1560829925993726868, guid: 650a0cbfe995b404785b1f060e5e88c7,
+        type: 3}
+      bundle: 0
+    - name: character_head_sprite_batman
+      item: {fileID: 21300000, guid: fe12f5c4fb94368448d4efafa28ca325, type: 3}
+      bundle: 0
+    - name: character_head_sprite_bunny
+      item: {fileID: 21300000, guid: 30f398d3cead34d4ba7d86f63b423a0d, type: 3}
+      bundle: 0
+    - name: character_head_sprite_dart_vaider
+      item: {fileID: 21300000, guid: f157e0366aa756543aaafd196b4491d4, type: 3}
+      bundle: 0
+    - name: character_head_sprite_deadpool
+      item: {fileID: 21300000, guid: 750002d9a282bc04e8c1b1f5b0d5c806, type: 3}
+      bundle: 0
+    - name: character_head_sprite_dog
+      item: {fileID: 21300000, guid: 74eb111ba70352b4fb32d36ff03f46e3, type: 3}
+      bundle: 0
+    - name: character_head_sprite_elephant
+      item: {fileID: 21300000, guid: 339e2172e4bb9b14cb80c4b0b2e8f427, type: 3}
+      bundle: 0
+    - name: character_head_sprite_flash
+      item: {fileID: 21300000, guid: 22a69dc017be4134b8f6881693c2e992, type: 3}
+      bundle: 0
+    - name: character_head_sprite_friday13
+      item: {fileID: 21300000, guid: 79b645b214830f0498fa530de33ef073, type: 3}
+      bundle: 0
+    - name: character_head_sprite_froggy
+      item: {fileID: 21300000, guid: a5f17fc4e61f78443a994d39f493f6ba, type: 3}
+      bundle: 0
+    - name: character_head_sprite_iron_man_1
+      item: {fileID: 21300000, guid: 00735d01abfa95449ae2a057b4d4c875, type: 3}
+      bundle: 0
+    - name: character_head_sprite_iron_man_2
+      item: {fileID: 21300000, guid: 9fb5f5feec867cb4d916dd3ca77d323f, type: 3}
+      bundle: 0
+    - name: character_head_sprite_iron_man_3
+      item: {fileID: 21300000, guid: 0cc4213c287369d47a5125334c19581c, type: 3}
+      bundle: 0
+    - name: character_head_sprite_joker
+      item: {fileID: 21300000, guid: a2f02c29d13d4aa4bbe917b1d8bb7cb8, type: 3}
+      bundle: 0
+    - name: character_head_sprite_kitty
+      item: {fileID: 21300000, guid: 91843027324d37740bc4c0a234882270, type: 3}
+      bundle: 0
+    - name: character_head_sprite_spider_man
+      item: {fileID: 21300000, guid: a07e57b2246db594d97ee73c773c53d9, type: 3}
+      bundle: 0

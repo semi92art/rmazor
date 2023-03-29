@@ -34,29 +34,30 @@ namespace RMAZOR.UI.Panels
     
     public class RandomGenerationParamsPanel : DialogPanelBase, IRandomGenerationParamsPanel
     {
-        #region constants
-
-        private const float SlowGenerationWarningLeveSizeThreshold = 0.7f;
-
-        #endregion
-        
         #region nonpublic members
         
-        private Slider     m_SliderLevelSize;
-        private Button     m_ButtonPlay, m_ButtonClose, m_ButtonAiSim;
-        private Image      m_SlowGenWarningIcon;
-        private GameObject m_AiSimToggleOnObj, m_AiSimToggleOffObj;
+        private Button m_ButtonPlay, m_ButtonClose;
 
         private TextMeshProUGUI
             m_ButtonPlayText,
-            m_SlowGenWarningText,
-            m_SliderStartText,
-            m_SliderEndText,
             m_LevelSizeText,
-            m_AiSimText;
+            m_SlowGenWarningText;
 
-        private float m_LevelSizeValue;
-        private bool  m_AiSimulationOn;
+        private Toggle
+            m_ToggleLevelSizeSmall,
+            m_ToggleLevelSizeMedium,
+            m_ToggleLevelSizeBig,
+            m_ToggleLevelSizeVeryBig,
+            m_ToggleLevelSizeVeryVeryBig;
+        
+        private TextMeshProUGUI
+            m_ToggleLevelSizeSmallText,
+            m_ToggleLevelSizeMediumText,
+            m_ToggleLevelSizeBigText,
+            m_ToggleLevelSizeVeryBigText,
+            m_ToggleLevelSizeVeryVeryBigText;
+
+        private int m_LevelSizeValue;
 
         protected override string PrefabName => "random_generation_params_panel";
         
@@ -102,34 +103,33 @@ namespace RMAZOR.UI.Panels
 
         public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
 
+        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanel(_Container, _OnClose);
+            m_ToggleLevelSizeMedium.isOn = true;
+        }
 
         #endregion
 
         #region nonpublic methods
 
-        protected override void OnDialogStartAppearing()
-        {
-            base.OnDialogStartAppearing();
-            SetAiSimToggleOnOff();
-            m_LevelSizeValue = m_SliderLevelSize.value;
-            CheckForSlowGenerationWarning();
-        }
-
         protected override void GetPrefabContentObjects(GameObject _Go)
         {
-            m_ButtonPlay         = _Go.GetCompItem<Button>("button_play");
-            m_ButtonClose        = _Go.GetCompItem<Button>("button_close");
-            m_ButtonPlayText     = _Go.GetCompItem<TextMeshProUGUI>("button_play_text");
-            m_SliderLevelSize    = _Go.GetCompItem<Slider>("slider_level_size");
-            m_SliderStartText    = _Go.GetCompItem<TextMeshProUGUI>("slider_start_text");
-            m_SliderEndText      = _Go.GetCompItem<TextMeshProUGUI>("slider_end_text");
-            m_LevelSizeText      = _Go.GetCompItem<TextMeshProUGUI>("level_size_text");
-            m_SlowGenWarningText = _Go.GetCompItem<TextMeshProUGUI>("slow_gen_warning_text");
-            m_SlowGenWarningIcon = _Go.GetCompItem<Image>("slow_gen_warning_icon");
-            m_AiSimText          = _Go.GetCompItem<TextMeshProUGUI>("ai_simulation_text");
-            m_AiSimToggleOnObj   = _Go.GetContentItem("ai_simulation_toggle_on");
-            m_AiSimToggleOffObj  = _Go.GetContentItem("ai_simulation_toggle_off");
-            m_ButtonAiSim        = _Go.GetCompItem<Button>("ai_simulation_button");
+            m_ButtonPlay                     = _Go.GetCompItem<Button>("button_play");
+            m_ButtonClose                    = _Go.GetCompItem<Button>("button_close");
+            m_ButtonPlayText                 = _Go.GetCompItem<TextMeshProUGUI>("button_play_text");
+            m_LevelSizeText                  = _Go.GetCompItem<TextMeshProUGUI>("level_size_text");
+            m_ToggleLevelSizeSmall           = _Go.GetCompItem<Toggle>("toggle_level_size_small");
+            m_ToggleLevelSizeMedium          = _Go.GetCompItem<Toggle>("toggle_level_size_medium");
+            m_ToggleLevelSizeBig             = _Go.GetCompItem<Toggle>("toggle_level_size_big");
+            m_ToggleLevelSizeVeryBig         = _Go.GetCompItem<Toggle>("toggle_level_size_very_big");
+            m_ToggleLevelSizeVeryVeryBig     = _Go.GetCompItem<Toggle>("toggle_level_size_very_very_big");
+            m_ToggleLevelSizeSmallText       = _Go.GetCompItem<TextMeshProUGUI>("toggle_level_size_small_text");
+            m_ToggleLevelSizeMediumText      = _Go.GetCompItem<TextMeshProUGUI>("toggle_level_size_medium_text");
+            m_ToggleLevelSizeBigText         = _Go.GetCompItem<TextMeshProUGUI>("toggle_level_size_big_text");
+            m_ToggleLevelSizeVeryBigText     = _Go.GetCompItem<TextMeshProUGUI>("toggle_level_size_very_big_text");
+            m_ToggleLevelSizeVeryVeryBigText = _Go.GetCompItem<TextMeshProUGUI>("toggle_level_size_very_very_big_text");
+            m_SlowGenWarningText             = _Go.GetCompItem<TextMeshProUGUI>("slow_gen_warning_text");
         }
 
         protected override void LocalizeTextObjectsOnLoad()
@@ -137,12 +137,14 @@ namespace RMAZOR.UI.Panels
             static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_ButtonPlayText,     ETextType.MenuUI, "Play",             TextFormula),
-                new LocTextInfo(m_SlowGenWarningText, ETextType.MenuUI, "slow_gen_warning", TextFormula),
-                new LocTextInfo(m_LevelSizeText,      ETextType.MenuUI, "level_size",       TextFormula),
-                new LocTextInfo(m_SliderStartText,    ETextType.MenuUI, "small",            TextFormula),
-                new LocTextInfo(m_SliderEndText,      ETextType.MenuUI, "big",              TextFormula), 
-                new LocTextInfo(m_AiSimText,          ETextType.MenuUI, "ai_simulation",    TextFormula), 
+                new LocTextInfo(m_ButtonPlayText,                 ETextType.MenuUI_H1, "Play",             TextFormula),
+                new LocTextInfo(m_LevelSizeText,                  ETextType.MenuUI_H1, "level_size",       TextFormula),
+                new LocTextInfo(m_ToggleLevelSizeSmallText,       ETextType.MenuUI_H1, "small",            TextFormula), 
+                new LocTextInfo(m_ToggleLevelSizeMediumText,      ETextType.MenuUI_H1, "medium",           TextFormula), 
+                new LocTextInfo(m_ToggleLevelSizeBigText,         ETextType.MenuUI_H1, "big",              TextFormula), 
+                new LocTextInfo(m_ToggleLevelSizeVeryBigText,     ETextType.MenuUI_H1, "very_big",         TextFormula), 
+                new LocTextInfo(m_ToggleLevelSizeVeryVeryBigText, ETextType.MenuUI_H1, "very_very_big",    TextFormula), 
+                new LocTextInfo(m_SlowGenWarningText,             ETextType.MenuUI_H1, "slow_gen_warning", TextFormula),
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);
@@ -150,10 +152,13 @@ namespace RMAZOR.UI.Panels
 
         protected override void SubscribeButtonEvents()
         {
-            m_ButtonPlay     .onClick.AddListener(OnButtonPlayClick);
-            m_ButtonClose    .onClick.AddListener(OnButtonCloseClick);
-            m_SliderLevelSize.onValueChanged.AddListener(OnSliderLevelSizeValueChanged);
-            m_ButtonAiSim    .onClick.AddListener(OnAiSimButtonClick);
+            m_ButtonPlay                .onClick       .AddListener(OnButtonPlayClick);
+            m_ButtonClose               .onClick       .AddListener(OnButtonCloseClick);
+            m_ToggleLevelSizeSmall      .onValueChanged.AddListener(OnToggleLevelSizeSmallValueChanged);
+            m_ToggleLevelSizeMedium     .onValueChanged.AddListener(OnToggleLevelSizeMediumValueChanged);
+            m_ToggleLevelSizeBig        .onValueChanged.AddListener(OnToggleLevelSizeBigValueChanged);
+            m_ToggleLevelSizeVeryBig    .onValueChanged.AddListener(OnToggleLevelSizeVeryBigValueChanged);
+            m_ToggleLevelSizeVeryVeryBig.onValueChanged.AddListener(OnToggleLevelSizeVeryVeryBigValueChanged);
         }
 
         private void OnButtonPlayClick()
@@ -168,32 +173,36 @@ namespace RMAZOR.UI.Panels
             OnClose();
         }
 
-        private void OnSliderLevelSizeValueChanged(float _Value)
+        private void OnToggleLevelSizeSmallValueChanged(bool _Value)
         {
-            m_LevelSizeValue = _Value;
-            CheckForSlowGenerationWarning();
-        }
-
-        private void CheckForSlowGenerationWarning()
-        {
-            bool enableWarning = m_LevelSizeValue > SlowGenerationWarningLeveSizeThreshold;
-            m_SlowGenWarningText.enabled = enableWarning;
-            m_SlowGenWarningIcon.enabled = enableWarning;
-        }
-
-        private void OnAiSimButtonClick()
-        {
-            PlayButtonClickSound();
-            m_AiSimulationOn = !m_AiSimulationOn;
-            SetAiSimToggleOnOff();
+            if (_Value)
+                m_LevelSizeValue = 0;
         }
         
-        private void SetAiSimToggleOnOff()
+        private void OnToggleLevelSizeMediumValueChanged(bool _Value)
         {
-            m_AiSimToggleOnObj.SetActive(m_AiSimulationOn);
-            m_AiSimToggleOffObj.SetActive(!m_AiSimulationOn);
+            if (_Value)
+                m_LevelSizeValue = 1;
         }
         
+        private void OnToggleLevelSizeBigValueChanged(bool _Value)
+        {
+            if (_Value)
+                m_LevelSizeValue = 2;
+        }
+        
+        private void OnToggleLevelSizeVeryBigValueChanged(bool _Value)
+        {
+            if (_Value)
+                m_LevelSizeValue = 3;
+        }
+        
+        private void OnToggleLevelSizeVeryVeryBigValueChanged(bool _Value)
+        {
+            if (_Value)
+                m_LevelSizeValue = 4;
+        }
+
         private void LoadRandomLevel()
         {
             var args = new Dictionary<string, object>
@@ -202,7 +211,7 @@ namespace RMAZOR.UI.Panels
                 {KeyLevelIndex,                     0L},
                 {KeyRandomLevelSize,                m_LevelSizeValue},
                 {KeyOnReadyToLoadLevelFinishAction, OnReadyToLoadLevelAction},
-                {KeyAiSimulation,                   m_AiSimulationOn}
+                {KeyAiSimulation,                   false}
             };
             OnClose();
             var loadLevelCoroutine = MainMenuUtils.LoadLevelCoroutine(

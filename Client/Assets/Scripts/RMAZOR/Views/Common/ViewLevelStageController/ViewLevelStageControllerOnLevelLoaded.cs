@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using Common.Managers.PlatformGameServices;
-using mazing.common.Runtime.Entities;
-using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
+using RMAZOR.Settings;
 using RMAZOR.Views.Characters;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.UI.Game_Logo;
+using RMAZOR.Views.Utils;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
@@ -15,75 +18,71 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         void OnLevelLoaded(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems);
     }
     
-    public class ViewLevelStageControllerOnLevelLoaded : IViewLevelStageControllerOnLevelLoaded
+    public class ViewLevelStageControllerOnLevelLoaded 
+        : ViewLevelStageControllerOnSingleStageBase, 
+          IViewLevelStageControllerOnLevelLoaded
     {
-        #region nonpublic members
-
-        private static AudioClipArgs AudioClipArgsMainTheme =>
-            new AudioClipArgs("main_theme", EAudioClipType.Music, 0.25f, true);
-
-        private bool m_MainThemeSoundPlayFirstTime;
-
-        #endregion
-        
         #region inject
         
         private ViewSettings                     ViewSettings                { get; }
-        private IModelGame                       Model                       { get; }
         private IScoreManager                    ScoreManager                { get; }
         private IAudioManager                    AudioManager                { get; }
         private IViewCharacter                   Character                   { get; }
         private IViewFullscreenTransitioner      FullscreenTransitioner      { get; }
         private IViewMazePathItemsGroup          PathItemsGroup              { get; }
         private IViewCameraEffectsCustomAnimator CameraEffectsCustomAnimator { get; }
+        private IRetroModeSetting                RetroModeSetting            { get; }
 
         private ViewLevelStageControllerOnLevelLoaded(
             ViewSettings                     _ViewSettings,
             IModelGame                       _Model,
+            IViewUIGameLogo                  _GameLogo,
             IScoreManager                    _ScoreManager,
             IAudioManager                    _AudioManager,
             IViewCharacter                   _Character,
             IViewFullscreenTransitioner      _FullscreenTransitioner,
             IViewMazePathItemsGroup          _PathItemsGroup,
-            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator)
+            IViewCameraEffectsCustomAnimator _CameraEffectsCustomAnimator,
+            IRetroModeSetting                _RetroModeSetting)
+            : base(_Model, _GameLogo)
         {
             ViewSettings                = _ViewSettings;
-            Model                       = _Model;
             ScoreManager                = _ScoreManager;
             AudioManager                = _AudioManager;
             Character                   = _Character;
             FullscreenTransitioner      = _FullscreenTransitioner;
             PathItemsGroup              = _PathItemsGroup;
             CameraEffectsCustomAnimator = _CameraEffectsCustomAnimator;
+            RetroModeSetting            = _RetroModeSetting;
         }
-
-
+        
         #endregion
 
         #region api
         
         public void OnLevelLoaded(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems)
         {
-            ProceedAudio();
-            ViewLevelStageControllerUtils.SaveGame(_Args, ScoreManager);
+            ProceedAudio(_Args);
+            ViewLevelStageSwitcherUtils.SaveGame(_Args, ScoreManager);
             Character.Appear(true);
             ProceedPathAndMazeItems(_MazeItems);
             ProceedBetweenLevelTransition();
+            if (ViewSettings.loadMainGameModeOnStart)
+                ShowGameLogoIfItWasNot();
+            RetroModeSetting.UpdateState();
         }
         
         #endregion
 
         #region nonpublic methods
 
-        private void ProceedAudio()
+        private void ProceedAudio(LevelStageArgs _Args)
         {
-            if (AudioManager.IsPlaying(AudioClipArgsMainTheme)) return;
-            if (!m_MainThemeSoundPlayFirstTime)
-            {
-                AudioManager.PlayClip(AudioClipArgsMainTheme);
-                m_MainThemeSoundPlayFirstTime = true;
-            }
-            else AudioManager.UnpauseClip(AudioClipArgsMainTheme);
+            if (_Args.PreviousStage == ELevelStage.None)
+                AudioManager.StopClip(AudioClipArgsMainMenuTheme);
+            var audioClipArgsLevelTheme = GetAudioClipArgsLevelTheme();
+            if (!AudioManager.IsPlaying(audioClipArgsLevelTheme))
+                AudioManager.PlayClip(audioClipArgsLevelTheme);
         }
 
         private void ProceedPathAndMazeItems(IEnumerable<IViewMazeItem> _MazeItems)

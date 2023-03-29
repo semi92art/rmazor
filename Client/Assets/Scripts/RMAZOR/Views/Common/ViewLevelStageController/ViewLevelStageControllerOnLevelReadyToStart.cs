@@ -3,10 +3,12 @@ using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Enums;
-using mazing.common.Runtime.Extensions;
-using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
+using RMAZOR.Constants;
 using RMAZOR.Models;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.UI.Game_Logo;
+using RMAZOR.Views.Utils;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
@@ -16,7 +18,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
     }
     
     public class ViewLevelStageControllerOnLevelReadyToStart : 
-        InitBase,
+        ViewLevelStageControllerOnSingleStageBase,
         IViewLevelStageControllerOnLevelReadyToStart
     {
         #region inject
@@ -24,18 +26,18 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         private IAudioManager     AudioManager     { get; }
         private IAnalyticsManager AnalyticsManager { get; }
         private IScoreManager     ScoreManager     { get; }
-        private IModelGame        Model            { get; }
         
         public ViewLevelStageControllerOnLevelReadyToStart(
             IAudioManager     _AudioManager,
             IAnalyticsManager _AnalyticsManager,
             IScoreManager     _ScoreManager,
-            IModelGame        _Model)
+            IModelGame        _Model,
+            IViewUIGameLogo   _GameLogo) 
+            : base(_Model, _GameLogo)
         {
             AudioManager     = _AudioManager;
             AnalyticsManager = _AnalyticsManager;
             ScoreManager     = _ScoreManager;
-            Model            = _Model;
         }
 
         #endregion
@@ -44,40 +46,39 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnLevelReadyToStart(LevelStageArgs _Args)
         {
-            if (_Args.PreviousStage == ELevelStage.Loaded)
-                ViewLevelStageControllerUtils.SaveGame(_Args, ScoreManager);
+            SaveGame(_Args);
             ProceedSounds(_Args);
+            SendAnalyticLevelReadyToStart(_Args);
         }
 
         #endregion
 
         #region nonpublic methods
 
-        private void SendAnalyticLevelReadyToStart()
+        private void SaveGame(LevelStageArgs _Args)
         {
-            string levelType = (string)Model.LevelStaging.Arguments.GetSafe(
-                ComInComArg.KeyCurrentLevelType, out _);
-            bool isThisLevelBonus = levelType == ComInComArg.ParameterLevelTypeBonus;
+            if (_Args.PreviousStage == ELevelStage.Loaded)
+                ViewLevelStageSwitcherUtils.SaveGame(_Args, ScoreManager);
+        }
+
+        private void SendAnalyticLevelReadyToStart(LevelStageArgs _Args)
+        {
+            if (_Args.PreviousStage != ELevelStage.Loaded)
+                return;
+            string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(_Args.Arguments);
+            string levelType = ViewLevelStageSwitcherUtils.GetCurrentLevelType(_Args.Arguments);
             var args = new Dictionary<string, object>
             {
-                {AnalyticIds.ParameterLevelIndex, Model.LevelStaging.LevelIndex},
-                {AnalyticIds.ParameterLevelType, isThisLevelBonus ? 2 : 1}
+                {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
+                {AnalyticIdsRmazor.ParameterGameMode, GetGameModeAnalyticParameterValue(gameMode)},
+                {AnalyticIds.ParameterLevelType, GetLevelTypeAnalyticParameterValue(levelType)},
             };
             AnalyticsManager.SendAnalytic(AnalyticIds.LevelReadyToStart, args);
         }
         
         private void ProceedSounds(LevelStageArgs _Args)
         {
-            switch (_Args.LevelStage)
-            {
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
-                    SendAnalyticLevelReadyToStart();
-                    AudioManager.UnmuteAudio(EAudioClipType.GameSound);
-                    break;
-                case ELevelStage.ReadyToStart:
-                    AudioManager.UnmuteAudio(EAudioClipType.GameSound);
-                    break;
-            }
+            AudioManager.UnmuteAudio(EAudioClipType.GameSound);
         }
 
         #endregion

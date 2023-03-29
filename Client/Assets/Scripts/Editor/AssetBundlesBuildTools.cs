@@ -19,16 +19,13 @@ namespace Editor
 
         private const string ProgressBarTitle = "Building Bundles";
         private const string BundlesLocalPath = "../../bundles";
-        private const string UserName         = "semi92art";
-        private const string Token            = "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";
-        private const string RepositoryName   = "bundles";
         
         #endregion
 
         #region nonpublic members
         
         private static string BundlesPath => $"Assets/AssetBundles/{GetOsBundleSubPath()}";
-        private static string PushCommand => $"push https://{Token}@github.com/{UserName}/{RepositoryName}.git";
+        private static string PushCommand => "push https://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@github.com/semi92art/bundles.git";
 
         #endregion
 
@@ -124,9 +121,8 @@ namespace Editor
                 Dbg.Log("No new bundles to push");
             GitUtils.RunGitCommand($"stage {fileNamesText}", BundlesLocalPath);
             EditorUtility.DisplayProgressBar(ProgressBarTitle, "Commit in git...", 50f);
-            GitUtils.RunGitCommand("commit -m 'UnityBuild'", BundlesLocalPath);
-            // EditorUtility.DisplayProgressBar(ProgressBarTitle, "Pushing to remote repository...", 70f);
-            // GitUtils.RunGitCommand(PushCommand, BundlesLocalPath);
+            string commitMessage = $@"commit -m ""Unity: app ver. {Application.version}""";
+            GitUtils.RunGitCommand(commitMessage, BundlesLocalPath);
             EditorUtility.ClearProgressBar();
         }
 

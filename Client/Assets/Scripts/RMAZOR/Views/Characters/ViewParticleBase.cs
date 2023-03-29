@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using Common;
 using Common.Extensions;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -29,9 +25,9 @@ namespace RMAZOR.Views.Characters
         #region nonpublic members
         
         private bool m_Activated;
-        
-        protected abstract IEnumerable<ShapeRenderer> MainShapes   { get; }
-        protected abstract IEnumerable<ShapeRenderer> BorderShapes { get; }
+
+        protected ShapeRenderer[] MainShapes;
+        protected ShapeRenderer[] BorderShapes;
         
         protected Transform   Transform;
         protected Rigidbody2D Rb;
@@ -63,12 +59,8 @@ namespace RMAZOR.Views.Characters
             get => m_Activated;
             set
             {
-                if (value && !Initialized)
-                    Init();
-                foreach (var shape in MainShapes)
-                    shape.enabled = value;
-                foreach (var shape in BorderShapes)
-                    shape.enabled = value;
+                if (!value)
+                    Transform.position = Vector3.right * 300;
                 m_Activated = value;
             }
         }
@@ -88,19 +80,22 @@ namespace RMAZOR.Views.Characters
             else
             {
                 Cor.Run(Cor.WaitWhile(() => !Initialized,
-                    () =>
-                    {
-                        SetColorsCore(_MainColor, _BorderColor);
-                    }));
+                    () => SetColorsCore(_MainColor, _BorderColor)));
             }
         }
         
         public void SetSortingOrder(int _SortingOrder)
         {
-            foreach (var shape in MainShapes)
+            for (int i = 0; i < MainShapes.Length; i++)
+            {
+                var shape = MainShapes[i];
                 shape.SetSortingOrder(_SortingOrder);
-            foreach (var shape in BorderShapes)
+            }
+            for (int i = 0; i < BorderShapes.Length; i++)
+            {
+                var shape = BorderShapes[i];
                 shape.SetSortingOrder(_SortingOrder - 1);
+            }
         }
 
         public abstract object Clone();
@@ -127,23 +122,41 @@ namespace RMAZOR.Views.Characters
         
         private void SetColorsCore(Color _MainColor, Color _BorderColor)
         {
-            foreach (var shape in MainShapes)
-                shape.SetColor(_MainColor);
-            foreach (var shape in BorderShapes)
-                shape.SetColor(_BorderColor);
+            for (int i = 0; i < MainShapes.Length; i++)
+            {
+                var shape = MainShapes[i];
+                shape.SetColor(_MainColor.SetA(0f));
+            }
+            for (int i = 0; i < BorderShapes.Length; i++)
+            {
+                var shape = BorderShapes[i];
+                shape.SetColor(_BorderColor.SetA(0f));
+            }
         }
         
-        protected virtual IEnumerator SetColorsOnThrowCoroutine(float _ThrowTime)
+        private IEnumerator SetColorsOnThrowCoroutine(float _ThrowTime)
         {
+            const int decimator = 2;
+            int decimateCount = 0;
             yield return Cor.Lerp(
                 Ticker,
                 _ThrowTime,
                 _OnProgress: _P =>
                 {
-                    foreach (var shape in MainShapes)
-                        shape.SetColor(shape.Color.SetA(_P));
-                    foreach (var shape in BorderShapes)
-                        shape.SetColor(shape.Color.SetA(_P));
+                    if (decimateCount++ % decimator == 0)
+                        return;
+                    for (int i = 0; i < MainShapes.Length; i++)
+                    {
+                        var shape = MainShapes[i];
+                        var col = shape.Color.SetA(_P);
+                        shape.SetColor(col);
+                    }
+                    for (int i = 0; i < BorderShapes.Length; i++)
+                    {
+                        var shape = BorderShapes[i];
+                        var col = shape.Color.SetA(_P);
+                        shape.SetColor(col);
+                    }
                 },
                 _ProgressFormula: _P =>
                 {

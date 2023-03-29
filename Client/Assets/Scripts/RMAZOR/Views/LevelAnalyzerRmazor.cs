@@ -26,23 +26,40 @@ namespace RMAZOR.Views
         }
 
         #endregion
+
+        #region nonpublic members
+
+        private static readonly Vector2Int[] Directions =
+            {Vector2Int.up, Vector2Int.down, Vector2Int.right, Vector2Int.left};
+
+        #endregion
         
         #region api
         
         public bool IsValid(MazeInfo _Info)
         {
             var startPositionsToValidate = GetStartPositionsToValidate(_Info);
-            return startPositionsToValidate.All(_StartPosition => IsValid(_Info, _StartPosition, false, out _));
+            bool Predicate(V2Int _StartPos) => IsValid(_Info, _StartPos, false, out _);
+            bool isValid = startPositionsToValidate.All(Predicate);
+            return isValid;
         }
 
         public List<V2Int> GetPassMoveDirections(MazeInfo _Info)
         {
-            List<V2Int> directions;
-            while (!IsValid(
-                _Info, 
-                _Info.PathItems.First().Position,
-                true,
-                out directions)) {}
+            List<V2Int> directions = null;
+            int triesCount = 10;
+            bool Predicate()
+            {
+                return !IsValid(
+                    _Info,
+                    _Info.PathItems[0].Position,
+                    true,
+                    out directions);
+            }
+            while (triesCount > 0 && Predicate())
+            {
+                triesCount--;
+            }
             return directions;
         }
 
@@ -60,7 +77,7 @@ namespace RMAZOR.Views
             var pathItems = _Info.PathItems;
             if (!pathItems.Any())
                 return false;
-            var solves = pathItems.Select(_N => new PathSolve(_N.Position)).ToList();
+            var solves = pathItems.Select(_N => new PathSolve(_N.Position)).ToArray();
             var currPathItemPos = _StartPosition;
             solves[0].Solved = true;
 
@@ -68,9 +85,9 @@ namespace RMAZOR.Views
             int k = 0;
             while (k++ < triesCount)
             {
-                var path = pathItems.Select(_PI => _PI.Position).ToList();
+                var pathPositions = pathItems.Select(_PI => _PI.Position).ToArray();
                 var prevPos = currPathItemPos;
-                FollowRandomDirection(ref currPathItemPos, solves, path);
+                FollowRandomDirection(ref currPathItemPos, solves, pathPositions);
                 if (_WritePassDirections)
                     _Directions.Add((currPathItemPos - prevPos).NormalizedAlt);
                 if (solves.All(_N => _N.Solved))
@@ -80,16 +97,22 @@ namespace RMAZOR.Views
         }
         
         private static void FollowRandomDirection(
-            ref V2Int                      _Position, 
-            IReadOnlyCollection<PathSolve> _Solves,
-            IReadOnlyCollection<V2Int>     _PathItems)
+            ref V2Int   _Position,
+            PathSolve[] _Solves,
+            V2Int[]     _PathPositions)
         {
-            var direction = FindDirection(_Position, _PathItems);
+            var direction = FindDirection(_Position, _PathPositions);
             var nextPathItemPos = _Position;
             while (true)
             {
                 nextPathItemPos += direction;
-                var ns = _Solves.FirstOrDefault(_S => _S.Position == nextPathItemPos);
+                PathSolve ns = null;
+                for (int i = 0; i < _Solves.Length; i++)
+                {
+                    if (_Solves[i].Position != nextPathItemPos)
+                        continue;
+                    ns = _Solves[i];
+                }
                 if (ns == null)
                     break;
                 ns.Solved = true;
@@ -97,20 +120,28 @@ namespace RMAZOR.Views
             _Position = nextPathItemPos - direction;
         }
 
-        private static V2Int FindDirection(V2Int _Position, IReadOnlyCollection<V2Int> _PathItems)
+        private static V2Int FindDirection(V2Int _Position, V2Int[] _PathPositions)
         {
-            var dirs = new List<Vector2Int>
-            {
-                Vector2Int.up, Vector2Int.down, Vector2Int.right, Vector2Int.left
-            };
-            var dirIdxs = Enumerable.Range(0, dirs.Count).ToList();
+            var dirIdxs = new List<int> {0, 1, 2, 3};
+            int count = 4;
             V2Int nextPathItemPos = default;
-            while (dirIdxs.Any())
+            while (count > 0)
             {
-                int dirIdx = Mathf.FloorToInt(MathUtils.RandomGen.NextFloat() * dirs.Count * 0.999f);
-                nextPathItemPos = _Position + new V2Int(dirs[dirIdx]);
+                float rand01 = MathUtils.RandomGen.NextFloat();
+                int idx = Mathf.FloorToInt(rand01 * count * (1f - float.Epsilon));
+                int dirIdx = dirIdxs[idx];
+                nextPathItemPos = _Position + new V2Int(Directions[dirIdx]);
                 dirIdxs.Remove(dirIdx);
-                if (!_PathItems.Contains(nextPathItemPos)) 
+                count--;
+                bool contains = false;
+                for (int i = 0; i < _PathPositions.Length; i++)
+                {
+                    if (_PathPositions[i] != nextPathItemPos)
+                        continue;
+                    contains = true;
+                    break;
+                }
+                if (!contains) 
                     continue;
                 break;
             }
@@ -121,7 +152,7 @@ namespace RMAZOR.Views
         {
             var startPositionsToValidate = new[]
             {
-                _LevelInfo.PathItems.First().Position,
+                _LevelInfo.PathItems[0].Position,
                 _LevelInfo.PathItems.Last().Position
             };
             return startPositionsToValidate;

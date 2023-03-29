@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using Common;
 using Common.Constants;
 using Common.Entities;
@@ -11,8 +10,8 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
-using mazing.common.Runtime.Utils;
 using RMAZOR.UI.Panels;
+using RMAZOR.UI.Panels.ShopPanels;
 using RMAZOR.UI.Utils;
 using RMAZOR.Views.Coordinate_Converters;
 using TMPro;
@@ -27,86 +26,91 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
     {
         #region serialized fields
 
-        [SerializeField] private RawImage        characterIcon;
-        [SerializeField] private Button          customizeCharacterButton;
-        [SerializeField] private TextMeshProUGUI customizeCharacterButtonText;
-        
-        [SerializeField] private TextMeshProUGUI moneyText;
-        [SerializeField] private Button          buyMoneyButton;
-        
-        [SerializeField] private Slider          xpSlider;
-        [SerializeField] private TextMeshProUGUI xpSliderTitleText, xpSliderBodyText;
+        [SerializeField] private RawImage                         characterIcon;
+        [SerializeField] private MainMenuCustomizeCharacterButton buttonCustomizeCharacter;
+        [SerializeField] private MainMenuShopButton               buttonShop;
+        [SerializeField] private TextMeshProUGUI                  moneyText;
+        [SerializeField] private Button                           buyMoneyButton;
+        [SerializeField] private Slider                           xpSlider;
+        [SerializeField] private TextMeshProUGUI                  xpSliderTitleText, xpSliderBodyText;
 
-        [SerializeField] private Button         dailyGiftButton;
-        [SerializeField] private Image          dailyGiftIcon;
-        [SerializeField] private ParticleSystem dailyGiftParticleSystem;
-        [SerializeField] private Image          dailyGiftStamp;
+
 
         #endregion
 
         #region nonpublic members
         
-        private UnityAction              m_OnDailyGiftButtonClick;
-        private UnityAction              m_OnAddMoneyButtonClick;
-        private UnityAction              m_OnCustomizeCharacterButtonClick;
-        private Sprite                   m_DailyGiftDisabledSprite;
+        private UnityAction m_OnAddMoneyButtonClick;
         
         private LocTextInfo MoneyTextLocTextInfo => new LocTextInfo(
-            moneyText, ETextType.MenuUI, "empty_key",
+            moneyText, ETextType.MenuUI_H1, "empty_key",
             _T => GetBankMoneyCount().ToString("N0"));
 
-        private IContainersGetter       ContainersGetter    { get; set; }
-        private IPrefabSetManager       PrefabSetManager    { get; set; }
-        private IScoreManager           ScoreManager        { get; set; }
-        private IDailyGiftPanel         DailyGiftPanel      { get; set; }
-        private ICoordinateConverter    CoordinateConverter { get; set; }
+        private IContainersGetter        ContainersGetter        { get; set; }
+        private IPrefabSetManager        PrefabSetManager        { get; set; }
+        private IScoreManager            ScoreManager            { get; set; }
+        private IDailyGiftPanel          DailyGiftPanel          { get; set; }
+        private ICoordinateConverter     CoordinateConverter     { get; set; }
+        private ICustomizeCharacterPanel CustomizeCharacterPanel { get; set; }
+        private IShopDialogPanel         ShopDialogPanel         { get; set; }
 
         #endregion
 
         #region api
 
         public void Init(
-            IUITicker                   _UITicker,
-            IAudioManager               _AudioManager,
-            ILocalizationManager        _LocalizationManager,
-            IContainersGetter           _ContainersGetter,
-            IPrefabSetManager           _PrefabSetManager,
-            IScoreManager               _ScoreManager,
-            IDailyGiftPanel             _DailyGiftPanel,
-            ICoordinateConverter        _CoordinateConverter,
-            UnityAction                 _OnDailyGiftButtonClick,
-            UnityAction                 _OnAddMoneyButtonClick,
-            UnityAction                 _OnCustomizeCharacterButtonClick)
+            IUITicker                _UITicker,
+            IAudioManager            _AudioManager,
+            ILocalizationManager     _LocalizationManager,
+            IContainersGetter        _ContainersGetter,
+            IPrefabSetManager        _PrefabSetManager,
+            IScoreManager            _ScoreManager,
+            IDailyGiftPanel          _DailyGiftPanel,
+            ICoordinateConverter     _CoordinateConverter,
+            ICustomizeCharacterPanel _CustomizeCharacterPanel,
+            IShopDialogPanel         _ShopDialogPanel,
+            UnityAction              _OnAddMoneyButtonClick,
+            UnityAction              _OnCustomizeCharacterButtonClick,
+            UnityAction              _OnShopButtonClick)
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
-            ContainersGetter    = _ContainersGetter;
-            PrefabSetManager    = _PrefabSetManager;
-            ScoreManager        = _ScoreManager;
-            DailyGiftPanel      = _DailyGiftPanel;
-            CoordinateConverter = _CoordinateConverter;
-            
-            m_OnDailyGiftButtonClick          = _OnDailyGiftButtonClick;
-            m_OnAddMoneyButtonClick           = _OnAddMoneyButtonClick;
-            m_OnCustomizeCharacterButtonClick = _OnCustomizeCharacterButtonClick;
+            ContainersGetter          = _ContainersGetter;
+            PrefabSetManager          = _PrefabSetManager;
+            ScoreManager              = _ScoreManager;
+            DailyGiftPanel            = _DailyGiftPanel;
+            CoordinateConverter       = _CoordinateConverter;
+            CustomizeCharacterPanel   = _CustomizeCharacterPanel;
+            ShopDialogPanel           = _ShopDialogPanel;
+            m_OnAddMoneyButtonClick   = _OnAddMoneyButtonClick;
             InitRenderCameraAndRawTexture();
             LocalizeTextObjects();
             SubscribeButtonEvents();
-            m_DailyGiftDisabledSprite = PrefabSetManager.GetObject<Sprite>(
-                CommonPrefabSetNames.Views, "daily_gift_icon_disabled");
-            if (!DailyGiftPanel.IsDailyGiftAvailableToday)
-                Cor.Run(Cor.WaitNextFrame(DisableDailyGiftButton));
-            DailyGiftPanel.OnClose += DisableDailyGiftButton;
             DailyGiftPanel.OnClose += RecalculateBankMoneyCount;
             ScoreManager.GameSaved += OnGameSaved;
+            buttonCustomizeCharacter.Init(
+                _UITicker, 
+                _AudioManager,
+                _LocalizationManager,
+                _OnCustomizeCharacterButtonClick,
+                GetCustomizeCharacterBadgeNum, 
+                "choose");
+            buttonShop.Init(
+                _UITicker, 
+                _AudioManager,
+                _LocalizationManager,
+                _OnShopButtonClick,
+                GetShopBadgeNum, 
+                "shop");
+            CustomizeCharacterPanel.BadgesNumberChanged += OnCustomizeCharacterPanelBadgesNumberChanged;
+            ShopDialogPanel        .BadgesNumberChanged += OnShopPanelBadgesNumberChanged;
         }
-
+        
         public void UpdateState()
         {
             LocalizeTextObjects();
             xpSlider.value = (float) GetXpGotOnThisLevel() / GetXpTotalToNextLevel();
-            dailyGiftStamp.enabled = false;
-            if (!DailyGiftPanel.IsDailyGiftAvailableToday)
-                Cor.Run(Cor.WaitNextFrame(DisableDailyGiftButton));
+            buttonCustomizeCharacter.UpdateState();
+            buttonShop.UpdateState();
         }
 
         #endregion
@@ -118,6 +122,26 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             var savedGame = (SavedGameV2) _Args.SavedGame;
             int moneyCount = Convert.ToInt32(savedGame.Arguments[KeyMoneyCount]);
             moneyText.text = moneyCount.ToString("N0");
+        }
+        
+        private void OnCustomizeCharacterPanelBadgesNumberChanged(int _BadgesNum)
+        {
+            buttonCustomizeCharacter.UpdateState();
+        }
+        
+        private void OnShopPanelBadgesNumberChanged(int _BadgesNum)
+        {
+            buttonShop.UpdateState();
+        }
+        
+        private int GetCustomizeCharacterBadgeNum()
+        {
+            return CustomizeCharacterPanel.GetBadgesCount();
+        }
+
+        private int GetShopBadgeNum()
+        {
+            return ShopDialogPanel.GetBadgesNumber();
         }
 
         private void RecalculateBankMoneyCount()
@@ -140,13 +164,6 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
                 CommonPrefabSetNames.Views, "preview_character_camera_texture");
             cam.targetTexture      = previewCharacterTexture;
             characterIcon.texture  = previewCharacterTexture;
-            var colorGrading = cam.gameObject.AddComponent<ColorGrading>();
-            colorGrading.material = PrefabSetManager.GetObject<Material>(
-                CommonPrefabSetNames.Views, "color_grading_material");
-            colorGrading.Contrast       = 0.35f;
-            colorGrading.Blur           = 0.2f;
-            colorGrading.Saturation     = 0f;
-            colorGrading.VignetteAmount = 0f;
         }
         
         private void LocalizeTextObjects()
@@ -155,12 +172,11 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             var locTextInfos = new[]
             {
                 MoneyTextLocTextInfo,
-                new LocTextInfo(xpSliderTitleText, ETextType.MenuUI, emptyLocKey,
+                new LocTextInfo(xpSliderTitleText, ETextType.MenuUI_H1, emptyLocKey,
                     _T => GetCharacterLevel().ToString(), ETextLocalizationType.OnlyText),
-                new LocTextInfo(xpSliderBodyText, ETextType.MenuUI, emptyLocKey, 
-                    _T => GetXpGotOnThisLevel() + "/" + GetXpTotalToNextLevel() + "XP", ETextLocalizationType.OnlyText),
-                new LocTextInfo(customizeCharacterButtonText, ETextType.MenuUI, "choose",
-                    _T => _T.ToUpper(CultureInfo.CurrentUICulture)), 
+                new LocTextInfo(xpSliderBodyText, ETextType.MenuUI_H1, emptyLocKey, 
+                    _T => GetXpGotOnThisLevel() + "/" + GetXpTotalToNextLevel() + "XP", 
+                    ETextLocalizationType.OnlyText),
             };
             foreach (var locTextInfo in locTextInfos)
                 LocalizationManager.AddLocalization(locTextInfo);
@@ -168,9 +184,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         private void SubscribeButtonEvents()
         {
-            customizeCharacterButton.onClick.AddListener(m_OnCustomizeCharacterButtonClick);
-            buyMoneyButton          .onClick.AddListener(m_OnAddMoneyButtonClick);
-            dailyGiftButton         .onClick.AddListener(m_OnDailyGiftButtonClick);
+            buyMoneyButton.SetOnClick(m_OnAddMoneyButtonClick);
         }
 
         private int GetBankMoneyCount()
@@ -203,14 +217,6 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             int totalXpGot = MainMenuUtils.GetTotalXpGot(ScoreManager);
             RmazorUtils.GetCharacterLevel(totalXpGot, out int xpToNextLevelTotal, out _);
             return xpToNextLevelTotal;
-        }
-
-        private void DisableDailyGiftButton()
-        {
-            dailyGiftIcon.sprite = m_DailyGiftDisabledSprite;
-            dailyGiftButton.interactable = false;
-            dailyGiftParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            dailyGiftStamp.enabled = true;
         }
 
         #endregion

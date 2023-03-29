@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Common;
 using Common.Constants;
@@ -11,11 +12,15 @@ using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
 using Newtonsoft.Json;
 using RMAZOR;
+using RMAZOR.Controllers;
+using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using MathUtils = mazing.common.Runtime.Utils.MathUtils;
+using static RMAZOR.Models.ComInComArg;
+using static Common.ColorIds;
 
 namespace Editor
 {
@@ -23,6 +28,8 @@ namespace Editor
     {
         private static ColorsEditorHelperWindow _instance;
 
+        private int                                 m_LevelIndex;
+        private IGameController                     m_GameController;
         private IColorProvider                      m_ColorProvider;
         private MainColorsSetScriptableObject       m_MainColorsPropsSetScrObj;
         private AdditionalColorsSetScriptableObject m_AdditionalColorsPropsSetScrObj;
@@ -32,6 +39,7 @@ namespace Editor
         private Color                               m_UiColorCheck;
         private bool                                m_ChangeOnlyHueUi = true;
         private int                                 m_CurrSetIdx;
+        private Vector2                             m_ScrollPosition;
 
         [MenuItem("Tools/Colors Helper _%&c", false, 102)]
         public static void ShowWindow()
@@ -64,20 +72,25 @@ namespace Editor
 
         private void OnGUI()
         {
-            LoadColorsProvider(false);
-            DisplayColorSetObjectFields();
-            EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
-            EditorUtilsEx.GuiButtonAction(CopyAdditionalColorsToClipboard);
-            EditorUtilsEx.HorizontalZone(() =>
+            EditorUtilsEx.ScrollViewZone(ref m_ScrollPosition, () =>
             {
-                EditorUtilsEx.GuiButtonAction("Update color set",   SetCurrentAdditionalColorSet);
-                EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousAdditionalColorSet);
-                EditorUtilsEx.GuiButtonAction("Next color set",     SetNextAdditionalColorSet);
+                LoadColorsProvider(false);
+                DisplayColorSetObjectFields();
+                EditorUtilsEx.GuiButtonAction(CopyMainColorsToClipboard);
+                EditorUtilsEx.GuiButtonAction(CopyAdditionalColorsToClipboard);
+                EditorUtilsEx.HorizontalZone(() =>
+                {
+                    EditorUtilsEx.GuiButtonAction("Update color set",   SetCurrentAdditionalColorSet);
+                    EditorUtilsEx.GuiButtonAction("Previous color set", SetPreviousAdditionalColorSet);
+                    EditorUtilsEx.GuiButtonAction("Next color set",     SetNextAdditionalColorSet);
+                });
+                DisplayColors();
+                EditorUtilsEx.HorizontalLine(Color.gray);
+                DisplayUiColorsEditorZone();
+                EditorUtilsEx.HorizontalLine(Color.gray);
+                EditorUtilsEx.GuiButtonAction(UpdateCurrentBackgroundTexture);
+                EditorUtilsEx.GuiButtonAction(SetNextBackgroundTexture);
             });
-            DisplayColors();
-            EditorUtilsEx.HorizontalLine(Color.gray);
-            DisplayUiColorsEditorZone();
-            EditorUtilsEx.HorizontalLine(Color.gray);
         }
 
         private void LoadColorsProvider(bool _Forced)
@@ -117,14 +130,7 @@ namespace Editor
 
         private void SetUiColors(Color _Color)
         {
-            var coloIds = new []
-            {
-                ColorIds.UI,
-                ColorIds.UiBackground,
-                ColorIds.UiBorder,
-                ColorIds.UiText,
-                ColorIds.UiDialogItemNormal,
-            };
+            var coloIds = new [] {UI, UiBackground, UiBorder, UiText, UiDialogItemNormal,};
             foreach (int id in coloIds)
             {
                 var item = m_MainColorsPropsSet.FirstOrDefault(
@@ -182,16 +188,27 @@ namespace Editor
             CommonDataRmazor.CameraEffectsCustomAnimator?.SetBloom(props.bloom);
             CommonDataRmazor.BackgroundTextureControllerRmazor?.SetAdditionalInfo(props.additionalInfo);
             CommonDataRmazor.AdditionalBackgroundDrawer?.SetAdditionalBackgroundSprite(props.additionalInfo.additionalBackgroundName);
-            m_ColorProvider.SetColor(ColorIds.MoneyItem,         m_ColorProvider.GetColor(ColorIds.MoneyItem));
-            m_ColorProvider.SetColor(ColorIds.Main,              props.main);
-            m_ColorProvider.SetColor(ColorIds.Background1,       props.bacground1);
-            m_ColorProvider.SetColor(ColorIds.Background2,       props.bacground2);
-            m_ColorProvider.SetColor(ColorIds.PathItem,          props.GetColor(props.pathItemFillType));
-            m_ColorProvider.SetColor(ColorIds.PathBackground,    props.GetColor(props.pathBackgroundFillType));
-            m_ColorProvider.SetColor(ColorIds.PathFill,          GetAdditionalColorPathItemFill(props));
-            m_ColorProvider.SetColor(ColorIds.Character2,        props.GetColor(props.characterBorderFillType));
-            m_ColorProvider.SetColor(ColorIds.UiBackground,      props.GetColor(props.uiBackgroundFillType));
-            m_ColorProvider.SetColor(ColorIds.GameUiAlternative, props.GetColor(props.uiBackgroundFillType));
+            var colorIdsSetItemCurrent = new[]
+                {Main, PathItem, PathFill, PathBackground, UiBackground, GameUiAlternative, Background1, Background2};
+            foreach (int colorId in colorIdsSetItemCurrent)
+                m_ColorProvider.SetColor(colorId, GetAdditionalColor(colorId, props));
+        }
+        
+        private static Color GetAdditionalColor(int _ColorId, AdditionalColorsPropsAssetItem _Props)
+        {
+            return _ColorId switch
+            {
+                Main              => _Props.main,
+                Background1       => _Props.bacground1,
+                Background2       => _Props.bacground2,
+                PathItem          => _Props.GetColor(_Props.pathItemFillType),
+                PathBackground    => _Props.GetColor(_Props.pathBackgroundFillType),
+                PathFill          => _Props.GetColor(_Props.pathFillFillType),
+                Character2        => _Props.GetColor(_Props.characterBorderFillType),
+                UiBackground      => _Props.GetColor(_Props.uiBackgroundFillType),
+                GameUiAlternative => _Props.GetColor(_Props.uiBackgroundFillType),
+                _                 => Color.magenta
+            };
         }
 
         private void SetNextOrPreviousOrCurrentAdditionalColorSet(bool? _Next)
@@ -223,12 +240,12 @@ namespace Editor
                 {
                     EditorUtilsEx.GUIEnabledZone(false, () =>
                     {
-                        EditorGUILayout.TextField(ColorIds.GetColorIdByName(item.name).ToString(), GUILayout.Width(80));
+                        EditorGUILayout.TextField(GetColorIdByName(item.name).ToString(), GUILayout.Width(80));
                         EditorGUILayout.TextField(item.name, GUILayout.Width(170));
                     });
                     var newColor = EditorGUILayout.ColorField(item.color);
                     if (newColor != item.color)
-                        m_ColorProvider?.SetColor(ColorIds.GetColorIdByName(item.name), item.color);
+                        m_ColorProvider?.SetColor(GetColorIdByName(item.name), item.color);
                     item.color = newColor;
                 });
             }
@@ -240,7 +257,7 @@ namespace Editor
             if (!m_UiColor.HasValue)
             {
                 var uiSetItem = m_MainColorsPropsSet.FirstOrDefault(
-                    _Item => ColorIds.GetColorIdByName(_Item.name) == ColorIds.UI);
+                    _Item => GetColorIdByName(_Item.name) == UI);
                 if (uiSetItem != null)
                 {
                     m_UiColor = EditorGUILayout.ColorField(uiSetItem.color);
@@ -275,25 +292,62 @@ namespace Editor
                 converter);
             CommonUtils.CopyToClipboard(json);
         }
-        
-        private static Color GetAdditionalColorPathItemFill(AdditionalColorsPropsAssetItem _Props)
+
+        private void UpdateCurrentBackgroundTexture()
         {
-            if (!SRLauncher.ViewSettings.mazeItemBlockColorEqualsMainColor)
-                return _Props.GetColor(_Props.pathFillFillType);
-            EBackAndFrontColorType colorType = _Props.pathFillFillType switch
+            if (!ValidAction())
+                return;
+            var args = GetLevelStageArgsForBackgroundTexture(true);
+            m_GameController.View.Background.OnLevelStageChanged(args);
+            m_GameController.View.AdditionalBackground.OnLevelStageChanged(args);
+        }
+
+        private void SetNextBackgroundTexture()
+        {
+            if (!ValidAction())
+                return;
+            var args = GetLevelStageArgsForBackgroundTexture(false);
+            m_GameController.View.Background.OnLevelStageChanged(args);
+            m_GameController.View.AdditionalBackground.OnLevelStageChanged(args);
+        }
+
+        private LevelStageArgs GetLevelStageArgsForBackgroundTexture(bool _Current)
+        {
+            var settings = new PrefabSetManager(new AssetBundleManagerFake()).GetObject<ViewSettings>(
+                CommonPrefabSetNames.Configs, "view_settings");
+            int group = RmazorUtils.GetLevelsGroupIndex(m_LevelIndex);
+            int levels = (_Current ? 0 : 1) * RmazorUtils.GetLevelsInGroup(group);
+            m_LevelIndex = MathUtils.ClampInverse(
+                m_LevelIndex + levels, 
+                0, 
+                settings.levelsCountMain - 1);
+            var args = new Dictionary<string, object>
             {
-                EBackAndFrontColorType.Main => _Props.pathBackgroundFillType switch
-                {
-                    EBackAndFrontColorType.Main        => _Props.pathFillFillType,
-                    EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background2,
-                    EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background1,
-                    _                                  => throw new SwitchExpressionException(_Props.pathBackgroundFillType)
-                },
-                EBackAndFrontColorType.Background1 => EBackAndFrontColorType.Background1,
-                EBackAndFrontColorType.Background2 => EBackAndFrontColorType.Background2,
-                _                                  => throw new SwitchExpressionException(_Props.pathFillFillType)
+                {KeySetBackgroundFromEditor, true}
             };
-            return _Props.GetColor(colorType);
+            var fakeArgs = new LevelStageArgs(
+                m_LevelIndex, 
+                ELevelStage.Loaded, 
+                ELevelStage.Unloaded, 
+                ELevelStage.ReadyToUnloadLevel,
+                ELevelStage.Finished,
+                float.PositiveInfinity,
+                args);
+            return fakeArgs;
+        }
+
+        private bool ValidAction()
+        {
+            if (!Application.isPlaying)
+            {
+                Dbg.LogWarning("This option is available only in play mode");
+                return false;
+            }
+            m_GameController = FindObjectOfType<GameControllerMVC>();
+            if (m_GameController != null)
+                return true;
+            Dbg.LogError("Game Controller was not found.");
+            return false;
         }
     }
 }

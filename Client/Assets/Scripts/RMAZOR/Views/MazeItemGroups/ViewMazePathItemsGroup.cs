@@ -9,14 +9,16 @@ using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
+using RMAZOR.Models.MazeInfos;
 using RMAZOR.Views.Helpers.MazeItemsCreators;
+using RMAZOR.Views.MazeItems;
 using RMAZOR.Views.MazeItems.ViewMazeItemPath;
 
 namespace RMAZOR.Views.MazeItemGroups
 {
     public interface IViewMazePathItemsGroup :
+        IViewMazeItemGroup,
         IInit,
-        IOnLevelStageChanged,
         ICharacterMoveStarted,
         ICharacterMoveContinued,
         ICharacterMoveFinished,
@@ -126,6 +128,12 @@ namespace RMAZOR.Views.MazeItemGroups
         
         public virtual void OnPathCompleted(V2Int _LastPath)
         {
+        }
+        
+        public IEnumerable<EMazeItemType> Types => new EMazeItemType[0];
+        public IEnumerable<IViewMazeItem> GetActiveItems()
+        {
+            return PathItems;
         }
 
         #endregion

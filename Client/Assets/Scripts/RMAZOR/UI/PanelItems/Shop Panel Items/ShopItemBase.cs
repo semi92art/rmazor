@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
+using Common.Managers.Advertising;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
+using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
@@ -16,14 +18,12 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
 {
     public class ViewShopItemInfo
     {
-        public int    PurchaseKey      { get; set; }
-        public bool   BuyForWatchingAd { get; set; }
-        public string Price            { get; set; }
-        public bool   Ready            { get; set; }
-        public Sprite Icon             { get; set; }
-        public Sprite Background       { get; set; }
-        public string Currency         { get; set; }
-        public int    Reward           { get; set; }
+        public IAP_ProductInfo ShopItemArgs     { get; set; }
+        public int          PurchaseKey      { get; set; }
+        public bool         BuyForWatchingAd { get; set; }
+        public Sprite       Icon             { get; set; }
+        public Sprite       Background       { get; set; }
+        public int          Reward           { get; set; }
     }
     
     public abstract class ShopItemBase : SimpleUiItem
@@ -43,6 +43,8 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
         
         private ViewShopItemInfo m_Info;
         private IEnumerator      m_StopIndicateLoadingCoroutine;
+        
+        private IAdsManager AdsManager { get; set; }
 
         #endregion
 
@@ -52,13 +54,15 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             IUITicker            _UITicker,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager,
+            IAdsManager          _AdsManager,
             UnityAction          _Click,
             ViewShopItemInfo     _Info)
         {
+            AdsManager = _AdsManager;
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             m_Info = _Info;
-            LocalizationManager.AddLocalization(new LocTextInfo(title, ETextType.MenuUI));
-            LocalizationManager.AddLocalization(new LocTextInfo(price, ETextType.MenuUI));
+            LocalizationManager.AddLocalization(new LocTextInfo(title, ETextType.MenuUI_H1));
+            LocalizationManager.AddLocalization(new LocTextInfo(price, ETextType.MenuUI_H1));
             watchAdImage.SetGoActive(true);
             loadingAnim.SetGoActive(true);
             name = "Shop Item";
@@ -67,6 +71,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             itemIcon.sprite = _Info.Icon;
             if (_Info.Background.IsNotNull())
                 background.sprite = _Info.Background;
+            Cor.Run(IndicateLoadingCoroutine());
         }
         
         public override void Init(
@@ -77,31 +82,19 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             throw new NotSupportedException();
         }
 
-        public void UpdateState(
-            Func<bool>  _Ready,
-            UnityAction _OnFinish)
-        {
-            bool ready = _Ready();
-            IndicateLoading(!ready);
-            if (ready)
-            {
-                FinishAction();
-                return;
-            }
-            m_StopIndicateLoadingCoroutine = Cor.WaitWhile(
-                () => !_Ready(),
-                () =>
-                {
-                    IndicateLoading(false);
-                    _OnFinish?.Invoke();
-                    FinishAction();
-                });
-            Cor.Run(m_StopIndicateLoadingCoroutine);
-        }
-
         #endregion
 
         #region nonpublic methods
+
+        private IEnumerator IndicateLoadingCoroutine()
+        {
+            IndicateLoading(true);
+            yield return Cor.WaitWhile(() => m_Info == null 
+                ? AdsManager.RewardedAdReady
+                : m_Info.ShopItemArgs != null && m_Info.ShopItemArgs.Result() == EShopProductResult.Pending);
+            IndicateLoading(false);
+            FinishAction();
+        }
         
         private void IndicateLoading(bool _Indicate)
         {
@@ -116,7 +109,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             price.SetGoActive(!m_Info.BuyForWatchingAd);
             if (m_Info.BuyForWatchingAd) 
                 return;
-            price.text = $"{m_Info.Price}";
+            price.text = $"{m_Info.ShopItemArgs.LocalizedPriceString}";
             if (!string.IsNullOrEmpty(price.text))
                 return;
             price.text = LocalizationManager.GetTranslation("buy");

@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common.Managers.PlatformGameServices;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Managers;
-using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Constants;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
@@ -16,21 +19,22 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
     public class CustomizeCharacterPanelCharacterItemArgsFull
         : CustomizeCharacterPanelCharacterItemArgsFullBase
     {
-        public Sprite                                   CharacterIconSprite { get; set; }
-        public int                                      CharacterId         { get; set; }
+        public Sprite CharacterIconSprite { get; set; }
+        public string NameLocalizationKey { get; set; }
     }
     
     public class CustomizeCharacterPanelItemCustomCharacter : CustomizeCharacterPanelItemBase
     {
         #region serialized fields
 
-        [SerializeField] private Image characterIcon;
+        [SerializeField] private Image           characterIcon;
+        [SerializeField] private TextMeshProUGUI characterName;
 
         #endregion
 
         #region nonpublic members
 
-        protected override int InternalId => CharacterItemArgsFull.CharacterId;
+        protected override SaveKey<List<string>> IdsOfBoughtItemsSaveKey => SaveKeysRmazor.IdsOfBoughtCharacters;
         
         private IViewInputCommandsProceeder CommandsProceeder { get; set; }
 
@@ -44,12 +48,12 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
             IUITicker                                    _UITicker,
             IAudioManager                                _AudioManager,
             ILocalizationManager                         _LocalizationManager,
-            IShopManager                                 _ShopManager,
             IScoreManager                                _ScoreManager,
             IAnalyticsManager                            _AnalyticsManager,
             Func<int>                                    _GetCharacterLevel,
             IViewInputCommandsProceeder                  _CommandsProceeder,
-            CustomizeCharacterPanelCharacterItemArgsFull _CharacterItemArgs)
+            CustomizeCharacterPanelCharacterItemArgsFull _CharacterItemArgs,
+            UnityAction                                  _OpenShopPanel)
         {
             CharacterItemArgsFull = _CharacterItemArgs;
             CommandsProceeder     = _CommandsProceeder;
@@ -57,19 +61,17 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
                 _UITicker, 
                 _AudioManager, 
                 _LocalizationManager,
-                _ShopManager,
                 _ScoreManager,
                 _AnalyticsManager,
-                _CharacterItemArgs.AccessConditionArgs, 
-                _CharacterItemArgs.CoastArgs,
-                _CharacterItemArgs.HasReceiptArgs,
-                _GetCharacterLevel);
+                _CharacterItemArgs,
+                _GetCharacterLevel,
+                _OpenShopPanel);
         }
 
         public override void UpdateState()
         {
             base.UpdateState();
-            UpdateCharacterIcon();
+            UpdateCharacterIconAndName();
         }
 
         #endregion
@@ -80,47 +82,34 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
         {
             var args = new Dictionary<string, object>
             {
-                {ComInComArg.KeyCharacterId, CharacterItemArgsFull.CharacterId}
+                {ComInComArg.KeyCharacterId, CharacterItemArgsFull.Id}
             };
             CommandsProceeder.RaiseCommand(EInputCommand.SelectCharacter, args);
-            SaveUtils.PutValue(SaveKeysRmazor.CharacterId, CharacterItemArgsFull.CharacterId);
+            SaveUtils.PutValue(SaveKeysRmazor.CharacterIdV2, CharacterItemArgsFull.Id);
         }
 
-        private void UpdateCharacterIcon()
+        private void UpdateCharacterIconAndName()
         {
             characterIcon.sprite = CharacterItemArgsFull.CharacterIconSprite;
+            characterName.text = LocalizationManager.GetTranslation(CharacterItemArgsFull.NameLocalizationKey);
+            
         }
 
-        protected override void UpdateAccessState()
-        {
-            base.UpdateAccessState();
-            bool accessibleForUse = IsItemAccessibleForUse();
-            if (!accessibleForUse)
-                return;
-            var iconRtr = characterIcon.rectTransform;
-            iconRtr.anchorMin        = Vector2.one * 0.5f;
-            iconRtr.anchorMax        = Vector2.one * 0.5f;
-            iconRtr.anchoredPosition = Vector2.zero;
-            iconRtr.pivot            = Vector2.one * 0.5f;
-            iconRtr.sizeDelta        = Vector2.one * 78f;
-        }
-
-        protected override void OnBuyForGameMoneyButtonClick()
+        protected override void BuyForGameMoney()
         {
             PlayButtonClickSound();
             var args = new Dictionary<string, object>
-            {{AnalyticIdsRmazor.ParameterCharacterId, CharacterItemArgsFull.CharacterId}};
+            {{AnalyticIdsRmazor.ParameterCharacterId, CharacterItemArgsFull.Id}};
             AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.BuyCharacterForGameMoneyButtonClick, args);
-            base.OnBuyForGameMoneyButtonClick();
+            base.BuyForGameMoney();
         }
 
-        protected override void OnBuyForRealMoneyButtonClick()
+        protected override void LocalizeTextObjectsOnInit()
         {
-            PlayButtonClickSound();
-            var args = new Dictionary<string, object>
-                {{AnalyticIdsRmazor.ParameterCharacterId, CharacterItemArgsFull.CharacterId}};
-            AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.BuyCharacterForRealMoneyButtonClick, args);
-            base.OnBuyForRealMoneyButtonClick();
+            var locInfo = new LocTextInfo(characterName, ETextType.MenuUI_H1,
+                CharacterItemArgsFull.NameLocalizationKey);
+            LocalizationManager.AddLocalization(locInfo);
+            base.LocalizeTextObjectsOnInit();
         }
 
         #endregion

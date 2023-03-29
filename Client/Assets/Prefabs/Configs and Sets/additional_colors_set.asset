@@ -16,11 +16,11 @@ MonoBehaviour:
     array:
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
-      bacground2: {r: 0.63390803, g: 0.6698113, b: 0.2748754, a: 1}
+      bacground2: {r: 0.764151, g: 0.69065326, b: 0.24150053, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 0
       uiBackgroundFillType: 0
       bloom:
@@ -35,7 +35,56 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 3.37
-        backgroundName: skyline
+        backgroundName: sunflow
+        additionalBackgroundName: additional_background_texture_1
+        arguments: []
+    - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
+      bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
+      bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: fibrous_rings
+        additionalBackgroundName: additional_background_texture_1
+        arguments:
+        - daily_challenge
+    - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
+      bacground1: {r: 0.6603774, g: 0.5875572, b: 0.4765931, a: 1}
+      bacground2: {r: 0.509434, g: 0.2763439, b: 0.35245493, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0
+        color: {r: 0, g: 0, b: 0, a: 0}
+        amount: 0
+        threshold: 0
+        softness: 0
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: fibrous_rings
         additionalBackgroundName: additional_background_texture_1
         arguments: []
     - main: {r: 0, g: 0.5397725, b: 1, a: 1}
@@ -62,56 +111,8 @@ MonoBehaviour:
         backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
         arguments:
-        - big_levels
-    - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
-      bacground1: {r: 0.6603774, g: 0.5875572, b: 0.4765931, a: 1}
-      bacground2: {r: 0.509434, g: 0.2763439, b: 0.35245493, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 0
-        diffusion: 0
-        color: {r: 0, g: 0, b: 0, a: 0}
-        amount: 0
-        threshold: 0
-        softness: 0
-      additionalInfo:
-        dark: 0
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: fibrous_rings
-        additionalBackgroundName: additional_background_texture_1
-        arguments: []
-    - main: {r: 0.2264151, g: 0, b: 0.07318465, a: 1}
-      bacground1: {r: 0.7924528, g: 0.5250343, b: 0.33268064, a: 1}
-      bacground2: {r: 0.6037736, g: 0, b: 0.19515905, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 0
-        diffusion: 0
-        color: {r: 0, g: 0, b: 0, a: 0}
-        amount: 0
-        threshold: 0
-        softness: 0
-      additionalInfo:
-        dark: 0
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: white_fire
-        additionalBackgroundName: additional_background_texture_1
-        arguments:
-        - daily_challenge
+        - bonus
+        - disable_for_main
     - main: {r: 1, g: 0.07954545, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.3584906, g: 0.11131402, b: 0.093004644, a: 1}
@@ -133,23 +134,24 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: rave_squares
+        backgroundName: squares_fall
         additionalBackgroundName: additional_background_texture_1
-        arguments: []
-    - main: {r: 1, g: 0, b: 0.721591, a: 1}
+        arguments:
+        - disable_for_main
+    - main: {r: 0.4433962, g: 0, b: 0.24517208, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.5660378, g: 0.15752938, b: 0.4522962, a: 1}
-      inUse: 0
-      pathItemFillType: 0
+      bacground2: {r: 0, g: 1, b: 1, a: 1}
+      inUse: 1
+      pathItemFillType: 2
       pathBackgroundFillType: 1
       pathFillFillType: 2
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.6
         color: {r: 1, g: 0, b: 0.72156864, a: 1}
-        amount: 300
+        amount: 100
         threshold: 10
         softness: 1
       additionalInfo:
@@ -157,9 +159,11 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: toon_rain
+        backgroundName: synthwave
         additionalBackgroundName: additional_background_texture_1
-        arguments: []
+        arguments:
+        - random
+        - disable_for_main
     - main: {r: 0.07058824, g: 0.09610473, b: 0.16862746, a: 1}
       bacground1: {r: 0.503293, g: 0.63806975, b: 0.735849, a: 1}
       bacground2: {r: 0.2206746, g: 0.5724457, b: 0.8207547, a: 1}

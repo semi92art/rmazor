@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Utils;
+using RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items;
 using RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items;
 using UnityEngine;
 
@@ -23,8 +24,18 @@ namespace RMAZOR
         private static SaveKey<Dictionary<long, float>>    _bonusLevelTimeRecordsDict;
         private static SaveKey<Dictionary<DateTime, bool>> _dailyRewardGot;
         private static SaveKey<List<DailyChallengeInfo>>   _dailyChallengeInfos;
-        private static SaveKey<int>                        _characterId;
-        private static SaveKey<int>                        _characterColorSetId;
+        private static SaveKey<string>                     _characterIdV2;
+        private static SaveKey<string>                     _characterColorSetIdV2;
+        private static SaveKey<bool>                       _retroModeOn;
+        private static SaveKey<bool>                       _mainGameModeLoadedAtLeastOnce;
+        private static SaveKey<List<string>>               _idsOfBoughtCharacters;
+        private static SaveKey<List<string>>               _idsOfBoughtColorSets;
+        private static SaveKey<TimeSpan>                   _specialOfferTimePassedInMinutes;
+        private static SaveKey<bool>                       _retroModeUnlocked; 
+        private static SaveKey<bool>                       _fullCustomizationUnlocked;
+        private static SaveKey<float>                      _multiplyNewCoinsCoefficient;
+
+        private static SaveKey<Dictionary<string, List<Badge>>> _tabBadgesDict;
 
         private static SaveKey<bool> _mainMenuButtonDailyChallengeBadgeNewMustBeHidden;
         private static SaveKey<bool> _mainMenuButtonRandomBadgeNewMustBeHidden;
@@ -61,10 +72,12 @@ namespace RMAZOR
             _dailyRewardGot ??= new SaveKey<Dictionary<DateTime, bool>>(nameof(DailyRewardGot));
         public static SaveKey<List<DailyChallengeInfo>> DailyChallengeInfos =>
             _dailyChallengeInfos ??= new SaveKey<List<DailyChallengeInfo>>(nameof(DailyChallengeInfos));
-        public static SaveKey<int> CharacterId =>
-            _characterId ??= new SaveKey<int>(nameof(CharacterId));
-        public static SaveKey<int> CharacterColorSetId =>
-            _characterColorSetId ??= new SaveKey<int>(nameof(CharacterColorSetId));
+        public static SaveKey<string> CharacterIdV2 =>
+            _characterIdV2 ??= new SaveKey<string>(nameof(CharacterIdV2));
+        public static SaveKey<string> CharacterColorSetIdV2 =>
+            _characterColorSetIdV2 ??= new SaveKey<string>(nameof(CharacterColorSetIdV2));
+        public static SaveKey<bool> RetroModeOn =>
+            _retroModeOn ??= new SaveKey<bool>(nameof(RetroModeOn));
 
         public static SaveKey<bool> MainMenuButtonDailyChallengeBadgeNewMustBeHidden =>
             _mainMenuButtonDailyChallengeBadgeNewMustBeHidden ??=
@@ -75,6 +88,27 @@ namespace RMAZOR
         public static SaveKey<bool> MainMenuButtonPuzzlesBadgeNewMustBeHidden =>
             _mainMenuButtonPuzzlesBadgeNewMustBeHidden ??=
                 new SaveKey<bool>(nameof(MainMenuButtonPuzzlesBadgeNewMustBeHidden));
+
+        public static SaveKey<Dictionary<string, List<Badge>>> TabBadgesDict => 
+            _tabBadgesDict ??= new SaveKey<Dictionary<string, List<Badge>>>(nameof(TabBadgesDict));
+        public static SaveKey<bool> MainGameModeLoadedAtLeastOnce =>
+            _mainGameModeLoadedAtLeastOnce ??= new SaveKey<bool>(nameof(MainGameModeLoadedAtLeastOnce));
+
+        public static SaveKey<List<string>> IdsOfBoughtCharacters =>
+            _idsOfBoughtCharacters ??= new SaveKey<List<string>>(nameof(IdsOfBoughtCharacters));
+        public static SaveKey<List<string>> IdsOfBoughtColorSets =>
+            _idsOfBoughtColorSets ??= new SaveKey<List<string>>(nameof(IdsOfBoughtColorSets));
+
+        public static SaveKey<TimeSpan> SpecialOfferTimePassedInMinutes =>
+            _specialOfferTimePassedInMinutes ??= new SaveKey<TimeSpan>(nameof(SpecialOfferTimePassedInMinutes));
+
+        public static SaveKey<bool> RetroModeUnlocked =>
+            _retroModeUnlocked ?? new SaveKey<bool>(nameof(RetroModeUnlocked));
+        public static SaveKey<bool> FullCustomizationUnlocked =>
+            _fullCustomizationUnlocked ?? new SaveKey<bool>(nameof(FullCustomizationUnlocked));
+
+        public static SaveKey<float> MultiplyNewCoinsCoefficient =>
+            _multiplyNewCoinsCoefficient ?? new SaveKey<float>(nameof(MultiplyNewCoinsCoefficient));
 
         public static SaveKey<bool> IsTutorialFinished(string _TutorialName)
         {
@@ -100,9 +134,17 @@ namespace RMAZOR
             _mainLevelTimeRecordsDict   = null;
             _bonusLevelTimeRecordsDict  = null;
             _dailyChallengeInfos        = null;
-            _characterId                = null;
-            _characterColorSetId        = null;
+            _characterIdV2              = null;
+            _characterColorSetIdV2      = null;
+            _retroModeOn                = null;
+            _tabBadgesDict              = null;
+            _idsOfBoughtCharacters      = null;
+            _idsOfBoughtColorSets       = null;
+            _retroModeUnlocked          = null;
+            _fullCustomizationUnlocked  = null;
             
+            _specialOfferTimePassedInMinutes                  = null;
+            _mainGameModeLoadedAtLeastOnce                    = null;
             _mainMenuButtonDailyChallengeBadgeNewMustBeHidden = null; 
             _mainMenuButtonRandomBadgeNewMustBeHidden         = null;
             _mainMenuButtonPuzzlesBadgeNewMustBeHidden        = null;
@@ -122,9 +164,24 @@ namespace RMAZOR
             SaveUtils.PutValue(BonusLevelTimeRecordsDict,SaveUtils.GetValue(BonusLevelTimeRecordsDict),onlyCache);
             SaveUtils.PutValue(DailyRewardGot,           SaveUtils.GetValue(DailyRewardGot),           onlyCache);
             SaveUtils.PutValue(DailyChallengeInfos,      SaveUtils.GetValue(DailyChallengeInfos),      onlyCache);
-            SaveUtils.PutValue(CharacterColorSetId,      SaveUtils.GetValue(CharacterColorSetId),      onlyCache);
-            SaveUtils.PutValue(CharacterId,              SaveUtils.GetValue(CharacterId),              onlyCache);
+            SaveUtils.PutValue(CharacterColorSetIdV2,    SaveUtils.GetValue(CharacterColorSetIdV2),    onlyCache);
+            SaveUtils.PutValue(CharacterIdV2,            SaveUtils.GetValue(CharacterIdV2),            onlyCache);
+            SaveUtils.PutValue(RetroModeOn,              SaveUtils.GetValue(RetroModeOn),              onlyCache);
+            SaveUtils.PutValue(TabBadgesDict,            SaveUtils.GetValue(TabBadgesDict),            onlyCache);
+            SaveUtils.PutValue(IdsOfBoughtCharacters,    SaveUtils.GetValue(IdsOfBoughtCharacters),    onlyCache);
+            SaveUtils.PutValue(IdsOfBoughtColorSets,     SaveUtils.GetValue(IdsOfBoughtColorSets),     onlyCache);
+            SaveUtils.PutValue(RetroModeUnlocked,        SaveUtils.GetValue(RetroModeUnlocked),        onlyCache);
+            SaveUtils.PutValue(FullCustomizationUnlocked,SaveUtils.GetValue(FullCustomizationUnlocked),onlyCache);
             
+            SaveUtils.PutValue(MultiplyNewCoinsCoefficient,
+                SaveUtils.GetValue(MultiplyNewCoinsCoefficient),
+                onlyCache);
+            SaveUtils.PutValue(SpecialOfferTimePassedInMinutes,   
+                SaveUtils.GetValue(SpecialOfferTimePassedInMinutes),  
+                onlyCache);
+            SaveUtils.PutValue(MainGameModeLoadedAtLeastOnce,
+                SaveUtils.GetValue(MainGameModeLoadedAtLeastOnce), 
+                onlyCache);
             SaveUtils.PutValue(MainMenuButtonDailyChallengeBadgeNewMustBeHidden,
                 SaveUtils.GetValue(MainMenuButtonDailyChallengeBadgeNewMustBeHidden),      
                 onlyCache);
@@ -143,6 +200,7 @@ namespace RMAZOR
                 SaveUtils.PutValue(saveKey, SaveUtils.GetValue(saveKey), onlyCache);
                 _mazeItemsTutorialsFinished.SetSafe(tutorialName, saveKey);
             }
+            
         }
 
         public static IEnumerable<string> GetAllTutorialNames()

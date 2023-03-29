@@ -11,6 +11,9 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Models;
+using RMAZOR.Settings;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.Utils;
 using UnityEngine;
 using static RMAZOR.Models.ComInComArg;
 using static Common.ColorIds;
@@ -52,6 +55,9 @@ namespace RMAZOR.Views.Common
         private BloomPropsArgs m_BloomPropsArgs;
 
         protected AdditionalColorPropsAdditionalInfo AdditionalInfo;
+        
+        private int  m_RandomModeColorPropsIndex;
+        private bool m_IsRetroMode;
 
         #endregion
 
@@ -60,21 +66,27 @@ namespace RMAZOR.Views.Common
         private   GlobalGameSettings      GlobalGameSettings { get; }
         private   ViewSettings            ViewSettings       { get; }
         protected IRemotePropertiesRmazor RemoteProperties   { get; }
+        private   IModelGame              Model              { get; }
         protected IColorProvider          ColorProvider      { get; }
         protected IPrefabSetManager       PrefabSetManager   { get; }
+        private   IRetroModeSetting       RetroModeSetting   { get; }
 
         protected ViewMazeBackgroundTextureControllerBase(
             GlobalGameSettings      _GlobalGameSettings,
             ViewSettings            _ViewSettings,
             IRemotePropertiesRmazor _RemoteProperties,
+            IModelGame              _Model,
             IColorProvider          _ColorProvider,
-            IPrefabSetManager       _PrefabSetManager)
+            IPrefabSetManager       _PrefabSetManager,
+            IRetroModeSetting       _RetroModeSetting)
         {
             GlobalGameSettings = _GlobalGameSettings;
             ViewSettings       = _ViewSettings;
             RemoteProperties   = _RemoteProperties;
+            Model              = _Model;
             ColorProvider      = _ColorProvider;
             PrefabSetManager   = _PrefabSetManager;
+            RetroModeSetting   = _RetroModeSetting;
         }
 
         #endregion
@@ -83,6 +95,7 @@ namespace RMAZOR.Views.Common
         
         public override void Init()
         {
+            RetroModeSetting.ValueSet += OnRetroModeSettingValueSet;
             LoadSets();
             base.Init();
         }
@@ -95,7 +108,7 @@ namespace RMAZOR.Views.Common
                 KeySetBackgroundFromEditor, out bool keyExist);
             if (keyExist && (bool)setBackgroundFromEditorArg)
                 return;
-            SetColorsOnNewLevel(_Args);
+            SetColors(_Args);
         }
 
         public CurrentLevelBackgroundTexturesArgs GetBackgroundColorArgs()
@@ -109,6 +122,15 @@ namespace RMAZOR.Views.Common
 
         #region nonpublic methods
         
+        private void OnRetroModeSettingValueSet(bool _Value)
+        {
+            var levelStageArgs = Model.LevelStaging.GetCurrentLevelStageArguments();
+            if (levelStageArgs.LevelStage == ELevelStage.None)
+                return;
+            SetColors(levelStageArgs);
+            ActivateAndShowBackgroundTexture(levelStageArgs);
+        }
+        
         protected virtual void LoadSets()
         {
             m_ColorPropsList = RemoteProperties.BackAndFrontColorsSet
@@ -120,14 +142,16 @@ namespace RMAZOR.Views.Common
                 CommonPrefabSetNames.Configs, "additional_colors_set");
             m_ColorPropsList = additionalBackgroundColorsSet.set
                 .Where(_Item => _Item.inUse)
-                    .ToList();
+                .ToList();
         }
 
-        private void SetColorsOnNewLevel(LevelStageArgs _Args)
+        private void SetColors(LevelStageArgs _Args)
         {
+            if (_Args.LevelStage == ELevelStage.None)
+                return;
             var setItemCurrent = GetAdditionalColorsSetItemIndexForLevel(_Args);
-            BackCol1Current = GetAdditionalColor(Background1, setItemCurrent);
-            BackCol2Current = GetAdditionalColor(Background2, setItemCurrent);
+            BackCol1Current    = GetAdditionalColor(Background1, setItemCurrent);
+            BackCol2Current    = GetAdditionalColor(Background2, setItemCurrent);
             var colorIdsSetItemCurrent = new[]
                 {Main, PathItem, PathFill, PathBackground, UiBackground, GameUiAlternative, Background1, Background2};
             foreach (int colorId in colorIdsSetItemCurrent)
@@ -137,6 +161,9 @@ namespace RMAZOR.Views.Common
             BackCol2Prev = GetAdditionalColor(Background2, setItemPrev);
             m_BloomPropsArgs = setItemCurrent.bloom;
             AdditionalInfo = setItemCurrent.additionalInfo;
+            ColorProvider.SetColor(MazeItem1, RetroModeSetting.Get()
+                ? Color.red
+                : Color.white);
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorsSetItemIndexForLevel(
@@ -162,8 +189,14 @@ namespace RMAZOR.Views.Common
             bool           _ForPreviousLevel,
             bool           _ForNextLevel)
         {
-            string levelType = (string) _Args.Arguments.GetSafe(KeyNextLevelType, out _);
-            var colorPropsListForMainGameMode = GetColorPropsList(true);
+            if (RetroModeSetting.Get())
+                return GetAdditionalColorPropsForGameModeRandom();
+            string levelType = ViewLevelStageSwitcherUtils.GetNextLevelType(_Args.Arguments);
+            if (levelType == ParameterLevelTypeBonus)
+                return m_ColorPropsList.FirstOrDefault(_Props => _Props.additionalInfo.arguments.Contains("bonus"));
+            var propsForLevelTypeMain = m_ColorPropsList
+                .Where(_Props => !_Props.additionalInfo.arguments.Contains("disable_for_main"))
+                .ToList();
             bool isBonusLevel = levelType == ParameterLevelTypeBonus;
             int levelIndex = (int)_Args.LevelIndex;
             if (_ForPreviousLevel && !isBonusLevel)
@@ -173,27 +206,28 @@ namespace RMAZOR.Views.Common
             int setItemIdx = isBonusLevel ?
                 levelIndex * GlobalGameSettings.extraLevelEveryNStage
                 : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
-            setItemIdx %= colorPropsListForMainGameMode.Count;
+            setItemIdx %= propsForLevelTypeMain.Count;
             if (setItemIdx < 0) setItemIdx = 0;
-            var colorsSet = colorPropsListForMainGameMode[setItemIdx];
+            var colorsSet = propsForLevelTypeMain[setItemIdx];
             return colorsSet;
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeRandom()
         {
-            var colorPropsListForMainGameMode = GetColorPropsList(false);
-            int setItemIdx = Mathf.FloorToInt(colorPropsListForMainGameMode.Count * Random.value);
-            var colorsSet = colorPropsListForMainGameMode[setItemIdx];
-            return colorsSet;
+            return GetAdditionalColorPropsWithConcreteArgument("random");
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeDailyChallenge()
         {
+            if (RetroModeSetting.Get())
+                return GetAdditionalColorPropsForGameModeRandom();
             return GetAdditionalColorPropsWithConcreteArgument("daily_challenge");
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModePuzzles(LevelStageArgs _Args)
         {
+            if (RetroModeSetting.Get())
+                return GetAdditionalColorPropsForGameModeRandom();
             object showHintArg1 = _Args.Arguments.GetSafe(KeyShowPuzzleLevelHint, out bool showHintArgKeyExist);
             string puzzlesArgName = showHintArgKeyExist && (bool) showHintArg1
                 ? "puzzle_hint"
@@ -203,14 +237,9 @@ namespace RMAZOR.Views.Common
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeBigLevels()
         {
+            if (RetroModeSetting.Get())
+                return GetAdditionalColorPropsForGameModeRandom();
             return GetAdditionalColorPropsWithConcreteArgument("big_levels");
-        }
-
-        private IList<AdditionalColorsPropsAssetItem> GetColorPropsList(bool _OnlyForMainGameMode)
-        {
-            return !_OnlyForMainGameMode? m_ColorPropsList : m_ColorPropsList
-                .Where(_Props => !_Props.additionalInfo.arguments.Contains("disable_for_main"))
-                .ToList();
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsWithConcreteArgument(string _Argument)
@@ -257,6 +286,8 @@ namespace RMAZOR.Views.Common
             return _Props.GetColor(colorType);
         }
 
+        protected abstract void ActivateAndShowBackgroundTexture(LevelStageArgs _Args);
+
         #endregion
     }
     
@@ -268,15 +299,19 @@ namespace RMAZOR.Views.Common
             GlobalGameSettings      _GlobalGameSettings,
             ViewSettings            _ViewSettings,
             IRemotePropertiesRmazor _RemoteProperties,
+            IModelGame              _Model,
             IColorProvider          _ColorProvider,
             IPrefabSetManager       _PrefabSetManager,
-            ICameraProvider         _CameraProvider)
+            ICameraProvider         _CameraProvider,
+            IRetroModeSetting       _RetroModeSetting)
             : base(
                 _GlobalGameSettings,
                 _ViewSettings,
                 _RemoteProperties,
+                _Model,
                 _ColorProvider,
-                _PrefabSetManager)
+                _PrefabSetManager,
+                _RetroModeSetting)
         {
             CameraProvider = _CameraProvider;
         }
@@ -287,6 +322,8 @@ namespace RMAZOR.Views.Common
             base.Init();
         }
 
+        protected override void ActivateAndShowBackgroundTexture(LevelStageArgs _Args) { }
+        
         private void OnColorChanged(int _ColorId, Color _Color)
         {
             if (_ColorId == Background1)

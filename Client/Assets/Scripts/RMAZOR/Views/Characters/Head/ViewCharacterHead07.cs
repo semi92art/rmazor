@@ -7,6 +7,7 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -20,8 +21,6 @@ namespace RMAZOR.Views.Characters.Head
           IViewCharacterHead07
     {
         #region nonpublic members
-
-        protected override string PrefabName => "character_head_07";
         
         private Disc m_Hair2;
 
@@ -30,20 +29,34 @@ namespace RMAZOR.Views.Characters.Head
         #region inject
 
         protected ViewCharacterHead07(
-            ViewSettings                _ViewSettings,
-            IColorProvider              _ColorProvider,
-            IContainersGetter           _ContainersGetter,
-            IPrefabSetManager           _PrefabSetManager,
-            ICoordinateConverter        _CoordinateConverter,
-            IRendererAppearTransitioner _AppearTransitioner) 
+            ViewSettings                  _ViewSettings,
+            IColorProvider                _ColorProvider,
+            IContainersGetter             _ContainersGetter,
+            IPrefabSetManager             _PrefabSetManager,
+            ICoordinateConverter          _CoordinateConverter,
+            IRendererAppearTransitioner   _AppearTransitioner,
+            IViewInputCommandsProceeder   _CommandsProceeder,
+            IViewCharacterHeadBodyCommon  _BodyCommon,
+            IViewCharacterHeadEyesCommon  _EyesCommon,
+            IViewCharacterHeadMouthCommon _MouthCommon) 
             : base(
                 _ViewSettings, 
                 _ColorProvider,
                 _ContainersGetter, 
                 _PrefabSetManager,
                 _CoordinateConverter, 
-                _AppearTransitioner) { }
+                _AppearTransitioner,
+                _CommandsProceeder,
+                _BodyCommon, 
+                _EyesCommon, 
+                _MouthCommon) { }
         
+        #endregion
+
+        #region api
+
+        public override string Id => "07";
+
         #endregion
 
         #region nonpublic methods
@@ -62,7 +75,7 @@ namespace RMAZOR.Views.Characters.Head
         protected override void InitPrefab()
         {
             base.InitPrefab();
-            var go = PrefabObj;
+            var go = GetCharacterGameObject();
             m_Hair2 = go.GetCompItem<Disc>("hair_2").SetSortingOrder(SortingOrders.Character + 1);
             m_Hair2.enabled = false;
         }

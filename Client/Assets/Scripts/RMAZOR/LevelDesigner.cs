@@ -166,8 +166,6 @@ namespace RMAZOR
                     break;
                 case PlayModeStateChange.ExitingPlayMode:
                     break;
-                default:
-                    throw new SwitchCaseNotImplementedException(_Change);
             }
         }
 

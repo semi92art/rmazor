@@ -1,18 +1,30 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
+using RMAZOR.Models;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
+using UnityEngine;
 
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 {
-    public interface IViewMazeItemPathItemMoneyGetter : IInit, ICloneable
+    public interface IViewMazeItemPathItemMoneyGetter : IInit, ICloneable, IOnLevelStageChanged
     {
         IViewMazeItemPathItemMoney GetItem();
     }
     
     public class ViewMazeItemPathItemMoneyGetter : InitBase, IViewMazeItemPathItemMoneyGetter
     {
+        #region nonpublic members
+
+        private int m_PathItemContentShapeTypeHash;
+        private int 
+            m_PathItemHashDisc,
+            m_PathItemHashSquare,
+            m_PathItemHashEmptyDisc,
+            m_PathItemHashEmptySquare;
+
+        #endregion
+        
         #region inject
 
         private ViewSettings                     ViewSettings        { get; }
@@ -33,14 +45,29 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         #region api
 
+        public override void Init()
+        {
+            if (Initialized)
+                return;
+            m_PathItemHashDisc        = Animator.StringToHash("disc");
+            m_PathItemHashSquare      = Animator.StringToHash("square");
+            m_PathItemHashEmptyDisc   = Animator.StringToHash("empty_disc");
+            m_PathItemHashEmptySquare = Animator.StringToHash("empty_square");
+            base.Init();
+        }
+
         public IViewMazeItemPathItemMoney GetItem()
         {
-            return ViewSettings.pathItemContentShapeType switch
-            {
-                "disc"   => PathItemMoneyDisc,
-                "square" => PathItemMoneySquare,
-                _        => throw new SwitchExpressionException(ViewSettings.pathItemContentShapeType)
-            };
+            if (!Initialized)
+                Init();
+            if (m_PathItemContentShapeTypeHash == 0)
+                m_PathItemContentShapeTypeHash = Animator.StringToHash(ViewSettings.pathItemContentShapeType);
+            int hash = m_PathItemContentShapeTypeHash;
+            if (hash == m_PathItemHashDisc)        return PathItemMoneyDisc;
+            if (hash == m_PathItemHashSquare)      return PathItemMoneySquare;
+            if (hash == m_PathItemHashEmptyDisc)   return PathItemMoneyDisc;
+            if (hash == m_PathItemHashEmptySquare) return PathItemMoneySquare;
+            return PathItemMoneyDisc;
         }
         
         public object Clone()
@@ -53,7 +80,9 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         #endregion
 
+        public void OnLevelStageChanged(LevelStageArgs _Args)
+        {
 
-
+        }
     }
 }

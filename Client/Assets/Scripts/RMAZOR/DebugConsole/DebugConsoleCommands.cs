@@ -117,7 +117,15 @@ namespace RMAZOR.DebugConsole
                 new DebugCommandArgs(
                     "set_character",
                     SetCharacter,
-                    "Set character by id")
+                    "Set character by id"),
+                new DebugCommandArgs(
+                    "set_char_col",
+                    SetCharacterColor,
+                   "Set character color by id"),
+                new DebugCommandArgs(
+                    "set_char_xp",
+                    SetCharacterTotalXp,
+                    "Set character xp")
             };
             foreach (var args in commandArgsList)
                 Controller.RegisterCommand(args);
@@ -410,7 +418,7 @@ namespace RMAZOR.DebugConsole
         
         private static void SetCharacter(string[] _Args)
         {
-            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int characterId))
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !(_Args[0] is { } characterId))
             {
                 Controller.AppendLogLine("Wrong character id format.");
                 return;
@@ -420,6 +428,32 @@ namespace RMAZOR.DebugConsole
                 {KeyCharacterId, characterId}
             };
             Controller.CommandsProceeder.RaiseCommand(EInputCommand.SelectCharacter, args);
+        }
+        
+        private static void SetCharacterColor(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !(_Args[0] is { } colorId))
+            {
+                Controller.AppendLogLine("Wrong character id format.");
+                return;
+            }
+            var args = new Dictionary<string, object>
+            {
+                {KeyCharacterColorId, colorId}
+            };
+            Controller.CommandsProceeder.RaiseCommand(EInputCommand.SelectCharacterColor, args);
+        }
+        
+        private static void SetCharacterTotalXp(string[] _Args)
+        {
+            if (_Args == null || !_Args.Any() || _Args.Length > 1 || !int.TryParse(_Args[0], out int characterXp))
+            {
+                Controller.AppendLogLine("Wrong character id format.");
+                return;
+            }
+            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            savedGame.Arguments.SetSafe(KeyCharacterXp, characterXp);
+            Controller.ScoreManager.SaveGame(savedGame);
         }
     }
 }

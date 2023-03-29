@@ -16,14 +16,16 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
     {
         #region nonpublic members
         
-        protected override bool CanShow
-        {
-            get
-            {
-                var saveKeyValue = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
-                return saveKeyValue.HasValue && saveKeyValue.Value;
-            }
-        }
+        // protected override bool CanShow
+        // {
+        //     get
+        //     {
+        //         var saveKeyValue = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
+        //         return saveKeyValue.HasValue && saveKeyValue.Value;
+        //     }
+        // }
+
+        protected override bool CanShow => true;
 
         protected override string PrefabName => "shop_button";
 

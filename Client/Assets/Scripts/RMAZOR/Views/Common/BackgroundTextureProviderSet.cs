@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common;
-using Common.Helpers;
-using Common.Managers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
@@ -31,17 +28,20 @@ namespace RMAZOR.Views.Common
         
         private IFullscreenTextureProviderCustom     TextureProviderCustom     { get; }
         private IFullscreenTextureProviderTriangles2 TextureProviderTriangles2 { get; }
+        private IFullscreenTextureProviderSynthwave  TextureProviderSynthwave  { get; }
         private IFullscreenTextureProviderEmpty      TextureProviderEmpty      { get; }
         private IPrefabSetManager                    PrefabSetManager          { get; }
 
         public BackgroundTextureProviderSetImpl(
             IFullscreenTextureProviderCustom     _TextureProviderCustom,
             IFullscreenTextureProviderTriangles2 _TextureProviderTriangles2,
+            IFullscreenTextureProviderSynthwave  _TextureProviderSynthwave,
             IFullscreenTextureProviderEmpty      _TextureProviderEmpty,
             IPrefabSetManager                    _PrefabSetManager)
         {
             TextureProviderCustom     = _TextureProviderCustom;
             TextureProviderTriangles2 = _TextureProviderTriangles2;
+            TextureProviderSynthwave  = _TextureProviderSynthwave;
             TextureProviderEmpty      = _TextureProviderEmpty;
             PrefabSetManager          = _PrefabSetManager;
         }
@@ -85,6 +85,7 @@ namespace RMAZOR.Views.Common
                 {
                     "triangles_2" => TextureProviderTriangles2,
                     "empty"       => TextureProviderEmpty,
+                    "synthwave"   => TextureProviderSynthwave,
                     _             => (IFullscreenTextureProvider) TextureProviderCustom.Clone()
                 };
                 var material = Object.Instantiate(setItem.material);

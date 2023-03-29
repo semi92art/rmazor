@@ -7,6 +7,10 @@ namespace RMAZOR
 {
     public static class CommonDataRmazor
     {
+        public const int    RetroModeCharacterLevelToUnlock = 5;
+        public const string CharacterIdDefault              = "01";
+        public const string ColorSetIdDefault               = "yellow";
+        
         public const int CharacterLevelOnStart = 1;
         
         public static int[] LevelsInGroupArray = {3, 3, 3};

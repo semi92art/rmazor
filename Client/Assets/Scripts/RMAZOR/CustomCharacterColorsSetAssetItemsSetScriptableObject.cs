@@ -8,9 +8,7 @@ namespace RMAZOR
     [Serializable]
     public class CustomCharacterColorsSetAssetItem : CustomCharactersAssetItemBase
     {
-        public int   colorSetId;
-        public Color color1;
-        public Color color2;
+        public Color  color1;
     }
     
     [Serializable]

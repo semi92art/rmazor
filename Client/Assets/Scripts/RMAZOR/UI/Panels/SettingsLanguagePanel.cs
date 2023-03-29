@@ -112,7 +112,7 @@ namespace RMAZOR.UI.Panels
 
         protected override void LocalizeTextObjectsOnLoad()
         {
-            var locInfo = new LocTextInfo(m_Title, ETextType.MenuUI, "Language");
+            var locInfo = new LocTextInfo(m_Title, ETextType.MenuUI_H1, "Language");
             Managers.LocalizationManager.AddLocalization(locInfo);
         }
 

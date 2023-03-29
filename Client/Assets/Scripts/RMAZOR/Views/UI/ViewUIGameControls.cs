@@ -276,7 +276,7 @@ namespace RMAZOR.Views.UI
         {
             return new[]
             {
-                EInputCommand.ShopPanel,
+                EInputCommand.ShopMoneyPanel,
                 EInputCommand.SettingsPanel,
                 EInputCommand.DailyGiftPanel,
                 EInputCommand.LevelsPanel,

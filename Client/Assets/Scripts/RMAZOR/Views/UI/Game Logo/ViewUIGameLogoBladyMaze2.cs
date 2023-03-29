@@ -58,12 +58,13 @@ namespace RMAZOR.Views.UI.Game_Logo
         private bool                         m_GameLogoAppeared;
         private Dictionary<string, Animator> m_GameLogoCharAnims;
         private bool                         m_OnStart = true;
-        private GameObject                   m_CompanyLogoObj;
+        // private GameObject                   m_CompanyLogoObj;
         
         #endregion
         
         #region inject
 
+        private CompanyLogoMonoBeh               CompanyLogo         { get; }
         private ICameraProvider                  CameraProvider      { get; }
         private IViewInputCommandsProceeder      CommandsProceeder   { get; }
         private IColorProvider                   ColorProvider       { get; }
@@ -72,6 +73,7 @@ namespace RMAZOR.Views.UI.Game_Logo
         private IViewMazeGameLogoTextureProvider LogoTextureProvider { get; }
 
         private ViewUIGameLogoBladyMaze2(
+            CompanyLogoMonoBeh               _CompanyLogo,
             ICameraProvider                  _CameraProvider,
             IViewInputCommandsProceeder      _CommandsProceeder,
             IColorProvider                   _ColorProvider,
@@ -79,6 +81,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             IPrefabSetManager                _PrefabSetManager,
             IViewMazeGameLogoTextureProvider _LogoTextureProvider)
         {
+            CompanyLogo         = _CompanyLogo;
             CameraProvider      = _CameraProvider;
             CommandsProceeder   = _CommandsProceeder;
             ColorProvider       = _ColorProvider;
@@ -114,8 +117,7 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         public void Show()
         {
-            m_CompanyLogoObj.GetComponent<Canvas>().enabled = false;
-            m_CompanyLogoObj.DestroySafe();
+            CompanyLogo.EnableLogo(false);
             ShowGameLogo();
         }
         
@@ -153,7 +155,6 @@ namespace RMAZOR.Views.UI.Game_Logo
 
         private void InitGameLogo()
         {
-            m_CompanyLogoObj = GameObject.Find("Company Logo Canvas");
             const string prefabName = "game_logo_blady_maze";
             var go = PrefabSetManager.InitPrefab(
                 null,

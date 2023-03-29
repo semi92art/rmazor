@@ -44,6 +44,9 @@ MonoBehaviour:
     - name: transition_texture_material_circles
       item: {fileID: 2100000, guid: afb34e80db91395458d229f0ae343723, type: 2}
       bundle: 0
+    - name: transition_texture_material_circles_2
+      item: {fileID: 2100000, guid: ce8dfd7c52bb42144b208c035827b00b, type: 2}
+      bundle: 0
     - name: transition_texture_material_tria_hex
       item: {fileID: 2100000, guid: fa08a47d2377063498fff8f9dd14e0ec, type: 2}
       bundle: 0

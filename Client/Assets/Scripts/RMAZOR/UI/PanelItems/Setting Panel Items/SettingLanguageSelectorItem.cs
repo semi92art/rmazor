@@ -36,7 +36,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             var currentLang = _LocalizationManager.GetCurrentLanguage();
             languageIcon.sprite = _GetIconFunc(currentLang);
-            var locInfo = new LocTextInfo(title, ETextType.MenuUI, "Language",
+            var locInfo = new LocTextInfo(title, ETextType.MenuUI_H1, "Language",
                 _T => _T.FirstCharToUpper(CultureInfo.CurrentCulture));
             bool langPanelLoaded = false;
             _LocalizationManager.AddLocalization(locInfo);

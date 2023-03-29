@@ -54,8 +54,11 @@ namespace RMAZOR.Views.UI
         {
             switch (_Key)
             {
+                case EInputCommand.ShopMoneyPanel:
+                    ShowShopPanel<IShopMoneyDialogPanel>(_Args);
+                    break;
                 case EInputCommand.ShopPanel:
-                    ShowShopPanel(_Args);
+                    ShowShopPanel<IShopDialogPanel>(_Args);
                     break;
                 case EInputCommand.RateGameFromGameUi:
                 {
@@ -103,9 +106,10 @@ namespace RMAZOR.Views.UI
             }
         }
 
-        private void ShowShopPanel(Dictionary<string, object> _Args)
+        private void ShowShopPanel<T>(Dictionary<string, object> _Args)
+            where T : IDialogPanel, ISetOnCloseFinishAction
         {
-            var panel = DialogPanelsSet.GetPanel<IShopDialogPanel>();
+            var panel = DialogPanelsSet.GetPanel<T>();
             var dv = DialogViewersController.GetViewer(panel.DialogViewerId);
             panel.SetOnCloseFinishAction(() =>
             {

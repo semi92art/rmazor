@@ -8,7 +8,6 @@ namespace Common.Helpers
     {
         public float     adsLoadDelay;
         public bool      debugAnyway;
-        public bool      testAds;
         public ELogLevel logLevel;
         public int       firstLevelToShowAds;
         public int       payToContinueMoneyCount;

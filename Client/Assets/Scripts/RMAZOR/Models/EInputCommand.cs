@@ -22,6 +22,7 @@
         KillCharacter,
         ExitLevelStaging,
         // ui commands
+        ShopMoneyPanel,
         ShopPanel,
         DisableAdsPanel,
         SettingsPanel,
@@ -45,6 +46,7 @@
         GetRecordedCommands,
         PlayRecordedCommands,
         SetRecordCommadsFromClipboard,
-        SelectCharacter
+        SelectCharacter,
+        SelectCharacterColor,
     }
 }

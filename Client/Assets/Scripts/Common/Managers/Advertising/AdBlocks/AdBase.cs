@@ -27,18 +27,20 @@ namespace Common.Managers.Advertising.AdBlocks
         protected abstract string AdSource { get; }
         protected abstract string AdType   { get; }
 
-        protected UnityAction OnShown;
-        protected UnityAction OnClosed;
-        protected UnityAction OnClicked;
-        protected UnityAction OnFailedToShow;
-        protected string      UnitId;
-        private   float       m_LoadAdDelayTimer;
+        protected        UnityAction OnShown;
+        protected        UnityAction OnClosed;
+        protected        UnityAction OnClicked;
+        protected        UnityAction OnFailedToShow;
+        protected        UnityAction OnReward;
+        protected        string      UnitId;
+        private          float       m_LoadAdDelayTimer;
 
         private volatile bool m_DoLoadAdWithDelay;
         private volatile bool m_DoInvokeOnShown;
         private volatile bool m_DoInvokeOnClosed;
         private volatile bool m_DoInvokeOnClicked;
         private volatile bool m_DoInvokeOnFailedToShow;
+        private volatile bool m_DoInvokeOnReward;
         
         #endregion
 
@@ -75,6 +77,7 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             ProceedShownAction();
             ProceedClickedAction();
+            ProceedRewardAction();
             ProceedClosedAction();
             ProceedFailedToShownAction();
             ProceedLoadAdOnDelay();
@@ -84,7 +87,7 @@ namespace Common.Managers.Advertising.AdBlocks
 
         #region nonpublic methods
 
-        protected void ProceedShownAction()
+        private void ProceedShownAction()
         {
             if (!m_DoInvokeOnShown) 
                 return;
@@ -96,7 +99,7 @@ namespace Common.Managers.Advertising.AdBlocks
             m_DoInvokeOnShown = false;
         }
         
-        protected void ProceedClickedAction()
+        private void ProceedClickedAction()
         {
             if (!m_DoInvokeOnClicked)
                 return;
@@ -106,7 +109,7 @@ namespace Common.Managers.Advertising.AdBlocks
             m_DoInvokeOnClicked = false;
         }
 
-        protected void ProceedClosedAction()
+        private void ProceedClosedAction()
         {
             if (!m_DoInvokeOnClosed) 
                 return;
@@ -117,7 +120,7 @@ namespace Common.Managers.Advertising.AdBlocks
             LoadAd();
         }
         
-        protected void ProceedFailedToShownAction()
+        private void ProceedFailedToShownAction()
         {
             if (!m_DoInvokeOnFailedToShow) 
                 return;
@@ -130,7 +133,7 @@ namespace Common.Managers.Advertising.AdBlocks
             m_DoInvokeOnFailedToShow = false;
         }
 
-        protected void ProceedLoadAdOnDelay()
+        private void ProceedLoadAdOnDelay()
         {
             m_LoadAdDelayTimer += CommonTicker.DeltaTime;
             if (!m_DoLoadAdWithDelay)
@@ -142,6 +145,16 @@ namespace Common.Managers.Advertising.AdBlocks
             m_DoLoadAdWithDelay = false;
         }
         
+        private void ProceedRewardAction()
+        {
+            if (!m_DoInvokeOnReward) 
+                return;
+            Dbg.Log("Ad reward action");
+            OnReward?.Invoke();
+            OnReward = null;
+            m_DoInvokeOnReward = false;
+        }
+        
         protected void OnAdLoaded()
         {
             Dbg.Log($"{AdSource}: {AdType} loaded");
@@ -149,7 +162,7 @@ namespace Common.Managers.Advertising.AdBlocks
         
         protected void OnAdFailedToLoad()
         {
-            Dbg.LogWarning($"{AdSource}: {AdType} load failed");
+            // Dbg.LogWarning($"{AdSource}: {AdType} load failed");
             m_DoLoadAdWithDelay = true;
         }
         
@@ -176,6 +189,12 @@ namespace Common.Managers.Advertising.AdBlocks
         {
             Dbg.Log($"{AdSource}: {AdType} clicked");
             m_DoInvokeOnClicked = true;
+        }
+        
+        protected void OnAdRewardGot()
+        {
+            Dbg.Log($"{AdSource}: {AdType} reward got");
+            m_DoInvokeOnReward = true;
         }
 
         #endregion

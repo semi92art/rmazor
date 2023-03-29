@@ -122,9 +122,9 @@ namespace RMAZOR.UI.Panels
             static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_TitleText, ETextType.MenuUI, "play_bonus_level_title", TextFormula),
-                new LocTextInfo(m_PlayButtonText, ETextType.MenuUI, "Play", TextFormula),
-                new LocTextInfo(m_SkipButtonText, ETextType.MenuUI, "skip", TextFormula)
+                new LocTextInfo(m_TitleText, ETextType.MenuUI_H1, "play_bonus_level_title", TextFormula),
+                new LocTextInfo(m_PlayButtonText, ETextType.MenuUI_H1, "Play", TextFormula),
+                new LocTextInfo(m_SkipButtonText, ETextType.MenuUI_H1, "skip", TextFormula)
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);

@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Common.Entities;
 using Common.Helpers;
 using mazing.common.Runtime.Entities;
+using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.Utils;
 using UnityEngine;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views.Helpers.MazeItemsCreators
 {
@@ -18,10 +21,14 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         #region inject
         
         private GlobalGameSettings GlobalGameSettings { get; }
+        private IModelGame         Model              { get; }
 
-        public MoneyItemsOnPathItemsDistributor(GlobalGameSettings _GlobalGameSettings)
+        public MoneyItemsOnPathItemsDistributor(
+            GlobalGameSettings _GlobalGameSettings,
+            IModelGame         _Model)
         {
             GlobalGameSettings = _GlobalGameSettings;
+            Model              = _Model;
         }
 
         #endregion
@@ -30,10 +37,17 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
         
         public IList<V2Int> GetMoneyItemPoints(MazeInfo _Info)
         {
+            float rateCoefficient = 1;
+            string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(Model.LevelStaging.Arguments);
+            string levelType = ViewLevelStageSwitcherUtils.GetNextLevelType(Model.LevelStaging.Arguments);
+            if (gameMode == ParameterGameModeMain && levelType == ParameterLevelTypeBonus)
+            {
+                rateCoefficient = 1;
+            }
             int pathItemsCount = _Info.PathItems.Count;
             if (pathItemsCount < 10)
                 return new List<V2Int>();
-            float rate = GlobalGameSettings.moneyItemsRate;
+            float rate = GlobalGameSettings.moneyItemsRate * rateCoefficient;
             int moneyItemsCount = Mathf.FloorToInt(_Info.PathItems.Count * rate);
             var indices = new List<int>(moneyItemsCount);
             for (int i = 0; i < moneyItemsCount; i++)

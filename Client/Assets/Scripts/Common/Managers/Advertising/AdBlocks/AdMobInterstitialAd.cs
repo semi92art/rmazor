@@ -1,6 +1,4 @@
 ﻿#if ADMOB_API
-
-using System;
 using System.Text;
 using Common.Helpers;
 using UnityEngine.Events;
@@ -35,19 +33,8 @@ namespace Common.Managers.Advertising.AdBlocks
 
         #region api
         
-        public override bool Ready => m_InterstitialAd != null && m_InterstitialAd.IsLoaded();
-        
-        public override void Init(string _AppId, string _UnitId)
-        {
-            m_InterstitialAd = new InterstitialAd(_UnitId);
-            m_InterstitialAd.OnAdLoaded              += OnInterstitialAdLoaded;
-            m_InterstitialAd.OnAdFailedToLoad        += OnInterstitialAdFailedToLoad;
-            m_InterstitialAd.OnAdClosed              += OnInterstitialAdClosed;
-            m_InterstitialAd.OnAdDidRecordImpression += OnAdDidRecordImpression;
-            m_InterstitialAd.OnPaidEvent             += OnInterstitialAdPaidEvent;
-            base.Init(_AppId, _UnitId);
-        }
-        
+        public override bool Ready => m_InterstitialAd != null && m_InterstitialAd.CanShowAd();
+
         public override void ShowAd(
             UnityAction _OnShown, 
             UnityAction _OnClicked,
@@ -58,55 +45,65 @@ namespace Common.Managers.Advertising.AdBlocks
             OnClicked      = _OnClicked;
             OnClosed       = _OnClosed;
             OnFailedToShow = _OnFailedToShow;
+            if (m_InterstitialAd == null)
+                LoadAd();
             m_InterstitialAd.Show();
         }
 
         public override void LoadAd()
         {
             var adRequest = new AdRequest.Builder().Build();
-            m_InterstitialAd.LoadAd(adRequest);
+            InterstitialAd.Load(UnitId, adRequest, AdLoadCallback);
+        }
+
+        private void AdLoadCallback(InterstitialAd _Ad, LoadAdError _Error)
+        {
+            if (_Ad != null && _Error == null)
+            {
+                m_InterstitialAd = _Ad;
+                _Ad.OnAdFullScreenContentOpened += OnAdShown;
+                _Ad.OnAdFullScreenContentClosed += OnAdClosed;
+                _Ad.OnAdFullScreenContentFailed += OnAdFullScreenContentFailed;
+                _Ad.OnAdImpressionRecorded      += OnAdImpressionRecorded;
+                _Ad.OnAdPaid                    += OnInterstitialAdPaidEvent;
+                _Ad.OnAdClicked                 += OnAdClicked;
+                OnAdLoaded();
+            }
+            else
+            {
+                OnInterstitialAdFailedToLoad(_Error);
+            }
         }
 
         #endregion
 
         #region nonpublic methods
-        
-        private void OnInterstitialAdLoaded(object _Sender, EventArgs _E)
-        {
-            OnAdLoaded();
-        }
-        
-        private void OnInterstitialAdFailedToLoad(object _Sender, AdFailedToLoadEventArgs _E)
+
+        private void OnInterstitialAdFailedToLoad(AdError _Error)
         {
             OnAdFailedToLoad();
-            var sb = new StringBuilder();
-            sb.AppendLine("Code: " + _E.LoadAdError.GetCode());
-            sb.AppendLine("Message: " + _E.LoadAdError.GetMessage());
-            sb.AppendLine("Domain: " + _E.LoadAdError.GetDomain());
-            sb.AppendLine("Unit Id: " + UnitId);
-            Dbg.LogWarning(sb);
+            // AdMobAdUtils.LogAdError(_Error);
         }
         
-        private void OnInterstitialAdClosed(object _Sender, EventArgs _E)
+        private void OnInterstitialAdPaidEvent(AdValue _AdValue)
         {
-            OnAdClosed();
-            
+            OnAdRewardGot();
+            var sb = new StringBuilder();
+            AdMobAdUtils.AppendValue(sb, "Precision",    _AdValue.Precision);
+            AdMobAdUtils.AppendValue(sb, "Value",        _AdValue.Value);
+            AdMobAdUtils.AppendValue(sb, "CurrencyCode", _AdValue.CurrencyCode);
+            Dbg.Log(sb);
         }
         
-        private void OnAdDidRecordImpression(object _Sender, EventArgs _E)
+        private void OnAdFullScreenContentFailed(AdError _Error)
+        {
+            OnAdFailedToShow();
+            AdMobAdUtils.LogAdError(_Error);
+        }
+        
+        private static void OnAdImpressionRecorded()
         {
             Dbg.Log("AdMob: Interstitial record impression");
-        }
-        
-        private void OnInterstitialAdPaidEvent(object _Sender, AdValueEventArgs _E)
-        {
-            OnAdShown();
-            OnAdClicked();
-            var sb = new StringBuilder();
-            sb.AppendLine("Precision: " + _E.AdValue.Precision);
-            sb.AppendLine("Value: " + _E.AdValue.Value);
-            sb.AppendLine("CurrencyCode: " + _E.AdValue.CurrencyCode);         
-            Dbg.Log(sb);
         }
 
         #endregion

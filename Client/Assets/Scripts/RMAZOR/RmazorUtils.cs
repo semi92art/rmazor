@@ -39,7 +39,7 @@ namespace RMAZOR
         {
             return new[]
                 {
-                    EInputCommand.ShopPanel,
+                    EInputCommand.ShopMoneyPanel,
                     EInputCommand.SettingsPanel,
                     EInputCommand.DailyGiftPanel,
                     EInputCommand.LevelsPanel,
@@ -399,6 +399,11 @@ namespace RMAZOR
             var keysToRemove = new List<string>();
             foreach ((string key, var value) in _Args.ToList())
             {
+                if (value == null)
+                {
+                    keysToRemove.Add(key);
+                    continue;
+                }
                 var type = value.GetType();
                 if (IsAction(type) || IsFunc(type) || IsUnityAction(type))
                     keysToRemove.Add(key);

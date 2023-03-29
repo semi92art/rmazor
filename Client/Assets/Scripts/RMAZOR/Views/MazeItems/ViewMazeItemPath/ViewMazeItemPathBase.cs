@@ -37,7 +37,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             IManagersGetter             _Managers,
             IColorProvider              _ColorProvider,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewMazeItemPathItem          _PathItem,
+            IViewMazeItemPathItem       _PathItem,
             IViewMazeItemsPathInformer  _Informer)
             : base(
                 _ViewSettings,
@@ -74,7 +74,14 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             if (Initialized)
                 return;
+            PathItem.Init();
             base.Init();
+        }
+
+        public override void OnLevelStageChanged(LevelStageArgs _Args)
+        {
+            PathItem.OnLevelStageChanged(_Args);
+            base.OnLevelStageChanged(_Args);
         }
 
         public abstract void Collect(bool _Collect, bool _OnStart);

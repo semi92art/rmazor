@@ -25,22 +25,11 @@ namespace RMAZOR.UI.Utils
             IUnityTicker    _Ticker)
         {
             if (!_Appear)
-            {
-                // var colorGradingProps = new ColorGradingProps
-                // {
-                //     Contrast       = 0.35f,
-                //     Blur           = 0.2f,
-                //     Saturation     = 0f,
-                //     VignetteAmount = 0f
-                // };
-                // _CameraProvider.EnableEffect(ECameraEffect.ColorGrading, true);
-                // _CameraProvider.SetEffectProps(ECameraEffect.ColorGrading, colorGradingProps);
                 yield break;
-            }
             var effectsToDisable = Enum
                 .GetValues(typeof(ECameraEffect))
                 .Cast<ECameraEffect>()
-                .Except(new [] {ECameraEffect.ColorGrading});
+                .ToList();
             foreach (var effect in effectsToDisable)
                 _CameraProvider.EnableEffect(effect, false);
             float currTime = _Ticker.Time;

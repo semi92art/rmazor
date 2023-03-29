@@ -27,8 +27,10 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
     {
         #region nonpublic members
 
-        private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
-            new AudioClipArgs("collect_point", EAudioClipType.GameSound);
+        private AudioClipArgs AudioClipArgsCollectMoneyItem => 
+            new AudioClipArgs("collect_point", EAudioClipType.GameSound, _Id: m_HashCodeString);
+        
+        private readonly string m_HashCodeString;
 
         private Rectangle m_Shape, m_Border;
         private Animator  m_Animator;
@@ -77,6 +79,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             AudioManager                = _AudioManager;
             Transitioner                = _Transitioner;
             BackgroundTextureController = _BackgroundTextureController;
+            m_HashCodeString = base.GetHashCode().ToString();
         }
 
         #endregion

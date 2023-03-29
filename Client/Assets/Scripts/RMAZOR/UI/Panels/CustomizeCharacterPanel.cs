@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Common;
 using Common.Constants;
@@ -15,6 +14,7 @@ using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Managers;
 using RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items;
 using RMAZOR.UI.Panels.ShopPanels;
@@ -24,15 +24,25 @@ using RMAZOR.Views.InputConfigurators;
 using StansAssets.Foundation.Extensions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using static RMAZOR.Models.ComInComArg;
 using Object = UnityEngine.Object;
 
 namespace RMAZOR.UI.Panels
 {
-    public interface ICustomizeCharacterPanel : IDialogPanel { }
+    public interface ICustomizeCharacterPanel : IDialogPanel
+    {
+        event UnityAction<int> BadgesNumberChanged;
+        int                    GetBadgesCount();
+    }
     
-    public class CustomizeCharacterPanelFake : DialogPanelFake, ICustomizeCharacterPanel { }
+    public class CustomizeCharacterPanelFake : DialogPanelFake, ICustomizeCharacterPanel
+    {
+        public event UnityAction<int> BadgesNumberChanged;
+
+        public int GetBadgesCount() => default;
+    }
     
     public class CustomizeCharacterPanel : DialogPanelBase, ICustomizeCharacterPanel
     {
@@ -44,11 +54,12 @@ namespace RMAZOR.UI.Panels
         private TextMeshProUGUI m_BankMoneyText;
         private Button          m_ButtonAddMoney;
         
-        private TextMeshProUGUI m_CustomCharactersTitle, m_CustomColorSetsTitle;
         private Button          m_ButtonClose;
 
         private ScrollRect    m_CustomCharactersScrollRect, m_CustomColorSetsScrollRect;
         private RectTransform m_CustomCharactersContent,    m_CustomColorSetsContent;
+
+        private TabPanelView m_TabPanelView;
         
         private List<CustomizeCharacterPanelItemCustomCharacter> m_CustomCharacterItemsList;
         private List<CustomizeCharacterPanelItemCustomColorSet>  m_CustomColorSetItemsList;
@@ -58,9 +69,9 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region inject
-        
-        private IShopDialogPanel         ShopDialogPanel         { get; }
+
         private IDialogViewersController DialogViewersController { get; }
+        private IShopDialogPanel         ShopDialogPanel         { get; }
 
         private CustomizeCharacterPanel(
             IManagersGetter             _Managers,
@@ -79,15 +90,22 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            ShopDialogPanel         = _ShopDialogPanel;
             DialogViewersController = _DialogViewersController;
+            ShopDialogPanel         = _ShopDialogPanel;
         }
 
         #endregion
 
         #region api
 
+        public event UnityAction<int> BadgesNumberChanged;
+        
         public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
+        
+        public int GetBadgesCount()
+        {
+            return m_TabPanelView.GetBadges().Count(_B => _B.Number > 0);
+        }
 
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
@@ -96,20 +114,28 @@ namespace RMAZOR.UI.Panels
             LoadCustomCharacterColorSetsArgsList();
             InitPanelItems();
             AssignCurrentItems();
+            m_TabPanelView.BadgesChanged += OnTabPanelBadgesChanged;
+            InitTabView();
             Managers.ScoreManager.GameSaved -= OnGameSaved;
             Managers.ScoreManager.GameSaved += OnGameSaved;
-        }
-        
-        protected override void OnDialogStartAppearing()
-        {
-            base.OnDialogStartAppearing();
-            UpdateState();
         }
 
         #endregion
 
         #region nonpublic methods
         
+        protected override void OnDialogStartAppearing()
+        {
+            base.OnDialogStartAppearing();
+            UpdateState();
+        }
+        
+        private void OnTabPanelBadgesChanged(List<Badge> _Badges)
+        {
+            int badgesNum = _Badges.Count(_B => _B.Number > 0);
+            BadgesNumberChanged?.Invoke(badgesNum);
+        }
+
         private void OnGameSaved(SavedGameEventArgs _Args)
         {
             var savedGame = (SavedGameV2) _Args.SavedGame;
@@ -137,20 +163,21 @@ namespace RMAZOR.UI.Panels
                     Ticker,
                     Managers.AudioManager,
                     Managers.LocalizationManager,
-                    Managers.ShopManager,
                     Managers.ScoreManager,
                     Managers.AnalyticsManager,
                     GetCharacterLevel,
                     CommandsProceeder,
-                    _Args);
+                    _Args,
+                    OnShopButtonClick);
                 viewComponent.Selected += _Id =>
                 {
                     foreach (var viewComp in m_CustomCharacterItemsList
-                        .Where(_Item => _Item.CharacterItemArgsFull.CharacterId != _Id))
+                        .Where(_Item => _Item.CharacterItemArgsFull.Id != _Id))
                     {
                         viewComp.Select(false);
                     }
                 };
+                viewComponent.BoughtForGameMoney += UpdateState;
                 return viewComponent;
             }).ToList();
             Object.Destroy(characterPanelCharacterItemTemplateGo);
@@ -170,12 +197,12 @@ namespace RMAZOR.UI.Panels
                     Ticker,
                     Managers.AudioManager,
                     Managers.LocalizationManager,
-                    Managers.ShopManager,
                     Managers.ScoreManager,
                     Managers.AnalyticsManager,
                     GetCharacterLevel,
                     ColorProvider,
-                    _Args);
+                    _Args,
+                    OnShopButtonClick);
                 viewComponent.Selected += _Id =>
                 {
                     foreach (var viewComp in m_CustomColorSetItemsList
@@ -193,12 +220,14 @@ namespace RMAZOR.UI.Panels
         {
             var scrObj = Managers.PrefabSetManager.GetObject<CustomCharacterAssetItemsSetScriptableObject>(
                 CommonPrefabSetNames.Configs, "custom_characters_set");
-            return scrObj.set.Select(_Item =>
+            return scrObj.set
+                .Where(_Item => _Item.inUse)
+                .Select(_Item =>
             {
                 var itemOut = GetPanelItemArgsFullFromAssetItem
                     <CustomizeCharacterPanelCharacterItemArgsFull, CustomCharactersAssetItem>(_Item);
-                itemOut.CharacterId         = _Item.characterId;
                 itemOut.CharacterIconSprite = _Item.icon;
+                itemOut.NameLocalizationKey = $"char_name_{_Item.id}";
                 return itemOut;
             }).ToList();
         }
@@ -207,13 +236,15 @@ namespace RMAZOR.UI.Panels
         {
             var scrObj = Managers.PrefabSetManager.GetObject<CustomCharacterColorsSetAssetItemsSetScriptableObject>(
                 CommonPrefabSetNames.Configs, "custom_character_colors_set_set");
-            return scrObj.set.Select(_Item =>
+            return scrObj.set
+                .Where(_Item => _Item.inUse)
+                .Select(_Item =>
             {
                 var itemOut = GetPanelItemArgsFullFromAssetItem
                     <CustomizeCharacterPanelColorSetItemArgsFull, CustomCharacterColorsSetAssetItem>(_Item);
-                itemOut.ColorSetId = _Item.colorSetId;
-                itemOut.Color1     = _Item.color1;
-                itemOut.Color2     = _Item.color2;
+                itemOut.ColorSetId          = _Item.id;
+                itemOut.NameLocalizationKey = $"color_{_Item.id}";
+                itemOut.Color               = _Item.color1;
                 return itemOut;
             }).ToList();
         }
@@ -224,20 +255,15 @@ namespace RMAZOR.UI.Panels
         {
             return new T1
             {
+                Id = _CustomCharactersAssetItem.id,
                 CoastArgs = new CustomizeCharacterItemCoastArgs
                 {
-                    GameMoneyCoast = () => _CustomCharactersAssetItem.gameMoneyCoast,
-                    ShopItemArgs = Managers.ShopManager.GetItemInfo(_CustomCharactersAssetItem.purchaseKey),
-                    PurchaseKey = _CustomCharactersAssetItem.purchaseKey
+                    GameMoneyCoast = () => _CustomCharactersAssetItem.gameMoneyCoast
                 },
                 AccessConditionArgs = new CustomizeCharacterItemAccessConditionArgs
                 {
                     CharacterLevel = _CustomCharactersAssetItem.characterLevelToOpen
                 },
-                HasReceiptArgs = new CustomizeCharacterItemHasReceiptArgs
-                {
-                    HasReceipt = Managers.ShopManager.GetItemInfo(_CustomCharactersAssetItem.purchaseKey).HasReceipt
-                }
             };
         }
 
@@ -260,30 +286,30 @@ namespace RMAZOR.UI.Panels
 
         private void SelectCurrentCharacterItem()
         {
-            int charIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterId);
-            if (charIdCached == default)
+            string charIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterIdV2);
+            if (string.IsNullOrEmpty(charIdCached))
             {
-                charIdCached = 1;
-                SaveUtils.PutValue(SaveKeysRmazor.CharacterId, charIdCached);
+                charIdCached = "1";
+                SaveUtils.PutValue(SaveKeysRmazor.CharacterIdV2, charIdCached);
             }
             foreach (var characterItem in m_CustomCharacterItemsList)
             {
-                int itecCharId = characterItem.CharacterItemArgsFull.CharacterId;
+                string itecCharId = characterItem.CharacterItemArgsFull.Id;
                 characterItem.Select(itecCharId == charIdCached);
             }
         }
 
         private void SelectCurrentColorSetItem()
         {
-            int colorSetIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterColorSetId);
-            if (colorSetIdCached == default)
+            string colorSetIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterColorSetIdV2);
+            if (string.IsNullOrEmpty(colorSetIdCached))
             {
-                colorSetIdCached = 1;
-                SaveUtils.PutValue(SaveKeysRmazor.CharacterColorSetId, colorSetIdCached);
+                colorSetIdCached = "yellow";
+                SaveUtils.PutValue(SaveKeysRmazor.CharacterColorSetIdV2, colorSetIdCached);
             }
             foreach (var customColorSet in m_CustomColorSetItemsList)
             {
-                int itemColorSetId = customColorSet.ColorSetItemArgsFull.ColorSetId;
+                string itemColorSetId = customColorSet.ColorSetItemArgsFull.ColorSetId;
                 customColorSet.Select(itemColorSetId == colorSetIdCached);
             }
         }
@@ -297,22 +323,60 @@ namespace RMAZOR.UI.Panels
             }));
         }
 
+        private void InitTabView()
+        {
+            var tabPropsDict = new Dictionary<int, TabPanelItemArgs>
+            {
+                {
+                    0, new TabPanelItemArgs
+                    {
+                        LocalizationKey = "characters",
+                        OnClick = () =>
+                        {
+                            m_CustomCharactersScrollRect.SetGoActive(true);
+                            m_CustomColorSetsScrollRect.SetGoActive(false);
+                        }
+                    }
+                },
+                {
+                    1, new TabPanelItemArgs
+                    {
+                        LocalizationKey = "color_sets",
+                        OnClick = () =>
+                        {
+                            m_CustomCharactersScrollRect.SetGoActive(false);
+                            m_CustomColorSetsScrollRect.SetGoActive(true);
+                        }
+                    }
+                },
+            };
+            var (t, am, lm) = 
+                (Ticker, Managers.AudioManager, Managers.LocalizationManager);
+            m_TabPanelView.Init(t, am, lm, tabPropsDict, "customize_character");
+        }
+
         private void AssignCurrentCharacter()
         {
-            int characterId = SaveUtils.GetValue(SaveKeysRmazor.CharacterColorSetId);
-            if (characterId == default)
-                characterId = 1;
+            string charIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterIdV2);
+            if (string.IsNullOrEmpty(charIdCached))
+            {
+                charIdCached = CommonDataRmazor.CharacterIdDefault;
+                SaveUtils.PutValue(SaveKeysRmazor.CharacterIdV2, charIdCached);
+            }
             m_CustomCharacterItemsList.FirstOrDefault(_Item =>
-                _Item.CharacterItemArgsFull.CharacterId == characterId)!.Select(true);
+                    _Item.CharacterItemArgsFull.Id == charIdCached)!.Select(true);
         }
 
         private void AssignCurrentColorSet()
         {
-            int colorSetId = SaveUtils.GetValue(SaveKeysRmazor.CharacterColorSetId);
-            if (colorSetId == default)
-                colorSetId = 1;
+            string colorSetIdCached = SaveUtils.GetValue(SaveKeysRmazor.CharacterColorSetIdV2);
+            if (string.IsNullOrEmpty(colorSetIdCached))
+            {
+                colorSetIdCached = CommonDataRmazor.ColorSetIdDefault;
+                SaveUtils.PutValue(SaveKeysRmazor.CharacterColorSetIdV2, colorSetIdCached);
+            }
             m_CustomColorSetItemsList.FirstOrDefault(_Item =>
-                _Item.ColorSetItemArgsFull.ColorSetId == colorSetId)!.Select(true);
+                _Item.ColorSetItemArgsFull.ColorSetId == colorSetIdCached)!.Select(true);
         }
         
         protected override void GetPrefabContentObjects(GameObject _Go)
@@ -322,24 +386,20 @@ namespace RMAZOR.UI.Panels
             m_ButtonAddMoney             = _Go.GetCompItem<Button>("add_money_button");
             m_BankMoneyText              = _Go.GetCompItem<TextMeshProUGUI>("bank_money_text");
             m_ButtonClose                = _Go.GetCompItem<Button>("button_close");
-            m_CustomCharactersTitle      = _Go.GetCompItem<TextMeshProUGUI>("custom_characters_title");
-            m_CustomColorSetsTitle       = _Go.GetCompItem<TextMeshProUGUI>("custom_color_sets_title");
             m_CustomCharactersScrollRect = _Go.GetCompItem<ScrollRect>("custom_characters_scroll_rect");
             m_CustomColorSetsScrollRect  = _Go.GetCompItem<ScrollRect>("custom_color_sets_scroll_rect");
             m_CustomCharactersContent    = _Go.GetCompItem<RectTransform>("custom_characters_content");
             m_CustomColorSetsContent     = _Go.GetCompItem<RectTransform>("custom_color_sets_content");
+            m_TabPanelView               = _Go.GetCompItem<TabPanelView>("tab_view");
         }
 
         protected override void LocalizeTextObjectsOnLoad()
         {
-            static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_CustomCharactersTitle, ETextType.MenuUI, "characters", TextFormula),
-                new LocTextInfo(m_CustomColorSetsTitle,  ETextType.MenuUI, "color_sets", TextFormula),
-                new LocTextInfo(m_CharacterLevelText,    ETextType.MenuUI, "empty_key",
+                new LocTextInfo(m_CharacterLevelText,    ETextType.MenuUI_H1, "empty_key",
                     _T => GetCharacterLevel().ToString(), ETextLocalizationType.OnlyText), 
-                new LocTextInfo(m_BankMoneyText,         ETextType.MenuUI, "empty_key",
+                new LocTextInfo(m_BankMoneyText,         ETextType.MenuUI_H1, "empty_key",
                     _T => GetBankMoneyCount().ToString("N0")), 
             };
             foreach (var locTextInfo in locTextInfos)
@@ -359,8 +419,17 @@ namespace RMAZOR.UI.Panels
 
         private void OnAddMoneyButtonClick()
         {
+            PlayButtonClickSound();
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.CustomizeCharacterAddMoneyButtonClick);
             var dv = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerId);
             dv.Show(ShopDialogPanel, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
+        }
+        
+        private void OnShopButtonClick()
+        {
+            PlayButtonClickSound();
+            var dv = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerId);
+            dv.Show(ShopDialogPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
         }
         
         private int GetBankMoneyCount()

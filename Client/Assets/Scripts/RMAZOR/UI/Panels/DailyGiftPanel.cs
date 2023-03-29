@@ -73,7 +73,7 @@ namespace RMAZOR.UI.Panels
         private long m_MultiplyCoefficient;
         
         private LocTextInfo TodayGiftMoneyCountLocTextInfo => 
-            new LocTextInfo(m_TodayGiftMoneyCountText, ETextType.MenuUI, "empty_key", 
+            new LocTextInfo(m_TodayGiftMoneyCountText, ETextType.MenuUI_H1, "empty_key", 
                 _T => m_TodayGiftMoneyCount.ToString());
         
         protected override string PrefabName => "daily_gift_panel";
@@ -179,11 +179,11 @@ namespace RMAZOR.UI.Panels
             static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_DailyGiftText, ETextType.MenuUI, "daily_gift", TextFormula),
-                new LocTextInfo(m_TodayGiftMoneyCountText, ETextType.MenuUI, "empty_key", _T => m_TodayGiftMoneyCount.ToString()), 
-                new LocTextInfo(m_TomorrowGiftMoneyCountText, ETextType.MenuUI, "tomorrow", _T => TextFormula(_T) + ": " + m_TomorrowGiftMoneyCount),
-                new LocTextInfo(m_GetButtonText, ETextType.MenuUI, "get", TextFormula),
-                new LocTextInfo(m_MultiplyButtonText, ETextType.MenuUI, "multiply", _T => TextFormula(_T) + " x2"),
+                new LocTextInfo(m_DailyGiftText,              ETextType.MenuUI_H1, "daily_gift", TextFormula),
+                new LocTextInfo(m_TodayGiftMoneyCountText,    ETextType.MenuUI_H1, "empty_key", _T => m_TodayGiftMoneyCount.ToString()), 
+                new LocTextInfo(m_TomorrowGiftMoneyCountText, ETextType.MenuUI_H1, "tomorrow", _T => TextFormula(_T) + ": " + m_TomorrowGiftMoneyCount),
+                new LocTextInfo(m_GetButtonText,              ETextType.MenuUI_H1, "get", TextFormula),
+                new LocTextInfo(m_MultiplyButtonText,         ETextType.MenuUI_H1, "multiply", _T => TextFormula(_T) + " x2"),
                 TodayGiftMoneyCountLocTextInfo
             };
             foreach (var locTextInfo in locTextInfos)
@@ -289,7 +289,7 @@ namespace RMAZOR.UI.Panels
         {
             IndicateAdsLoading(true);
             yield return Cor.WaitWhile(
-                () => !Managers.AdsManager.RewardedAdNonSkippableReady,
+                () => !Managers.AdsManager.RewardedAdReady,
                 () => IndicateAdsLoading(false));
         }
         

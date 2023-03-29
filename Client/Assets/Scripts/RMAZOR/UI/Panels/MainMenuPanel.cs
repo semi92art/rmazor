@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Common;
 using Common.Constants;
+using Common.Entities;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.CameraProviders.Camera_Effects_Props;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
@@ -24,6 +27,8 @@ using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.UI;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -35,26 +40,25 @@ namespace RMAZOR.UI.Panels
 
     public class MainMenuPanelFake : FakeDialogPanel, IMainMenuPanel { }
     
-    public class MainMenuPanel : DialogPanelBase, IMainMenuPanel, IUpdateTick
+    public class MainMenuPanel : DialogPanelBase, IMainMenuPanel
     {
         #region nonpublic members
 
-        private Animator                      m_Animator;
-        private Image                         m_Background;
+        private Animator                      m_Animator, m_FirstLaunchHandAnimator;
         private RectTransform                 m_FirstLaunchPanel;
         private MainMenuCharacterSubPanelView m_CharacterSubPanel;
 
         private Button
-            m_ButtonDisableAds,
-            m_ButtonRateGame,
             m_ButtonSettings,
-            m_ButtonShop;
+            m_ButtonReviewMessage;
 
+        private MainMenuPanelButtonDailyGift           m_ButtonDailyGift;
         private MainMenuPanelButtonPlayMain            m_ButtonPlayMain;
         private MainMenuPanelButtonPlayDailyChallenges m_ButtonPlayDailyChallenges;
         private MainMenuPanelButtonPlayRandomLevels    m_ButtonPlayRandomLevels;
         private MainMenuPanelButtonPlayPuzzles         m_ButtonPlayPuzzles;
-        private MainMenuPanelButtonPlayVsAi            m_ButtonPlayVsAi;
+
+        private TextMeshProUGUI m_ReviewMessageText, m_ReviewMessageButtonText;
         
         protected override string PrefabName => "main_menu_panel";
         
@@ -62,46 +66,44 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
-        private ViewSettings                 ViewSettings                { get; }
-        private IViewLevelStageSwitcher      LevelStageSwitcher          { get; }
-        private IDailyChallengePanel         DailyChallengePanel         { get; }
-        private IRandomGenerationParamsPanel RandomGenerationParamsPanel { get; }
-        private ILevelsDialogPanelPuzzles    LevelsDialogPanelPuzzles    { get; }
-        private IDailyGiftPanel              DailyGiftPanel              { get; }
-        private IDisableAdsDialogPanel       DisableAdsDialogPanel       { get; }
-        private ISettingDialogPanel          SettingDialogPanel          { get; }
-        private IShopDialogPanel             ShopDialogPanel             { get; }
-        private ICustomizeCharacterPanel     CustomizeCharacterPanel     { get; }
-        private IDialogViewersController     DialogViewersController     { get; }
-        private IModelGame                   Model                       { get; }
-        private ILevelsLoader                LevelsLoader                { get; }
-        private IContainersGetter            ContainersGetter            { get; }
-        private ICoordinateConverter         CoordinateConverter         { get; }
-        private IViewFullscreenTransitioner  FullscreenTransitioner      { get; }
+        private ViewSettings                    ViewSettings             { get; }
+        private IViewLevelStageSwitcher         LevelStageSwitcher       { get; }
+        private IDailyChallengePanel            DailyChallengePanel      { get; }
+        private ILevelsDialogPanelPuzzles       LevelsDialogPanelPuzzles { get; }
+        private IDailyGiftPanel                 DailyGiftPanel           { get; }
+        private ISettingDialogPanel             SettingDialogPanel       { get; }
+        private IShopDialogPanel                ShopDialogPanel          { get; }
+        private ICustomizeCharacterPanel        CustomizeCharacterPanel  { get; }
+        private IDialogViewersController        DialogViewersController  { get; }
+        private IModelGame                      Model                    { get; }
+        private ILevelsLoader                   LevelsLoader             { get; }
+        private IContainersGetter               ContainersGetter         { get; }
+        private ICoordinateConverter            CoordinateConverter      { get; }
+        private IViewFullscreenTransitioner     FullscreenTransitioner   { get; }
+        private IViewGameUiCreatingLevelMessage CreatingLevelMessage     { get; }
 
         private MainMenuPanel(
-            ViewSettings                 _ViewSettings,
-            IManagersGetter              _Managers,
-            IUITicker                    _Ticker,
-            ICameraProvider              _CameraProvider,
-            IColorProvider               _ColorProvider,
-            IViewTimePauser              _TimePauser,
-            IViewInputCommandsProceeder  _CommandsProceeder,
-            IViewLevelStageSwitcher      _LevelStageSwitcher,
-            IDailyChallengePanel         _DailyChallengePanel,
-            IRandomGenerationParamsPanel _RandomGenerationParamsPanel,
-            ILevelsDialogPanelPuzzles    _LevelsDialogPanelPuzzles,
-            IDailyGiftPanel              _DailyGiftPanel,
-            IDisableAdsDialogPanel       _DisableAdsDialogPanel,
-            ISettingDialogPanel          _SettingDialogPanel,
-            IShopDialogPanel             _ShopDialogPanel,
-            ICustomizeCharacterPanel     _CustomizeCharacterPanel,
-            IDialogViewersController     _DialogViewersController,
-            IModelGame                   _Model,
-            ILevelsLoader                _LevelsLoader,
-            IContainersGetter            _ContainersGetter,
-            ICoordinateConverter         _CoordinateConverter,
-            IViewFullscreenTransitioner  _FullscreenTransitioner)
+            ViewSettings                    _ViewSettings,
+            IManagersGetter                 _Managers,
+            IUITicker                       _Ticker,
+            ICameraProvider                 _CameraProvider,
+            IColorProvider                  _ColorProvider,
+            IViewTimePauser                 _TimePauser,
+            IViewInputCommandsProceeder     _CommandsProceeder,
+            IViewLevelStageSwitcher         _LevelStageSwitcher,
+            IDailyChallengePanel            _DailyChallengePanel,
+            ILevelsDialogPanelPuzzles       _LevelsDialogPanelPuzzles,
+            IDailyGiftPanel                 _DailyGiftPanel,
+            ISettingDialogPanel             _SettingDialogPanel,
+            IShopDialogPanel                _ShopDialogPanel,
+            ICustomizeCharacterPanel        _CustomizeCharacterPanel,
+            IDialogViewersController        _DialogViewersController,
+            IModelGame                      _Model,
+            ILevelsLoader                   _LevelsLoader,
+            IContainersGetter               _ContainersGetter,
+            ICoordinateConverter            _CoordinateConverter,
+            IViewFullscreenTransitioner     _FullscreenTransitioner,
+            IViewGameUiCreatingLevelMessage _CreatingLevelMessage)
             : base(
                 _Managers, 
                 _Ticker,
@@ -113,10 +115,8 @@ namespace RMAZOR.UI.Panels
             ViewSettings                = _ViewSettings;
             LevelStageSwitcher          = _LevelStageSwitcher;
             DailyChallengePanel         = _DailyChallengePanel;
-            RandomGenerationParamsPanel = _RandomGenerationParamsPanel;
             LevelsDialogPanelPuzzles    = _LevelsDialogPanelPuzzles;
             DailyGiftPanel              = _DailyGiftPanel;
-            DisableAdsDialogPanel       = _DisableAdsDialogPanel;
             SettingDialogPanel          = _SettingDialogPanel;
             ShopDialogPanel             = _ShopDialogPanel;
             CustomizeCharacterPanel     = _CustomizeCharacterPanel;
@@ -126,50 +126,37 @@ namespace RMAZOR.UI.Panels
             ContainersGetter            = _ContainersGetter;
             CoordinateConverter         = _CoordinateConverter;
             FullscreenTransitioner      = _FullscreenTransitioner;
+            CreatingLevelMessage        = _CreatingLevelMessage;
         }
 
         #endregion
 
         #region api
         
-        public override int      DialogViewerId => MazorCommonDialogViewerIds.Fullscreen2;
+        public override int      DialogViewerId => DialogViewerIdsMazor.Fullscreen2;
         public override Animator Animator       => m_Animator;
         
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
+            InitDailyGiftButton();
             InitPlayButtons();
             InitCharacterSubPanel();
-            ProceedDisableAdsButtonOnLoad();
             ProceedFirstLaunchPanelOnLoad();
         }
-        
-        public void UpdateTick()
-        {
-            ChangeBackgroundColorOnUpdateTick();
-        }
-        
+
         #endregion
 
         #region nonpublic methods
 
-        private void ChangeBackgroundColorOnUpdateTick()
-        {
-            float h = 0.5f + 0.15f * Mathf.Cos(Ticker.Time * 0.1f);
-            const float s = 80f / 100f;
-            const float v = 100f / 100f;
-            var backColor = Color.HSVToRGB(h, s, v);
-            m_Background.color = backColor;
-        }
-
         protected override void OnDialogStartAppearing()
         {
+            m_ButtonDailyGift          .UpdateState();
             m_ButtonPlayMain           .UpdateState();
             m_ButtonPlayDailyChallenges.UpdateState();
             m_ButtonPlayPuzzles        .UpdateState();
             m_ButtonPlayRandomLevels   .UpdateState();
             m_CharacterSubPanel        .UpdateState();
-            m_ButtonPlayVsAi           .UpdateState();
         }
 
         protected override void OnDialogAppeared()
@@ -178,15 +165,24 @@ namespace RMAZOR.UI.Panels
             LoadDailyChallengePanelOnAppearedIfNeed();
         }
 
+        private void InitDailyGiftButton()
+        {
+            var (t, am, lm) = 
+                (Ticker, Managers.AudioManager, Managers.LocalizationManager);
+            m_ButtonDailyGift.Init(t, am, lm, 
+                Managers.PrefabSetManager,
+                DailyGiftPanel,
+                OnDailyGiftButtonClick);
+        }
+
         private void InitPlayButtons()
         {
             var (t, am, lm) = 
                 (Ticker, Managers.AudioManager, Managers.LocalizationManager);
             m_ButtonPlayMain.Init(t, am, lm, GetMainGameModeStagesTotalCount, GetMainGameModeCurrentStageIndex);
-            m_ButtonPlayRandomLevels.Init(t, am, lm);
+            m_ButtonPlayRandomLevels.Init(t, am, lm, Managers.ScoreManager);
             m_ButtonPlayDailyChallenges.Init(t, am, lm, GetDailyChTodayTotalCount, GetDailyChTodayFinishedCount);
-            m_ButtonPlayPuzzles.Init(t, am, lm, GetPuzzlesTotalCount, GetPuzzlesFinishedCount);
-            m_ButtonPlayVsAi.Init(t, am, lm);
+            m_ButtonPlayPuzzles.Init(t, am, lm, Managers.ScoreManager, GetPuzzlesTotalCount, GetPuzzlesFinishedCount);
         }
 
         private void InitCharacterSubPanel()
@@ -194,17 +190,25 @@ namespace RMAZOR.UI.Panels
             var (t, am, lm) = 
                 (Ticker, Managers.AudioManager, Managers.LocalizationManager);
             m_CharacterSubPanel.Init(t, am, lm, ContainersGetter,
-                Managers.PrefabSetManager, Managers.ScoreManager, DailyGiftPanel, CoordinateConverter,
-                OnDailyGiftButtonClick, OnAddMoneyButtonClick, OnCustomizeCharacterButtonClick);
+                Managers.PrefabSetManager, Managers.ScoreManager, DailyGiftPanel,
+                CoordinateConverter, CustomizeCharacterPanel, ShopDialogPanel,
+                OnAddMoneyButtonClick,
+                OnCustomizeCharacterButtonClick,
+                OnShopButtonClick);
         }
 
         private int GetMainGameModeCurrentStageIndex()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame( MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            if (savedGame == null)
+            {
+                savedGame = new SavedGameV2 {Arguments = new Dictionary<string, object>()};
+                Managers.ScoreManager.SaveGame(savedGame);
+            }
             object levelIndexArg = savedGame.Arguments.GetSafe(KeyLevelIndexMainLevels, out _);
             long levelIndex = Convert.ToInt64(levelIndexArg);
             string levelType = (string) savedGame.Arguments.GetSafe(KeyCurrentLevelType, out _);
-            return levelType == ParameterLevelTypeBonus ? (int)levelIndex : RmazorUtils.GetLevelsGroupIndex(levelIndex);
+            return levelType == ParameterLevelTypeBonus ? (int)levelIndex + 1 : RmazorUtils.GetLevelsGroupIndex(levelIndex);
         }
 
         private int GetMainGameModeStagesTotalCount()
@@ -253,44 +257,48 @@ namespace RMAZOR.UI.Panels
         protected override void GetPrefabContentObjects(GameObject _Go)
         {
             m_Animator                  = _Go.GetCompItem<Animator>("animator");
-            m_Background                = _Go.GetCompItem<Image>("background");
-            m_ButtonDisableAds          = _Go.GetCompItem<Button>("button_no_ads");
-            m_ButtonRateGame            = _Go.GetCompItem<Button>("button_rate_game");
+            m_ButtonReviewMessage       = _Go.GetCompItem<Button>("button_review_message");
             m_ButtonSettings            = _Go.GetCompItem<Button>("button_settings");
-            m_ButtonShop                = _Go.GetCompItem<Button>("button_shop");
+            m_ButtonDailyGift           = _Go.GetCompItem<MainMenuPanelButtonDailyGift>("button_daily_gift");
             m_ButtonPlayMain            = _Go.GetCompItem<MainMenuPanelButtonPlayMain>("button_play_main_levels");
             m_ButtonPlayDailyChallenges = _Go.GetCompItem<MainMenuPanelButtonPlayDailyChallenges>("button_play_daily_challenge");
             m_ButtonPlayRandomLevels    = _Go.GetCompItem<MainMenuPanelButtonPlayRandomLevels>("button_play_random_levels");
             m_ButtonPlayPuzzles         = _Go.GetCompItem<MainMenuPanelButtonPlayPuzzles>("button_play_puzzle_levels");
-            m_ButtonPlayVsAi            = _Go.GetCompItem<MainMenuPanelButtonPlayVsAi>("button_play_vs_ai");
             m_CharacterSubPanel         = _Go.GetCompItem<MainMenuCharacterSubPanelView>("character_sub_panel");
             m_FirstLaunchPanel          = _Go.GetCompItem<RectTransform>("first_launch_panel");
+            m_FirstLaunchHandAnimator   = _Go.GetCompItem<Animator>("first_launch_hand_animator");
+            m_ReviewMessageText         = _Go.GetCompItem<TextMeshProUGUI>("review_message_text");
+            m_ReviewMessageButtonText   = _Go.GetCompItem<TextMeshProUGUI>("review_message_button_text");
         }
 
         protected override void LocalizeTextObjectsOnLoad()
         {
+            var locTextInfos = new[]
+            {
+                new LocTextInfo(m_ReviewMessageText,       ETextType.MenuUI_H3, "review_message_text"),
+                new LocTextInfo(m_ReviewMessageButtonText, ETextType.MenuUI_H2, "suggest_idea", 
+                    _T =>
+                    {
+                        var textCol = Managers.LocalizationManager.GetCurrentLanguage() == ELanguage.Russian
+                            ? new Color(0.29f, 0.19f, 0.17f)
+                            : Color.white;
+                        m_ReviewMessageButtonText.color = textCol;
 
+                        return _T.FirstCharToUpper(CultureInfo.CurrentUICulture);
+                    }),
+            };
+            foreach (var locTextInfo in locTextInfos)
+                Managers.LocalizationManager.AddLocalization(locTextInfo);
         }
 
         protected override void SubscribeButtonEvents()
         {
-            m_ButtonDisableAds         .SetOnClick(OnDisableAdsButtonClick);
-            m_ButtonRateGame           .SetOnClick(OnRateGameButtonClick);
+            m_ButtonReviewMessage      .SetOnClick(OnRateGameButtonClick);
             m_ButtonSettings           .SetOnClick(OnSettingsButtonClick);
-            m_ButtonShop               .SetOnClick(OnAddMoneyButtonClick);
             m_ButtonPlayMain           .SetOnClick(OnPlayMainLevelsButtonClick);
             m_ButtonPlayDailyChallenges.SetOnClick(OnPlayDailyChallengeButtonClick);
             m_ButtonPlayRandomLevels   .SetOnClick(OnPlayRandomLevelsButtonClick);
             m_ButtonPlayPuzzles        .SetOnClick(OnPlayPuzzleLevelsButtonClick);
-            m_ButtonPlayVsAi           .SetOnClick(OnPlayVsAiButtonClick);
-        }
-
-        private void OnDisableAdsButtonClick()
-        {
-            PlayButtonClickSound();
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.MainMenuDisableAdsButtonClick);
-            var dv = DialogViewersController.GetViewer(DisableAdsDialogPanel.DialogViewerId);
-            dv.Show(DisableAdsDialogPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
         }
 
         private void OnRateGameButtonClick()
@@ -319,10 +327,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnAddMoneyButtonClick()
         {
-            PlayButtonClickSound();
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.MainMenuShopButtonClick);
-            var dv = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerId);
-            dv.Show(ShopDialogPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
+            OnShopButtonClick();
         }
 
         private void OnCustomizeCharacterButtonClick()
@@ -331,6 +336,14 @@ namespace RMAZOR.UI.Panels
             Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.MainMenuCustomizeCharacterClick);
             var dv = DialogViewersController.GetViewer(CustomizeCharacterPanel.DialogViewerId);
             dv.Show(CustomizeCharacterPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
+        }
+        
+        private void OnShopButtonClick()
+        {
+            PlayButtonClickSound();
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.MainMenuShopButtonClick);
+            var dv = DialogViewersController.GetViewer(ShopDialogPanel.DialogViewerId);
+            dv.Show(ShopDialogPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
         }
 
         private void OnPlayMainLevelsButtonClick()
@@ -342,7 +355,8 @@ namespace RMAZOR.UI.Panels
                 var saveKeyMainMenuTutFinished = SaveKeysRmazor.IsTutorialFinished("main_menu");
                 if (SaveUtils.GetValue(saveKeyMainMenuTutFinished))
                     return;
-                m_FirstLaunchPanel.SetGoActive(false);
+                m_FirstLaunchPanel       .SetGoActive(false);
+                m_FirstLaunchHandAnimator.SetGoActive(false);
                 SaveUtils.PutValue(saveKeyMainMenuTutFinished, true);
             }));
         }
@@ -360,9 +374,19 @@ namespace RMAZOR.UI.Panels
         {
             PlayButtonClickSound();
             Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.PlayRandomLevelsButtonClick);
-            RandomGenerationParamsPanel.OnReadyToLoadLevelAction = () => OnClose();
-            var dv = DialogViewersController.GetViewer(RandomGenerationParamsPanel.DialogViewerId);
-            dv.Show(RandomGenerationParamsPanel, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
+            var args = new Dictionary<string, object>
+            {
+                {KeyGameMode,                       ParameterGameModeRandom},
+                {KeyLevelIndex,                     0L},
+                {KeyRandomLevelSize,                -1},
+                {KeyOnReadyToLoadLevelFinishAction, (UnityAction)(() => OnClose())},
+                {KeyAiSimulation,                   false}
+            };
+            var loadLevelCoroutine = MainMenuUtils.LoadLevelCoroutine(
+                args, ViewSettings, FullscreenTransitioner, Ticker, LevelStageSwitcher);
+            Cor.Run(Cor.Delay(
+                ViewSettings.betweenLevelTransitionTime * 0.8f, Ticker, CreatingLevelMessage.ShowMessage));
+            Cor.Run(loadLevelCoroutine);
         }
 
         private void OnPlayPuzzleLevelsButtonClick()
@@ -372,13 +396,6 @@ namespace RMAZOR.UI.Panels
             LevelsDialogPanelPuzzles.OnReadyToLoadLevelAction = () => OnClose();
             var dv = DialogViewersController.GetViewer(LevelsDialogPanelPuzzles.DialogViewerId);
             dv.Show(LevelsDialogPanelPuzzles, 100f, _AdditionalCameraEffectsAction: AdditionalCameraEffectsActionDefaultCoroutine);
-        }
-        
-        private void OnPlayVsAiButtonClick()
-        {
-            PlayButtonClickSound();
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.PlayVsAiButtonClick);
-            // TODO
         }
 
         private void LoadLastMainLevel(UnityAction _OnReadyToLoadLevel)
@@ -436,15 +453,11 @@ namespace RMAZOR.UI.Panels
                 CameraProvider, Ticker));
         }
 
-        private void ProceedDisableAdsButtonOnLoad()
-        {
-            m_ButtonDisableAds.SetGoActive(Managers.AdsManager.ShowAds);
-        }
-
         private void ProceedFirstLaunchPanelOnLoad()
         {
             bool mainMenuTutorialFinished = SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished("main_menu"));
-            m_FirstLaunchPanel.SetGoActive(!mainMenuTutorialFinished);
+            m_FirstLaunchPanel       .SetGoActive(!mainMenuTutorialFinished);
+            m_FirstLaunchHandAnimator.SetGoActive(!mainMenuTutorialFinished);
         }
 
         #endregion

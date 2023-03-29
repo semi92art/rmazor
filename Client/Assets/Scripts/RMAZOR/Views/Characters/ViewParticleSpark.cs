@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
+﻿using Common.Extensions;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -25,9 +22,6 @@ namespace RMAZOR.Views.Characters
         #endregion
 
         #region nonpublic members
-        
-        protected override IEnumerable<ShapeRenderer> MainShapes   => new[] {m_InnerLine};
-        protected override IEnumerable<ShapeRenderer> BorderShapes => new[] {m_OuterLine};
 
         #endregion
 
@@ -51,15 +45,6 @@ namespace RMAZOR.Views.Characters
             return new ViewParticleSpark(ContainersGetter, CoordinateConverter, Ticker);
         }
 
-        public override void Throw(
-            Vector2 _Position,
-            Vector2 _Speed,
-            float   _Scale,
-            float   _ThrowTime)
-        {
-            base.Throw(_Position, _Speed, _Scale, _ThrowTime);
-        }
-
         #endregion
 
         #region nonpublic methods
@@ -79,6 +64,8 @@ namespace RMAZOR.Views.Characters
             Rb = obj.AddComponent<Rigidbody2D>();
             Rb.mass = 0f;
             Rb.gravityScale = 0f;
+            MainShapes = new ShapeRenderer[] {m_InnerLine};
+            BorderShapes = new ShapeRenderer[] {m_OuterLine};
         }
 
         #endregion

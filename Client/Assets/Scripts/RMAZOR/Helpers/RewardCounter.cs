@@ -4,6 +4,8 @@ using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Views;
 using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.Utils;
+using UnityEngine;
 using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Helpers
@@ -20,8 +22,8 @@ namespace RMAZOR.Helpers
     {
         #region nonpublic members
 
-        private int m_CurrentLevelGroupXp;
-        private int m_CurrentLevelGroupMoney;
+        private float m_NewMoneyMultiplyCoefficient;
+        private int   m_CurrentLevelMoney;
 
         #endregion
 
@@ -29,26 +31,15 @@ namespace RMAZOR.Helpers
 
         public int CurrentLevelXp { get; private set; }
 
-        public int CurrentLevelGroupXp
-        {
-            get => m_CurrentLevelGroupXp;
-            private set
-            {
-                SaveUtils.PutValue(SaveKeysRmazor.CurrentLevelGroupXp, value);
-                m_CurrentLevelGroupXp = value;
-            }
-        }
-        public int CurrentLevelMoney { get; set; }
+        public int CurrentLevelGroupXp { get; private set; }
 
-        public int CurrentLevelGroupMoney
+        public int CurrentLevelMoney
         {
-            get => m_CurrentLevelGroupMoney;
-            private set
-            {
-                SaveUtils.PutValue(SaveKeysRmazor.CurrentLevelGroupMoney, value);
-                m_CurrentLevelGroupMoney = value;
-            }
+            get => m_CurrentLevelMoney;
+            set => m_CurrentLevelMoney = Mathf.RoundToInt(value * m_NewMoneyMultiplyCoefficient);
         }
+
+        public int CurrentLevelGroupMoney { get; private set; }
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
@@ -57,8 +48,14 @@ namespace RMAZOR.Helpers
             switch (_Args.LevelStage)
             {
                 case ELevelStage.Loaded when _Args.PreviousStage == ELevelStage.None && gameMode == ParameterGameModeMain:
-                    m_CurrentLevelGroupXp    = SaveUtils.GetValue(SaveKeysRmazor.CurrentLevelGroupXp);
-                    m_CurrentLevelGroupMoney = SaveUtils.GetValue(SaveKeysRmazor.CurrentLevelGroupMoney);
+                    m_NewMoneyMultiplyCoefficient = SaveUtils.GetValue(SaveKeysRmazor.MultiplyNewCoinsCoefficient);
+                    if (m_NewMoneyMultiplyCoefficient < 1f)
+                    {
+                        m_NewMoneyMultiplyCoefficient = 1f;
+                        SaveUtils.PutValue(SaveKeysRmazor.MultiplyNewCoinsCoefficient, 1f);
+                    }
+                    CurrentLevelGroupXp    = SaveUtils.GetValue(SaveKeysRmazor.CurrentLevelGroupXp);
+                    CurrentLevelGroupMoney = SaveUtils.GetValue(SaveKeysRmazor.CurrentLevelGroupMoney);
                     break;
                 case ELevelStage.Finished:
                     if (gameMode != ParameterGameModeMain && gameMode != ParameterGameModePuzzles)
@@ -67,14 +64,18 @@ namespace RMAZOR.Helpers
                     CurrentLevelXp = RmazorUtils.CalculateLevelXp(_Args.LevelIndex, gameMode, currentLevelType);
                     CurrentLevelGroupXp += CurrentLevelXp;
                     break;
+                case ELevelStage.ReadyToUnloadLevel:
+                    SaveUtils.PutValue(SaveKeysRmazor.CurrentLevelGroupXp, CurrentLevelGroupXp);
+                    SaveUtils.PutValue(SaveKeysRmazor.CurrentLevelGroupMoney, CurrentLevelGroupMoney);
+                    break;
                 case ELevelStage.Unloaded:
                     CurrentLevelMoney = CurrentLevelXp = 0;
                     if (MustResetCurrentLevelGroupRewardsOnLevelUnloaded(_Args))
                         CurrentLevelGroupMoney = CurrentLevelGroupXp = 0;
                     break;
                 case ELevelStage.None when _Args.PreviousStage != ELevelStage.None:
-                    m_CurrentLevelGroupXp    = 0;
-                    m_CurrentLevelGroupMoney = 0;
+                    CurrentLevelGroupXp    = 0;
+                    CurrentLevelGroupMoney = 0;
                     break;
             }
         }

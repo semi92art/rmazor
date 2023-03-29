@@ -24,6 +24,14 @@ MonoBehaviour:
       item: {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b,
         type: 3}
       bundle: 0
+    - name: shop_panel
+      item: {fileID: 8219298684319459333, guid: 1ac5d469c51fa3c4fa9ab7456011e693,
+        type: 3}
+      bundle: 0
+    - name: shop_money_panel
+      item: {fileID: 8219298684319459333, guid: da554ec90fcd34345ba1654db919878b,
+        type: 3}
+      bundle: 0
     - name: character_died_panel
       item: {fileID: 8219298684319459333, guid: aada0e6c1e3f9b246bc089aa5d754518,
         type: 3}
@@ -86,5 +94,9 @@ MonoBehaviour:
       bundle: 0
     - name: confirm_go_to_main_menu_panel
       item: {fileID: 8219298684319459333, guid: 1264d2e276edb0d4eadf158163685e24,
+        type: 3}
+      bundle: 0
+    - name: special_offer_panel
+      item: {fileID: 8219298684319459333, guid: c25776886579fae499cd1d0d089c13ab,
         type: 3}
       bundle: 0

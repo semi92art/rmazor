@@ -1,5 +1,7 @@
 ﻿using System;
+using mazing.common.Runtime;
 using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Helpers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewMazeMoneyItems;
@@ -9,6 +11,7 @@ using UnityEngine;
 namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 {
     public interface IViewMazeItemPathItem :
+        IInit,
         ICloneable,
         IAppear, 
         IOnLevelStageChanged 
@@ -22,7 +25,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         void                       EnableInitializedShapes(bool _Enable);
     }
     
-    public class ViewMazeItemPathItem : IViewMazeItemPathItem
+    public class ViewMazeItemPathItem : InitBase, IViewMazeItemPathItem
     {
         #region nonpublic members
 
@@ -52,7 +55,14 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public bool IsCollected => PathItemIdle.IsCollected;
         
         public EAppearingState AppearingState => PathItemIdle.AppearingState;
-        
+
+        public override void Init()
+        {
+            PathItemIdleGetter .Init();
+            PathItemMoneyGetter.Init();
+            base.Init();
+        }
+
         public object Clone() =>
             new ViewMazeItemPathItem(
                 PathItemIdleGetter.Clone() as IViewMazeItemPathItemIdleGetter,
@@ -60,6 +70,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
 
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
+            PathItemMoneyGetter.OnLevelStageChanged(_Args);
+            PathItemIdleGetter.OnLevelStageChanged(_Args);
             PathItemMoney.OnLevelStageChanged(_Args);
         }
 

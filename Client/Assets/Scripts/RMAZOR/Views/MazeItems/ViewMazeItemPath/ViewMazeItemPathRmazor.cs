@@ -38,7 +38,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         #region nonpublic members
 
         private Rectangle m_PathBackground;
-        private Rectangle m_PassedPathBackground;
+        private Rectangle m_PathBackgroundPassed;
 
         private IEnumerator m_HighlightPathItemCoroutine;
         private float       m_HighlightPathItemCoefficient;
@@ -149,14 +149,14 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             {
                 if (!_Collect)
                     return;
-                m_PassedPathBackground.enabled = false;
+                m_PathBackgroundPassed.enabled = false;
                 base.Collect(true, true);
                 return;
             }
             if (_Collect)
                 Fill();
             else
-                m_PassedPathBackground.enabled = false;
+                m_PathBackgroundPassed.enabled = false;
             base.Collect(_Collect, _OnStart);
         }
 
@@ -216,7 +216,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     break;
                 case ColorIds.PathFill:
                     var col = GetPathFillColorCorrected(_Color);
-                    m_PassedPathBackground.SetColor(col);
+                    m_PathBackgroundPassed.SetColor(col);
                     break;
             }
         }
@@ -225,11 +225,11 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             GetCornerRadii(out float bottomLeft, out float topLeft, 
             out float topRight, out float bottomRight);
-            m_PassedPathBackground.enabled = true;
+            m_PathBackgroundPassed.enabled = true;
             float fullSize = CoordinateConverter.Scale;
             float size = fullSize * (1f + 2f * AdditionalScale);
             var radii = new Vector4(bottomLeft, topLeft, topRight, bottomRight);
-            m_PassedPathBackground.SetCornerRadii(radii);
+            m_PathBackgroundPassed.SetCornerRadii(radii);
             FillCore(ViewSettings.animatePathFill, size, radii);
         }
 
@@ -237,7 +237,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         {
             if (!_Animate)
             {
-                m_PassedPathBackground
+                m_PathBackgroundPassed
                     .SetWidth(_Size)
                     .SetHeight(_Size)
                     .SetCornerRadii(_CornerRadii);
@@ -257,7 +257,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     float topRight    = Mathf.Lerp(defaultCorderRadius, _CornerRadii.z, _P);
                     float bottomRight = Mathf.Lerp(defaultCorderRadius, _CornerRadii.w, _P);
                     var radii = new Vector4(bottomLeft, topLeft, topRight, bottomRight);
-                    m_PassedPathBackground.SetWidth(size).SetHeight(size).SetCornerRadii(radii);
+                    m_PathBackgroundPassed.SetWidth(size).SetHeight(size).SetCornerRadii(radii);
                 },
                 _ProgressFormula: _P => _P));
         }
@@ -272,15 +272,15 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 .SetType(Rectangle.RectangleType.RoundedSolid)
                 .SetCornerRadiusMode(Rectangle.RectangleCornerRadiusMode.PerCorner)
                 .SetSortingOrder(SortingOrders.PathBackground + 1);
-            sh.enabled = false;
-            sh2.enabled = false;
-            m_PathBackground = sh;
-            m_PassedPathBackground = sh2;
+            sh.enabled             = false;
+            sh2.enabled            = false;
+            m_PathBackground       = sh;
+            m_PathBackgroundPassed = sh2;
         }
 
         private void UpdateBackgroundShape()
         {
-            m_PassedPathBackground.enabled = false;
+            m_PathBackgroundPassed.enabled = false;
             var sh = m_PathBackground;
             float scale = CoordinateConverter.Scale;
             sh.Width = sh.Height = scale * (1f + AdditionalScale);
@@ -313,14 +313,14 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             GetCurrentExtraBorders().EnableInitializedShapes(_Enable);
             if (m_PathBackground.IsNotNull())
                 m_PathBackground.enabled = _Enable;
-            if (m_PassedPathBackground.IsNotNull())
-                m_PassedPathBackground.enabled = _Enable;
+            if (m_PathBackgroundPassed.IsNotNull())
+                m_PathBackgroundPassed.enabled = _Enable;
         }
         
         protected override void HighlightBordersAndCorners()
         {
-            base.HighlightBordersAndCorners();
-            GetCurrentExtraBorders().HighlightBordersAndCorners();
+            // base.HighlightBordersAndCorners();
+            // GetCurrentExtraBorders().HighlightBordersAndCorners();
         }
 
         protected override void DrawBorders()
@@ -334,8 +334,8 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             base.OnAppearStart(_Appear);
             if (!_Appear) 
                 return;
-            if (m_PassedPathBackground.IsNotNull())
-                m_PassedPathBackground.enabled = false;
+            if (m_PathBackgroundPassed.IsNotNull())
+                m_PathBackgroundPassed.enabled = false;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
@@ -356,7 +356,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
             var col = ColorProvider.GetColor(ColorIds.PathFill);
             col = GetPathFillColorCorrected(col);
             Color.RGBToHSV(col, out float h1, out float s1, out float v1);
-            Color.RGBToHSV(m_PassedPathBackground.Color, out _, out _, out float v2);
+            Color.RGBToHSV(m_PathBackgroundPassed.Color, out _, out _, out float v2);
             const float highlightAmplitude = 0.3f;
             if (v1 < 1f - highlightAmplitude)
             {
@@ -371,14 +371,14 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     return;
             }
             col = Color.HSVToRGB(h1, s1, v1);
-            m_PassedPathBackground.SetColor(col);
+            m_PathBackgroundPassed.SetColor(col);
         }
         
         private IEnumerator CharacterMoveHighlightCoroutine(float _Delay)
         {
             yield return Cor.Delay(_Delay, GameTicker);
             yield return Cor.Delay(0.07f, GameTicker);
-            m_PassedPathBackground.SetSortingOrder(SortingOrders.PathBackground + 2);
+            m_PathBackgroundPassed.SetSortingOrder(SortingOrders.PathBackground + 2);
             int num = ++m_HighlightPathItemCoroutineNumber;
             yield return Cor.Lerp(
                 GameTicker,
@@ -392,7 +392,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                 {
                     var col = ColorProvider.GetColor(ColorIds.PathFill);
                     col = GetPathFillColorCorrected(col);
-                    m_PassedPathBackground
+                    m_PathBackgroundPassed
                         .SetColor(col)
                         .SetSortingOrder(SortingOrders.PathBackground + 1);
                     if (!_Broken)

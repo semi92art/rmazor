@@ -9,10 +9,9 @@ namespace RMAZOR.Views.Characters.Legs
     
     public class ViewCharacterLegsFake : InitBase, IViewCharacterLegsFake
     {
-        public void OnRotationFinished(MazeRotationEventArgs _Args) { }
-
-        public EAppearingState AppearingState => EAppearingState.Dissapeared;
         public bool            Activated      { get; set; }
+        public EAppearingState AppearingState => EAppearingState.Dissapeared;
+
         
         public void Appear(bool _Appear)                                                  { }
         public void OnCharacterMoveStarted(CharacterMovingStartedEventArgs     _Args)     { }
@@ -20,5 +19,6 @@ namespace RMAZOR.Views.Characters.Legs
         public void OnCharacterMoveFinished(CharacterMovingFinishedEventArgs   _Args)     { }
         public void OnLevelStageChanged(LevelStageArgs                         _Args)     { }
         public void OnPathCompleted(V2Int                                      _LastPath) { }
+        public void OnMazeRotationFinished(MazeRotationEventArgs               _Args)     { }
     }
 }

@@ -1,17 +1,10 @@
 ﻿#if ADMOB_API
-
 using GoogleMobileAds.Api;
 using UnityEngine;
 using UnityEngine.Events;
 using Common.Managers.Advertising.AdBlocks;
-using GoogleMobileAds.Api.Mediation.AdColony;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
-using GoogleMobileAds.Api.Mediation.AppLovin;
-using GoogleMobileAds.Api.Mediation.IronSource;
-using GoogleMobileAds.Api.Mediation.MyTarget;
-using GoogleMobileAds.Api.Mediation.UnityAds;
-using GoogleMobileAds.Api.Mediation.Vungle;
 
 namespace Common.Managers.Advertising.AdsProviders
 {
@@ -44,16 +37,18 @@ namespace Common.Managers.Advertising.AdsProviders
 
         protected override void InitConfigs(UnityAction _OnSuccess)
         {
-            AppLovin.SetHasUserConsent(true);
-            AppLovin.SetDoNotSell(true);
-            MyTarget.SetUserConsent(true);
-            MyTarget.SetCCPAUserConsent(true);
-            IronSource.SetConsent(true);
-            IronSource.SetMetaData("do_not_sell", "true");
-            UnityAds.SetConsentMetaData("gdpr.consent", true);
-            UnityAds.SetConsentMetaData("privacy.consent", true);
-            Vungle.UpdateConsentStatus(VungleConsent.ACCEPTED);
-            AdColonyAppOptions.SetTestMode(false);
+            // TODO хз нужно это или нет
+            // AppLovin.SetHasUserConsent(true);
+            // AppLovin.SetDoNotSell(true);
+            // MyTarget.SetUserConsent(true);
+            // MyTarget.SetCCPAUserConsent(true);
+            // IronSource.SetConsent(true);
+            // IronSource.SetMetaData("do_not_sell", "true");
+            // UnityAds.SetConsentMetaData("gdpr.consent", true);
+            // UnityAds.SetConsentMetaData("privacy.consent", true);
+            // Vungle.UpdateConsentStatus(VungleConsent.ACCEPTED);
+            // AdColonyAppOptions.SetTestMode(false);
+            
             var reqConfig = new RequestConfiguration.Builder().build();
             MobileAds.SetiOSAppPauseOnBackground(true);
             MobileAds.SetRequestConfiguration(reqConfig);

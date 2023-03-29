@@ -97,7 +97,7 @@ namespace RMAZOR.Views.Common.ViewUILevelSkippers
             }
             var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
             float xPos = screenBounds.min.x + 5.5f;
-            float yPos = screenBounds.max.y - 6f;
+            float yPos = screenBounds.max.y - 12f;
             tr.SetLocalPosXY(xPos, yPos);
         }
 

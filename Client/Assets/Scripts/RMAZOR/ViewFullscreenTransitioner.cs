@@ -30,19 +30,24 @@ namespace RMAZOR
 
         private IFullscreenTransitionTextureProvider CurrentProvider { get; set; }
 
+        private string m_TextureProviderDefaultName;
+
         #endregion
 
         #region inject
 
+        private ViewSettings                             ViewSettings        { get; }
         private ICameraProvider                          CameraProvider      { get; }
         private IViewGameTicker                          GameTicker          { get; }
         private IFullscreenTransitionTextureProvidersSet TextureProvidersSet { get; }
 
         private ViewFullscreenTransitioner(
+            ViewSettings                             _ViewSettings,
             ICameraProvider                          _CameraProvider,
             IViewGameTicker                          _GameTicker,
             IFullscreenTransitionTextureProvidersSet _TextureProvidersSet)
         {
+            ViewSettings        = _ViewSettings;
             CameraProvider      = _CameraProvider;
             GameTicker          = _GameTicker;
             TextureProvidersSet = _TextureProvidersSet;
@@ -58,7 +63,8 @@ namespace RMAZOR
         {
             CameraProvider.ActiveCameraChanged += OnActiveCameraChanged;
             TextureProvidersSet.Init();
-            CurrentProvider = TextureProvidersSet.GetTextureProvider("playground");
+            m_TextureProviderDefaultName = ViewSettings.betweenLevelsTransitionTextureName;
+            CurrentProvider = TextureProvidersSet.GetTextureProvider(m_TextureProviderDefaultName);
             Enabled = false;
             base.Init();
         }
@@ -82,11 +88,11 @@ namespace RMAZOR
             string gameMode = (string)_Args.Arguments.GetSafe(KeyGameMode, out _);
             string providerName = _Args.LevelStage switch
             {
-                ELevelStage.None when _Args.PreviousStage == ELevelStage.None       => "playground",
-                ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused => "playground",
+                ELevelStage.None when _Args.PreviousStage == ELevelStage.None       => m_TextureProviderDefaultName,
+                ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused => m_TextureProviderDefaultName,
                 ELevelStage.ReadyToUnloadLevel when _Args.PreviousStage != ELevelStage.Paused =>
                     gameMode != ParameterGameModePuzzles || !_Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint)
-                        ? "playground"
+                        ? m_TextureProviderDefaultName
                         : "circles",
                 _ => null
             };

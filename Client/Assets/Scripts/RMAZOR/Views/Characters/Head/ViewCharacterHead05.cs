@@ -7,6 +7,7 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using RMAZOR.Views.Coordinate_Converters;
+using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Utils;
 using Shapes;
 using UnityEngine;
@@ -16,13 +17,11 @@ namespace RMAZOR.Views.Characters.Head
     public interface IViewCharacterHead05 : IViewCharacterHead { }
 
     public class ViewCharacterHead05
-        : ViewCharacterHeadBase,
+        : ViewCharacterHeadWithBorderObjectBase,
           IViewCharacterHead05
     {
         #region nonpublic members
-
-        protected override string PrefabName => "character_head_05";
-
+        
         private Rectangle m_Eye;
 
         private Disc
@@ -43,18 +42,22 @@ namespace RMAZOR.Views.Characters.Head
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
             ICoordinateConverter        _CoordinateConverter,
-            IRendererAppearTransitioner _AppearTransitioner) 
+            IRendererAppearTransitioner _AppearTransitioner,
+            IViewInputCommandsProceeder _CommandsProceeder) 
             : base(
                 _ViewSettings, 
                 _ColorProvider,
                 _ContainersGetter, 
                 _PrefabSetManager,
                 _CoordinateConverter, 
-                _AppearTransitioner) { }
+                _AppearTransitioner,
+                _CommandsProceeder) { }
         
         #endregion
 
         #region nonpublic methods
+
+        public override string Id => "05";
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
@@ -75,7 +78,7 @@ namespace RMAZOR.Views.Characters.Head
         protected override void InitPrefab()
         {
             base.InitPrefab();
-            var go = PrefabObj;
+            var go = GetCharacterGameObject();
             const int sortingOrder = SortingOrders.Character;
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
             m_HeadShape = go.GetCompItem<Disc>("head")

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Common.Helpers;
 using Common.Utils;
+using Firebase.Crashlytics;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
@@ -150,6 +151,7 @@ namespace RMAZOR.Managers
                     }
                     catch (SerializationException ex)
                     {
+                        Crashlytics.LogException(ex);
                         Dbg.LogException(ex);
                         m_FetchCompletedActionDone = true;
                         return;
@@ -165,7 +167,6 @@ namespace RMAZOR.Managers
                             if (isThisDeviceForTesting)
                                 Dbg.Log("This device is test, idfa: " + idfaEntity.Value);
                             RemoteProperties.DebugEnabled = isThisDeviceForTesting;
-                            GlobalGameSettings.testAds = isThisDeviceForTesting;
                             m_FetchCompletedActionDone = true;
                         }));
                 }));

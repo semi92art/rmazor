@@ -50,7 +50,7 @@ namespace RMAZOR.UI.Panels
     {
         #region constants
 
-        private const int DailyChallengesCountTimer = 3;
+        private const int DailyChallengesCountTimer = 1;
         private const int DailyChallengesCountSteps = 2;
 
         #endregion
@@ -75,6 +75,7 @@ namespace RMAZOR.UI.Panels
         private IViewFullscreenTransitioner FullscreenTransitioner { get; }
         private ILevelsLoader               LevelsLoader           { get; }
         private IViewLevelStageSwitcher     LevelStageSwitcher     { get; }
+        private IViewBetweenLevelAdShower   BetweenLevelAdShower   { get; }
 
         private DailyChallengePanel(
             ViewSettings                _ViewSettings,
@@ -86,7 +87,8 @@ namespace RMAZOR.UI.Panels
             IViewTimePauser             _TimePauser,
             IViewInputCommandsProceeder _CommandsProceeder,
             ILevelsLoader               _LevelsLoader,
-            IViewLevelStageSwitcher     _LevelStageSwitcher) 
+            IViewLevelStageSwitcher     _LevelStageSwitcher,
+            IViewBetweenLevelAdShower   _BetweenLevelAdShower) 
             : base(
                 _Managers, 
                 _Ticker,
@@ -99,6 +101,7 @@ namespace RMAZOR.UI.Panels
             FullscreenTransitioner = _FullscreenTransitioner;
             LevelsLoader           = _LevelsLoader;
             LevelStageSwitcher     = _LevelStageSwitcher;
+            BetweenLevelAdShower   = _BetweenLevelAdShower;
         }
 
         #endregion
@@ -152,10 +155,13 @@ namespace RMAZOR.UI.Panels
         {
             PlayButtonClickSound();
             SendAnalyticOnDailyChallengeItemClick(_ChallengeType);
-            var infos = m_DailyChallengeInfos
-                .Where(_Info => _Info.ChallengeType == _ChallengeType)
-                .ToList();
-            LoadDailyChallengeLevel(infos[_Index]);
+            BetweenLevelAdShower.TryShowAd(() =>
+            {
+                var infos = m_DailyChallengeInfos
+                    .Where(_Info => _Info.ChallengeType == _ChallengeType)
+                    .ToList();
+                LoadDailyChallengeLevel(infos[_Index]);
+            }, EAdvertisingType.Interstitial);
         }
 
         private void SendAnalyticOnDailyChallengeItemClick(string _ChallengeType)
@@ -192,7 +198,7 @@ namespace RMAZOR.UI.Panels
         {
             var locInfos = new[]
             {
-                new LocTextInfo(m_TitleText, ETextType.MenuUI, "daily_challenges",
+                new LocTextInfo(m_TitleText, ETextType.MenuUI_H1, "daily_challenges",
                     _T => _T.ToUpper(CultureInfo.CurrentUICulture)),
             };
             foreach (var locInfo in locInfos)
@@ -210,7 +216,7 @@ namespace RMAZOR.UI.Panels
                 ParameterChallengeTypeTimer,
                 DailyChallengesCountTimer,
                 _Idx => 60 - _Idx * 15,
-                _Idx => 200 + _Idx * 150,
+                _Idx => 400 + _Idx * 200,
                 _Idx => 500 + _Idx * 250);
         }
 
@@ -220,7 +226,7 @@ namespace RMAZOR.UI.Panels
                 ParameterChallengeTypeSteps,
                 DailyChallengesCountSteps,
                 _Idx => 40 - _Idx * 5,
-                _Idx => 300 + _Idx * 200,
+                _Idx => 300 + _Idx * 300,
                 _Idx => 500 + _Idx * 250);
         }
 

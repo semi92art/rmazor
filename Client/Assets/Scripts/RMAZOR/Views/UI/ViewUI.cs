@@ -98,8 +98,8 @@ namespace RMAZOR.Views.UI
             {
                 DialogViewerMediumCommon,
                 DialogViewerFullscreenCommon,
+                DialogViewerFullscreen2,
                 DialogViewerMedium2,
-                DialogViewerFullscreen2
             };
             foreach (var viewer in viewers)
                 DialogViewersController.RegisterDialogViewer(viewer);

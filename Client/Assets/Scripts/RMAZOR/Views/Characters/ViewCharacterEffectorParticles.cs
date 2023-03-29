@@ -19,11 +19,19 @@ namespace RMAZOR.Views.Characters
 {
     public class ViewCharacterEffectorParticles : InitBase, IViewCharacterEffector
     {
+        #region constants
+
+        private const int DeathShapesCount = 50;
+
+        #endregion
+        
         #region nonpublic members
 
         private EDirection? m_MoveDirection;
         private Vector2?    m_FromPos;
         private Vector2?    m_DeathPos;
+
+        private Vector2[] m_StartDirections;
 
         #endregion
         
@@ -69,6 +77,7 @@ namespace RMAZOR.Views.Characters
             ParticlesThrower.SetColors(
                 ColorProvider.GetColor(ColorIds.Character),
                 ColorProvider.GetColor(ColorIds.Character2));
+            InitStartDirections();
             base.Init();
         }
 
@@ -153,51 +162,48 @@ namespace RMAZOR.Views.Characters
             }
         }
 
+        private void InitStartDirections()
+        {
+            var startAngles = Enumerable
+                .Range(0, DeathShapesCount)
+                .Select(_Num => _Num * Mathf.PI * 2f / DeathShapesCount);
+            m_StartDirections = startAngles
+                .Select(_Ang => new Vector2(Mathf.Cos(_Ang), Mathf.Sin(_Ang)))
+                .ToArray();
+        }
+
         private void ThrowParticlesOnCharacterDisappear(bool _Death, V2Int _LastPos = default)
         {
-            Vector3 center;
-            if (m_MoveDirection.HasValue && _Death)
-                center = ContainersGetter.GetContainer(ContainerNamesMazor.Character).position;
-            else
-                center = CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
+            var center = m_MoveDirection.HasValue && _Death
+                ? (Vector2)ContainersGetter.GetContainer(ContainerNamesMazor.Character).position
+                : CoordinateConverter.ToGlobalMazeItemPosition(_LastPos);
             Activated = true;
-            const int deathShapesCount = 50;
-            var startAngles = Enumerable
-                .Range(0, deathShapesCount)
-                .Select(_Num => _Num * Mathf.PI * 2f / deathShapesCount);
-            var startDirections = startAngles
-                .Select(_Ang => new Vector2(Mathf.Cos(_Ang), Mathf.Sin(_Ang)))
-                .ToList();
-            var localStartPositions = startDirections
-                .Select(_Dir => (Vector3) _Dir * Random.value)
-                .ToList();
-            var speeds = new Vector3[localStartPositions.Count];
+            var speeds = new Vector3[m_StartDirections.Length];
             if (m_MoveDirection.HasValue && _Death)
             {
                 float sqrt2 = Mathf.Sqrt(2f);
                 Vector2 moveDir = RmazorUtils.GetDirectionVector(m_MoveDirection.Value, EMazeOrientation.North);
-                for (int i = 0; i < deathShapesCount; i++)
+                for (int i = 0; i < DeathShapesCount; i++)
                 {
-                    float dist = Vector2.Distance(moveDir, startDirections[i]);
+                    float dist = Vector2.Distance(moveDir, m_StartDirections[i]);
                     float coeff;
                     if (dist < sqrt2)
                         coeff = (sqrt2 - dist) * (sqrt2 - dist) * 5f + Random.value * 5f;
                     else coeff = Random.value * 5f;
-                    speeds[i] = ((Vector3) startDirections[i] + (Vector3)moveDir) * coeff;
+                    speeds[i] = ((Vector3) m_StartDirections[i] + (Vector3)moveDir) * coeff;
                 }
             }
             else
             {
-                for (int i = 0; i < deathShapesCount; i++)
-                    speeds[i] = (Vector3) startDirections[i] * Random.value * 5f;
+                for (int i = 0; i < DeathShapesCount; i++)
+                    speeds[i] = (Vector3) m_StartDirections[i] * Random.value * 5f;
             }
-
-            for (int i = 0; i < deathShapesCount; i++)
+            for (int i = 0; i < DeathShapesCount; i++)
             {
                 float randScale = 0.5f + 0.5f * Random.value;
                 float throwTime = 0.5f + 0.5f * Random.value;
                 ParticlesThrower.ThrowParticle(
-                    center + localStartPositions[i], 
+                    center + m_StartDirections[i] * Random.value, 
                     speeds[i],
                     randScale,
                     throwTime);

@@ -57,10 +57,6 @@ namespace RMAZOR
         private IPushNotificationsProvider PushNotificationsProvider { get; set; }
         private IViewUIGameLogo            GameLogo                  { get; set; }
         private IFirebaseInitializer       FirebaseInitializer       { get; set; }
-        
-#if UNITY_ANDROID
-        [Inject] private IAndroidPerformanceTunerClient AndroidPerformanceTunerClient { get; set; }
-#endif
 
         [Inject] 
         private void Inject(
@@ -115,7 +111,6 @@ namespace RMAZOR
             FirebaseInitializer.Init();
             yield return UpdateTodaySessionsCountCoroutine();
             ApplicationVersionUpdater.UpdateToCurrentVersion();
-            yield return InitAndroidPerformanceClient();
             yield return SetGameId();
             yield return LogAppInfoCoroutine();
             yield return PermissionsRequestCoroutine();
@@ -129,14 +124,6 @@ namespace RMAZOR
             var permissionsEntity = PermissionsRequester.RequestPermissions();
             while (permissionsEntity.Result == EEntityResult.Pending)
                 yield return new WaitForEndOfFrame();
-        }
-
-        private IEnumerator InitAndroidPerformanceClient()
-        {
-#if UNITY_ANDROID
-            AndroidPerformanceTunerClient.Init();
-#endif
-            yield return null;
         }
 
         private static IEnumerator SetGameId()
@@ -175,9 +162,9 @@ namespace RMAZOR
                 () => !FirebaseInitializer.Initialized,
                 () =>
                 {
-                    SceneManager.LoadScene(SceneNames.Level);
-                    // var @params = new LoadSceneParameters(LoadSceneMode.Single);
-                    // SceneManager.LoadSceneAsync(SceneNames.Level, @params);
+                    // SceneManager.LoadScene(SceneNames.Level);
+                    var @params = new LoadSceneParameters(LoadSceneMode.Single);
+                    SceneManager.LoadSceneAsync(SceneNames.Level, @params);
                 }, 3f);
         }
 
@@ -199,7 +186,6 @@ namespace RMAZOR
         
         private void OnSceneLoaded(Scene _Scene, LoadSceneMode _Mode)
         {
-            Dbg.Log("Application Initializer: " + 5);
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GameLogo.Init();
             Cor.Run(InitGameControllerCoroutine());
@@ -233,6 +219,7 @@ namespace RMAZOR
         {
             yield return null;
             AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic(AnalyticIds.SessionStart);
+            InitAdsManager();
             InitRemoteConfigManager();
             InitAssetBundleManager();
             InitShopManager();
@@ -240,6 +227,11 @@ namespace RMAZOR
             InitGameClient();
             InitLocalizationManager();
             InitPushNotificationsProvider();
+        }
+
+        private void InitAdsManager()
+        {
+            TryExecute( AdsManager.Init);
         }
 
         private void InitRemoteConfigManager()
@@ -368,23 +360,12 @@ namespace RMAZOR
             const ProductType nonCons = ProductType.NonConsumable;
             return new List<ProductInfo>
             {
-                new ProductInfo(PurchaseKeys.Money1, $"small_pack_of_coins{suffix}",  cons),
-                new ProductInfo(PurchaseKeys.Money2, $"medium_pack_of_coins{suffix}", cons),
-                new ProductInfo(PurchaseKeys.Money3, $"big_pack_of_coins{suffix}",    cons),
-                
-                new ProductInfo(PurchaseKeys.Character01, "character_1", nonCons),
-                new ProductInfo(PurchaseKeys.Character02, "character_2", nonCons),
-                new ProductInfo(PurchaseKeys.Character03, "character_3", nonCons),
-                new ProductInfo(PurchaseKeys.Character04, "character_4", nonCons),
-                new ProductInfo(PurchaseKeys.Character05, "character_5", nonCons),
-                
-                new ProductInfo(PurchaseKeys.CharacterColorSet01, "character_color_set_1", nonCons),
-                new ProductInfo(PurchaseKeys.CharacterColorSet02, "character_color_set_2", nonCons),
-                new ProductInfo(PurchaseKeys.CharacterColorSet03, "character_color_set_3", nonCons),
-                new ProductInfo(PurchaseKeys.CharacterColorSet04, "character_color_set_4", nonCons),
-                new ProductInfo(PurchaseKeys.CharacterColorSet05, "character_color_set_5", nonCons),
-                
-                new ProductInfo(PurchaseKeys.NoAds, $"disable_mandatory_advertising{suffix}", nonCons),
+                new ProductInfo(PurchaseKeys.Money1,       $"small_pack_of_coins{suffix}",           cons),
+                new ProductInfo(PurchaseKeys.Money2,       $"medium_pack_of_coins{suffix}",          cons),
+                new ProductInfo(PurchaseKeys.Money3,       $"big_pack_of_coins{suffix}",             cons),
+                new ProductInfo(PurchaseKeys.SpecialOffer, "special_offer",                          nonCons),
+                new ProductInfo(PurchaseKeys.X2NewCoins,   "x2_new_coins",                           nonCons),
+                new ProductInfo(PurchaseKeys.NoAds,        $"disable_mandatory_advertising{suffix}", nonCons),
             };
         }
 

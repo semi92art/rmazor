@@ -26,6 +26,8 @@ namespace RMAZOR.UI.Panels
         private ISettingDialogPanel          SettingDialogPanel          { get; }
         private ISettingLanguageDialogPanel  SettingLanguageDialogPanel  { get; }
         private IShopDialogPanel             ShopDialogPanel             { get; }
+        private IShopMoneyDialogPanel        ShopMoneyDialogPanel        { get; }
+        private ISpecialOfferDialogPanel     SpecialOfferDialogPanel     { get; }
         private ICharacterDiedDialogPanel    CharacterDiedDialogPanel    { get; }
         private IRateGameDialogPanel         RateGameDialogPanel         { get; }
         private ITutorialDialogPanel         TutorialDialogPanel         { get; }
@@ -45,10 +47,12 @@ namespace RMAZOR.UI.Panels
 
 
         public DialogPanelsSet(
-            IDialogViewersController     _DialogViewersController,
-            ISettingDialogPanel          _SettingDialogPanel,
-            ISettingLanguageDialogPanel  _SettingLanguageDialogPanel, 
-            IShopDialogPanel             _ShopDialogPanel,
+            IDialogViewersController    _DialogViewersController,
+            ISettingDialogPanel         _SettingDialogPanel,
+            ISettingLanguageDialogPanel _SettingLanguageDialogPanel, 
+            IShopDialogPanel            _ShopDialogPanel,
+            IShopMoneyDialogPanel       _ShopMoneyDialogPanel,
+            ISpecialOfferDialogPanel    _SpecialOfferDialogPanel,
             ICharacterDiedDialogPanel    _CharacterDiedDialogPanel,
             IRateGameDialogPanel         _RateGameDialogPanel,
             ITutorialDialogPanel         _TutorialDialogPanel,
@@ -70,6 +74,8 @@ namespace RMAZOR.UI.Panels
             SettingDialogPanel          = _SettingDialogPanel;
             SettingLanguageDialogPanel  = _SettingLanguageDialogPanel;
             ShopDialogPanel             = _ShopDialogPanel;
+            ShopMoneyDialogPanel        = _ShopMoneyDialogPanel;
+            SpecialOfferDialogPanel     = _SpecialOfferDialogPanel;
             CharacterDiedDialogPanel    = _CharacterDiedDialogPanel;
             RateGameDialogPanel         = _RateGameDialogPanel;
             TutorialDialogPanel         = _TutorialDialogPanel;
@@ -94,7 +100,7 @@ namespace RMAZOR.UI.Panels
         
         public override void Init()
         {
-            ShopDialogPanel.Init();
+            ShopMoneyDialogPanel.Init();
             CachePanels();
             LoadDialogPanels();
             base.Init();
@@ -118,6 +124,8 @@ namespace RMAZOR.UI.Panels
                 SettingDialogPanel,
                 SettingLanguageDialogPanel,
                 ShopDialogPanel,
+                ShopMoneyDialogPanel,
+                SpecialOfferDialogPanel,
                 CharacterDiedDialogPanel,
                 RateGameDialogPanel,
                 TutorialDialogPanel,

@@ -12,42 +12,53 @@ using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
+using RMAZOR.Models.ItemProceeders.Additional;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Rotation;
 using UnityEngine;
 
 namespace RMAZOR.Views.Characters.Head
 {
+    public interface IViewCharacterHead 
+        : IViewCharacterHeadPart,
+          IMazeRotationFinished, 
+          ICharacterMoveFinished,
+          ICharacterMoveStarted
+    {
+        string       Id        { get; }
+        Transform    Transform { get; }
+        Collider2D[] Colliders { get; }
+    }
+    
     public abstract class ViewCharacterHeadBase : InitBase, IViewCharacterHead
     {
         #region constants
 
-        private const float RelativeLocalScale = 0.8f;
+        protected const float RelativeLocalScale = 0.8f;
         
         #endregion
 
         #region nonpublic members
 
-        private static int AnimKeyIdle          => AnimKeys.Stop;
         private static int AnimKeyStartJumping1 => AnimKeys.Anim;
         private static int AnimKeyStartMove     => AnimKeys.Anim2;
         private static int AnimKeyStartMove2    => AnimKeys.Anim3;
         private static int AnimKeyBump          => AnimKeys.Anim4;
         private static int AnimKeyMainMenu      => AnimKeys.Anim5;
-        
-        protected abstract string PrefabName { get; }
+
+        protected virtual string PrefabName => $"character_head_{Id}";
 
         private   EMazeOrientation m_LastMazeOrientation;
         private   EDirection       m_PrevHorDir = EDirection.Right;
         protected GameObject       PrefabObj;
         private   GameObject       m_HeadObj;
-        private   GameObject       m_BorderObj;
         private   Animator         m_Animator;
         private   CircleCollider2D m_HeadCollider;
 
-        private bool             m_Activated;
-        private bool             m_HorizontalScaleInverse;
-        private bool             m_VerticalScaleInverse;
+        private bool m_Activated;
+        private bool m_HorizontalScaleInverse;
+        private bool m_VerticalScaleInverse;
         
         #endregion
 
@@ -56,10 +67,10 @@ namespace RMAZOR.Views.Characters.Head
         private   ViewSettings                ViewSettings        { get; }
         protected IColorProvider              ColorProvider       { get; }
         private   IContainersGetter           ContainersGetter    { get; }
-        private   IPrefabSetManager           PrefabSetManager    { get; }
-        private   ICoordinateConverter        CoordinateConverter { get; }
+        protected IPrefabSetManager           PrefabSetManager    { get; }
+        protected ICoordinateConverter        CoordinateConverter { get; }
         private   IRendererAppearTransitioner AppearTransitioner  { get; }
-        [Zenject.Inject] private   IViewInputCommandsProceeder CommandsProceeder   { get; }
+        private   IViewInputCommandsProceeder CommandsProceeder   { get; }
 
         protected ViewCharacterHeadBase(
             ViewSettings                _ViewSettings,
@@ -67,7 +78,8 @@ namespace RMAZOR.Views.Characters.Head
             IContainersGetter           _ContainersGetter,
             IPrefabSetManager           _PrefabSetManager,
             ICoordinateConverter        _CoordinateConverter,
-            IRendererAppearTransitioner _AppearTransitioner)
+            IRendererAppearTransitioner _AppearTransitioner,
+            IViewInputCommandsProceeder _CommandsProceeder)
         {
             ViewSettings        = _ViewSettings;
             ColorProvider       = _ColorProvider;
@@ -75,15 +87,20 @@ namespace RMAZOR.Views.Characters.Head
             PrefabSetManager    = _PrefabSetManager;
             CoordinateConverter = _CoordinateConverter;
             AppearTransitioner  = _AppearTransitioner;
+            CommandsProceeder   = _CommandsProceeder;
         }
         
         #endregion
 
         #region api
-        
+
+        public abstract string Id { get; }
+
         public EAppearingState AppearingState { get; private set; }
         public Transform       Transform      => m_HeadObj.transform;
         public Collider2D[]    Colliders      => new Collider2D[] {m_HeadCollider};
+        
+        protected Func<GameObject> GetCharacterGameObject => () => PrefabObj;
 
         public bool Activated
         {
@@ -93,6 +110,7 @@ namespace RMAZOR.Views.Characters.Head
                 if (value)
                     UpdatePrefab();
                 ActivateShapes(value);
+                m_HeadCollider.enabled = value;
                 m_Activated = value;
             }
         }
@@ -102,12 +120,12 @@ namespace RMAZOR.Views.Characters.Head
             if (Initialized)
                 return;
             ColorProvider.ColorChanged += OnColorChanged;
-            CommandsProceeder.Command += OnCommand;
+            CommandsProceeder.Command  += OnCommand;
             InitPrefab();
             base.Init();
         }
 
-        public void OnRotationFinished(MazeRotationEventArgs _Args)
+        public void OnMazeRotationFinished(MazeRotationEventArgs _Args)
         {
             m_LastMazeOrientation = _Args.NextOrientation;
         }
@@ -202,22 +220,18 @@ namespace RMAZOR.Views.Characters.Head
                 "characters",
                 PrefabName);
             go.transform.SetLocalPosXY(Vector2.zero);
-            PrefabObj      = go;
+            PrefabObj    = go;
             m_HeadObj      = go.GetContentItem("head");
-            m_BorderObj    = go.GetContentItem("border");
             m_Animator     = go.GetCompItem<Animator>("animator");
             m_HeadCollider = go.GetCompItem<CircleCollider2D>("collider");
             m_HeadCollider.gameObject.layer = LayerMask.NameToLayer(LayerNamesCommon.Gamma);
         }
         
-        private void UpdatePrefab()
+        protected virtual void UpdatePrefab()
         {
-            float scale = CoordinateConverter.Scale;
-            if (MathUtils.Equals(scale, 0f))
-                scale = 1f;
+            float scale = GetScale();
             var localScale = Vector2.one * scale * RelativeLocalScale;
             m_HeadObj.transform.SetLocalScaleXY(localScale);
-            m_BorderObj.transform.SetLocalScaleXY(localScale);
             SetOrientation(EDirection.Right, false, EMazeOrientation.North);
         }
         
@@ -246,26 +260,17 @@ namespace RMAZOR.Views.Characters.Head
                 m_PrevHorDir = _Direction;
         }
         
-        private void LookAtByOrientationOnMoveStart(
+        protected virtual void LookAtByOrientationOnMoveStart(
             EDirection _Direction,
             bool               _VerticalInverse,
             EMazeOrientation?   _Orientation = null)
         {
-            float angle, horScale;
-            (angle, horScale) = _Direction switch
-            {
-                EDirection.Left  => (0f, -1f),
-                EDirection.Right => (0f, 1f),
-                EDirection.Down  => (90f, -1f),
-                EDirection.Up    => (90f, 1f),
-                _                        => throw new SwitchCaseNotImplementedException(_Direction)
-            };
+            GetAngleAndHorizontalScaleOnMoveStart(_Direction, out float angle, out float horScale);
             m_HorizontalScaleInverse = horScale < 0f;
             m_VerticalScaleInverse = _VerticalInverse;
             var localRot = Quaternion.Euler(
                 Vector3.forward * (angle + GetMazeAngleByCurrentOrientation(_Orientation)));
             m_HeadObj.transform.localRotation = localRot;
-            m_BorderObj.transform.localRotation = localRot;
             float vertScale = _VerticalInverse ? -1f : 1f;
             float scale = CoordinateConverter.Scale;
             if (MathUtils.Equals(scale, 0f))
@@ -273,33 +278,52 @@ namespace RMAZOR.Views.Characters.Head
             float scaleCoeff = scale * RelativeLocalScale;
             var localScale = scaleCoeff * new Vector3(horScale, vertScale, 1f);
             m_HeadObj.transform.localScale = localScale;
-            m_BorderObj.transform.localScale = localScale;
+        }
+
+        protected static void GetAngleAndHorizontalScaleOnMoveStart(
+            EDirection _Direction, 
+            out float _Angle, 
+            out float _HorScale)
+        {
+            (_Angle, _HorScale) = _Direction switch
+            {
+                EDirection.Left  => (0f, -1f),
+                EDirection.Right => (0f, 1f),
+                EDirection.Down  => (90f, -1f),
+                EDirection.Up    => (90f, 1f),
+                _                => throw new SwitchCaseNotImplementedException(_Direction)
+            };
         }
         
-        private void LookAtByOrientationOnMoveFinish(
+        protected virtual void LookAtByOrientationOnMoveFinish(
             EDirection _Direction,
             EMazeOrientation? _Orientation = null)
         {
-            float angle, vertScale;
-            (angle, vertScale) = _Direction switch
+            GetAngleAndVerticalScaleOnMoveFinished(_Direction, out float angle, out float vertScale);
+            var localRot = Quaternion.Euler(
+                Vector3.forward * (angle + GetMazeAngleByCurrentOrientation(_Orientation)));
+            m_HeadObj.transform.localRotation = localRot;
+            float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
+            var localScale = scaleCoeff * new Vector3(1f, vertScale, 1f);
+            m_HeadObj.transform.localScale = localScale;
+        }
+
+        protected static void GetAngleAndVerticalScaleOnMoveFinished(
+            EDirection _Direction,
+            out float  _Angle,
+            out float  _VertScale)
+        {
+            (_Angle, _VertScale) = _Direction switch
             {
                 EDirection.Left  => (90f, -1f),
                 EDirection.Right => (90f, 1f),
                 EDirection.Down  => (0f, 1f),
                 EDirection.Up    => (0f, -1f),
-                _                        => throw new SwitchCaseNotImplementedException(_Direction)
+                _                => throw new SwitchCaseNotImplementedException(_Direction)
             };
-            var localRot = Quaternion.Euler(
-                Vector3.forward * (angle + GetMazeAngleByCurrentOrientation(_Orientation)));
-            m_HeadObj.transform.localRotation = localRot;
-            m_BorderObj.transform.localRotation = localRot;
-            float scaleCoeff = CoordinateConverter.Scale * RelativeLocalScale;
-            var localScale = scaleCoeff * new Vector3(1f, vertScale, 1f);
-            m_HeadObj.transform.localScale = localScale;
-            m_BorderObj.transform.localScale = localScale;
         }
 
-        private float GetMazeAngleByCurrentOrientation(EMazeOrientation? _Orientation)
+        protected float GetMazeAngleByCurrentOrientation(EMazeOrientation? _Orientation)
         {
             var oritentation = _Orientation ?? m_LastMazeOrientation;
             return oritentation switch
@@ -315,6 +339,14 @@ namespace RMAZOR.Views.Characters.Head
         protected abstract void ActivateShapes(bool _Active);
 
         protected abstract Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear);
+
+        protected float GetScale()
+        {
+            float scale = CoordinateConverter.Scale;
+            if (MathUtils.Equals(scale, 0f))
+                scale = 1f;
+            return scale;
+        }
 
         #endregion
     }

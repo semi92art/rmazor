@@ -244,13 +244,13 @@ namespace RMAZOR.UI.Panels
             static string TextFormula1(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture) + ":";
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_TitleText,              ETextType.MenuUI, "empty_key"),
-                new LocTextInfo(m_RewardText,             ETextType.MenuUI, "reward",         TextFormula1),
-                new LocTextInfo(m_MultiplyButtonText,     ETextType.MenuUI, "multiply",       TextFormula),
-                new LocTextInfo(m_MoneyGotCountText,      ETextType.MenuUI, "empty_key",      TextFormula),
-                new LocTextInfo(m_WatchVideoToTheEndText, ETextType.MenuUI, "watch_video_to_the_end"),
-                new LocTextInfo(m_GetMoneyButtonText,     ETextType.MenuUI, getMoneyButtonTextLocKey,       TextFormula),
-                new LocTextInfo(m_ContinueButtonText,     ETextType.MenuUI, "continue",       TextFormula)
+                new LocTextInfo(m_TitleText,              ETextType.MenuUI_H1, "empty_key"),
+                new LocTextInfo(m_RewardText,             ETextType.MenuUI_H1, "reward",         TextFormula1),
+                new LocTextInfo(m_MultiplyButtonText,     ETextType.MenuUI_H1, "multiply",       TextFormula),
+                new LocTextInfo(m_MoneyGotCountText,      ETextType.MenuUI_H1, "empty_key",      TextFormula),
+                new LocTextInfo(m_WatchVideoToTheEndText, ETextType.MenuUI_H1, "watch_video_to_the_end"),
+                new LocTextInfo(m_GetMoneyButtonText,     ETextType.MenuUI_H1, getMoneyButtonTextLocKey,       TextFormula),
+                new LocTextInfo(m_ContinueButtonText,     ETextType.MenuUI_H1, "continue",       TextFormula)
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);
@@ -329,7 +329,7 @@ namespace RMAZOR.UI.Panels
         {
             IndicateAdsLoading(true);
             yield return Cor.WaitWhile(
-                () => !Managers.AdsManager.RewardedAdNonSkippableReady,
+                () => !Managers.AdsManager.RewardedAdReady,
                 () => IndicateAdsLoading(false));
         }
         
@@ -363,7 +363,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnMultiplyCoefficientChanged(int _Coefficient)
         {
-            if (!Managers.AdsManager.RewardedAdNonSkippableReady)
+            if (!Managers.AdsManager.RewardedAdReady)
                 return;
             m_MultiplyButtonText.text = m_MultiplyWord + " x" + _Coefficient;
         }
@@ -483,7 +483,9 @@ namespace RMAZOR.UI.Panels
         {
             string gameMode = (string) Model.LevelStaging.Arguments.GetSafe(KeyGameMode, out _);
             string locKey = gameMode == ParameterGameModeMain ? "stage_finished" : "level_finished";
-            m_TitleText.text = Managers.LocalizationManager.GetTranslation(locKey);
+            m_TitleText.text = Managers.LocalizationManager.GetTranslation(locKey)
+                .ToUpper(CultureInfo.CurrentUICulture);
+            m_TitleText.font = Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1);
         }
 
         private void SetRewardOnDialogStartAppearing()

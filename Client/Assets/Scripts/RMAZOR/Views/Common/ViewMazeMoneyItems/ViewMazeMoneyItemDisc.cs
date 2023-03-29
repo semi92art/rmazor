@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Common;
 using Common.Constants;
 using Common.Extensions;
@@ -27,9 +28,11 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
     {
         #region nonpublic members
 
-        private static AudioClipArgs AudioClipArgsCollectMoneyItem => 
-            new AudioClipArgs("collect_point", EAudioClipType.GameSound);
+        private AudioClipArgs AudioClipArgsCollectMoneyItem => 
+            new AudioClipArgs("collect_point", EAudioClipType.GameSound, _Id: m_HashCodeString);
 
+        private readonly string m_HashCodeString;
+        
         private Disc     m_MainDisc;
         private Disc     m_InnerDisc, m_OuterDisc;
         private Animator m_Animator;
@@ -50,6 +53,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
                 m_OuterDisc.enabled = value && !isDarkColorTheme;
             }
         }
+
         
         #endregion
 
@@ -79,6 +83,7 @@ namespace RMAZOR.Views.Common.ViewMazeMoneyItems
             AudioManager                = _AudioManager;
             Transitioner                = _Transitioner;
             BackgroundTextureController = _BackgroundTextureController;
+            m_HashCodeString = base.GetHashCode().ToString();
         }
 
         #endregion

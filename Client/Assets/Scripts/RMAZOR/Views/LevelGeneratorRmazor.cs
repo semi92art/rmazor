@@ -232,6 +232,7 @@ namespace RMAZOR.Views
         }
 
         private EInputCommand? m_PrCommand;
+        private int            m_ValidationDecimatorCounter;
 
         private void FollowDirectionByLength(
             ref V2Int             _Position,
@@ -279,6 +280,7 @@ namespace RMAZOR.Views
                     _PathItemPositions,
                     _MazeItemPositions, 
                     _PassLevelCommandsRecord);
+                m_ValidationDecimatorCounter++;
                 bool isValid = LevelAnalyzerRmazor.IsValid(levelInfo);
                 if (isValid)
                 {

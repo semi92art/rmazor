@@ -26,7 +26,7 @@ namespace Common
                 _CameraProvider,
                 _PrefabSetManager) { }
 
-        public override int    Id         => MazorCommonDialogViewerIds.Medium2;
+        public override int    Id         => DialogViewerIdsMazor.Medium2;
         public override string CanvasName => CommonCanvasNames.CommonScreenSpace;
     }
 }

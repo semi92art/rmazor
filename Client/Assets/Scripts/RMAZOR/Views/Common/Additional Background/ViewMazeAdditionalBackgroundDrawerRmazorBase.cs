@@ -233,7 +233,7 @@ namespace RMAZOR.Views.Common.Additional_Background
                     var pointA = center + orth * 0.5f;
                     var pointB = center - orth * 0.5f;
                     line.SetColor(ColorProvider.GetColor(ColorIds.Main))
-                        .SetThickness(CoordinateConverter.Scale * ViewSettings.LineThickness * 0.1f)
+                        .SetThickness(CoordinateConverter.Scale * ViewSettings.LineThickness * 0.07f)
                         .SetStart(CoordinateConverter.ToLocalMazeItemPosition(pointA))
                         .SetEnd(CoordinateConverter.ToLocalMazeItemPosition(pointB));
                 }

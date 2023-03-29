@@ -53,6 +53,9 @@ MonoBehaviour:
     - name: main_theme
       item: {fileID: 8300000, guid: 091ff636bfd7e7d47909b0f9498f02e7, type: 3}
       bundle: 0
+    - name: main_menu_theme
+      item: {fileID: 8300000, guid: e9dc95a879040114ea1caa96f69694bd, type: 3}
+      bundle: 0
     - name: maze_rotation
       item: {fileID: 8300000, guid: 475d12fd67cb38646b29adbc5e55c773, type: 3}
       bundle: 0
@@ -124,4 +127,7 @@ MonoBehaviour:
       bundle: 0
     - name: sound_fail
       item: {fileID: 8300000, guid: ce85fce984f126743bc312d2ba628980, type: 3}
+      bundle: 0
+    - name: synthwave_theme
+      item: {fileID: 8300000, guid: 1c8c9f11300e9934f8dd3982ecd6bac9, type: 3}
       bundle: 0

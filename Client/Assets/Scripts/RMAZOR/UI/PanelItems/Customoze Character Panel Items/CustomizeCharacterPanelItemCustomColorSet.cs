@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Common;
 using Common.Managers.PlatformGameServices;
+using mazing.common.Runtime.Entities;
+using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Managers;
-using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Constants;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
@@ -16,23 +20,23 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
     public class CustomizeCharacterPanelColorSetItemArgsFull
         : CustomizeCharacterPanelCharacterItemArgsFullBase
     {
-        public int   ColorSetId { get; set; }
-        public Color Color1     { get; set; }
-        public Color Color2     { get; set; }
+        public string ColorSetId          { get; set; }
+        public string NameLocalizationKey { get; set; }
+        public Color  Color               { get; set; }
     }
     
     public class CustomizeCharacterPanelItemCustomColorSet : CustomizeCharacterPanelItemBase
     {
         #region serialized fields
 
-        [SerializeField] private Image colorIconsBackground;
-        [SerializeField] private Image color1Icon, color2Icon;
+        [SerializeField] private Image           color1Icon;
+        [SerializeField] private TextMeshProUGUI colorSetName;
 
         #endregion
 
         #region nonpublic members
 
-        protected override int InternalId => ColorSetItemArgsFull.ColorSetId;
+        protected override SaveKey<List<string>> IdsOfBoughtItemsSaveKey => SaveKeysRmazor.IdsOfBoughtColorSets;
         
         private IColorProvider ColorProvider { get; set; }
 
@@ -46,12 +50,12 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
             IUITicker                                   _UITicker,
             IAudioManager                               _AudioManager,
             ILocalizationManager                        _LocalizationManager,
-            IShopManager                                _ShopManager,
             IScoreManager                               _ScoreManager,
             IAnalyticsManager                           _AnalyticsManager,
             Func<int>                                   _GetCharacterLevel,
             IColorProvider                              _ColorProvider,
-            CustomizeCharacterPanelColorSetItemArgsFull _ColorSetItemArgsFull)
+            CustomizeCharacterPanelColorSetItemArgsFull _ColorSetItemArgsFull,
+            UnityAction                                 _OpenShopPanel)
         {
             ColorSetItemArgsFull = _ColorSetItemArgsFull;
             ColorProvider        = _ColorProvider;
@@ -59,13 +63,11 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
                 _UITicker, 
                 _AudioManager, 
                 _LocalizationManager,
-                _ShopManager,
                 _ScoreManager,
                 _AnalyticsManager,
-                _ColorSetItemArgsFull.AccessConditionArgs,
-                _ColorSetItemArgsFull.CoastArgs, 
-                _ColorSetItemArgsFull.HasReceiptArgs,
-                _GetCharacterLevel);
+                _ColorSetItemArgsFull,
+                _GetCharacterLevel,
+                _OpenShopPanel);
         }
 
         public override void UpdateState()
@@ -80,47 +82,33 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
         
         protected override void SetThisItem()
         {
-            ColorProvider.SetColor(ColorIds.Character,  ColorSetItemArgsFull.Color1);
-            ColorProvider.SetColor(ColorIds.Character2, ColorSetItemArgsFull.Color2);
-            SaveUtils.PutValue(SaveKeysRmazor.CharacterColorSetId, ColorSetItemArgsFull.ColorSetId);
+            ColorProvider.SetColor(ColorIds.Character,  ColorSetItemArgsFull.Color);
+            ColorProvider.SetColor(ColorIds.Character2, Color.black);
+            SaveUtils.PutValue(SaveKeysRmazor.CharacterColorSetIdV2, ColorSetItemArgsFull.ColorSetId);
         }
 
         private void UpdateColorIcons()
         {
-            color1Icon.color = ColorSetItemArgsFull.Color1;
-            color2Icon.color = ColorSetItemArgsFull.Color2;
+            color1Icon.color = ColorSetItemArgsFull.Color;
         }
 
-        protected override void UpdateAccessState()
-        {
-            base.UpdateAccessState();
-            bool accessibleForUse = IsItemAccessibleForUse();
-            if (!accessibleForUse)
-                return;
-            var iconRtr = colorIconsBackground.rectTransform;
-            iconRtr.anchorMin        = Vector2.one * 0.5f;
-            iconRtr.anchorMax        = Vector2.one * 0.5f;
-            iconRtr.anchoredPosition = Vector2.zero;
-            iconRtr.pivot            = Vector2.one * 0.5f;
-            iconRtr.sizeDelta        = Vector2.one * 78f;
-        }
-        
-        protected override void OnBuyForGameMoneyButtonClick()
+        protected override void BuyForGameMoney()
         {
             var args = new Dictionary<string, object>
                 {{AnalyticIdsRmazor.ParameterColorSetId, ColorSetItemArgsFull.ColorSetId}};
             AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.BuyColorSetForGameMoneyButtonClick, args);
-            base.OnBuyForGameMoneyButtonClick();
-        }
-
-        protected override void OnBuyForRealMoneyButtonClick()
-        {
-            var args = new Dictionary<string, object>
-                {{AnalyticIdsRmazor.ParameterColorSetId, ColorSetItemArgsFull.ColorSetId}};
-            AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.BuyColorSetForRealMoneyButtonClick, args);
-            base.OnBuyForRealMoneyButtonClick();
+            base.BuyForGameMoney();
         }
         
+        protected override void LocalizeTextObjectsOnInit()
+        {
+            var locInfo = new LocTextInfo(colorSetName, ETextType.MenuUI_H1,
+                ColorSetItemArgsFull.NameLocalizationKey, 
+                _T => _T.ToUpper(CultureInfo.CurrentUICulture));
+            LocalizationManager.AddLocalization(locInfo);
+            base.LocalizeTextObjectsOnInit();
+        }
+
         #endregion
     }
 }

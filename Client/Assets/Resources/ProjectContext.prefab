@@ -76,7 +76,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   colorProvider: {fileID: 5801256520906685625, guid: c93dbf76a6376f148b36a1c337a4924c,
     type: 3}
-  companyLogo: {fileID: 8828779044702047863, guid: bfe13c5da350a5743a9ec173908f293d,
+  companyLogo: {fileID: 432925089894661674, guid: f557dc78161ae9042abb986f213dcb2c,
     type: 3}
   globalGameSettings: {fileID: 11400000, guid: 7b4a7ac8dabe081468d40370feba620a, type: 2}
   modelSettings: {fileID: 11400000, guid: 243986dd30cfcce4abbf025e950c2262, type: 2}

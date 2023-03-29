@@ -182,7 +182,7 @@ namespace RMAZOR.UI.Panels
             var locMan = Managers.LocalizationManager;
             locMan.AddLocalization(new LocTextInfo(
                 m_TitleText,
-                ETextType.MenuUI, 
+                ETextType.MenuUI_H1, 
                 "stages",
                 _Text => _Text.ToUpper(CultureInfo.CurrentUICulture)));
         }

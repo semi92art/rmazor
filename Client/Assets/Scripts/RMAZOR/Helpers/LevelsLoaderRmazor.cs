@@ -78,6 +78,8 @@ namespace RMAZOR.Helpers
             = new Dictionary<GameModeAndLevelTypePair,SerializedLevelsAndLoadedPair>();
 
         private IList<LevelGenerationParams> m_GenerationParamsForRandomLevels;
+        
+        private readonly object m_PreloadLevelLock = new object();
 
         #endregion
 
@@ -112,7 +114,7 @@ namespace RMAZOR.Helpers
             var entyty = new Entity<MazeInfo>();
             if (_Args.GameMode == ParameterGameModeRandom)
             {
-                float levelSize = (float) _Args.Arguments.GetSafe(KeyRandomLevelSize, out _);
+                int levelSize = (int) _Args.Arguments.GetSafe(KeyRandomLevelSize, out _);
                 var genParams = GetLevelGenerationParams(levelSize);
                 entyty = LevelGeneratorRmazor.GetLevelInfoRandomAsync(genParams);
                 return entyty;
@@ -156,11 +158,6 @@ namespace RMAZOR.Helpers
         {
             PreloadLevelsIfWereNotLoaded();
             var key = new GameModeAndLevelTypePair(_Args.GameMode, _Args.LevelType);
-            var sb = new StringBuilder();
-            sb.AppendLine("GetLevelsCount key: " + _Args.GameMode + ", " + _Args.LevelType);
-            foreach (var key1 in m_SerializedLevelsDict.Keys)
-                sb.AppendLine(key1.ToString());
-            Dbg.Log(sb.ToString());
             var val = m_SerializedLevelsDict[key];
             var levels =  val.BundleLevelsLoaded ? val.SerializedLevelsBundle : val.SerializedLevelsLocal;
             return levels.Length;
@@ -178,15 +175,21 @@ namespace RMAZOR.Helpers
                 new GameModeAndLevelTypePair(ParameterGameModeMain,    ParameterLevelTypeBonus),
                 new GameModeAndLevelTypePair(ParameterGameModePuzzles, ParameterLevelTypeDefault),
             };
-            bool allLevelsLoaded = dictKeys.All(_Key =>
+            bool allLevelsLoaded;
+            lock (m_PreloadLevelLock)
             {
-                if (m_SerializedLevelsDict == null)
-                    return false;
-                if (!m_SerializedLevelsDict.ContainsKey(_Key))
-                    return false;
-                var value = m_SerializedLevelsDict[_Key];
-                return value.BundleLevelsLoaded || value.LocalLevelsLoaded;
-            });
+                allLevelsLoaded = dictKeys.All(_Key =>
+                {
+                    if (m_SerializedLevelsDict == null)
+                        return false;
+                    if (!m_SerializedLevelsDict.ContainsKey(_Key))
+                        return false;
+                    var value = m_SerializedLevelsDict[_Key];
+                    if (value == null)
+                        return false;
+                    return value.BundleLevelsLoaded || value.LocalLevelsLoaded;
+                });
+            }
             return !allLevelsLoaded;
         }
 
@@ -200,18 +203,26 @@ namespace RMAZOR.Helpers
             return levels;
         }
 
-        protected void PreloadLevels(bool _FromCache)
+        private void PreloadLevels(bool _Local)
         {
-            PreloadLevels(_FromCache, ParameterGameModeMain,    ParameterLevelTypeDefault);
-            PreloadLevels(_FromCache, ParameterGameModeMain,    ParameterLevelTypeBonus);
-            PreloadLevels(_FromCache, ParameterGameModePuzzles, ParameterLevelTypeDefault);
+            PreloadLevels(_Local, ParameterGameModeMain,    ParameterLevelTypeDefault);
+            PreloadLevels(_Local, ParameterGameModeMain,    ParameterLevelTypeBonus);
+            PreloadLevels(_Local, ParameterGameModePuzzles, ParameterLevelTypeDefault);
         }
         
-        private void PreloadLevels(bool _FromCache, string _GameMode, string _LevelType)
+        private void PreloadLevels(bool _Local, string _GameMode, string _LevelType)
         {
+            var key = new GameModeAndLevelTypePair(_GameMode, _LevelType);
+            if (m_SerializedLevelsDict.ContainsKey(key))
+            {
+                if (_Local && m_SerializedLevelsDict[key].LocalLevelsLoaded)
+                    return;
+                if (!_Local && m_SerializedLevelsDict[key].BundleLevelsLoaded)
+                    return;
+            }
             var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName,
                 LevelsAssetName(_GameMode, _LevelType),
-                _FromCache ? EPrefabSource.Asset : EPrefabSource.Bundle);
+                _Local ? EPrefabSource.Asset : EPrefabSource.Bundle);
             string[] serializedLevels;
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
@@ -224,17 +235,19 @@ namespace RMAZOR.Helpers
                 serializedLevels = serializedLevels
                     .RemoveRange(new[] {serializedLevels[0]})
                     .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-                var key = new GameModeAndLevelTypePair(_GameMode, _LevelType);
-                if (!m_SerializedLevelsDict.ContainsKey(key))
+                lock (m_PreloadLevelLock)
                 {
-                    var newVal = new SerializedLevelsAndLoadedPair();
-                    m_SerializedLevelsDict.Add(key, newVal);
+                    if (!m_SerializedLevelsDict.ContainsKey(key))
+                    {
+                        var newVal = new SerializedLevelsAndLoadedPair();
+                        m_SerializedLevelsDict.Add(key, newVal);
+                    }
+                    var val = m_SerializedLevelsDict[key];
+                    if (!_Local)
+                        (val.SerializedLevelsBundle, val.BundleLevelsLoaded) = (serializedLevels, true);
+                    else
+                        (val.SerializedLevelsLocal, val.LocalLevelsLoaded) = (serializedLevels, true);
                 }
-                var val = m_SerializedLevelsDict[key];
-                if (!_FromCache)
-                    (val.SerializedLevelsBundle, val.BundleLevelsLoaded) = (serializedLevels, true);
-                else
-                    (val.SerializedLevelsLocal, val.LocalLevelsLoaded) = (serializedLevels, true);
             });
         }
 
@@ -275,11 +288,14 @@ namespace RMAZOR.Helpers
             return new Exception(sb.ToString());
         }
 
-        private LevelGenerationParams GetLevelGenerationParams(float _LevelSizeArg)
+        private LevelGenerationParams GetLevelGenerationParams(int _LevelSizeArg)
         {
-            int paramsSetCount = m_GenerationParamsForRandomLevels.Count;
-            int idx = Mathf.FloorToInt(paramsSetCount * _LevelSizeArg - 0.001f);
-            return m_GenerationParamsForRandomLevels[idx];
+            if (_LevelSizeArg != -1) 
+                return m_GenerationParamsForRandomLevels[_LevelSizeArg];
+            static float Formula(float _V) => _V * _V; 
+            float randVal = Formula(UnityEngine.Random.value) * (1f - MathUtils.Epsilon);
+            _LevelSizeArg = Mathf.FloorToInt(m_GenerationParamsForRandomLevels.Count * randVal);
+            return m_GenerationParamsForRandomLevels[_LevelSizeArg];
         }
 
         private void LoadGenerationParamsForRandomLevels()
@@ -338,6 +354,5 @@ namespace RMAZOR.Helpers
         }
 
         #endregion
-
     }
 }

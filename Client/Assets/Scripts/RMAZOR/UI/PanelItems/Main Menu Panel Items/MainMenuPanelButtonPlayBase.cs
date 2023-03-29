@@ -1,4 +1,5 @@
-﻿using mazing.common.Runtime.Entities;
+﻿using System.Linq;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
@@ -54,7 +55,19 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             });
         }
 
-        public abstract void UpdateState();
+        public virtual void UpdateState()
+        {
+            const float fontSize = 32;
+            const bool enableAutoSizing = true;
+            foreach (var text in new [] { title, body}
+                .Where(_T => _T.IsNotNull()))
+            {
+                text.fontSize         = fontSize;
+                text.enableAutoSizing = enableAutoSizing;
+                text.fontSizeMin      = fontSize * 0.5f;
+                text.fontSizeMax      = fontSize;
+            }
+        }
 
         #endregion
 

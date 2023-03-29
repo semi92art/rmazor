@@ -5,7 +5,6 @@ using Common.Managers.PlatformGameServices;
 using Common.ScriptableObjects;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities.UI;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
@@ -24,10 +23,15 @@ using UnityEngine.UI;
 
 namespace RMAZOR.UI.Panels.ShopPanels
 {
-    public interface IShopDialogPanelBase<T> : IDialogPanel where T : ShopItemBase
+    public interface ISetOnCloseFinishAction
     {
         void SetOnCloseFinishAction(UnityAction _Action);
     }
+    
+    public interface IShopDialogPanelBase<T> 
+        : IDialogPanel,
+          ISetOnCloseFinishAction
+        where T : ShopItemBase { }
     
     public abstract class ShopDialogPanelBase<T> :
         DialogPanelBase, IShopDialogPanelBase<T> 
@@ -101,10 +105,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
         
         private void OnButtonCloseClick()
         {
-            OnClose(() =>
-            {
-                m_OnCloseFinishAction?.Invoke();
-            });
+            OnClose(m_OnCloseFinishAction);
             PlayButtonClickSound();
         }
 
@@ -119,12 +120,12 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 {
                     BuyForWatchingAd = itemInSet.watchingAds,
                     Icon = itemInSet.icon,
-                    Price = itemInSet.price.ToString()
                 };
                 item.Init(
                     Ticker,
                     Managers.AudioManager,
                     Managers.LocalizationManager,
+                    Managers.AdsManager,
                     null,
                     args);
             }
@@ -171,7 +172,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         protected override void SubscribeButtonEvents()
         {
-            m_ButtonClose.onClick.AddListener(OnButtonCloseClick);
+            m_ButtonClose.SetOnClick(OnButtonCloseClick);
         }
 
         protected override void LocalizeTextObjectsOnLoad() { }

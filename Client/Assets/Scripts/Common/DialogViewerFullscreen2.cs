@@ -31,7 +31,7 @@ namespace Common
                 _CameraProvider, 
                 _PrefabSetManager) { }
 
-        public override int    Id         => MazorCommonDialogViewerIds.Fullscreen2;
+        public override int    Id         => DialogViewerIdsMazor.Fullscreen2;
         public override string CanvasName => CommonCanvasNames.CommonCameraSpace;
     }
 }

@@ -6,7 +6,7 @@
 
         protected override string TitleLocalizationKey            => "daily_challenge_steps_title";
         protected override string GoalMeasureItemsLocalizationKey => "steps_1";
-        protected override string GoalColorString                 => "#004FFF";
+        protected override string GoalColorString                 => "#ff0000";
 
         #endregion
     }

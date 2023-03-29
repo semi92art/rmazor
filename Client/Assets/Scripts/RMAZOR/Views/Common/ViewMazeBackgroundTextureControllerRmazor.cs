@@ -10,6 +10,7 @@ using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
+using RMAZOR.Settings;
 using RMAZOR.Views.Common.FullscreenTextureProviders;
 using RMAZOR.Views.Common.ViewMazeBackgroundPropertySets;
 using RMAZOR.Views.Utils;
@@ -46,18 +47,22 @@ namespace RMAZOR.Views.Common
         private ViewMazeBackgroundTextureControllerRmazor(
             GlobalGameSettings            _GlobalGameSettings,
             ViewSettings                  _ViewSettings,
-            ICameraProvider               _CameraProvider,
-            IContainersGetter             _ContainersGetter,
             IRemotePropertiesRmazor       _RemoteProperties,
+            IModelGame                    _Model,
             IColorProvider                _ColorProvider,
             IPrefabSetManager             _PrefabSetManager,
+            IRetroModeSetting             _RetroModeSetting,
+            ICameraProvider               _CameraProvider,
+            IContainersGetter             _ContainersGetter,
             IBackgroundTextureProviderSet _TextureProviderSet)
             : base(
                 _GlobalGameSettings,
                 _ViewSettings,
                 _RemoteProperties,
+                _Model,
                 _ColorProvider, 
-                _PrefabSetManager)
+                _PrefabSetManager,
+                _RetroModeSetting)
         {
             CameraProvider        = _CameraProvider;
             ContainersGetter      = _ContainersGetter;
@@ -109,7 +114,7 @@ namespace RMAZOR.Views.Common
         private void OnLevelLoaded(LevelStageArgs _Args)
         {
             m_RenderCamera.enabled = true;
-            ActivateAndShowBackgroundTexture(_Args.LevelIndex);
+            ActivateAndShowBackgroundTexture(_Args);
         }
 
         private void OnExitLevelStaging(LevelStageArgs _Args)
@@ -214,12 +219,13 @@ namespace RMAZOR.Views.Common
                 .ToList();
         }
 
-        private void ActivateAndShowBackgroundTexture(long _LevelIndex)
+        protected override void ActivateAndShowBackgroundTexture(LevelStageArgs _Args)
         {
-            ActivateConcreteBackgroundTexture(_LevelIndex, out var provider);
-            int group = RmazorUtils.GetLevelsGroupIndex(_LevelIndex);
+            long levelIndex = _Args.LevelIndex;
+            ActivateConcreteBackgroundTexture(levelIndex, out var provider);
+            int group = RmazorUtils.GetLevelsGroupIndex(levelIndex);
             long firstLevInGroup = RmazorUtils.GetFirstLevelInGroupIndex(group);
-            bool predicate = _LevelIndex == firstLevInGroup || m_IsFirstLoad;
+            bool predicate = levelIndex == firstLevInGroup || m_IsFirstLoad;
             var colFrom1 = predicate ? BackCol1Current : BackCol1Prev;
             var colFrom2 = predicate ? BackCol2Current : BackCol2Prev;
             m_IsFirstLoad = false;

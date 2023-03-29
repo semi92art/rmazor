@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edbe76a02fa3404f9e04b54b4caf98f8, type: 3}
   m_Name: view_settings
   m_EditorClassIdentifier: 
-  lineThickness: 15
-  pathItemBorderThickness: 40
+  lineThickness: 10
+  pathItemBorderThickness: 15
   movingTrapRotationSpeed: -400
   shredingerLineOffsetSpeed: 200
   turretProjectileRotationSpeed: -1000
@@ -31,7 +31,7 @@ MonoBehaviour:
   levelsCountMain: 420
   firstLevelToRateGame: 4
   firstLevelToRateGameThisSession: 0
-  betweenLevelTransitionTime: 1
+  betweenLevelTransitionTime: 0.6
   spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
   filledPathAlpha: 1
@@ -44,13 +44,15 @@ MonoBehaviour:
   highlightPathItem: 1
   levelsInGroup: 3,3,3
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
-  finishLevelGroupPanelBackgroundVariant: 4
-  characterDiedPanelBackgroundVariant: 2
+  finishLevelGroupPanelBackgroundVariant: 3
+  characterDiedPanelBackgroundVariant: 1
   extraBordersIndices: 2
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
   showPathItems: 1
-  characterId: 1
-  drawAdditionalMazeNet: 0
-  pathItemContentShapeType: disc
+  drawAdditionalMazeNet: 1
+  pathItemContentShapeType: square
   mazeItemBlockColorEqualsMainColor: 1
+  betweenLevelsTransitionTextureName: circles_2
+  loadMainGameModeOnStart: 1
+  specialOfferDurationInMinutes: 10

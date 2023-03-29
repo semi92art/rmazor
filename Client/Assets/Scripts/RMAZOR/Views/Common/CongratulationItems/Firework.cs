@@ -1,8 +1,5 @@
 ﻿using System.Collections;
-using Common.Extensions;
-using Common.Utils;
 using mazing.common.Runtime.Extensions;
-using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.SpawnPools;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
@@ -25,9 +22,8 @@ namespace RMAZOR.Views.Common.CongratulationItems
         #region nonpublic members
         
         private Disc[]          m_Discs;
-        private Rigidbody[]     m_Bodies;
+        private Rigidbody[]     m_RigidBodies;
         private IViewGameTicker m_Ticker;
-        private IColorProvider  m_ColorProvider;
         private bool            m_ActivatedInSpawnPool;
         
         private static readonly Color[] CongradColorSet =
@@ -54,25 +50,34 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     return;
                 int count = m_Discs.Length;
                 for (int i = 0; i < count; i++)
-                    m_Bodies[i].gameObject.SetActive(value);
+                {
+                    var rb = m_RigidBodies[i];
+                    if (value)
+                    {
+                        rb.WakeUp();
+                    }
+                    else
+                    {
+                        rb.Sleep();
+                        rb.transform.position = Vector3.right * 300f;
+                    }
+                }
             }
         }
         
         public void InitFirework(
             Disc[]          _Discs,
             Rigidbody[]     _Bodies, 
-            IViewGameTicker _Ticker,
-            IColorProvider  _ColorProvider)
+            IViewGameTicker _Ticker)
         {
             m_Discs = _Discs;
-            m_Bodies = _Bodies;
+            m_RigidBodies = _Bodies;
             m_Ticker = _Ticker;
-            m_ColorProvider = _ColorProvider;
             int count = m_Discs.Length;
             for (int i = 0; i < count; i++)
             {
-                m_Bodies[i].MovePosition(transform.position);
-                m_Bodies[i].constraints = RigidbodyConstraints.FreezeAll;
+                m_RigidBodies[i].MovePosition(transform.position);
+                m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeAll;
                 m_Discs[i].Color = m_Discs[i].Color.SetA(0f);
                 m_Discs[i].SortingOrder = SortingOrders.BackgroundItem;
             }
@@ -99,9 +104,9 @@ namespace RMAZOR.Views.Common.CongratulationItems
             for (int i = 0; i < count; i++)
             {
                 var dir = new Vector2(RandDir(), RandDir());
-                m_Bodies[i].constraints = RigidbodyConstraints.FreezeRotation;
-                m_Bodies[i].transform.localPosition = Vector3.zero;
-                m_Bodies[i].AddForce(force * dir, ForceMode.VelocityChange);
+                m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeRotation;
+                m_RigidBodies[i].transform.localPosition = Vector3.zero;
+                m_RigidBodies[i].AddForce(force * dir, ForceMode.VelocityChange);
                 SetColorByTheme(m_Discs[i], col);
             }
             yield return Cor.Lerp(
@@ -118,7 +123,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        m_Bodies[i].constraints = RigidbodyConstraints.FreezeAll;
+                        m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeAll;
                         m_Discs[i].Color = m_Discs[i].Color.SetA(0f);
                         ActivatedInSpawnPool = false;
                     }

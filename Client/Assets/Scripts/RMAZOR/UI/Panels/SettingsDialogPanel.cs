@@ -151,7 +151,7 @@ namespace RMAZOR.UI.Panels
 
         protected override void LocalizeTextObjectsOnLoad()
         {
-            var logInfo = new LocTextInfo(m_TitleText, ETextType.MenuUI, "settings", 
+            var logInfo = new LocTextInfo(m_TitleText, ETextType.MenuUI_H1, "settings", 
                 _T => _T.ToUpper(CultureInfo.CurrentCulture));
             Managers.LocalizationManager.AddLocalization(logInfo);
         }
@@ -181,6 +181,7 @@ namespace RMAZOR.UI.Panels
             InitLeaderboardsButton();
             InitRestorePurchasesButton();
             InitRateUsButton();
+            InitRetroModeSettingItem(SettingsGetter.RetroModeSetting);
         }
 
         private void InitSettingItem<T>(ISetting<T> _Setting)
@@ -227,6 +228,20 @@ namespace RMAZOR.UI.Panels
                 _Setting.TitleKey, 
                 _IsOn => _Setting.Put(ConvertValue<T>(_IsOn)));
         }
+        
+        private void InitRetroModeSettingItem(IRetroModeSetting _Setting)
+        {
+            var retroModeSettingItem = CreateRetroModeSetting();
+            _Setting.StateUpdated += retroModeSettingItem.CheckIfSettingLocked;
+            retroModeSettingItem.Init(
+                Ticker,
+                Managers.AudioManager,
+                Managers.LocalizationManager,
+                Managers.ScoreManager,
+                Convert.ToBoolean(_Setting.Get()),
+                _Setting.TitleKey, 
+                _IsOn => _Setting.Put(ConvertValue<bool>(_IsOn)));
+        }
 
         private void InitLanguageSelectorSettingItem<T>(ISetting<T> _Setting)
         {
@@ -271,7 +286,7 @@ namespace RMAZOR.UI.Panels
                     CommonPrefabSetNames.Views, "five_stars_icon"),
                 Managers.PrefabSetManager.GetObject<Sprite>(
                 CommonPrefabSetNames.Views, "rate_game_button_background"));
-            var info = new LocTextInfo(item.title, ETextType.MenuUI, "rate_game");
+            var info = new LocTextInfo(item.title, ETextType.MenuUI_H1, "rate_game");
             Managers.LocalizationManager.AddLocalization(info);
             item.Highlighted = true;
         }
@@ -325,7 +340,7 @@ namespace RMAZOR.UI.Panels
                     CommonPrefabSetNames.Views, "leaderboard_icon"),
                 Managers.PrefabSetManager.GetObject<Sprite>(
                     CommonPrefabSetNames.Views, "leaderboard_button_background"));
-            var info = new LocTextInfo(item.title, ETextType.MenuUI, "show_leaderboards");
+            var info = new LocTextInfo(item.title, ETextType.MenuUI_H1, "show_leaderboards");
             Managers.LocalizationManager.AddLocalization(info);
         }
 
@@ -343,7 +358,7 @@ namespace RMAZOR.UI.Panels
                 },
                 Managers.PrefabSetManager.GetObject<Sprite>(
                     CommonPrefabSetNames.Views, "refund_icon"));
-            var info = new LocTextInfo(item.title, ETextType.MenuUI, "restore_purchases");
+            var info = new LocTextInfo(item.title, ETextType.MenuUI_H1, "restore_purchases");
             Managers.LocalizationManager.AddLocalization(info);
         }
 
@@ -365,6 +380,16 @@ namespace RMAZOR.UI.Panels
                     m_SettingItemRectLite),
                 SettingItemsPrefabSetName, "on_off_item");
             return obj.GetComponent<SettingItemOnOff>();
+        }
+        
+        private RetroModeSettingItem CreateRetroModeSetting()
+        {
+            var obj = Managers.PrefabSetManager.InitUiPrefab(
+                UIUtils.UiRectTransform(
+                    m_SettingsContent,
+                    m_SettingItemRectLite),
+                SettingItemsPrefabSetName, "retro_mode_item");
+            return obj.GetComponent<RetroModeSettingItem>();
         }
 
         private SettingLanguageSelectorItem CreateLanguageSelectorSettingItem()

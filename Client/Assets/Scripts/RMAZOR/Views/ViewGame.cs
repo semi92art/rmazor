@@ -2,20 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Common;
 using Common.Constants;
 using Common.Managers.Advertising.AdsProviders;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
-using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
+using RMAZOR.Settings;
 using RMAZOR.UI.Panels;
 using RMAZOR.UI.Utils;
 using RMAZOR.Views.Characters;
@@ -29,7 +32,10 @@ using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.MazeItemGroups;
 using RMAZOR.Views.Rotation;
 using RMAZOR.Views.UI;
+using RMAZOR.Views.Utils;
 using UnityEngine;
+using UnityEngine.Events;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views
 {
@@ -90,12 +96,13 @@ namespace RMAZOR.Views
         private IViewGameIdleQuitter           IdleQuitter               { get; }
         private IViewMobileNotificationsSender MobileNotificationsSender { get; }
         private IViewInputCommandsRecorder     InputCommandsRecorder     { get; }
-        private IViewInputCommandsPlayer       InputCommandsPlayer       { get; }
+        private IViewInputCommandsReplayer       InputCommandsReplayer       { get; }
         private IUITicker                      UiTicker                  { get; }
         private IRewardCounter                 RewardCounter             { get; }
         private IRemoteConfigManager           RemoteConfigManager       { get; }
-        private IDialogViewersController       DialogViewersController   { get; }
         private IViewLevelStageSwitcher        LevelStageSwitcher        { get; }
+        private IRetroModeSetting              RetroModeSetting          { get; }
+        private IModelGame                     Model                     { get; }
         private IContainersGetter              ContainersGetter          { get; }
         private IViewMazeCommon                Common                    { get; }
         private ICoordinateConverter           CoordinateConverter       { get; }
@@ -132,12 +139,13 @@ namespace RMAZOR.Views
             IViewGameIdleQuitter           _IdleQuitter,
             IViewMobileNotificationsSender _MobileNotificationsSender,
             IViewInputCommandsRecorder     _InputCommandsRecorder,
-            IViewInputCommandsPlayer       _InputCommandsPlayer,
+            IViewInputCommandsReplayer       _InputCommandsReplayer,
             IUITicker                      _UiTicker,
             IRewardCounter                 _RewardCounter,
             IRemoteConfigManager           _RemoteConfigManager,
-            IDialogViewersController       _DialogViewersController,
-            IViewLevelStageSwitcher        _LevelStageSwitcher)
+            IViewLevelStageSwitcher        _LevelStageSwitcher,
+            IRetroModeSetting              _RetroModeSetting,
+            IModelGame                     _Model)
         {
             Settings                     = _Settings;
             ContainersGetter             = _ContainersGetter;
@@ -166,12 +174,13 @@ namespace RMAZOR.Views
             IdleQuitter                  = _IdleQuitter;
             MobileNotificationsSender    = _MobileNotificationsSender;
             InputCommandsRecorder        = _InputCommandsRecorder;
-            InputCommandsPlayer          = _InputCommandsPlayer;
+            InputCommandsReplayer          = _InputCommandsReplayer;
             UiTicker                     = _UiTicker;
             RewardCounter                = _RewardCounter;
             RemoteConfigManager          = _RemoteConfigManager;
-            DialogViewersController      = _DialogViewersController;
             LevelStageSwitcher           = _LevelStageSwitcher;
+            RetroModeSetting             = _RetroModeSetting;
+            Model                        = _Model;
         }
         
         #endregion
@@ -182,6 +191,7 @@ namespace RMAZOR.Views
         {
             if (Initialized)
                 return;
+            RetroModeSetting.ValueSet += OnRetroModeValueSet;
             CommonDataRmazor.LevelsInGroupArray = Settings.LevelsInGroup; 
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
@@ -189,10 +199,42 @@ namespace RMAZOR.Views
             InitProceeders();
             TouchProceeder.ProceedRotation = Application.isEditor;
             CameraProvider.Follow = ContainersGetter.GetContainer(ContainerNamesMazor.Character);
-            CommonUtils.DoOnInitializedEx(DialogPanelsSet, () => Cor.Run(LoadMainMenuOnStart()));
+            CommonUtils.DoOnInitializedEx(DialogPanelsSet, () =>
+            {
+                bool mainGameModeLoadedAtLeastOnce = SaveUtils.GetValue(SaveKeysRmazor.MainGameModeLoadedAtLeastOnce);
+                if (Settings.loadMainGameModeOnStart && !mainGameModeLoadedAtLeastOnce)
+                {
+                    LoadLastMainLevel(null);
+                    SaveUtils.PutValue(SaveKeysRmazor.MainGameModeLoadedAtLeastOnce, true);
+                }
+                else
+                {
+                    Cor.Run(LoadMainMenuOnStart());
+                }
+            });
             base.Init();
         }
+
+        private void OnRetroModeValueSet(bool _Value)
+        {
+            if (Model.LevelStaging.LevelStage == ELevelStage.None)
+                return;
+            string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(Model.LevelStaging.Arguments);
+            if (gameMode == ParameterGameModeRandom)
+                return;
+            var defaultClip = GetAudioClipArgsLevelTheme(false);
+            var retroClip   = GetAudioClipArgsLevelTheme(true);
+            Managers.AudioManager.PlayClip(_Value ? retroClip : defaultClip);
+            Managers.AudioManager.PauseClip(_Value ? defaultClip : retroClip);
+        }
         
+        private static AudioClipArgs GetAudioClipArgsLevelTheme(bool _Retro)
+        {
+            string prefabName = _Retro ? "synthwave_theme" : "main_theme";
+            float volume = _Retro ? 0.1f : 0.25f;
+            return new AudioClipArgs(prefabName, EAudioClipType.Music, volume, true);
+        }
+
         public void OnLevelStageChanged(LevelStageArgs _Args)
         {
             LevelStageController.OnLevelStageChanged(_Args);
@@ -241,13 +283,15 @@ namespace RMAZOR.Views
         {
             if (!CameraProvider.Initialized)
                 yield return null;
-            var mainMenuPanel = DialogPanelsSet.GetPanel<IMainMenuPanel>();
-            var dv = DialogViewersController.GetViewer(mainMenuPanel.DialogViewerId);
-            LevelStageSwitcher.SwitchLevelStage(EInputCommand.ExitLevelStaging);
-            dv.Show(mainMenuPanel, _AdditionalCameraEffectsAction: MainMenuAdditionalCameraEffectsAction);
+            var args = new Dictionary<string, object>
+            {
+                {KeyAdditionalCameraEffectAction, 
+                    (UnityAction<bool, float>)AdditionalCameraEffectsActionDefaultCoroutine}
+            };
+            CommandsProceeder.RaiseCommand(EInputCommand.MainMenuPanel, args);
         }
-        
-        private void MainMenuAdditionalCameraEffectsAction(bool _Appear, float _Time)
+
+        private void AdditionalCameraEffectsActionDefaultCoroutine(bool _Appear, float _Time)
         {
             Cor.Run(MainMenuUtils.SubPanelsAdditionalCameraEffectsActionCoroutine(_Appear, _Time,
                 CameraProvider, UiTicker));
@@ -320,7 +364,7 @@ namespace RMAZOR.Views
                 {+02, CameraProvider},
                 {+03, Managers},
                 {+04, InputCommandsRecorder},
-                {+05, InputCommandsPlayer},
+                {+05, InputCommandsReplayer},
                 {+06, RewardCounter}
             };
         }
@@ -328,6 +372,46 @@ namespace RMAZOR.Views
         private T[] GetInterfaceOfProceeders<T>() where T : class
         {
             return Array.ConvertAll(m_ProceedersCached, _Item => _Item as T);
+        }
+        
+        private void LoadLastMainLevel(UnityAction _OnReadyToLoadLevel)
+        {
+            var sgCache = Managers.ScoreManager.GetSavedGame( MazorCommonData.SavedGameFileName);
+            object levelIndexArg = sgCache.Arguments.GetSafe(KeyLevelIndexMainLevels, out _);
+            long levelIndex = Convert.ToInt64(levelIndexArg);
+            LoadLevelByIndex(levelIndex, ParameterGameModeMain, sgCache.Arguments, _OnReadyToLoadLevel);
+        }
+
+        private void LoadLevelByIndex(
+            long                       _LevelIndex,
+            string                     _GameMode,
+            Dictionary<string, object> _SavedArgs,
+            UnityAction                _OnReadyToLoadLevel)
+        {
+            var args = new Dictionary<string, object>
+            {
+                {KeyGameMode,                       _GameMode},
+                {KeyLevelIndex,                     _LevelIndex},
+                {KeyOnReadyToLoadLevelFinishAction, _OnReadyToLoadLevel},
+                {KeySource,                         ParameterSourceMainMenu}
+            };
+            switch (_GameMode)
+            {
+                case ParameterGameModeMain:
+                {
+                    string levelType = (string) _SavedArgs.GetSafe(KeyNextLevelType, out _);
+                    if (levelType != ParameterLevelTypeDefault && levelType != ParameterLevelTypeBonus)
+                        levelType = ParameterLevelTypeDefault;
+                    args.SetSafe(KeyNextLevelType, levelType);
+                    break;
+                }
+                case ParameterGameModePuzzles:
+                    args.SetSafe(KeyNextLevelType, ParameterLevelTypeDefault);
+                    break;
+            }
+            var loadLevelCoroutine = MainMenuUtils.LoadLevelCoroutine(
+                args, Settings, FullscreenTransitioner, UiTicker, LevelStageSwitcher);
+            Cor.Run(loadLevelCoroutine);
         }
         
         #endregion

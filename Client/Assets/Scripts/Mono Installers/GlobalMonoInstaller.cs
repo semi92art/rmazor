@@ -6,7 +6,6 @@ using Common.Managers.Advertising;
 using Common.Managers.Advertising.AdBlocks;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Analytics;
-using Common.Managers.IAP;
 using Common.Managers.Notifications;
 using Common.Managers.PlatformGameServices;
 using Common.Managers.PlatformGameServices.Achievements;
@@ -90,6 +89,7 @@ namespace Mono_Installers
             Container.Bind<IHapticsSetting>()     .To<HapticsSetting>()                     .AsSingle();
             Container.Bind<ILanguageSetting>()    .To<LanguageSetting>()                    .AsSingle();
             Container.Bind<IDebugSetting>()       .To<DebugSetting>()                       .AsSingle();
+            Container.Bind<IRetroModeSetting>()   .To<RetroModeSetting>()                   .AsSingle();
         }
         
         private void BindTickers()
@@ -227,6 +227,10 @@ namespace Mono_Installers
 
         private void BindOther()
         {
+            Container.Bind<CompanyLogoMonoBeh>()             
+                .FromComponentInNewPrefab(companyLogo)
+                .AsSingle();
+            
             if (!MazorCommonData.Release)
                 Container.Bind<IViewUIGameLogo>() .To<ViewUIGameLogoFake>()     .AsSingle();
             else
@@ -256,8 +260,8 @@ namespace Mono_Installers
             }
             
             Container.Bind<IFpsCounter>()
-                .To<FpsCounter>()
-                // .To<FpsCounterFake>()
+                // .To<FpsCounter>()
+                .To<FpsCounterFake>()
                 .AsSingle();
             
             Container.Bind<IDebugConsoleView>()
@@ -266,13 +270,9 @@ namespace Mono_Installers
                 .AsSingle();
             
             Container.Bind<IAssetBundleManager>()
-                .To<AssetBundleManager>()
-                // .To<AssetBundleManagerFake>()
+                // .To<AssetBundleManager>()
+                .To<AssetBundleManagerFake>()
                 .AsSingle();
-            
-#if UNITY_ANDROID
-            Container.Bind<IAndroidPerformanceTunerClient>().To<AndroidPerformanceTunerClient>().AsSingle();
-#endif
 
             Container.Bind<IApplicationVersionUpdater>().To<ApplicationVersionUpdater>().AsSingle();
             

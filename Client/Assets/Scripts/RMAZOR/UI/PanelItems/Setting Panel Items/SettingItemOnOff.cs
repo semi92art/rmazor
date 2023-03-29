@@ -1,8 +1,14 @@
-﻿using mazing.common.Runtime.Entities;
+﻿using System;
+using Common;
+using Common.Managers.PlatformGameServices;
+using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
+using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
+using RMAZOR.Models;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,9 +18,9 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
 {
     public class SettingItemOnOff : SimpleUiItem
     {
-        [SerializeField] private TextMeshProUGUI title;
-        [SerializeField] private Button          button;
-        [SerializeField] private GameObject      toggleOnObj, toggleOffObj;
+        [SerializeField] protected TextMeshProUGUI title;
+        [SerializeField] protected Button          button;
+        [SerializeField] protected GameObject      toggleOnObj, toggleOffObj;
 
         private bool m_IsOn;
 
@@ -26,9 +32,9 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             string               _TitleLocalizationKey,
             UnityAction<bool>    _Action)
         {
-            Init(_UITicker, _AudioManager, _LocalizationManager);
+            base.Init(_UITicker, _AudioManager, _LocalizationManager);
             name = "Setting";
-            var locInfo = new LocTextInfo(title, ETextType.MenuUI, _TitleLocalizationKey);
+            var locInfo = new LocTextInfo(title, ETextType.MenuUI_H1, _TitleLocalizationKey);
             _LocalizationManager.AddLocalization(locInfo);
             m_IsOn = _IsOn;
             SetToggleObject();
@@ -46,5 +52,6 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             toggleOnObj.SetActive(m_IsOn);
             toggleOffObj.SetActive(!m_IsOn);
         }
+
     }
 }

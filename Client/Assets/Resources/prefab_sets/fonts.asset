@@ -32,6 +32,24 @@ MonoBehaviour:
     - name: lilita_one_54_regular
       item: {fileID: 11400000, guid: 605433b68313d491a8ab88bc03a41651, type: 2}
       bundle: 0
+    - name: lilita_one_40_regular
+      item: {fileID: 11400000, guid: 50c12c23294124aa48490c44ac65a9e4, type: 2}
+      bundle: 0
+    - name: lilita_one_regular
+      item: {fileID: 11400000, guid: c1482dbce654844b9ba1c753cbea5d80, type: 2}
+      bundle: 0
     - name: multiround_pro
       item: {fileID: 11400000, guid: 39dd0d0fec7520c469a364996c8fdd4a, type: 2}
+      bundle: 0
+    - name: lilita_one_54_regular_extended_ascii
+      item: {fileID: 11400000, guid: 8ecd17aeceaba4c10b42ac497ccbfcff, type: 2}
+      bundle: 0
+    - name: lilita_one_40_regular_extended_ascii
+      item: {fileID: 11400000, guid: 9844632d790894e85a0b85fdefbfe1e5, type: 2}
+      bundle: 0
+    - name: lilita_one_32_regular_extended_ascii
+      item: {fileID: 11400000, guid: 1bdbbd43a253d47f99f853e49dce8edc, type: 2}
+      bundle: 0
+    - name: lilita_one_120_regular_extended_ascii
+      item: {fileID: 11400000, guid: 8d34560b6d49c4469b2174ccd34ae34b, type: 2}
       bundle: 0

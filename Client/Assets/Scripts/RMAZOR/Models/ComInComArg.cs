@@ -25,6 +25,7 @@
         public const string KeyChallengeGoal                       = "level_time";
         public const string KeyRandomLevelSize                     = "random_level_size";
         public const string KeyCharacterId                         = "character_id";
+        public const string KeyCharacterColorId                    = "character_color_id";
         public const string KeyChallengeType                       = "challenge_type";
         public const string KeyCharacterXp                         = "character_xp";
         public const string KeyAiSimulation                        = "ai_simulation";

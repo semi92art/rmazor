@@ -97,7 +97,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                 var content = newGo.GetCompItem<Transform>("content");
                 var discs = content.GetComponentsInChildren<Disc>().ToArray();
                 var bodies = content.GetComponentsInChildren<Rigidbody>().ToArray();
-                firework.InitFirework(discs, bodies, GameTicker, ColorProvider);
+                firework.InitFirework(discs, bodies, GameTicker);
                 m_BackCongratsItemsPool.Add(firework);
                 int randAudioIdx = Mathf.FloorToInt(1 + Random.value * 4.9f);
                 m_AudioClipIndices.Add(firework, randAudioIdx);
@@ -114,8 +114,6 @@ namespace RMAZOR.Views.Common.CongratulationItems
             m_LastCongratsItemAnimTime = GameTicker.Time;
             m_NextRandomCongratsItemAnimInterval = 0.05f + Random.value * 0.15f;
             var firework = m_BackCongratsItemsPool.FirstInactive;
-            if (firework.IsNull())
-                return;
             var tr = firework.transform;
             tr.position = RandomPositionOnScreen();
             tr.localScale = Vector3.one * (0.5f + 1.5f * Random.value);

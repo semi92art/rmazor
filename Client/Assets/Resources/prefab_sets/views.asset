@@ -162,7 +162,7 @@ MonoBehaviour:
       item: {fileID: 21300000, guid: 928516686caa643f5b6615dc945cff34, type: 3}
       bundle: 0
     - name: daily_gift_icon_disabled
-      item: {fileID: 21300000, guid: 58b3d7517aaea33498aa1186b7b698da, type: 3}
+      item: {fileID: 21300000, guid: d8c6fa29b5779fc4c984bf97cd059f18, type: 3}
       bundle: 0
     - name: preview_character_camera_texture
       item: {fileID: 8400000, guid: c7ca8306e87d71c4799c23a2cba8d975, type: 2}
@@ -172,7 +172,7 @@ MonoBehaviour:
         type: 3}
       bundle: 0
     - name: character_panel_color_set_item
-      item: {fileID: 7721579039813235215, guid: 1bcb4f0a82a6bca44820dbd68f77baae,
+      item: {fileID: 7721579039813235215, guid: d1950014be0728949ad6c95e5324f462,
         type: 3}
       bundle: 0
     - name: game_money_icon_sprite_enabled

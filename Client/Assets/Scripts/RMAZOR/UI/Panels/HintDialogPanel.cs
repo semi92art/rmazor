@@ -137,8 +137,8 @@ namespace RMAZOR.UI.Panels
             var locMan = Managers.LocalizationManager;
             var locInfos = new[]
             {
-                new LocTextInfo(m_ButtonShowHintText, ETextType.MenuUI, "show_hint", TextFormula),
-                new LocTextInfo(m_TitleText, ETextType.MenuUI, "hint_panel_title", TextFormula)
+                new LocTextInfo(m_ButtonShowHintText, ETextType.MenuUI_H1, "show_hint", TextFormula),
+                new LocTextInfo(m_TitleText, ETextType.MenuUI_H1, "hint_panel_title", TextFormula)
             };
             foreach (var locInfo in locInfos)
                 locMan.AddLocalization(locInfo);

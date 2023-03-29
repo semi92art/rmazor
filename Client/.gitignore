@@ -102,3 +102,6 @@ Prototyping.meta*
 
 /.sonarqube
 /Recordings
+
+Assets/GeneratedLocalRepo
+Assets/GeneratedLocalRepo.meta

@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.iOS", "SA.iOS.csproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMAZOR", "RMAZOR.csproj", "{92a482b9-d6ff-fdc6-3a70-65826a212f32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Api.Mediation", "GoogleMobileAds.Api.Mediation.csproj", "{e7292745-5e5f-8953-54f2-bc02cc04c91e}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lean.Localization", "Lean.Localization.csproj", "{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage.Demo", "LeTai.TranslucentImage.Demo.csproj", "{8984c209-a36b-c7b9-35ec-a1322f14e2f3}"
@@ -51,8 +49,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Foundation", "SA.Foundat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanTouch", "LeanTouch.csproj", "{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner", "Google.Android.PerformanceTuner.csproj", "{7494cc53-568c-4a49-8512-d83f6c447d17}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeanCommon", "LeanCommon.csproj", "{b84c5e54-bf41-bdac-dd64-59140a6d59ce}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations", "MoreMountains.NiceVibrations.csproj", "{d044e99d-0d9a-740a-d68a-047fc0ed20b8}"
@@ -74,8 +70,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Rumble.Editor", "MoreMountains.NiceVibrations.Rumble.Editor.csproj", "{15649502-615b-247e-36cf-22f7863a9883}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android.Manifest", "SA.Android.Manifest.csproj", "{869f5012-7037-6276-2e54-a11088fbdb90}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner_gen", "Google.Android.PerformanceTuner_gen.csproj", "{387d2185-e8fa-cbeb-64ce-46c508e0c175}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-PoolMonitor-Editor", "Zenject-PoolMonitor-Editor.csproj", "{63b2b48a-78b3-8da0-b943-c308151a6ef3}"
 EndProject
@@ -107,8 +101,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-TestFramework", "Ze
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firstpass", "Assembly-CSharp-Editor-firstpass.csproj", "{6c069222-a403-3357-4636-43653c20a180}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google.Android.PerformanceTuner.Editor", "Google.Android.PerformanceTuner.Editor.csproj", "{368cf049-f75d-0a3f-4039-a90bb86efaa9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins.Editor", "StansAssets.Plugins.Editor.csproj", "{46a768cf-0c9b-596d-69cb-da65ad487ead}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Editor", "MoreMountains.NiceVibrations.Editor.csproj", "{542d7cc5-ff84-220e-82cb-600dcd89302d}"
@@ -123,8 +115,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Editor", "Hierar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoogleMobileAds.Common.Mediation", "GoogleMobileAds.Common.Mediation.csproj", "{bb100f66-8fbf-510e-456d-b2b0d44fb876}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,8 +128,6 @@ Global
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{e7292745-5e5f-8953-54f2-bc02cc04c91e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{e7292745-5e5f-8953-54f2-bc02cc04c91e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8984c209-a36b-c7b9-35ec-a1322f14e2f3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -180,8 +168,6 @@ Global
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7494cc53-568c-4a49-8512-d83f6c447d17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7494cc53-568c-4a49-8512-d83f6c447d17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{b84c5e54-bf41-bdac-dd64-59140a6d59ce}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{b84c5e54-bf41-bdac-dd64-59140a6d59ce}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{d044e99d-0d9a-740a-d68a-047fc0ed20b8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -204,8 +190,6 @@ Global
 		{15649502-615b-247e-36cf-22f7863a9883}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{869f5012-7037-6276-2e54-a11088fbdb90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{387d2185-e8fa-cbeb-64ce-46c508e0c175}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{387d2185-e8fa-cbeb-64ce-46c508e0c175}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{63b2b48a-78b3-8da0-b943-c308151a6ef3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6e1e3ec6-e18c-554f-5da4-49773c4445a0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -236,8 +220,6 @@ Global
 		{d1024056-1084-ea89-f063-b34a3adceced}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{368cf049-f75d-0a3f-4039-a90bb86efaa9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{368cf049-f75d-0a3f-4039-a90bb86efaa9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{542d7cc5-ff84-220e-82cb-600dcd89302d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -252,8 +234,6 @@ Global
 		{b898a651-6f82-fbed-dad4-ba57469584ee}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{bb100f66-8fbf-510e-456d-b2b0d44fb876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{bb100f66-8fbf-510e-456d-b2b0d44fb876}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

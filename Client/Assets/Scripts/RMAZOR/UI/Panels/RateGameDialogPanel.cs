@@ -129,11 +129,11 @@ namespace RMAZOR.UI.Panels
             static string TextFormula2(string _Text) => _Text.FirstCharToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new []
             {
-                new LocTextInfo(m_TextTitle,       ETextType.MenuUI, "rate_game_panel_title", TextFormula1),
-                new LocTextInfo(m_TextMessage,     ETextType.MenuUI, "rate_game_panel_text",  TextFormula2),
-                new LocTextInfo(m_ButtonRateText,  ETextType.MenuUI, "leave_feedback",        TextFormula2),
-                new LocTextInfo(m_ButtonLaterText, ETextType.MenuUI, "later",                 TextFormula2),
-                new LocTextInfo(m_ButtonNeverText, ETextType.MenuUI, "never",                 TextFormula2)
+                new LocTextInfo(m_TextTitle,       ETextType.MenuUI_H1, "rate_game_panel_title", TextFormula1),
+                new LocTextInfo(m_TextMessage,     ETextType.MenuUI_H1, "rate_game_panel_text",  TextFormula2),
+                new LocTextInfo(m_ButtonRateText,  ETextType.MenuUI_H1, "leave_feedback",        TextFormula2),
+                new LocTextInfo(m_ButtonLaterText, ETextType.MenuUI_H1, "later",                 TextFormula2),
+                new LocTextInfo(m_ButtonNeverText, ETextType.MenuUI_H1, "never",                 TextFormula2)
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);

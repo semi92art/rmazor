@@ -64,7 +64,6 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             Arguments = _Args;
-            SetIcons();
             SubscribeButtonEvents();
             LocalizeTextObjects();
             CompleteChallenge(false);
@@ -92,11 +91,6 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
             button.interactable          = !_Complete;
         }
 
-        private void SetIcons()
-        {
-            rewardMoneyIcon.sprite = Arguments.RewardIcon;
-        }
-        
         private void SubscribeButtonEvents()
         {
             button.onClick.AddListener(Arguments.OnClick);
@@ -106,17 +100,17 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
         {
             var locTextInfos = new[]
             {
-                new LocTextInfo(title, ETextType.MenuUI, TitleLocalizationKey,
+                new LocTextInfo(title, ETextType.MenuUI_H1, TitleLocalizationKey,
                     _T => _T.ToUpper(CultureInfo.CurrentUICulture)
                           + " "
-                          + $"<size=25><color={GoalColorString}>{Arguments.Info.Goal}</color></size>"
+                          + $"<size=32><color={GoalColorString}>{Arguments.Info.Goal}</color></size>"
                           + " "
-                          + LocalizationManager.GetTranslation(GoalMeasureItemsLocalizationKey)),
-                new LocTextInfo(rewardTitle, ETextType.MenuUI, "reward",
+                          + LocalizationManager.GetTranslation(GoalMeasureItemsLocalizationKey).ToUpper(CultureInfo.CurrentUICulture)),
+                new LocTextInfo(rewardTitle, ETextType.MenuUI_H1, "reward",
                     _T => _T.ToUpper(CultureInfo.CurrentUICulture)),
-                new LocTextInfo(rewardMoneyCountText, ETextType.MenuUI, "empty",
+                new LocTextInfo(rewardMoneyCountText, ETextType.MenuUI_H1, "empty",
                     _T => Arguments.Info.RewardMoney.ToString()),
-                new LocTextInfo(rewardXpCountText, ETextType.MenuUI, "empty",
+                new LocTextInfo(rewardXpCountText, ETextType.MenuUI_H1, "empty",
                     _T => Arguments.Info.RewardXp.ToString())
             };
             foreach (var locTextInfo in locTextInfos)

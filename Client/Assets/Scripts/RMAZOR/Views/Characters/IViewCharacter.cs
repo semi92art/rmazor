@@ -1,5 +1,4 @@
 ﻿using Common;
-using Common.Entities;
 using mazing.common.Runtime;
 using mazing.common.Runtime.SpawnPools;
 using RMAZOR.Models;
@@ -20,6 +19,6 @@ namespace RMAZOR.Views.Characters
     {
         ViewCharacterInfo GetObjects();
         void              OnRotationFinished(MazeRotationEventArgs _Args);
-        void              SetCharacter(int                         _Id);
+        void              SetCharacter(string                         _Id);
     }
 }

@@ -11,6 +11,7 @@ namespace RMAZOR.Settings
         INotificationSetting NotificationSetting { get; }
         IHapticsSetting      HapticsSetting      { get; }
         ILanguageSetting     LanguageSetting     { get; }
+        IRetroModeSetting    RetroModeSetting    { get; }
         IDebugSetting        DebugSetting        { get; }
     }
     
@@ -21,6 +22,7 @@ namespace RMAZOR.Settings
         public INotificationSetting NotificationSetting { get; }
         public IHapticsSetting      HapticsSetting      { get; }
         public ILanguageSetting     LanguageSetting     { get; }
+        public IRetroModeSetting    RetroModeSetting    { get; }
         public IDebugSetting        DebugSetting        { get; }
 
         public SettingsGetter(
@@ -29,6 +31,7 @@ namespace RMAZOR.Settings
             INotificationSetting _NotificationSetting, 
             IHapticsSetting      _HapticsSetting,
             ILanguageSetting     _LanguageSetting,
+            IRetroModeSetting    _RetroModeSetting,
             IDebugSetting        _DebugSetting)
         {
             SoundSetting        = _SoundSetting;
@@ -36,6 +39,7 @@ namespace RMAZOR.Settings
             NotificationSetting = _NotificationSetting;
             HapticsSetting      = _HapticsSetting;
             LanguageSetting     = _LanguageSetting;
+            RetroModeSetting    = _RetroModeSetting;
             DebugSetting        = _DebugSetting;
         }
     }

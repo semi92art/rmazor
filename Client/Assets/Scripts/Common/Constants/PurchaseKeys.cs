@@ -2,11 +2,13 @@
 {
     public static class PurchaseKeys
     {
-        public const int Money1    = 1;
-        public const int Money2    = 2;
-        public const int Money3    = 3;
-        public const int NoAds     = 4;
-        public const int DarkTheme = 5;
+        public const int Money1       = 1;
+        public const int Money2       = 2;
+        public const int Money3       = 3;
+        public const int NoAds        = 4;
+        public const int DarkTheme    = 5;
+        public const int X2NewCoins   = 6;
+        public const int SpecialOffer = 7;
 
         public const int Character01 = 101;
         public const int Character02 = 102;
@@ -29,5 +31,7 @@
         public const int CharacterColorSet08 = 208;
         public const int CharacterColorSet09 = 209;
         public const int CharacterColorSet10 = 210;
+        public const int CharacterColorSet11 = 211;
+        public const int CharacterColorSet12 = 212;
     }
 }

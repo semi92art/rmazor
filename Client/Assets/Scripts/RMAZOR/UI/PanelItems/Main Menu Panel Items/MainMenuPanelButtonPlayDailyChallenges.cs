@@ -14,8 +14,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         private Func<int> GetDailyChallengesTotalCount    { get; set; }
         private Func<int> GetDailyChallengesFinishedCount { get; set; }
 
-        protected override SaveKey<bool> BadgeNewGameModeMustBeHidden =>
-            SaveKeysRmazor.MainMenuButtonDailyChallengeBadgeNewMustBeHidden;
+        protected override SaveKey<bool> BadgeNewGameModeMustBeHidden => null;
         
         #endregion
         
@@ -36,6 +35,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         
         public override void UpdateState()
         {
+            base.UpdateState();
             body.text = GetDailyChallengesFinishedCount() + "/" + GetDailyChallengesTotalCount();
         }
 
@@ -47,9 +47,9 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         {
             var locTextInfos = new[]
             {
-                new LocTextInfo(title, ETextType.MenuUI, "today",
+                new LocTextInfo(title, ETextType.MenuUI_H1, "daily_challenges",
                     _T => _T.ToUpper(CultureInfo.CurrentUICulture)),
-                new LocTextInfo(body, ETextType.MenuUI, "empty_key",
+                new LocTextInfo(body,  ETextType.MenuUI_H1, "empty_key",
                     _T => GetDailyChallengesFinishedCount() + "/" + GetDailyChallengesTotalCount())
             };
             foreach (var locTextInfo in locTextInfos)

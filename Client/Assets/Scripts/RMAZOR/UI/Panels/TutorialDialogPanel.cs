@@ -1,9 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Enums;
@@ -54,12 +52,6 @@ namespace RMAZOR.UI.Panels
     
     public class TutorialDialogPanel : DialogPanelBase, ITutorialDialogPanel
     {
-        #region constants
-
-        private const int CharacterSpritesCount = 5;
-
-        #endregion
-        
         #region nonpublic members
 
         private TutorialDialogPanelInfo m_Info;
@@ -68,10 +60,7 @@ namespace RMAZOR.UI.Panels
         private VideoPlayer             m_VideoPlayer;
         private Button                  m_ButtonClose;
         private Animator                m_Animator;
-        private Image                   m_CharacterIcon;
         private SimpleUiItem            m_PanelView;
-
-        private readonly List<Sprite> m_CharacterSprites = new List<Sprite>();
         
         protected override string PrefabName => "tutorial_panel";
 
@@ -130,15 +119,7 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-
             m_PanelView.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
-
-            for (int i = 1; i <= CharacterSpritesCount; i++)
-            {
-                var charSprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                    CommonPrefabSetNames.Views, $"tutorial_character_sprite_{i}");
-                m_CharacterSprites.Add(charSprite);
-            }
         }
 
         #endregion
@@ -148,11 +129,9 @@ namespace RMAZOR.UI.Panels
         protected override void OnDialogStartAppearing()
         {
             TimePauser.PauseTimeInGame();
-            var font =  Managers.LocalizationManager.GetFont(ETextType.MenuUI);
+            var font =  Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1);
             m_Title.font = m_Description.font = font;
             m_Title.text = m_Description.text = string.Empty;
-            int currentTutorialNumber = GetNumberOfFinishedTutorials() + 1;
-            m_CharacterIcon.sprite = m_CharacterSprites[currentTutorialNumber % CharacterSpritesCount];
             base.OnDialogStartAppearing();
         }
 
@@ -188,12 +167,11 @@ namespace RMAZOR.UI.Panels
 
         protected override void GetPrefabContentObjects(GameObject _Go)
         {
-            m_PanelView     = _Go.GetCompItem<SimpleUiItem>("panel");
-            m_Title         = _Go.GetCompItem<TextMeshProUGUI>("title");
-            m_Description   = _Go.GetCompItem<TextMeshProUGUI>("description");
-            m_ButtonClose   = _Go.GetCompItem<Button>("button_close");
-            m_Animator      = _Go.GetCompItem<Animator>("animator");
-            m_CharacterIcon = _Go.GetCompItem<Image>("character_icon");
+            m_PanelView   = _Go.GetCompItem<SimpleUiItem>("panel");
+            m_Title       = _Go.GetCompItem<TextMeshProUGUI>("title");
+            m_Description = _Go.GetCompItem<TextMeshProUGUI>("description");
+            m_ButtonClose = _Go.GetCompItem<Button>("button_close");
+            m_Animator    = _Go.GetCompItem<Animator>("animator");
         }
 
         protected override void LocalizeTextObjectsOnLoad() { }

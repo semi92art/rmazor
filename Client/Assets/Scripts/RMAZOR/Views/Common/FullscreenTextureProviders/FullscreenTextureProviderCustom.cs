@@ -1,6 +1,4 @@
-﻿using Common.Helpers;
-using Common.Managers;
-using mazing.common.Runtime.CameraProviders;
+﻿using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
@@ -18,8 +16,8 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
           IFullscreenTextureProviderCustom
     {
         #region nonpublic members
-        
-        protected override int    SortingOrder       => SortingOrders.BackgroundTexture;
+
+        protected override int SortingOrder => SortingOrders.BackgroundTexture;
 
         #endregion
 

@@ -30,3 +30,6 @@ MonoBehaviour:
     - name: shop_money_items_set
       item: {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
       bundle: 0
+    - name: shop_items_set
+      item: {fileID: 11400000, guid: c96e47f5bfb58e54dbbf3b023c341bf7, type: 2}
+      bundle: 0

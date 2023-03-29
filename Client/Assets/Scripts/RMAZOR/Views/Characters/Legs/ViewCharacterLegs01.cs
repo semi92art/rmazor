@@ -83,7 +83,7 @@ namespace RMAZOR.Views.Characters.Legs
         }
         public EAppearingState  AppearingState { get; private set; }
         
-        public void OnRotationFinished(MazeRotationEventArgs _Args)
+        public void OnMazeRotationFinished(MazeRotationEventArgs _Args)
         {
             m_LastMazeOrientation = _Args.NextOrientation;
         }

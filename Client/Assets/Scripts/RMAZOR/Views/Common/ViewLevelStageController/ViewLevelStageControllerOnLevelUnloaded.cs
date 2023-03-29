@@ -10,12 +10,11 @@ using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Ticker;
-using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
-using RMAZOR.UI.Panels;
 using RMAZOR.UI.Utils;
 using RMAZOR.Views.Common.ViewLevelStageSwitchers;
+using RMAZOR.Views.Common.ViewUILevelSkippers;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine.Events;
 using static RMAZOR.Models.ComInComArg;
@@ -31,15 +30,14 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
     {
         #region inject
 
-        private IModelGame                  Model                   { get; }
-        private IScoreManager               ScoreManager            { get; }
-        private IViewLevelStageSwitcher     LevelStageSwitcher      { get; }
-        private IViewGameTicker             ViewGameTicker          { get; }
-        private IViewInputCommandsProceeder CommandsProceeder       { get; }
-        private ICameraProvider             CameraProvider          { get; }
-        private IUITicker                   UiTicker                { get; }
-        private IDialogViewersController    DialogViewersController { get; }
-        private IMainMenuPanel              MainMenuPanel           { get; }
+        private IModelGame                  Model              { get; }
+        private IScoreManager               ScoreManager       { get; }
+        private IViewLevelStageSwitcher     LevelStageSwitcher { get; }
+        private IViewGameTicker             ViewGameTicker     { get; }
+        private IViewInputCommandsProceeder CommandsProceeder  { get; }
+        private ICameraProvider             CameraProvider     { get; }
+        private IUITicker                   UiTicker           { get; }
+        private IViewGameUiLevelSkipper     LevelSkipper       { get; }
 
         public ViewLevelStageControllerOnLevelUnloaded(
             IModelGame                  _Model,
@@ -49,8 +47,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             IViewInputCommandsProceeder _CommandsProceeder,
             ICameraProvider             _CameraProvider,
             IUITicker                   _UIUiTicker,
-            IDialogViewersController    _DialogViewersController,
-            IMainMenuPanel              _MainMenuPanel)
+            IViewGameUiLevelSkipper     _LevelSkipper)
         {
             Model              = _Model;
             ScoreManager       = _ScoreManager;
@@ -59,8 +56,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             CommandsProceeder  = _CommandsProceeder;
             CameraProvider     = _CameraProvider;
             UiTicker           = _UIUiTicker;
-            DialogViewersController = _DialogViewersController;
-            MainMenuPanel = _MainMenuPanel;
+            LevelSkipper       = _LevelSkipper;
         }
 
         #endregion
@@ -69,6 +65,8 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnLevelUnloaded(LevelStageArgs _Args)
         {
+            SetLevelTimeRecord(_Args);
+            CheckIfLevelWasFinishedAtLeastOnce(_Args);
             var scoreEntity = ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
             Cor.Run(Cor.WaitWhile(
                 () => scoreEntity.Result == EEntityResult.Pending,
@@ -180,11 +178,17 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 SaveUtils.PutValue(SaveKeysRmazor.DailyChallengeInfos, dailyChallengeInfosFromDisc);
                 AddDailyChallengeRewardToBank(_Args);
             }
-            var dv = DialogViewersController.GetViewer(MainMenuPanel.DialogViewerId);
-            dv.Show(MainMenuPanel, _AdditionalCameraEffectsAction: MainMenuAdditionalCameraEffectsAction);
+            var args = new Dictionary<string, object>
+            {
+                {KeyDailyChallengeIndex,     dcIndex},
+                {KeyIsDailyChallengeSuccess, isDailyChallengeSuccess},
+                {KeyAdditionalCameraEffectAction, 
+                    (UnityAction<bool, float>)AdditionalCameraEffectsActionDefaultCoroutine}
+            };
+            CommandsProceeder.RaiseCommand(EInputCommand.MainMenuPanel, args);
         }
         
-        private void MainMenuAdditionalCameraEffectsAction(bool _Appear, float _Time)
+        private void AdditionalCameraEffectsActionDefaultCoroutine(bool _Appear, float _Time)
         {
             Cor.Run(MainMenuUtils.SubPanelsAdditionalCameraEffectsActionCoroutine(_Appear, _Time,
                 CameraProvider, UiTicker));
@@ -204,6 +208,50 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             charXp += rewardXp;
             savedGame.Arguments.SetSafe(KeyCharacterXp, charXp);
             ScoreManager.SaveGame(savedGame);
+        }
+        
+        private void SetLevelTimeRecord(LevelStageArgs _Args)
+        {
+            long levelIndex = _Args.LevelIndex;
+            string levelType = (string) _Args.Arguments.GetSafe(KeyCurrentLevelType, out _);
+            bool isThisLevelBonus = levelType == ParameterLevelTypeBonus;
+            var saveKey = isThisLevelBonus
+                ? SaveKeysRmazor.BonusLevelTimeRecordsDict
+                : SaveKeysRmazor.MainLevelTimeRecordsDict;
+            var levelTimeRecordsDict = SaveUtils.GetValue(saveKey) ?? new Dictionary<long, float>();
+            float timeRecord = levelTimeRecordsDict.GetSafe(levelIndex, out bool containsKey);
+            if ((!containsKey || _Args.LevelTime < timeRecord) && !LevelSkipper.LevelSkipped)
+                levelTimeRecordsDict.SetSafe(levelIndex, _Args.LevelTime);
+            SaveUtils.PutValue(saveKey, levelTimeRecordsDict);
+        }
+        
+        private static bool CheckIfLevelWasFinishedAtLeastOnce(LevelStageArgs _Args)
+        {
+            string gameMode = (string) _Args.Arguments.GetSafe(KeyGameMode, out _);
+            if (gameMode == ParameterGameModePuzzles && _Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint))
+                return false;
+            SaveKey<List<long>> levelsFinishedOnceSaveKey = gameMode switch
+            {
+                ParameterGameModeMain           => SaveKeysRmazor.LevelsFinishedOnce,
+                ParameterGameModePuzzles        => SaveKeysRmazor.LevelsFinishedOncePuzzles,
+                ParameterGameModeRandom         => null,
+                ParameterGameModeBigLevels      => null,
+                ParameterGameModeDailyChallenge => null,
+                _                               => null
+            };
+            if (levelsFinishedOnceSaveKey == null)
+                return false;
+            bool wasFinishedAtLeastOnce = false;
+            var finishedOnceDict = SaveUtils.GetValue(levelsFinishedOnceSaveKey);
+            if (finishedOnceDict != null && finishedOnceDict.Contains(_Args.LevelIndex))
+                wasFinishedAtLeastOnce = true;
+            if (wasFinishedAtLeastOnce) 
+                return true;
+            finishedOnceDict ??= new List<long>();
+            finishedOnceDict.Add(_Args.LevelIndex);
+            finishedOnceDict = finishedOnceDict.Distinct().ToList();
+            SaveUtils.PutValue(levelsFinishedOnceSaveKey, finishedOnceDict);
+            return false;
         }
 
         #endregion

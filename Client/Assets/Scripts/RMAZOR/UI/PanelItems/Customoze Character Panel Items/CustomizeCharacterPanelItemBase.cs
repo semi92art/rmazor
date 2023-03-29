@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using Common;
 using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
-using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
 using mazing.common.Runtime.Utils;
@@ -24,24 +21,17 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
     {
         public int CharacterLevel { get; set; }
     }
-
-    public class CustomizeCharacterItemHasReceiptArgs
-    {
-        public bool HasReceipt { get; set; }
-    }
-
+    
     public class CustomizeCharacterItemCoastArgs
     {
         public Func<int>    GameMoneyCoast          { get; set; }
-        public ShopItemArgs ShopItemArgs            { get; set; }
-        public int          PurchaseKey             { get; set; }
     }
     
-    public class CustomizeCharacterPanelCharacterItemArgsFullBase
+    public abstract class CustomizeCharacterPanelCharacterItemArgsFullBase
     {
+        public string                                    Id                  { get; set; }
         public CustomizeCharacterItemAccessConditionArgs AccessConditionArgs { get; set; }
         public CustomizeCharacterItemCoastArgs           CoastArgs           { get; set; }
-        public CustomizeCharacterItemHasReceiptArgs      HasReceiptArgs      { get; set; }
     }
     
     public abstract class CustomizeCharacterPanelItemBase : SimpleUiItem
@@ -52,36 +42,24 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         [SerializeField] private Button          buyForGameMoneyButton;
         [SerializeField] private TextMeshProUGUI buyForGameMoneyButtonText;
-        [SerializeField] private Image           buyForGameMoneyButtonBackground;
-        [SerializeField] private Image           gameMoneyIcon;
 
-        [SerializeField] private Image           orBackground;
-        [SerializeField] private TextMeshProUGUI orText;
+        [SerializeField] private Image           priceBackground;
+        [SerializeField] private TextMeshProUGUI priceText;
         
-        [SerializeField] private Button          buyForRealMoneyButton;
-        [SerializeField] private TextMeshProUGUI buyForRealMoneyButtonText;
-        [SerializeField] private Image           buyForRealMoneyButtonBackground;
-
-        [SerializeField] private Image           lockIcon;
-        [SerializeField] private Image           characterLevelBackground;
-        [SerializeField] private TextMeshProUGUI characterLevelText;
-
-        [SerializeField] private   Image    checkMarkIcon;
-        [SerializeField] protected Animator loadingAnim;
+        [SerializeField] private Image           gameMoneyIcon;
+        [SerializeField] private Image           checkMarkIcon;
         
         #endregion
 
         #region nonpublic members
-
-        private CustomizeCharacterItemAccessConditionArgs m_AccessConditionArgs;
-        private CustomizeCharacterItemCoastArgs           m_ItemCoastArgs;
-        private CustomizeCharacterItemHasReceiptArgs      m_HasReceiptArgs;
         
-        private Func<int> m_GetCharacterLevel;
-        
-        protected abstract int InternalId { get; }
+        protected abstract SaveKey<List<string>> IdsOfBoughtItemsSaveKey { get; }
 
-        private   IShopManager      ShopManager      { get; set; }
+        private CustomizeCharacterPanelCharacterItemArgsFullBase m_Args;
+        
+        private Func<int>   m_GetCharacterLevel;
+        private UnityAction m_OpenShopPanel;
+        
         private   IScoreManager     ScoreManager     { get; set; }
         protected IAnalyticsManager AnalyticsManager { get; set; }
 
@@ -89,15 +67,20 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         #region api
 
-        public event UnityAction<int> Selected;
+        public event UnityAction<string> Selected;
+
+        public event UnityAction BoughtForGameMoney;
 
         public void Select(bool _Selected)
         {
-            checkMarkIcon.enabled = _Selected;
+            priceBackground.enabled = !_Selected;
+            priceText.enabled       = !_Selected;
+            gameMoneyIcon.enabled   = !_Selected;
+            checkMarkIcon.enabled   = _Selected;
             if (!_Selected)
                 return;
             SetThisItem();
-            Selected?.Invoke(InternalId);
+            Selected?.Invoke(m_Args.Id);
         }
 
         public virtual void UpdateState()
@@ -112,65 +95,39 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
         protected abstract void SetThisItem();
         
         protected void Init(
-            IUITicker                                 _UITicker,
-            IAudioManager                             _AudioManager,
-            ILocalizationManager                      _LocalizationManager,
-            IShopManager                              _ShopManager,
-            IScoreManager                             _ScoreManager,
-            IAnalyticsManager                         _AnalyticsManager,
-            CustomizeCharacterItemAccessConditionArgs _AccessConditionArgs,
-            CustomizeCharacterItemCoastArgs           _ItemCoastArgs,
-            CustomizeCharacterItemHasReceiptArgs      _HasReceiptArgs,
-            Func<int>                                 _GetCharacterLevel)
+            IUITicker                                        _UITicker,
+            IAudioManager                                    _AudioManager,
+            ILocalizationManager                             _LocalizationManager,
+            IScoreManager                                    _ScoreManager,
+            IAnalyticsManager                                _AnalyticsManager,
+            CustomizeCharacterPanelCharacterItemArgsFullBase _FullArgs,
+            Func<int>                                        _GetCharacterLevel,
+            UnityAction                                      _OpenShopPanel)
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
-            ShopManager           = _ShopManager;
             ScoreManager          = _ScoreManager;
             AnalyticsManager      = _AnalyticsManager;
-            m_AccessConditionArgs = _AccessConditionArgs;
-            m_ItemCoastArgs       = _ItemCoastArgs;
-            m_HasReceiptArgs      = _HasReceiptArgs;
+            m_Args                = _FullArgs;
             m_GetCharacterLevel   = _GetCharacterLevel;
+            m_OpenShopPanel       = _OpenShopPanel;
             LocalizeTextObjectsOnInit();
             SubscribeButtonEvents();
-            AddPurchaseActionToShopManager();
-            ProceedLoadingRealPriceInfo();
         }
         
-        protected virtual void UpdateAccessState()
+        private void UpdateAccessState()
         {
             bool accessibleForUse      = IsItemAccessibleForUse();
-            bool accessibleForPurchase = IsItemAccessibleForPurchase(out bool accessibleForGameMoneyPurchase);
-            buyForGameMoneyButton.interactable = accessibleForPurchase && accessibleForGameMoneyPurchase;
-            buyForRealMoneyButton.interactable = accessibleForPurchase;
             buyForGameMoneyButton.SetGoActive(!accessibleForUse);
-            buyForRealMoneyButton.SetGoActive(!accessibleForUse);
-            orText      .enabled = !accessibleForUse;
-            orBackground.enabled = !accessibleForUse;
-            
-            button.interactable  = accessibleForUse;
-            
-            orText.color                    = GetAccessibleColor(accessibleForPurchase);
-            buyForGameMoneyButtonText.color = GetAccessibleColor(accessibleForPurchase && accessibleForGameMoneyPurchase);
-            buyForRealMoneyButtonText.color = GetAccessibleColor(accessibleForPurchase);
-            gameMoneyIcon.color = GetAccessibleColor(accessibleForPurchase && accessibleForGameMoneyPurchase);
-            lockIcon.enabled = characterLevelBackground.enabled = characterLevelText.enabled = !accessibleForPurchase;
+            button.interactable = accessibleForUse;
         }
 
-        private void LocalizeTextObjectsOnInit()
+        protected virtual void LocalizeTextObjectsOnInit()
         {
-            const string emptyLocKey = "empty_key";
             var locTextInfos = new []
             {
-                new LocTextInfo(buyForGameMoneyButtonText, ETextType.MenuUI, emptyLocKey,
-                    _T => m_ItemCoastArgs.GameMoneyCoast().ToString()),
-                new LocTextInfo(buyForRealMoneyButtonText, ETextType.MenuUI, emptyLocKey,
-                    _TextLocalizationType: ETextLocalizationType.OnlyFont),
-                new LocTextInfo(characterLevelText, ETextType.MenuUI, emptyLocKey,
-                    _T => m_AccessConditionArgs.CharacterLevel.ToString(), 
-                    ETextLocalizationType.OnlyText), 
-                new LocTextInfo(orText, ETextType.MenuUI, "or",
-                    _T => _T.ToUpper(CultureInfo.CurrentUICulture)), 
+                new LocTextInfo(buyForGameMoneyButtonText, ETextType.MenuUI_H1, "buy"),
+                new LocTextInfo(priceText, ETextType.MenuUI_H3, "empty_key",
+                    _T => m_Args.CoastArgs.GameMoneyCoast().ToString()),
             };
             foreach (var locTextInfo in locTextInfos)
                 LocalizationManager.AddLocalization(locTextInfo);
@@ -180,56 +137,41 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
         {
             button               .SetOnClick(OnMainButtonClick);
             buyForGameMoneyButton.SetOnClick(OnBuyForGameMoneyButtonClick);
-            buyForRealMoneyButton.SetOnClick(OnBuyForRealMoneyButtonClick);
-        }
-
-        private void AddPurchaseActionToShopManager()
-        {
-            ShopManager.AddPurchaseAction(m_ItemCoastArgs.PurchaseKey, SetItemAsAvailableForUse);
         }
         
-        private void ProceedLoadingRealPriceInfo()
-        {
-            IndicateLoading(true);
-            var shopItemArgs = m_ItemCoastArgs.ShopItemArgs;
-            Cor.Run(Cor.WaitWhile(
-                () => shopItemArgs.Result() == EShopProductResult.Pending,
-                () =>
-                {
-                    IndicateLoading(false);
-                    buyForRealMoneyButtonText.text = shopItemArgs.LocalizedPriceString;
-                }));
-        }
-
         private void OnMainButtonClick()
         {
             PlayButtonClickSound();
             Select(true);
         }
 
-        protected virtual void OnBuyForGameMoneyButtonClick()
+        private void OnBuyForGameMoneyButtonClick()
+        {
+            IsItemAccessibleForPurchase(out bool accessibleForGameMoneyPurchase);
+            if (accessibleForGameMoneyPurchase)
+                BuyForGameMoney();
+            else
+                m_OpenShopPanel?.Invoke();
+        }
+
+        protected virtual void BuyForGameMoney()
         {
             var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
-            money -= m_ItemCoastArgs.GameMoneyCoast();
+            money -= m_Args.CoastArgs.GameMoneyCoast();
             savedGame.Arguments.SetSafe(ComInComArg.KeyMoneyCount, money);
             ScoreManager.SaveGame(savedGame);
             SetItemAsAvailableForUse();
-        }
-
-        protected virtual void OnBuyForRealMoneyButtonClick()
-        {
-            ShopManager.Purchase(m_ItemCoastArgs.PurchaseKey);
+            BoughtForGameMoney?.Invoke();
         }
 
         private void SetItemAsAvailableForUse()
         {
-            var boughtPurchaseIds = SaveUtils.GetValue(SaveKeysMazor.BoughtPurchaseIds) ??
-                                    new List<int>();
-            boughtPurchaseIds.Add(m_ItemCoastArgs.PurchaseKey);
-            boughtPurchaseIds = boughtPurchaseIds.Distinct().ToList();
-            SaveUtils.PutValue(SaveKeysMazor.BoughtPurchaseIds, boughtPurchaseIds);
+            var idsOfBoughtItems = SaveUtils.GetValue(IdsOfBoughtItemsSaveKey) ?? new List<string>();
+            if (!idsOfBoughtItems.Contains(m_Args.Id))
+                idsOfBoughtItems.Add(m_Args.Id);
+            SaveUtils.PutValue(IdsOfBoughtItemsSaveKey, idsOfBoughtItems);
             UpdateAccessState();
         }
 
@@ -238,27 +180,18 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
             var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
-            _AccessibleForGameMoneyPurchase = money >= m_ItemCoastArgs.GameMoneyCoast();
-            return m_GetCharacterLevel() >= m_AccessConditionArgs.CharacterLevel;
+            _AccessibleForGameMoneyPurchase = money >= m_Args.CoastArgs.GameMoneyCoast();
+            return m_GetCharacterLevel() >= m_Args.AccessConditionArgs.CharacterLevel;
         }
 
-        protected bool IsItemAccessibleForUse()
+        private bool IsItemAccessibleForUse()
         {
-            bool isItemAvailableCached = (SaveUtils.GetValue(SaveKeysMazor.BoughtPurchaseIds) ??
-                                         new List<int>()).Contains(m_ItemCoastArgs.PurchaseKey);
-            return m_HasReceiptArgs.HasReceipt || isItemAvailableCached || m_ItemCoastArgs.GameMoneyCoast() == 0;
-        }
-
-        private static Color GetAccessibleColor(bool _ItemOpened)
-        {
-            return _ItemOpened ? Color.white : Color.gray;
-        }
-        
-        private void IndicateLoading(bool _Indicate)
-        {
-            buyForGameMoneyButtonText.SetGoActive(!_Indicate);
-            loadingAnim.SetGoActive(_Indicate);
-            loadingAnim.enabled = _Indicate;
+            bool fullCustomizationUnlocked = SaveUtils.GetValue(SaveKeysRmazor.FullCustomizationUnlocked);
+            if (fullCustomizationUnlocked)
+                return true;
+            var idsOfBoughtItems = SaveUtils.GetValue(IdsOfBoughtItemsSaveKey) ?? new List<string>();
+            bool isItemAvailableCached = idsOfBoughtItems.Contains(m_Args.Id);
+            return isItemAvailableCached || m_Args.CoastArgs.GameMoneyCoast() == 0;
         }
 
         #endregion

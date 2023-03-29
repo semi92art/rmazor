@@ -56,7 +56,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         protected override Vector2 GetPosition(Camera _Camera)
         {
             var visibleBounds = GetVisibleBounds(_Camera);
-            float xPos = visibleBounds.min.x + 1f;
+            float xPos = visibleBounds.min.x + 6f;
             float yPos = visibleBounds.max.y - TopOffset;
             return new Vector2(xPos, yPos);
         }

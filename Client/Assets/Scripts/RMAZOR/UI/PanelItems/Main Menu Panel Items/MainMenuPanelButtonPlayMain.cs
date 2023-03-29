@@ -31,14 +31,15 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             (GetMainGameModeStagesTotalCount, GetMainGameModeCurrentStageIndex)
                 = (_GetMainGameModeStagesTotalCount, _GetMainGameModeCurrentStageIndex);
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
-            var locTextInfo = new LocTextInfo(title, ETextType.MenuUI, "stage", GetTitleText);
+            var locTextInfo = new LocTextInfo(title, ETextType.MenuUI_H1, "stage", GetTitleText);
             LocalizationManager.AddLocalization(locTextInfo);
         }
 
         public override void UpdateState()
         {
+            base.UpdateState();
             string stageWord = LocalizationManager.GetTranslation("stage");
-            title.font = LocalizationManager.GetFont(ETextType.MenuUI);
+            title.font = LocalizationManager.GetFont(ETextType.MenuUI_H1);
             title.text = GetTitleText(stageWord);
             int currentStageIndex = GetMainGameModeCurrentStageIndex();
             int totalStagesCount = GetMainGameModeStagesTotalCount();
@@ -52,8 +53,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         private string GetTitleText(string _StageWord)
         {
             int currentStageIndex = GetMainGameModeCurrentStageIndex();
-            int maxStageIndex     = GetMainGameModeStagesTotalCount();
-            return _StageWord.ToUpper(CultureInfo.CurrentUICulture) + ": " + currentStageIndex + "/" + maxStageIndex;   
+            return _StageWord.ToUpper(CultureInfo.CurrentUICulture) + " " + currentStageIndex;   
         }
         
         #endregion

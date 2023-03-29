@@ -45,7 +45,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
         
         public void SetTitle(string _Title)
         {
-            title.font = LocalizationManager.GetFont(ETextType.MenuUI);
+            title.font = LocalizationManager.GetFont(ETextType.MenuUI_H1);
             title.text = _Title;
         }
 
@@ -67,7 +67,7 @@ namespace RMAZOR.UI.PanelItems.Levels_Panel_Items
 
         public void SetBestTimeText(float _BestTime)
         {
-            bestTimeText.font = LocalizationManager.GetFont(ETextType.MenuUI);
+            bestTimeText.font = LocalizationManager.GetFont(ETextType.MenuUI_H1);
             bestTimeText.text = float.IsInfinity(_BestTime) ?
                 "-" : _BestTime.ToString("F3", m_FloatValueCultureInfo) + "s";
             bestTimeText.text = _BestTime.ToString("F3");

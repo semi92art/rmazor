@@ -43,7 +43,7 @@ Shader "RMAZOR/Transition/Circles To Square" {
 				fixed4 col = fixed4(0,0,0,0);
 				c = smoothstep(0.,64./_ScreenParams.y, c - t);
 				fixed4 frag_col = lerp(col,_Color1,c);
-				frag_col.rgb *= (1.0 - c);
+				// frag_col.rgb *= (1.0 - c);
 			    return frag_col;
 			}
 			ENDCG

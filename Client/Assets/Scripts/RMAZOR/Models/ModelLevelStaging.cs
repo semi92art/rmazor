@@ -79,6 +79,8 @@ namespace RMAZOR.Models
         void ReadyToUnloadLevel(Dictionary<string, object>   _Args = null);
         void UnloadLevel(Dictionary<string, object>          _Args = null);
         void ExitLevelStaging(Dictionary<string, object>     _Args = null);
+
+        LevelStageArgs GetCurrentLevelStageArguments();
     }
 
     public class ModelLevelStaging : InitBase, IModelLevelStaging, IUpdateTick
@@ -178,6 +180,18 @@ namespace RMAZOR.Models
             InvokeLevelStageChanged(ELevelStage.None, _Args);
         }
 
+        public LevelStageArgs GetCurrentLevelStageArguments()
+        {
+            return new LevelStageArgs(
+                LevelIndex,
+                LevelStage,
+                PrevLevelStage,
+                PrevPrevLevelStage,
+                PrevPrevPrevLevelStage,
+                LevelTime,
+                Arguments);
+        }
+
         #endregion
 
         #region nonpublic methods
@@ -205,14 +219,7 @@ namespace RMAZOR.Models
                     break;
             }
             LevelStage = _Stage;
-            var args = new LevelStageArgs(
-                LevelIndex,
-                LevelStage,
-                PrevLevelStage,
-                PrevPrevLevelStage,
-                PrevPrevPrevLevelStage,
-                LevelTime,
-                Arguments);
+            var args = GetCurrentLevelStageArguments();
             LevelStageChanged?.Invoke(args);
         }
     

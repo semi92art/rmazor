@@ -54,3 +54,5 @@ MonoBehaviour:
       material: {fileID: 2100000, guid: 7e18e8abb64a68647bfe7251cff7fde9, type: 2}
     - name: empty
       material: {fileID: 2100000, guid: d8a92038452427a46af0f1c9384d88b7, type: 2}
+    - name: synthwave
+      material: {fileID: 2100000, guid: af23eb9c94ef49340b3bd2f5d5498537, type: 2}

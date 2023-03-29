@@ -20,7 +20,6 @@ namespace Common.Managers.Advertising
     public interface IAdsManager : IInit
     {
         bool RewardedAdReady             { get; }
-        bool RewardedAdNonSkippableReady { get; }
         bool InterstitialAdReady         { get; }
         bool ShowAds                     { get; set; }
 
@@ -54,16 +53,13 @@ namespace Common.Managers.Advertising
 
         #region inject
 
-        private GlobalGameSettings      GameGameSettings { get; }
         private IAdsProvidersSet        AdsProvidersSet  { get; }
         private IAnalyticsManager       AnalyticsManager { get; }
 
         private AdsManager(
-            GlobalGameSettings      _GameGameSettings,
             IAdsProvidersSet        _AdsProvidersSet,
             IAnalyticsManager       _AnalyticsManager)
         {
-            GameGameSettings = _GameGameSettings;
             AdsProvidersSet  = _AdsProvidersSet;
             AnalyticsManager = _AnalyticsManager;
         }
@@ -78,9 +74,8 @@ namespace Common.Managers.Advertising
             set => SaveUtils.PutValue(SaveKeysMazor.DisableAds, !value);
         }
 
-        public bool RewardedAdReady             => m_Providers.Values.Any(_P => _P.RewardedAdReady);
-        public bool RewardedAdNonSkippableReady => m_Providers.Values.Any(_P => _P.RewardedAdReady);
-        public bool InterstitialAdReady         => m_Providers.Values.Any(_P => _P.InterstitialAdReady);
+        public bool RewardedAdReady     => m_Providers.Values.Any(_P => _P.RewardedAdReady);
+        public bool InterstitialAdReady => m_Providers.Values.Any(_P => _P.InterstitialAdReady);
 
         public override void Init()
         {
@@ -183,11 +178,10 @@ namespace Common.Managers.Advertising
 
         private void InitProviders()
         {
-            bool testMode = GameGameSettings.testAds;
             var adsConfig = ResLoader.FromResources(@"configs\ads");
             foreach (var adsProvider in AdsProvidersSet.GetProviders())
             {
-                adsProvider.Init(testMode, 100f, adsConfig);
+                adsProvider.Init(false, 100f, adsConfig);
                 m_Providers.Add(adsProvider.Source, adsProvider);
             }
         }

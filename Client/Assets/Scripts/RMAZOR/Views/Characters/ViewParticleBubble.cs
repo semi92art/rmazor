@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Common.Constants;
-using Common.Extensions;
-using Common.Helpers;
+﻿using Common.Extensions;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
@@ -28,9 +25,6 @@ namespace RMAZOR.Views.Characters
         private bool        m_Activated;
         private Disc        m_InnerDisc;
         private Disc        m_OuterDisc;
-
-        protected override IEnumerable<ShapeRenderer> MainShapes   => new[] {m_InnerDisc};
-        protected override IEnumerable<ShapeRenderer> BorderShapes => new[] {m_OuterDisc};
 
         #endregion
 
@@ -66,16 +60,17 @@ namespace RMAZOR.Views.Characters
             m_InnerDisc = obj.AddComponentOnNewChild<Disc>("Inner Disc", out _)
                 .SetType(DiscType.Disc)
                 .SetRadius(Radius);
-            m_InnerDisc.enabled = false;
             m_OuterDisc = obj.AddComponentOnNewChild<Disc>("Outer Disc", out _)
                 .SetType(DiscType.Ring)
                 .SetRadius(Radius)
                 .SetThickness(BoardThickness);
-            m_OuterDisc.enabled = false;
             Transform = obj.transform;
             Rb = obj.AddComponent<Rigidbody2D>();
             Rb.mass = 0f;
             Rb.gravityScale = 0f;
+            MainShapes = new ShapeRenderer[] {m_InnerDisc};
+            BorderShapes = new ShapeRenderer[] {m_OuterDisc};
+            ActivatedInSpawnPool = false;
         }
 
         #endregion

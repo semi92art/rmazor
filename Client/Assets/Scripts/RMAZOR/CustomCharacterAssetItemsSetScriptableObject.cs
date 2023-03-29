@@ -8,16 +8,18 @@ namespace RMAZOR
     [Serializable]
     public class CustomCharactersAssetItemBase
     {
-        public int purchaseKey;
-        public int gameMoneyCoast;
-        public int characterLevelToOpen;
+        public string id;
+        public bool   inUse;
+        public int    gameMoneyCoast;
+        public int    characterLevelToOpen;
     }
     
     [Serializable]
     public class CustomCharactersAssetItem : CustomCharactersAssetItemBase
     {
         public Sprite icon;
-        public int    characterId;
+        public bool   overrideCharacterColor2;
+        public Color  characterColor2;
     }
     
     [Serializable]

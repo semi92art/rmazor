@@ -15,15 +15,21 @@ namespace RMAZOR
     {
         #region inject
         
-        private IFullscreenTransitionTextureProviderPlayground ProviderPlayground { get; }
-        private IFullscreenTransitionTextureProviderCircles    ProviderCircles    { get; }
+        private IFullscreenTransitionTextureProviderPlayground       ProviderPlayground       { get; }
+        private IFullscreenTransitionTextureProviderCircles          ProviderCircles          { get; }
+        private IFullscreenTransitionTextureProviderCircles2         ProviderCircles2         { get; }
+        private IFullscreenTransitionTextureProviderCirclesToSquares ProviderCirclesToSquares { get; }
 
         private FullscreenTransitionTextureProvidersSet(
-            IFullscreenTransitionTextureProviderPlayground _ProviderPlayground,
-            IFullscreenTransitionTextureProviderCircles    _ProviderCircles)
+            IFullscreenTransitionTextureProviderPlayground       _ProviderPlayground,
+            IFullscreenTransitionTextureProviderCircles          _ProviderCircles,
+            IFullscreenTransitionTextureProviderCircles2         _ProviderCircles2,
+            IFullscreenTransitionTextureProviderCirclesToSquares _ProviderCirclesToSquares)
         {
-            ProviderPlayground = _ProviderPlayground;
-            ProviderCircles    = _ProviderCircles;
+            ProviderPlayground       = _ProviderPlayground;
+            ProviderCircles          = _ProviderCircles;
+            ProviderCircles2         = _ProviderCircles2;
+            ProviderCirclesToSquares = _ProviderCirclesToSquares;
         }
 
         #endregion
@@ -32,8 +38,10 @@ namespace RMAZOR
 
         public override void Init()
         {
-            ProviderPlayground.Init();
-            ProviderCircles   .Init();
+            ProviderPlayground      .Init();
+            ProviderCircles         .Init();
+            ProviderCircles2        .Init();
+            ProviderCirclesToSquares.Init();
             base.Init();
         }
 
@@ -42,7 +50,9 @@ namespace RMAZOR
             return new List<IFullscreenTransitionTextureProvider>
             {
                 ProviderPlayground,
-                ProviderCircles
+                ProviderCircles,
+                ProviderCircles2,
+                ProviderCirclesToSquares
             };
         }
 
@@ -50,9 +60,11 @@ namespace RMAZOR
         {
             return _Name switch
             {
-                "playground" => ProviderPlayground,
-                "circles"    => ProviderCircles,
-                _            => ProviderPlayground
+                "circles_to_squares" => ProviderCirclesToSquares,
+                "playground"         => ProviderPlayground,
+                "circles"            => ProviderCircles,
+                "circles_2"          => ProviderCircles2,
+                _                    => ProviderCirclesToSquares
             };
         }
 

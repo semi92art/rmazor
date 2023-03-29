@@ -14,33 +14,87 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - purchaseKey: 201
+    - id: yellow
+      inUse: 1
+      purchaseKey: 201
       gameMoneyCoast: 0
       characterLevelToOpen: 0
-      colorSetId: 1
+      colorSetId: yellow
       color1: {r: 0.80225706, g: 0.8113208, b: 0, a: 1}
-      color2: {r: 0, g: 0, b: 0, a: 1}
-    - purchaseKey: 202
-      gameMoneyCoast: 300
+    - id: white
+      inUse: 1
+      purchaseKey: 202
+      gameMoneyCoast: 200
       characterLevelToOpen: 0
-      colorSetId: 2
+      colorSetId: white
       color1: {r: 1, g: 1, b: 1, a: 1}
-      color2: {r: 0, g: 0, b: 0, a: 1}
-    - purchaseKey: 203
-      gameMoneyCoast: 500
-      characterLevelToOpen: 5
-      colorSetId: 3
-      color1: {r: 1, g: 1, b: 1, a: 1}
-      color2: {r: 0.0014920235, g: 0, b: 1, a: 1}
-    - purchaseKey: 204
-      gameMoneyCoast: 600
-      characterLevelToOpen: 7
-      colorSetId: 4
-      color1: {r: 1, g: 1, b: 1, a: 1}
-      color2: {r: 1, g: 0, b: 0, a: 1}
-    - purchaseKey: 205
-      gameMoneyCoast: 700
-      characterLevelToOpen: 10
-      colorSetId: 5
+    - id: orange
+      inUse: 1
+      purchaseKey: 203
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: orange
+      color1: {r: 1, g: 0.51984906, b: 0, a: 1}
+    - id: red
+      inUse: 1
+      purchaseKey: 204
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: red
       color1: {r: 1, g: 0, b: 0, a: 1}
-      color2: {r: 1, g: 1, b: 1, a: 1}
+    - id: green
+      inUse: 1
+      purchaseKey: 205
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: green
+      color1: {r: 0.13743496, g: 1, b: 0, a: 1}
+    - id: pink
+      inUse: 1
+      purchaseKey: 206
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: pink
+      color1: {r: 1, g: 0, b: 0.6968298, a: 1}
+    - id: gray
+      inUse: 1
+      purchaseKey: 207
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: gray
+      color1: {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
+    - id: violet
+      inUse: 1
+      purchaseKey: 208
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: violet
+      color1: {r: 0.5246062, g: 0, b: 1, a: 1}
+    - id: blue
+      inUse: 1
+      purchaseKey: 209
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: blue
+      color1: {r: 0, g: 0.78094625, b: 1, a: 1}
+    - id: brown
+      inUse: 1
+      purchaseKey: 210
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: brown
+      color1: {r: 0.6792453, g: 0.35552165, b: 0.2979708, a: 1}
+    - id: pink_2
+      inUse: 1
+      purchaseKey: 211
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: pink_2
+      color1: {r: 0.6792453, g: 0.3300107, b: 0.528265, a: 1}
+    - id: blue_2
+      inUse: 1
+      purchaseKey: 212
+      gameMoneyCoast: 200
+      characterLevelToOpen: 0
+      colorSetId: blue_2
+      color1: {r: 0.4166191, g: 0.377136, b: 0.7075472, a: 1}

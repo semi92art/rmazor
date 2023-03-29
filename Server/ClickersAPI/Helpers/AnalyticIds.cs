@@ -1,20 +1,38 @@
 ﻿using System;
+using System.Linq;
 
 namespace ClickersAPI.Helpers
 {
     public static class AnalyticIds
     {
-        public const string ParameterGameMode  = "game_mode";
-        public const string ParameterLevelType = "level_type";
+        public const string SessionStart       = "session_start";
+        public const string LevelReadyToStart  = "level_ready_to_start";
+        public const string LevelStarted       = "level_started";
+        public const string LevelFinished      = "level_finished";
+        public const string LevelStageFinished = "level_stage_finished";
         
-        public const string ParameterGameModeMain           = "main";
-        public const string ParameterGameModeRandom         = "random";
-        public const string ParameterGameModeDailyChallenge = "daily_challenge";
-        public const string ParameterGameModePuzzles        = "puzzles";
-        public const string ParameterGameModeBigLevels      = "big_levels";
+        public const string AdShown        = "ad_shown";
+        public const string AdClicked      = "ad_clicked";
+        public const string AdReward       = "ad_reward";
+        public const string AdClosed       = "ad_closed";
+        public const string AdFailedToShow = "ad_failed_to_show";
         
-        public const string ParameterLevelTypeBonus   = "bonus";
-        public const string ParameterLevelTypeDefault = "default";
+        public const string PlayMainLevelsButtonClick     = "play_main_levels_button_click";
+        public const string PlayDailyChallengeButtonClick = "play_daily_challenges_button_click";
+        public const string PlayRandomLevelsButtonClick   = "play_random_levels_button_click";
+        public const string PlayPuzzleLevelsButtonClick   = "play_puzzle_levels_button_click";
+        
+        private const string ParameterGameMode  = "game_mode";
+        private const string ParameterLevelType = "level_type";
+        
+        private const string ParameterGameModeMain           = "main";
+        private const string ParameterGameModeRandom         = "random";
+        private const string ParameterGameModeDailyChallenge = "daily_challenge";
+        private const string ParameterGameModePuzzles        = "puzzles";
+        private const string ParameterGameModeBigLevels      = "big_levels";
+        
+        private const string ParameterLevelTypeBonus   = "bonus";
+        private const string ParameterLevelTypeDefault = "default";
 
         public static string GetGameParameterValueByAnalyticIdParameterValue(string _AnalyticParameterId, object _AnalyticParameterValue)
         {
@@ -24,6 +42,19 @@ namespace ClickersAPI.Helpers
                 ParameterLevelType => GetLevelTypeAnalyticParameterValue(Convert.ToInt32(_AnalyticParameterValue)),
                 _                  => _AnalyticParameterValue.ToString()
             };
+        }
+        
+        public static string GetLevelFinishedAnalyticId(long _LevelIndex)
+        {
+            var validLevelsForAnalytic = new long[]
+            {
+                1, 2, 3, 4, 5, 6, 7, 8, 9,
+                10, 20, 30, 40, 50, 60, 70, 80, 90,
+                100, 200, 300, 400, 500, 600, 700, 800, 900, 1000
+            };
+            string anId = validLevelsForAnalytic.Contains(_LevelIndex) ?
+                $"level_{_LevelIndex}_finished" : null;
+            return anId;
         }
         
         

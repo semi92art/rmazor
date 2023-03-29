@@ -47,12 +47,13 @@ namespace RMAZOR
         public string backgroundTextures;
         public int    additionalBackgroundType;
         public bool   showPathItems;
-        public int    characterId;
         public bool   drawAdditionalMazeNet;
         public string pathItemContentShapeType;
         public bool   mazeItemBlockColorEqualsMainColor;
-
-
+        public string betweenLevelsTransitionTextureName;
+        public bool   loadMainGameModeOnStart;
+        public float  specialOfferDurationInMinutes;
+        
         public float LineThickness
         {
             get => lineThickness * 0.01f;

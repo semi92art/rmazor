@@ -1,7 +1,6 @@
 ﻿using Common.Managers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Utils;
@@ -10,7 +9,6 @@ using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.InputConfigurators;
 using UnityEngine;
-using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
 {
@@ -20,22 +18,8 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
     {
         #region nonpublic members
         
-        // private bool IsNextLevelBonus
-        // {
-        //     get
-        //     {
-        //         string nextLevelType = (string) Model.LevelStaging.Arguments.GetSafe(KeyNextLevelType, out _);
-        //         return nextLevelType == ParameterLevelTypeBonus;
-        //     }
-        // }
-
-        // protected override bool CanShow =>
-        //     !ButtonDailyGift.CanShowDailyGiftPanel
-        //     && ((Model.LevelStaging.LevelIndex > 8 && !IsNextLevelBonus)
-        //         || (Model.LevelStaging.LevelIndex > 2 && IsNextLevelBonus));
+        protected override bool CanShow => true;
         
-        protected override bool CanShow => false;
-
         protected override string PrefabName => "rate_game_button";
 
         #endregion
@@ -44,7 +28,6 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         
         private IShopManager               ShopManager     { get; }
         private IDailyGiftPanel            DailyGiftPanel  { get; }
-        private IViewGameUiButtonDailyGift ButtonDailyGift { get; }
 
         private ViewGameUiButtonRateGame(
             IModelGame                  _Model,
@@ -55,8 +38,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
             IViewInputTouchProceeder    _TouchProceeder,
             IAnalyticsManager           _AnalyticsManager,
             IShopManager                _ShopManager,
-            IDailyGiftPanel             _DailyGiftPanel,
-            IViewGameUiButtonDailyGift  _ButtonDailyGift)
+            IDailyGiftPanel             _DailyGiftPanel)
             : base(
                 _Model,
                 _CameraProvider,
@@ -68,7 +50,6 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         {
             ShopManager     = _ShopManager;
             DailyGiftPanel  = _DailyGiftPanel;
-            ButtonDailyGift = _ButtonDailyGift;
         }
 
         #endregion

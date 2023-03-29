@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Common;
-using Common.Helpers;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Helpers;
@@ -82,7 +80,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
         public virtual void InitShape(Func<ViewMazeItemProps> _GetProps, Transform _Parent)
         {
             GetProps = _GetProps;
-            Parent = _Parent;
+            Parent   = _Parent;
             Init();
         }
 
@@ -117,10 +115,7 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                         _Appear,
                         appearSets,
                         ViewSettings.betweenLevelTransitionTime,
-                        () =>
-                        {
-                            OnAppearFinish(_Appear);
-                        });
+                        () => OnAppearFinish(_Appear));
                 }));
         }
 

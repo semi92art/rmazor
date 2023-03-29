@@ -40,6 +40,7 @@ namespace RMAZOR.Managers
         private const string IdInterstitialAdsRatio                 = "interstitial_ads_ratio";
         private const string IdLevelsInGroup                        = "levels_in_group";
         private const string IdLineThickness                        = "line_thickness";
+        private const string IdPathItemBorderThickness              = "path_item_border_thickness";
         private const string IdMainColorPropsSet                    = "main_color_props_set";
         private const string IdMazeItemTransitionTime               = "maze_item_transition_time";
         private const string IdMazeRotationSpeed                    = "maze_rotation_speed";
@@ -52,7 +53,6 @@ namespace RMAZOR.Managers
         private const string IdSkipButtonDelay                      = "skip_button_seconds";
         private const string IdSpearProjectileSpeed                 = "spear_projectile_speed";
         private const string IdTestDeviceIds                        = "test_device_ids";
-        private const string IdTestDeviceIdsForAdmob                = "test_device_ids_for_admob";
         private const string IdTrapIncreasingIdleTime               = "trap_increasing_idle_time";
         private const string IdTrapIncreasingIncreasedTime          = "trap_increasing_increased_time";
         private const string IdMoneyItemsFillRate                   = "money_items_fill_rate";
@@ -64,10 +64,12 @@ namespace RMAZOR.Managers
         private const string IdEnableExtraLevels                    = "enable_extra_levels";
         private const string IdExtraLevelEveryNStage                = "extra_level_every_n_stage";
         private const string IdShowOnlyRewardedAds                  = "show_only_rewarded_ads";
-        private const string IdCharacterId                          = "character_id";
         private const string IdDrawAdditionalMazeNet                = "draw_additional_maze_net";
         private const string IdPathItemContentShapeType             = "path_item_content_shape_type";
         private const string IdMazeItemBlockColorEqualsMainColor    = "maze_item_block_color_equals_main_color";
+        private const string IdBetweenLevelsTransitionTextureName   = "between_levels_transition_texture_name";
+        private const string IdLoadMainGameModeOnStart              = "load_main_game_mode_on_start";
+        private const string IdSpecialOfferDurationInMinutes        = "special_offer_duration_in_minutes";
 
         #endregion
         
@@ -161,6 +163,9 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdLineThickness,
                     _Value => Execute(
                         _Value, _V => ViewSettings.lineThickness = ToFloat(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdPathItemBorderThickness,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.pathItemBorderThickness = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeRotationSpeed,
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeRotationSpeed = ToFloat(_V))),
@@ -200,9 +205,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdAdditionalBackgroundType,
                     _Value => Execute(
                         _Value, _V => ViewSettings.additionalBackgroundType = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterId,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.characterId = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdDrawAdditionalMazeNet,
                     _Value => Execute(
                         _Value, _V => ViewSettings.drawAdditionalMazeNet = ToBool(_V))),
@@ -212,6 +214,15 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdMazeItemBlockColorEqualsMainColor,
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeItemBlockColorEqualsMainColor = ToBool(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBetweenLevelsTransitionTextureName,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.betweenLevelsTransitionTextureName = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdLoadMainGameModeOnStart,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.loadMainGameModeOnStart = ToBool(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdSpecialOfferDurationInMinutes,
+                    _Value => Execute(
+                        _Value, _V => ViewSettings.specialOfferDurationInMinutes = ToFloat(_V))),
             };
         }
 
@@ -294,14 +305,6 @@ namespace RMAZOR.Managers
                         RemoteProperties.ColorGradingProps =
                             JsonConvert.DeserializeObject<ColorGradingProps>(Convert.ToString(_V));
                     }), true),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdTestDeviceIdsForAdmob,
-                    _Value => Execute(
-                        _Value, _V =>
-                    {
-                        RemoteProperties.TestDeviceIdsForAdmob =
-                            JsonConvert.DeserializeObject<List<string>>(Convert.ToString(_V));
-                    }),
-                    true),
             };
         }
         

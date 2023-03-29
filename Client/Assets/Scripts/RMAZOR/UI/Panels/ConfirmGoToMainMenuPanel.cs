@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using mazing.common.Runtime.CameraProviders;
-using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
-using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -47,11 +45,9 @@ namespace RMAZOR.UI.Panels
         
         #region inject
 
-        private ViewSettings                ViewSettings            { get; }
-        private IViewFullscreenTransitioner FullscreenTransitioner  { get; }
-        private IViewLevelStageSwitcher     LevelStageSwitcher      { get; }
-        private IDialogViewersController    DialogViewersController { get; }
-        private IMainMenuPanel              MainMenuPanel           { get; }
+        private ViewSettings                ViewSettings           { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
+        private IViewLevelStageSwitcher     LevelStageSwitcher     { get; }
 
         private ConfirmGoToMainMenuPanel(
             ViewSettings                _ViewSettings,
@@ -62,9 +58,7 @@ namespace RMAZOR.UI.Panels
             IColorProvider              _ColorProvider,
             IViewTimePauser             _TimePauser,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewLevelStageSwitcher     _LevelStageSwitcher,
-            IDialogViewersController    _DialogViewersController,
-            IMainMenuPanel              _MainMenuPanel)
+            IViewLevelStageSwitcher     _LevelStageSwitcher)
             : base(
                 _Managers,
                 _Ticker,
@@ -76,8 +70,6 @@ namespace RMAZOR.UI.Panels
             ViewSettings           = _ViewSettings;
             FullscreenTransitioner = _FullscreenTransitioner;
             LevelStageSwitcher     = _LevelStageSwitcher;
-            DialogViewersController = _DialogViewersController;
-            MainMenuPanel = _MainMenuPanel;
         }
 
         #endregion
@@ -104,9 +96,9 @@ namespace RMAZOR.UI.Panels
             static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_TitleText, ETextType.MenuUI, "load_level_warning"),
-                new LocTextInfo(m_ButtonNoText, ETextType.MenuUI, "back", TextFormula),
-                new LocTextInfo(m_ButtonYesText, ETextType.MenuUI, "yes", TextFormula)
+                new LocTextInfo(m_TitleText,     ETextType.MenuUI_H1, "go_to_main_menu_question"),
+                new LocTextInfo(m_ButtonNoText,  ETextType.MenuUI_H1, "back", TextFormula),
+                new LocTextInfo(m_ButtonYesText, ETextType.MenuUI_H1, "yes", TextFormula)
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);
@@ -150,16 +142,8 @@ namespace RMAZOR.UI.Panels
             FullscreenTransitioner.DoTextureTransition(false, ViewSettings.betweenLevelTransitionTime);
             yield return Cor.Delay(ViewSettings.betweenLevelTransitionTime, Ticker);
             FullscreenTransitioner.Enabled = false;
-            var dv = DialogViewersController.GetViewer(MainMenuPanel.DialogViewerId);
-            dv.Show(MainMenuPanel, _AdditionalCameraEffectsAction: MainMenuAdditionalCameraEffectsAction);
         }
-
-        private void MainMenuAdditionalCameraEffectsAction(bool _Appear, float _Time)
-        {
-            Cor.Run(MainMenuUtils.SubPanelsAdditionalCameraEffectsActionCoroutine(_Appear, _Time,
-                CameraProvider, Ticker));
-        }
-
+        
         private void AdditionalCameraEffectsActionDefaultCoroutine(bool _Appear, float _Time)
         {
             Cor.Run(MainMenuUtils.SubPanelsAdditionalCameraEffectsActionCoroutine(_Appear, _Time,

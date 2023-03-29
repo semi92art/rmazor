@@ -1,12 +1,8 @@
 ﻿#if ADMOB_API
-
-using System;
 using System.Text;
 using Common.Helpers;
 using UnityEngine.Events;
 using GoogleMobileAds.Api;
-using GoogleMobileAds.Api.Mediation.AdColony;
-using GoogleMobileAds.Api.Mediation.Vungle;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Ticker;
@@ -23,8 +19,7 @@ namespace Common.Managers.Advertising.AdBlocks
         protected override string AdType   => AdTypeRewarded;
         
         private RewardedAd m_RewardedAd;
-        
-        
+
         #endregion
 
         #region inject
@@ -38,21 +33,8 @@ namespace Common.Managers.Advertising.AdBlocks
 
         #region api
         
-        public override bool Ready => m_RewardedAd != null && m_RewardedAd.IsLoaded();
+        public override bool Ready => m_RewardedAd != null && m_RewardedAd.CanShowAd();
         
-        public override void Init(string _AppId, string _UnitId)
-        {
-            m_RewardedAd = new RewardedAd(_UnitId);
-            m_RewardedAd.OnAdLoaded              += OnRewardedAdLoaded;
-            m_RewardedAd.OnAdFailedToLoad        += OnRewardedAdFailedToLoad;
-            m_RewardedAd.OnAdFailedToShow        += OnRewardedAdFailedToShow;
-            m_RewardedAd.OnPaidEvent             += OnRewardedAdPaidEvent;
-            m_RewardedAd.OnAdClosed              += OnRewardedAdClosed;
-            m_RewardedAd.OnUserEarnedReward      += OnRewardedAdUserEarnedReward;
-            m_RewardedAd.OnAdDidRecordImpression += OnRewardedAdDidRecordImpression;
-            base.Init(_AppId, _UnitId);
-        }
-
         public override void ShowAd(
             UnityAction _OnShown,
             UnityAction _OnClicked,
@@ -65,74 +47,66 @@ namespace Common.Managers.Advertising.AdBlocks
             OnReward       = _OnReward;
             OnClosed       = _OnClosed;
             OnFailedToShow = _OnFailedToShow;
-            m_RewardedAd.Show();
+            if (m_RewardedAd == null)
+                LoadAd();
+            m_RewardedAd.Show(_R => { });
         }
 
         public override void LoadAd()
         {
-            var vungleExtras = new VungleRewardedVideoMediationExtras();
-            var adColonyExtras = new AdColonyMediationExtras();
-            adColonyExtras.SetShowPrePopup(false);
-            adColonyExtras.SetShowPostPopup(false);
-#if UNITY_ANDROID
-            vungleExtras.SetAllPlacements(new [] { "REWARDED_DEFAULT-7468017", "DEFAULT-9492930" });
-#endif
             var adRequest = new AdRequest.Builder()
-                .AddMediationExtras(vungleExtras)
-                .AddMediationExtras(adColonyExtras)
                 .Build();
-            m_RewardedAd.LoadAd(adRequest);
+            RewardedAd.Load(UnitId, adRequest, AdLoadCallback);
         }
 
         #endregion
 
         #region nonpublic methods
         
-        private void OnRewardedAdLoaded(object _Sender, EventArgs _E)
+        private void AdLoadCallback(RewardedAd _Ad, LoadAdError _Error)
         {
-            OnAdLoaded();
-        }
-        
-        private void OnRewardedAdFailedToLoad(object _Sender, AdFailedToLoadEventArgs _E)
-        {
-            OnAdFailedToLoad();
-            var sb = new StringBuilder();
-            sb.AppendLine("Code: " + _E.LoadAdError.GetCode());
-            sb.AppendLine("Message: " + _E.LoadAdError.GetMessage());
-            sb.AppendLine("Domain: " + _E.LoadAdError.GetDomain());
-            sb.AppendLine("Unit Id: " + UnitId);
-            Dbg.LogWarning(sb);
-        }
-        
-        private void OnRewardedAdFailedToShow(object _Sender, AdErrorEventArgs _E)
-        {
-            OnAdFailedToShow();
-            var sb = new StringBuilder();
-            sb.AppendLine("Code: " + _E.AdError.GetCode());
-            sb.AppendLine("Message: " + _E.AdError.GetMessage());
-            sb.AppendLine("Domain: " + _E.AdError.GetDomain());
-            sb.AppendLine("Unit Id: " + UnitId);
-            Dbg.LogWarning(sb);
-        }
-        
-        private void OnRewardedAdPaidEvent(object _Sender, AdValueEventArgs _E)
-        {
-            OnAdClicked();
-        }
-        
-        private void OnRewardedAdClosed(object _Sender, EventArgs _E)
-        {
-            OnAdClosed();
-        }
-        
-        private void OnRewardedAdDidRecordImpression(object _Sender, EventArgs _E)
-        {
-            OnAdShown();
+            if (_Ad != null && _Error == null)
+            {
+                m_RewardedAd = _Ad;
+                _Ad.OnAdFullScreenContentOpened += OnAdShown;
+                _Ad.OnAdFullScreenContentClosed += OnAdClosed;
+                _Ad.OnAdFullScreenContentFailed += OnAdFullScreenContentFailed;
+                _Ad.OnAdImpressionRecorded      += OnAdImpressionRecorded;
+                _Ad.OnAdPaid                    += OnRewardedAdPaidEvent;
+                _Ad.OnAdClicked                 += OnAdClicked;
+                OnAdLoaded();
+            }
+            else
+            {
+                OnRewardedAdFailedToLoad(_Error);
+            }
         }
 
-        private void OnRewardedAdUserEarnedReward(object _Sender, Reward _E)
+        private void OnRewardedAdFailedToLoad(AdError _Error)
+        {
+            OnAdFailedToLoad();
+            // AdMobAdUtils.LogAdError(_Error);
+        }
+
+        private void OnRewardedAdPaidEvent(AdValue _AdValue)
         {
             OnAdRewardGot();
+            var sb = new StringBuilder();
+            AdMobAdUtils.AppendValue(sb, "Precision:",    _AdValue.Precision);
+            AdMobAdUtils.AppendValue(sb, "Value:",        _AdValue.Value);
+            AdMobAdUtils.AppendValue(sb, "CurrencyCode:", _AdValue.CurrencyCode);
+            Dbg.Log(sb);
+        }
+        
+        private void OnAdFullScreenContentFailed(AdError _Error)
+        {
+            OnAdFailedToShow();
+            AdMobAdUtils.LogAdError(_Error);
+        }
+
+        private static void OnAdImpressionRecorded()
+        {
+            Dbg.Log("AdMob: Rewarded record impression");
         }
 
         #endregion

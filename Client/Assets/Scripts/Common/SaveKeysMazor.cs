@@ -14,6 +14,7 @@ namespace Common
         private static SaveKey<List<int>>    _boughtPurchaseIds;
         private static SaveKey<List<string>> _debugConsoleCommandsHistory;
         private static SaveKey<string>       _appVersion;
+        private static SaveKey<bool>         _retroModeUnlocked;
         
         [RuntimeInitializeOnLoadMethod]
         public static void ResetState()
@@ -38,7 +39,6 @@ namespace Common
             _boughtPurchaseIds ??= new SaveKey<List<int>>(nameof(BoughtPurchaseIds));
         public static SaveKey<List<string>> DebugConsoleCommandsHistory =>
             _debugConsoleCommandsHistory ??= new SaveKey<List<string>>(nameof(DebugConsoleCommandsHistory));
-
 
         private static void SetAllToNull()
         {

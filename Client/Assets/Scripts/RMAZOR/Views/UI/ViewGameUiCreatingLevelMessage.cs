@@ -30,6 +30,7 @@ namespace RMAZOR.Views.UI
         #region inject
 
         private ViewSettings         ViewSettings        { get; }
+        private IModelGame           Model               { get; }
         private IPrefabSetManager    PrefabSetManager    { get; }
         private ILocalizationManager LocalizationManager { get; }
         private ICameraProvider      CameraProvider      { get; }
@@ -37,12 +38,14 @@ namespace RMAZOR.Views.UI
 
         public ViewGameUiCreatingLevelMessage(
             ViewSettings         _ViewSettings,
+            IModelGame           _Model,
             IPrefabSetManager    _PrefabSetManager,
             ILocalizationManager _LocalizationManager,
             ICameraProvider      _CameraProvider,
             IViewGameTicker      _ViewGameTicker)
         {
             ViewSettings        = _ViewSettings;
+            Model               = _Model;
             PrefabSetManager    = _PrefabSetManager;
             LocalizationManager = _LocalizationManager;
             CameraProvider      = _CameraProvider;
@@ -61,6 +64,14 @@ namespace RMAZOR.Views.UI
         
         public void ShowMessage()
         {
+            var levelStage = Model.LevelStaging.LevelStage;
+            
+            if (levelStage != ELevelStage.ReadyToUnloadLevel
+                && levelStage != ELevelStage.Unloaded
+                && levelStage != ELevelStage.None)
+            {
+                return;
+            }
             m_MessageText.enabled = true;
         }
 
@@ -76,6 +87,7 @@ namespace RMAZOR.Views.UI
                         ViewSettings.betweenLevelTransitionTime * 0.8f, ViewGameTicker, ShowMessage)); 
                     break;
                 case ELevelStage.Loaded: 
+                case ELevelStage.ReadyToStart:
                     HideMessage();
                     break;
             }
@@ -88,6 +100,7 @@ namespace RMAZOR.Views.UI
         private void OnActiveCameraChanged(Camera _Camera)
         {
             var bounds = GraphicUtils.GetVisibleBounds(_Camera);
+            m_MessageText.transform.SetParent(_Camera.transform);
             m_MessageText.transform
                 .SetLocalPosX(bounds.center.x)
                 .SetLocalPosY(bounds.center.y)
@@ -101,7 +114,7 @@ namespace RMAZOR.Views.UI
                 parent, CommonPrefabSetNames.UiGame, "creating_level_message");
             m_MessageText = go.GetCompItem<TextMeshPro>("text");
             m_MessageText.sortingOrder = SortingOrders.GameLogoBackground;
-            m_MessageText.color = Color.black;
+            m_MessageText.color = Color.white;
             var locTextInfo = new LocTextInfo(
                 m_MessageText, ETextType.GameUI,
                 "creating_level", 

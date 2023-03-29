@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Common;
 using Common.Constants;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -8,6 +9,7 @@ using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
 using RMAZOR.Views.Common;
@@ -49,7 +51,7 @@ namespace RMAZOR.UI.Panels
         private bool         m_LastItemPriceRequestIsFail;
         private string       m_OldPriceTextString;
         private string       m_NewPriceTextString;
-        private ShopItemArgs m_DisableAdsShopItemArgs;
+        private IAP_ProductInfo m_DisableAdsShopItemArgs;
         
         protected override string PrefabName => "disable_ads_panel";
         
@@ -95,7 +97,7 @@ namespace RMAZOR.UI.Panels
             base.LoadPanel(_Container, _OnClose);
             Managers.LocalizationManager.LanguageChanged += OnLanguageChanged;
             m_DisableAdsShopItemArgs = GetDisableAdsShopItemArgs();
-            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, OnButtonCloseClick);
+            Managers.ShopManager.AddPurchaseAction(PurchaseKeys.NoAds, BuyNoAds);
         }
         
         #endregion
@@ -105,7 +107,7 @@ namespace RMAZOR.UI.Panels
         protected override void OnDialogStartAppearing()
         {
             m_BackGlowDark.enabled = Model.LevelStaging.LevelStage == ELevelStage.None;
-            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI);
+            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1);
             m_BuyButtonTextDefault.font  = font;
             m_BuyButtonTextPriceOld.font = font;
             m_BuyButtonTextPriceNew.font = font;
@@ -151,6 +153,11 @@ namespace RMAZOR.UI.Panels
             PlayButtonClickSound();
         }
 
+        private void BuyNoAds()
+        {
+            SaveUtils.PutValue(SaveKeysMazor.DisableAds, true);
+        }
+
         private void OnButtonBuyClick()
         {
             SendButtonPressedAnalytic();
@@ -189,14 +196,14 @@ namespace RMAZOR.UI.Panels
             m_NewPriceTextString = m_DisableAdsShopItemArgs.LocalizedPriceString;
             m_BuyButtonTextPriceOld.text = m_OldPriceTextString;
             m_BuyButtonTextPriceNew.text = m_NewPriceTextString;
-            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI);
+            var font = Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1);
             m_BuyButtonTextPriceOld.font = font;
             if (m_NewPriceTextString != buyText)
-                font = Managers.LocalizationManager.GetFont(ETextType.MenuUI, ELanguage.English);
+                font = Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1, ELanguage.English);
             m_BuyButtonTextPriceNew.font = font;
         }
 
-        private ShopItemArgs GetDisableAdsShopItemArgs()
+        private IAP_ProductInfo GetDisableAdsShopItemArgs()
         {
             return Managers.ShopManager.GetItemInfo(PurchaseKeys.NoAds);
         }

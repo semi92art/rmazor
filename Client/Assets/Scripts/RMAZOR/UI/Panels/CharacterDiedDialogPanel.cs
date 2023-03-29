@@ -22,6 +22,7 @@ using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.UI.Panels
 {
@@ -113,7 +114,6 @@ namespace RMAZOR.UI.Panels
         public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
         {
             base.LoadPanel(_Container, _OnClose);
-            
             var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
                 "icons", "icon_coin_ui");
             m_MoneyInBankIcon.sprite      = moneyIconSprite;
@@ -125,7 +125,7 @@ namespace RMAZOR.UI.Panels
         public void ReturnFromShopPanel()
         {
             var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
-            object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+            object bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             m_MoneyCount = Convert.ToInt64(bankMoneyCountArg);
             m_MoneyInBankText.text = m_MoneyCount.ToString();
             m_AdsWatched      = false;
@@ -142,7 +142,6 @@ namespace RMAZOR.UI.Panels
         protected override void OnDialogStartAppearing()
         {
             m_TextPayMoneyCount.text = GlobalGameSettings.payToContinueMoneyCount.ToString();
-            m_TextPayMoneyCount.font = Managers.LocalizationManager.GetFont(ETextType.MenuUI);
             TimePauser.PauseTimeInGame();
             m_CountdownValue = 1f;
             m_AdsWatched       = false;
@@ -157,7 +156,7 @@ namespace RMAZOR.UI.Panels
                 () => IndicateAdsLoading(false),
                 () => !m_PanelShowing));
             var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
-            var bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+            var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             m_MoneyCount = Convert.ToInt64(bankMoneyCountArg);
             m_MoneyInBankText.text = m_MoneyCount.ToString();
             SetBankIsLoaded();
@@ -213,20 +212,17 @@ namespace RMAZOR.UI.Panels
             bool isMoneyEnough = m_MoneyCount >= GlobalGameSettings.payToContinueMoneyCount;
             if (!isMoneyEnough)
             {
-                var args = new Dictionary<string, object>
-                {
-                    {ComInComArg.KeyLoadShopPanelFromCharacterDiedPanel, true}
-                };
+                var args = new Dictionary<string, object> {{KeyLoadShopPanelFromCharacterDiedPanel, true}};
                 CommandsProceeder.RaiseCommand(EInputCommand.ShopPanel, args, true);
                 m_WentToShopPanel = true;
             }
             else
             {
                 var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
-                var bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
+                var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
                 long money = Convert.ToInt64(bankMoneyCountArg);
                 money -= GlobalGameSettings.payToContinueMoneyCount;
-                savedGame.Arguments.SetSafe(ComInComArg.KeyMoneyCount, money);
+                savedGame.Arguments.SetSafe(KeyMoneyCount, money);
                 Managers.ScoreManager.SaveGame(savedGame);
                 m_MoneyPayed = true;
             }
@@ -256,9 +252,13 @@ namespace RMAZOR.UI.Panels
             static string TextFormula(string _Text) => _Text.ToUpper(CultureInfo.CurrentUICulture);
             var locTextInfos = new[]
             {
-                new LocTextInfo(m_TextYouHaveMoney, ETextType.MenuUI, "you_have", TextFormula),
-                new LocTextInfo(m_TextContinue,     ETextType.MenuUI, "continue", TextFormula),
-                new LocTextInfo(m_TextRevive,       ETextType.MenuUI, "revive?",  TextFormula)
+                new LocTextInfo(m_MoneyInBankText, ETextType.MenuUI_H1, "empty_key",
+                    _TextLocalizationType: ETextLocalizationType.OnlyFont), 
+                new LocTextInfo(m_TextPayMoneyCount, ETextType.MenuUI_H1, "empty_key",
+                    _TextLocalizationType: ETextLocalizationType.OnlyFont), 
+                new LocTextInfo(m_TextYouHaveMoney, ETextType.MenuUI_H1, "you_have", TextFormula),
+                new LocTextInfo(m_TextContinue,     ETextType.MenuUI_H1, "continue", TextFormula),
+                new LocTextInfo(m_TextRevive,       ETextType.MenuUI_H1, "revive?",  TextFormula)
             };
             foreach (var locTextInfo in locTextInfos)
                 Managers.LocalizationManager.AddLocalization(locTextInfo);
@@ -313,7 +313,7 @@ namespace RMAZOR.UI.Panels
             BetweenLevelAdShower.ShowAdEnabled = false;
             var arguments = new Dictionary<string, object>
             {
-                {ComInComArg.KeySource, ComInComArg.ParameterSourceCharacterDiedPanel}
+                {KeySource, ParameterSourceCharacterDiedPanel}
             };
             LevelStageSwitcher.SwitchLevelStage(EInputCommand.StartUnloadingLevel, arguments);
         }

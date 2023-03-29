@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Common;
 using Common.Constants;
 using Common.Managers;
@@ -120,7 +121,8 @@ namespace RMAZOR.Views.Characters
                 setItem.Tail.Activated = false;
                 setItem.Tail.GetCharacterObjects = GetObjects;
             }
-            var defaultItem = CharactersSet.GetItem(ViewSettings.characterId);
+            string characterId = GetCharacterIdCached();
+            var defaultItem = CharactersSet.GetItem(characterId);
             (Head, Tail, Legs) = (defaultItem.Head, defaultItem.Tail, defaultItem.Legs);
             MazeShaker.Init();
             Effector.Init();
@@ -134,16 +136,13 @@ namespace RMAZOR.Views.Characters
 
         public override void OnRotationFinished(MazeRotationEventArgs _Args)
         {
-            Head.OnRotationFinished(_Args);
-            Legs.OnRotationFinished(_Args);
+            Head.OnMazeRotationFinished(_Args);
+            Legs.OnMazeRotationFinished(_Args);
         }
 
-        public override void SetCharacter(int _Id)
+        public override void SetCharacter(string _Id)
         {
-            Head.Activated = Legs.Activated = Tail.Activated = false;
-            var setItem = CharactersSet.GetItem(_Id);
-            (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
-            Head.Activated = Legs.Activated = Tail.Activated = true;
+            Cor.Run(SetCharacterCoroutine(_Id));
         }
 
         public override void OnPathCompleted(V2Int _LastPath)
@@ -262,8 +261,15 @@ namespace RMAZOR.Views.Characters
                     m_EnableMoving = false;
                     break;
                 case EInputCommand.SelectCharacter:
-                    int id = (int) _Args.GetSafe(ComInComArg.KeyCharacterId, out _);
-                    SetCharacter(id);
+                    string charId = (string) _Args.GetSafe(ComInComArg.KeyCharacterId, out _);
+                    SetCharacter(charId);
+                    break;
+                case EInputCommand.SelectCharacterColor:
+                    // TODO выбор цвета
+                    int charColId = (int) _Args.GetSafe(ComInComArg.KeyCharacterColorId, out _);
+                    var characterPanelColorSetItemTemplateGo = Managers.PrefabSetManager
+                        .GetPrefab(CommonPrefabSetNames.Views, "character_panel_color_set_item");
+                    
                     break;
             }
         }
@@ -286,6 +292,28 @@ namespace RMAZOR.Views.Characters
         private void SetPosition(Vector2 _Position)
         {
             ContainersGetter.GetContainer(ContainerNamesMazor.Character).localPosition = _Position;
+        }
+
+        private IEnumerator SetCharacterCoroutine(string _Id)
+        {
+            bool Predicate() => Head == null || Legs == null || Tail == null;
+            yield return Cor.WaitWhile(Predicate);
+            Head.Activated = false;
+            Legs.Activated = false;
+            Tail.Activated = false;
+            var setItem = CharactersSet.GetItem(_Id);
+            (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
+            Head.Activated = Legs.Activated = Tail.Activated = true;
+        }
+
+        private static string GetCharacterIdCached()
+        {
+            string characterId = SaveUtils.GetValue(SaveKeysRmazor.CharacterIdV2);
+            if (!string.IsNullOrEmpty(characterId)) 
+                return characterId;
+            characterId = CommonDataRmazor.CharacterIdDefault;
+            SaveUtils.PutValue(SaveKeysRmazor.CharacterIdV2, characterId);
+            return characterId;
         }
 
         #endregion
