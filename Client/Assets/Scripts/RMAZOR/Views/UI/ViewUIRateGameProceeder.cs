@@ -97,8 +97,7 @@ namespace RMAZOR.Views.UI
                    && !isThisLevelLastInGroup
                    && !RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
                    && m_CanShowPanelThisSession
-                   && _Args.LevelIndex >= ViewSettings.firstLevelToRateGame
-                   && m_LevelsFinishedThisSession >= ViewSettings.firstLevelToRateGameThisSession;
+                   && _Args.LevelIndex >= ViewSettings.firstLevelToRateGame;
         }
 
         #endregion

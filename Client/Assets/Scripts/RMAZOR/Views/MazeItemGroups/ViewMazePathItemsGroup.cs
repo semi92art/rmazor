@@ -162,7 +162,7 @@ namespace RMAZOR.Views.MazeItemGroups
         
         private void CollectStartPathItemIfWasNot(bool _CheckOnMoveStarted)
         {
-            if ((_CheckOnMoveStarted && m_FirstMoveDone) || ViewSettings.collectStartPathItemOnLevelLoaded)
+            if ((_CheckOnMoveStarted && m_FirstMoveDone))
                 return;
             PathItems
                 .First(_P => _P.Props.IsStartNode)

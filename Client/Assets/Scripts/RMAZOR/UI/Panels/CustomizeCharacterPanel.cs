@@ -414,6 +414,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonCloseClick()
         {
+            PlayButtonClickSound();
             OnClose();
         }
 

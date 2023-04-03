@@ -355,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8204a346530a44e11a8f7a16aed74e85, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0aa457f380905464fad519a5d662ed48, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -519,6 +519,7 @@ MonoBehaviour:
   charLevelToUnlockBackground: {fileID: 7335981253337306834}
   charLevelToUnlockText: {fileID: 5454460021800246681}
   lockIcon: {fileID: 4820873868728046276}
+  doLock: 1
 --- !u!114 &1656733224932499152
 MonoBehaviour:
   m_ObjectHideFlags: 0

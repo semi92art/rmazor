@@ -9,9 +9,7 @@ AnimatorOverrideController:
   m_Name: Character Head 06
   m_Controller: {fileID: 9100000, guid: 3c06005ef66aeb147903f451bb6e2265, type: 2}
   m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: 3363dc9c9ff52ac4c9998dc0b437051a, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 3c7db2928b2cca141b62822ae1cb0ca9, type: 2}
-  - m_OriginalClip: {fileID: 7400000, guid: 2ca84a53557420f40aba8f799163d9ad, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 837ff262829e0e3408ea1cab6f4c7240, type: 2}
-  - m_OriginalClip: {fileID: 7400000, guid: 22a49bfa71d392c47a0f4e7ff572eb94, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: e44c43f9aa4b1ed49ad3123ac145270a, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 5dbae6d9b11931d4f86479411fe19c4a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7292b3616eebe7c4499b67b9d541eec7, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: aaa185f67e4b34140965d79e79d4d65a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b742bcaf6aec4f44fb3660e69e08be56, type: 2}

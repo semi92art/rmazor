@@ -223,10 +223,6 @@ namespace Mono_Installers
             Container.Bind<IViewCharacterHead04>().To<ViewCharacterHead04>().AsSingle();
             Container.Bind<IViewCharacterHead05>().To<ViewCharacterHead05>().AsSingle();
             Container.Bind<IViewCharacterHead06>().To<ViewCharacterHead06>().AsSingle();
-            Container.Bind<IViewCharacterHead07>().To<ViewCharacterHead07>().AsSingle();
-            Container.Bind<IViewCharacterHead08>().To<ViewCharacterHead08>().AsSingle();
-            Container.Bind<IViewCharacterHead09>().To<ViewCharacterHead09>().AsSingle();
-            Container.Bind<IViewCharacterHead10>().To<ViewCharacterHead10>().AsSingle();
 
             Container.Bind<IViewCharacterHeadBatman>()    .To<ViewCharacterHeadBatman>()    .AsSingle();
             Container.Bind<IViewCharacterHeadBunny>()     .To<ViewCharacterHeadBunny>()     .AsSingle();

@@ -252,9 +252,6 @@ namespace RMAZOR.Views.MazeItems.ViewMazeItemPath
                     .SetEnd(Vector2.right * 0.5f * scale)
                     .SetThickness(scale);
             }
-            if (ViewSettings.collectStartPathItemOnLevelLoaded 
-                && Model.PathItemsProceeder.PathProceeds[Props.Position])
-                Collect(true, true);
             if (Informer.IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.ShredingerBlock)
                 || Informer.IsAnyBlockOfConcreteTypeWithSamePosition(EMazeItemType.Portal))
             {

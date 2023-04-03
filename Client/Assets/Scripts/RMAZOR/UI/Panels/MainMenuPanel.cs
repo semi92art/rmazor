@@ -57,8 +57,7 @@ namespace RMAZOR.UI.Panels
         private MainMenuPanelButtonPlayDailyChallenges m_ButtonPlayDailyChallenges;
         private MainMenuPanelButtonPlayRandomLevels    m_ButtonPlayRandomLevels;
         private MainMenuPanelButtonPlayPuzzles         m_ButtonPlayPuzzles;
-
-        private TextMeshProUGUI m_ReviewMessageText, m_ReviewMessageButtonText;
+        private TextMeshProUGUI                        m_ReviewMessageText, m_ReviewMessageButtonText;
         
         protected override string PrefabName => "main_menu_panel";
         

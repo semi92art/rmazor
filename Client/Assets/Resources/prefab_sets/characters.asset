@@ -35,27 +35,7 @@ MonoBehaviour:
         type: 3}
       bundle: 0
     - name: character_head_06
-      item: {fileID: 1560829925993726868, guid: faeec76242126574b89b86d18ee70aff,
-        type: 3}
-      bundle: 0
-    - name: character_head_07
-      item: {fileID: 1560829925993726868, guid: 3822f9a491a2fdd4ebafad51496b0edf,
-        type: 3}
-      bundle: 0
-    - name: character_head_08
-      item: {fileID: 1560829925993726868, guid: 55b1c038100e3e84bb04272327aba381,
-        type: 3}
-      bundle: 0
-    - name: character_head_09
-      item: {fileID: 1560829925993726868, guid: 383ce2f83710c32429a4da2569ebed0e,
-        type: 3}
-      bundle: 0
-    - name: character_head_10
       item: {fileID: 1560829925993726868, guid: a270993bc651d0148b7c02ece7964258,
-        type: 3}
-      bundle: 0
-    - name: character_head_11
-      item: {fileID: 1560829925993726868, guid: fb408d1ee7ad5964ea6dcdd722d932ef,
         type: 3}
       bundle: 0
     - name: character_head_one_sprite

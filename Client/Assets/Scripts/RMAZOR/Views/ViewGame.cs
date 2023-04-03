@@ -192,7 +192,7 @@ namespace RMAZOR.Views
             if (Initialized)
                 return;
             RetroModeSetting.ValueSet += OnRetroModeValueSet;
-            CommonDataRmazor.LevelsInGroupArray = Settings.LevelsInGroup; 
+            CommonDataRmazor.LevelsInGroupArray = new[] {3, 3, 3};
             InitAdsProvidersMuteAudioAction();
             CommonTicker.Register(this);
             RegisterLevelsStagingProceeders();

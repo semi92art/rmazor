@@ -14,38 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineThickness: 10
   pathItemBorderThickness: 15
-  movingTrapRotationSpeed: -400
-  shredingerLineOffsetSpeed: 200
-  turretProjectileRotationSpeed: -1000
-  blockItemsCount: 1000
-  pathItemsCount: 10000
-  collectStartPathItemOnLevelLoaded: 0
+  blockItemsCount: 500
+  pathItemsCount: 2400
   mazeRotationSpeed: 5
-  finishTimeExcellent: 3
-  finishTimeGood: 5
-  gravityTrapRotationSpeed: 1000
   bottomScreenOffset: 5
   topScreenOffset: 5
   moveSwipeThreshold: 0.1
   afterRotationEnableMoveDelay: 0.1
-  levelsCountMain: 420
   firstLevelToRateGame: 4
-  firstLevelToRateGameThisSession: 0
   betweenLevelTransitionTime: 0.6
-  spearProjectileSpeed: 0.4
   spearRotationSpeed: 5
-  filledPathAlpha: 1
-  additionalBackgroundAlpha: 0.5
   skipLevelSeconds: 1
   animatePathFill: 1
   animatePathFillTime: 0.5
   cameraSpeed: 0.1
   pathItemCharMoveHighlightTime: 0.3
   highlightPathItem: 1
-  levelsInGroup: 3,3,3
   finishLevelGroupPanelGetMoneyButtonTextVariant: 1
   finishLevelGroupPanelBackgroundVariant: 3
-  characterDiedPanelBackgroundVariant: 1
   extraBordersIndices: 2
   backgroundTextures: rave_squares,triangles_2,fall_in_deep,blue_purple_plaid,reversal,white_fire,sunflow,toon_rain,skyline
   additionalBackgroundType: 1
@@ -54,5 +40,5 @@ MonoBehaviour:
   pathItemContentShapeType: square
   mazeItemBlockColorEqualsMainColor: 1
   betweenLevelsTransitionTextureName: circles_2
-  loadMainGameModeOnStart: 1
+  loadMainGameModeOnStart: 0
   specialOfferDurationInMinutes: 10

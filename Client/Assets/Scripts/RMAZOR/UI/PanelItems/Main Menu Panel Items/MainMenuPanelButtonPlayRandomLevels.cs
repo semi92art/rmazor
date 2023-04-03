@@ -22,6 +22,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         [SerializeField] private Image           charLevelToUnlockBackground;
         [SerializeField] private TextMeshProUGUI charLevelToUnlockText;
         [SerializeField] private Image           lockIcon;
+        [SerializeField] private bool            doLock;
 
         #endregion
         
@@ -88,6 +89,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             }
             if (charLevelToUnlockText.IsNull())
                 return;
+            isGameModeLocked &= doLock;
             charLevelToUnlockText.text          = CommonDataRmazor.RetroModeCharacterLevelToUnlock.ToString();
             charLevelToUnlockText.enabled       = isGameModeLocked;
             charLevelToUnlockBackground.enabled = isGameModeLocked;

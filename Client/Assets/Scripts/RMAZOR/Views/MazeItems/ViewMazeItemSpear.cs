@@ -424,7 +424,7 @@ namespace RMAZOR.Views.MazeItems
                         }));
                     projTr.SetParentEx(m_ProjectileContainerOnFly).SetGoActive(true);
                     m_ProjectileRb.transform.SetParent(m_ProjectileContainerOnFly);
-                    m_ProjectileRb.AddForce(direction * ViewSettings.spearProjectileSpeed);
+                    m_ProjectileRb.AddForce(direction * 0.4f);
                     m_CanSpawnTailItems = true;
                     Cor.Run(DisappearCoroutine());
                     Cor.Run(Cor.WaitWhile(() =>

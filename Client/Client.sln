@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.iOS", "SA.iOS.csproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMAZOR", "RMAZOR.csproj", "{92a482b9-d6ff-fdc6-3a70-65826a212f32}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8441f412-22a4-275f-22e6-507969043f15}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lean.Localization", "Lean.Localization.csproj", "{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage.Demo", "LeTai.TranslucentImage.Demo.csproj", "{8984c209-a36b-c7b9-35ec-a1322f14e2f3}"
@@ -40,8 +42,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CameraEffects", "CameraEffects.csproj", "{103dcb2d-a996-0447-6d34-dc1f92e76ead}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage", "LeTai.TranslucentImage.csproj", "{8fa200cd-f859-95b4-8c64-e2b8ecf5583a}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8441f412-22a4-275f-22e6-507969043f15}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Common", "Client.Common.csproj", "{ec10a1ec-e58e-a37b-9557-808f23aa10e1}"
 EndProject
@@ -128,6 +128,8 @@ Global
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9effb9b0-5df2-d59f-eaf7-6f13fd62e218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8984c209-a36b-c7b9-35ec-a1322f14e2f3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -160,8 +162,6 @@ Global
 		{103dcb2d-a996-0447-6d34-dc1f92e76ead}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8fa200cd-f859-95b4-8c64-e2b8ecf5583a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8fa200cd-f859-95b4-8c64-e2b8ecf5583a}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

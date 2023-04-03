@@ -111,8 +111,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         {
             AppearingState = _Appear ? EAppearingState.Appearing : EAppearingState.Dissapearing;
             var mainCol = ColorProvider.GetColor(ColorIds.Main);
-            var back1Col = ColorProvider.GetColor(ColorIds.Background1)
-                .SetA(ViewSettings.additionalBackgroundAlpha);
+            var back1Col = ColorProvider.GetColor(ColorIds.Background1);
             var dict = new Dictionary<IEnumerable<Component>, Func<Color>>
             {
                 {m_Borders.GetAllActiveItems(),  () => mainCol},
@@ -162,7 +161,7 @@ namespace RMAZOR.Views.Common.Additional_Background
         {
             base.OnColorChanged(_ColorId, _Color);
             if (_ColorId == ColorIds.Background1)
-                m_TextureRendererBack.color = _Color.SetA(ViewSettings.additionalBackgroundAlpha);
+                m_TextureRendererBack.color = _Color;
             if (_ColorId != ColorIds.Main)
                 return;
             m_TextureRenderers.GetAllActiveItems().ForEach(_R => _R.color = _Color.SetA(_R.color.a));

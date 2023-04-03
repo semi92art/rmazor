@@ -320,7 +320,7 @@ namespace Editor
             m_LevelIndex = MathUtils.ClampInverse(
                 m_LevelIndex + levels, 
                 0, 
-                settings.levelsCountMain - 1);
+                400 - 1);
             var args = new Dictionary<string, object>
             {
                 {KeySetBackgroundFromEditor, true}

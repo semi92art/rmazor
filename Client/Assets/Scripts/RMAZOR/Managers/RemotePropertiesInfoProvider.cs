@@ -34,30 +34,25 @@ namespace RMAZOR.Managers
         private const string IdCharacterSpeed                       = "character_speed";
         private const string IdColorGradingProps                    = "color_grading_props_1";
         private const string IdFirstLevelToRateGame                 = "first_level_to_rate_game";
-        private const string IdFirstLevelToRateGameThisSession      = "first_level_to_rate_game_this_session";
         private const string IdHammerShotPause                      = "hammer_shot_pause";
         private const string IdInAppNotificationList                = "inapp_notifications_list_v2";
         private const string IdInterstitialAdsRatio                 = "interstitial_ads_ratio";
-        private const string IdLevelsInGroup                        = "levels_in_group";
         private const string IdLineThickness                        = "line_thickness";
         private const string IdPathItemBorderThickness              = "path_item_border_thickness";
         private const string IdMainColorPropsSet                    = "main_color_props_set";
         private const string IdMazeItemTransitionTime               = "maze_item_transition_time";
         private const string IdMazeRotationSpeed                    = "maze_rotation_speed";
         private const string IdGravityBlockSpeed                    = "mazeitems_gravityblock_speed";
-        private const string IdMoneyItemCoast                       = "money_item_coast";
         private const string IdMovingTrapPause                      = "moving_trap_pause";
         private const string IdMovingTrapSpeed                      = "moving_trap_speed";
         private const string IdPayToContinueMoneyCount              = "pay_to_continue_money_count";
         private const string IdShredingerBlockTime                  = "shredinger_block_time";
         private const string IdSkipButtonDelay                      = "skip_button_seconds";
-        private const string IdSpearProjectileSpeed                 = "spear_projectile_speed";
         private const string IdTestDeviceIds                        = "test_device_ids";
         private const string IdTrapIncreasingIdleTime               = "trap_increasing_idle_time";
         private const string IdTrapIncreasingIncreasedTime          = "trap_increasing_increased_time";
         private const string IdMoneyItemsFillRate                   = "money_items_fill_rate";
         private const string IdFinishLevelGroupPanelGetMoneyTextVar = "fin_lev_g_pan_get_money_button_text_variant";
-        private const string IdCharacterDiedPanelBackgroundVar      = "char_died_g_pan_background_variant";
         private const string IdBackgroundTextures                   = "background_textures_v2";
         private const string IdAdditionalBackgroundType             = "additional_background_type";
         private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
@@ -68,7 +63,6 @@ namespace RMAZOR.Managers
         private const string IdPathItemContentShapeType             = "path_item_content_shape_type";
         private const string IdMazeItemBlockColorEqualsMainColor    = "maze_item_block_color_equals_main_color";
         private const string IdBetweenLevelsTransitionTextureName   = "between_levels_transition_texture_name";
-        private const string IdLoadMainGameModeOnStart              = "load_main_game_mode_on_start";
         private const string IdSpecialOfferDurationInMinutes        = "special_offer_duration_in_minutes";
 
         #endregion
@@ -169,32 +163,15 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeRotationSpeed,
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeRotationSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdSpearProjectileSpeed,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.spearProjectileSpeed = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToRateGame,
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGame = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToRateGameThisSession,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.firstLevelToRateGameThisSession = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeItemTransitionTime,
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdLevelsInGroup,
-                    _Value => Execute(
-                        _Value, _V =>
-                        {
-                            ViewSettings.LevelsInGroup =
-                                JsonConvert.DeserializeObject<int[]>(ToString(_V));
-                        }),
-                    true),
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFinishLevelGroupPanelGetMoneyTextVar,
                     _Value => Execute(
                         _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdCharacterDiedPanelBackgroundVar,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.characterDiedPanelBackgroundVariant = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextures,
                     _Value => Execute(
                         _Value, _V =>
@@ -217,9 +194,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBetweenLevelsTransitionTextureName,
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelsTransitionTextureName = ToString(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdLoadMainGameModeOnStart,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.loadMainGameModeOnStart = ToBool(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdSpecialOfferDurationInMinutes,
                     _Value => Execute(
                         _Value, _V => ViewSettings.specialOfferDurationInMinutes = ToFloat(_V))),
@@ -233,9 +207,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToShowAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.firstLevelToShowAds = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(long), IdMoneyItemCoast,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.moneyItemCoast = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(long), IdPayToContinueMoneyCount,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.payToContinueMoneyCount = ToInt(_V))),

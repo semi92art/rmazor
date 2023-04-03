@@ -123,7 +123,6 @@ namespace RMAZOR.UI.Panels
                 MainMenuPanel,
                 SettingDialogPanel,
                 SettingLanguageDialogPanel,
-                ShopDialogPanel,
                 ShopMoneyDialogPanel,
                 SpecialOfferDialogPanel,
                 CharacterDiedDialogPanel,
@@ -140,7 +139,8 @@ namespace RMAZOR.UI.Panels
                 HintDialogPanel,
                 RandomGenerationParamsPanel,
                 CustomizeCharacterPanel,
-                ConfirmGoToMainMenuPanel
+                ConfirmGoToMainMenuPanel,
+                ShopDialogPanel,
             };
         }
         

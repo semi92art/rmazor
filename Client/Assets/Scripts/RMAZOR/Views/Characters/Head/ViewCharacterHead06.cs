@@ -18,13 +18,14 @@ namespace RMAZOR.Views.Characters.Head
     public interface IViewCharacterHead06 : IViewCharacterHead { }
 
     public class ViewCharacterHead06 
-        : ViewCharacterHeadWithBorderObjectBase, 
+        : ViewCharacterHeadWithBorderObjectBase,
           IViewCharacterHead06
     {
         #region nonpublic members
         
-        private Disc m_Hair;
-
+        private Triangle m_Ear1Body,    m_Ear2Body;
+        private Line     m_Ear1Border1, m_Ear1Border2, m_Ear2Border1, m_Ear2Border2;
+        
         #endregion
 
         #region inject
@@ -59,7 +60,7 @@ namespace RMAZOR.Views.Characters.Head
         }
         
         #endregion
-        
+
         #region api
 
         public override string Id => "06";
@@ -85,39 +86,60 @@ namespace RMAZOR.Views.Characters.Head
         {
             switch (_ColorId)
             {
+                case ColorIds.Character:
+                    m_Ear1Body.SetColor(_Color);
+                    m_Ear2Body.SetColor(_Color);
+                    break;
                 case ColorIds.Character2:
-                    m_Hair.SetColor(_Color);
+                    m_Ear1Border1.SetColor(_Color);
+                    m_Ear1Border2.SetColor(_Color);
+                    m_Ear2Border1.SetColor(_Color);
+                    m_Ear2Border2.SetColor(_Color);
                     break;
             }
         }
-        
+
         protected override void InitPrefab()
         {
             base.InitPrefab();
             var go = GetCharacterGameObject();
-            m_Hair = go.GetCompItem<Disc>("hair").SetSortingOrder(SortingOrders.Character + 1);
-            m_Hair.enabled = false;
+            const int sOrder = SortingOrders.Character;
+            m_Ear1Body       = go.GetCompItem<Triangle>("ear_1_body").SetSortingOrder(sOrder + 1);
+            m_Ear2Body       = go.GetCompItem<Triangle>("ear_2_body").SetSortingOrder(sOrder + 1);
+            m_Ear1Border1    = go.GetCompItem<Line>("ear_1_border_1").SetSortingOrder(sOrder + 2);
+            m_Ear1Border2    = go.GetCompItem<Line>("ear_1_border_2").SetSortingOrder(sOrder + 2);
+            m_Ear2Border1    = go.GetCompItem<Line>("ear_2_border_1").SetSortingOrder(sOrder + 2);
+            m_Ear2Border2    = go.GetCompItem<Line>("ear_2_border_2").SetSortingOrder(sOrder + 2);
         }
-        
+
         protected override void ActivateShapes(bool _Active)
         {
+            var localRenderers = new ShapeRenderer[]
+            {m_Ear1Body, m_Ear2Body, m_Ear1Border1, m_Ear1Border2, m_Ear2Border1, m_Ear2Border2};
+            foreach (var renderer in localRenderers)
+                renderer.enabled = _Active;
             BodyCommon .ActivateShapes(_Active);
             EyesCommon .ActivateShapes(_Active);
             MouthCommon.ActivateShapes(_Active);
-            m_Hair.enabled = _Active;
         }
 
         protected override Dictionary<IEnumerable<Component>, Func<Color>> GetAppearSets(bool _Appear)
         {
+            var charCol  = ColorProvider.GetColor(ColorIds.Character);
             var charCol2 = ColorProvider.GetColor(ColorIds.Character2);
-            var sets = EyesCommon.GetAppearSets(_Appear)
-                .Concat(MouthCommon.GetAppearSets(_Appear))
-                .ToDictionary(
-                    _Set => _Set.Key, 
-                    _Set => _Set.Value);
-            sets.Add(new Component[] {m_Hair}, () => charCol2);
-            return sets;
+            var sets1 = new Dictionary<IEnumerable<Component>, Func<Color>>
+            {
+                {new [] {m_Ear1Body, m_Ear2Body}, () => charCol},
+                {new [] {m_Ear1Border1, m_Ear1Border2, m_Ear2Border1, m_Ear2Border2}, () => charCol2}
+            };
+            var sets2 = BodyCommon.GetAppearSets(_Appear)
+                .Concat(EyesCommon.GetAppearSets(_Appear))
+                .Concat(MouthCommon.GetAppearSets(_Appear));
+            return sets1.Concat(sets2).ToDictionary(
+                _Set => _Set.Key, 
+                _Set => _Set.Value);
         }
+
 
         #endregion
     }

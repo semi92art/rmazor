@@ -398,6 +398,7 @@ MonoBehaviour:
   charLevelToUnlockBackground: {fileID: 2392302491708980861}
   charLevelToUnlockText: {fileID: 6051712938084387726}
   lockIcon: {fileID: 3267751696095174325}
+  doLock: 0
 --- !u!114 &3593501736509141016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -621,7 +622,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 8204a346530a44e11a8f7a16aed74e85, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0aa457f380905464fad519a5d662ed48, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

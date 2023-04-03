@@ -41,10 +41,6 @@ namespace RMAZOR.Views.Characters
         private IViewCharacterHead04         Head04         { get; }
         private IViewCharacterHead05         Head05         { get; }
         private IViewCharacterHead06         Head06         { get; }
-        private IViewCharacterHead07         Head07         { get; }
-        private IViewCharacterHead08         Head08         { get; }
-        private IViewCharacterHead09         Head09         { get; }
-        private IViewCharacterHead10         Head10         { get; }
         private IViewCharacterHeadBatman     HeadBatman     { get; }
         private IViewCharacterHeadBunny      HeadBunny      { get; }
         private IViewCharacterHeadDartVaider HeadDartVaider { get; }
@@ -73,10 +69,6 @@ namespace RMAZOR.Views.Characters
             IViewCharacterHead04         _Head04,
             IViewCharacterHead05         _Head05,
             IViewCharacterHead06         _Head06,
-            IViewCharacterHead07         _Head07,
-            IViewCharacterHead08         _Head08,
-            IViewCharacterHead09         _Head09,
-            IViewCharacterHead10         _Head10,
             IViewCharacterHeadBatman     _HeadBatman,
             IViewCharacterHeadBunny      _HeadBunny,
             IViewCharacterHeadDartVaider _HeadDartVaider,
@@ -103,10 +95,6 @@ namespace RMAZOR.Views.Characters
             Head04         = _Head04;
             Head05         = _Head05;
             Head06         = _Head06;
-            Head07         = _Head07;
-            Head08         = _Head08;
-            Head09         = _Head09;
-            Head10         = _Head10;
             HeadBatman     = _HeadBatman;
             HeadBunny      = _HeadBunny;
             HeadDartVaider = _HeadDartVaider;
@@ -164,10 +152,6 @@ namespace RMAZOR.Views.Characters
                 Head04,
                 Head05,
                 Head06,
-                Head07,
-                Head08,
-                Head09,
-                Head10,
                 HeadBatman,
                 HeadBunny,
                 HeadDartVaider,

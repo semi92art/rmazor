@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Common;
 using Common.Extensions;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -27,7 +26,7 @@ namespace RMAZOR.Views.MazeItems
         void MakeJump(SpringboardEventArgs _Args);
     }
     
-    public class ViewMazeItemSpringboard : ViewMazeItemBase, IViewMazeItemSpringboard, IUpdateTick
+    public class ViewMazeItemSpringboard : ViewMazeItemBase, IViewMazeItemSpringboard
     {
         #region constants
         
@@ -45,7 +44,6 @@ namespace RMAZOR.Views.MazeItems
         
         private Vector2 m_Edge1Start,        m_Edge2Start;
         private Line    m_Springboard,       m_Pillar;
-        private Color   m_NonHighlightColor, m_HighlightColor;
         private float   m_HighlightTimer;
         
         #endregion
@@ -96,20 +94,6 @@ namespace RMAZOR.Views.MazeItems
             Cor.Run(JumpCoroutine());
         }
 
-        public void UpdateTick()
-        {
-            const float rate = 3f;
-            m_HighlightTimer = GameTicker.Time;
-            if (!ActivatedInSpawnPool
-            || AppearingState != EAppearingState.Appeared)
-            {
-                return;
-            }
-            float coeff = Mathf.Cos(m_HighlightTimer * rate) * 0.5f + 0.5f;
-            var color = Color.Lerp(m_NonHighlightColor, m_HighlightColor, coeff);
-            m_Springboard.Color = m_Pillar.Color = color;
-        }
-
         #endregion
 
         #region nonpublic methods
@@ -126,8 +110,6 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void UpdateShape()
         {
-            m_NonHighlightColor = ColorProvider.GetColor(ColorIds.Main);
-            m_HighlightColor    = ColorProvider.GetColor(ColorIds.MazeItem2);
             m_Pillar.SetThickness(ViewSettings.LineThickness * CoordinateConverter.Scale);
             m_Springboard.SetThickness(m_Pillar.Thickness * 2f);
             (m_Pillar.Start, m_Pillar.End, m_Springboard.Start, m_Springboard.End) = GetSpringboardAndPillarEdges();
@@ -136,11 +118,10 @@ namespace RMAZOR.Views.MazeItems
 
         protected override void OnColorChanged(int _ColorId, Color _Color)
         {
-            switch (_ColorId)
-            {
-                case ColorIds.Main:      m_NonHighlightColor = _Color; break;
-                case ColorIds.MazeItem2: m_HighlightColor    = _Color; break;
-            }
+            if (_ColorId != GetMazeItemBlockColorId())
+                return;
+            m_Springboard.SetColor(_Color);
+            m_Pillar     .SetColor(_Color);
         }
 
         private IEnumerator JumpCoroutine()

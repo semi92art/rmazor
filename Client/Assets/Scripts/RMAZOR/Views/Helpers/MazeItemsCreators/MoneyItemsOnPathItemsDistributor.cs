@@ -40,9 +40,13 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
             float rateCoefficient = 1;
             string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(Model.LevelStaging.Arguments);
             string levelType = ViewLevelStageSwitcherUtils.GetNextLevelType(Model.LevelStaging.Arguments);
-            if (gameMode == ParameterGameModeMain && levelType == ParameterLevelTypeBonus)
+            switch (gameMode)
             {
-                rateCoefficient = 1;
+                case ParameterGameModeMain when levelType == ParameterLevelTypeBonus:
+                    rateCoefficient = 1;
+                    break;
+                case ParameterGameModeRandom:
+                    return new List<V2Int>();
             }
             int pathItemsCount = _Info.PathItems.Count;
             if (pathItemsCount < 10)

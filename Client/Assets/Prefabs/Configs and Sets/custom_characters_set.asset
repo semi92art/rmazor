@@ -29,29 +29,29 @@ MonoBehaviour:
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: 03
-      inUse: 0
+      inUse: 1
       gameMoneyCoast: 1000
       characterLevelToOpen: 0
       icon: {fileID: 21300000, guid: 018c0600e85dfde4c8476d09750af723, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: 04
-      inUse: 0
+      inUse: 1
       gameMoneyCoast: 1500
       characterLevelToOpen: 0
       icon: {fileID: 21300000, guid: 5607907c99614d3458764bfae802ca67, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
+    - id: 06
+      inUse: 1
+      gameMoneyCoast: 1000
+      characterLevelToOpen: 0
+      icon: {fileID: 21300000, guid: a80c618b7d0e92740b64968dd7c6246c, type: 3}
+      overrideCharacterColor2: 0
+      characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: 05
       inUse: 1
       gameMoneyCoast: 3000
-      characterLevelToOpen: 0
-      icon: {fileID: 21300000, guid: ab69516cdecf6aa428fd2a3293dab3b8, type: 3}
-      overrideCharacterColor2: 0
-      characterColor2: {r: 0, g: 0, b: 0, a: 0}
-    - id: 06
-      inUse: 0
-      gameMoneyCoast: 1000
       characterLevelToOpen: 0
       icon: {fileID: 21300000, guid: ab69516cdecf6aa428fd2a3293dab3b8, type: 3}
       overrideCharacterColor2: 0
@@ -136,14 +136,14 @@ MonoBehaviour:
     - id: deadpool
       inUse: 1
       gameMoneyCoast: 300
-      characterLevelToOpen: 0
+      characterLevelToOpen: 5
       icon: {fileID: 21300000, guid: 750002d9a282bc04e8c1b1f5b0d5c806, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: elephant
       inUse: 1
       gameMoneyCoast: 300
-      characterLevelToOpen: 0
+      characterLevelToOpen: 5
       icon: {fileID: 21300000, guid: 339e2172e4bb9b14cb80c4b0b2e8f427, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
@@ -157,42 +157,42 @@ MonoBehaviour:
     - id: iron_man_1
       inUse: 1
       gameMoneyCoast: 500
-      characterLevelToOpen: 0
+      characterLevelToOpen: 8
       icon: {fileID: 21300000, guid: 00735d01abfa95449ae2a057b4d4c875, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: iron_man_2
       inUse: 1
       gameMoneyCoast: 500
-      characterLevelToOpen: 0
+      characterLevelToOpen: 8
       icon: {fileID: 21300000, guid: 9fb5f5feec867cb4d916dd3ca77d323f, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: iron_man_3
       inUse: 1
       gameMoneyCoast: 500
-      characterLevelToOpen: 0
+      characterLevelToOpen: 8
       icon: {fileID: 21300000, guid: 0cc4213c287369d47a5125334c19581c, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: joker
       inUse: 1
       gameMoneyCoast: 1000
-      characterLevelToOpen: 0
+      characterLevelToOpen: 10
       icon: {fileID: 21300000, guid: a2f02c29d13d4aa4bbe917b1d8bb7cb8, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: friday13
       inUse: 1
       gameMoneyCoast: 1000
-      characterLevelToOpen: 0
+      characterLevelToOpen: 10
       icon: {fileID: 21300000, guid: 79b645b214830f0498fa530de33ef073, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: kitty
       inUse: 1
       gameMoneyCoast: 1000
-      characterLevelToOpen: 0
+      characterLevelToOpen: 10
       icon: {fileID: 21300000, guid: 91843027324d37740bc4c0a234882270, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}

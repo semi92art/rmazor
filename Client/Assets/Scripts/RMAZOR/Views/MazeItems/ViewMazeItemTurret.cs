@@ -361,7 +361,7 @@ namespace RMAZOR.Views.MazeItems
             yield return Cor.Lerp(
                 GameTicker,
                 _Duration, 
-                _OnProgress: _P => m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed * _P);
+                _OnProgress: _P => m_RotatingSpeed = -1000f * _P);
         }
 
         private IEnumerator ActivateRealProjectileAndOpenBarrel(float _Delay)
@@ -437,7 +437,7 @@ namespace RMAZOR.Views.MazeItems
             Vector2 projectilePos = _Args.From;
             Projectile.Tail.ShowTail(_Args);
             m_ProjRotating = true;
-            m_RotatingSpeed = ViewSettings.turretProjectileRotationSpeed;
+            m_RotatingSpeed = -1000f;
             bool CorPredicate()
             {
                 return !m_ProjectileMovingLocked;

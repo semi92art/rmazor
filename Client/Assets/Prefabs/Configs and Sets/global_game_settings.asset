@@ -14,13 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adsLoadDelay: 10
   debugAnyway: 0
-  testAds: 1
   logLevel: 5
   firstLevelToShowAds: 0
   payToContinueMoneyCount: 100
-  moneyItemCoast: 1
+  moneyItemCoast: 5
   interstitialAdsRatio: 0.3
-  moneyItemsRate: 0.1
+  moneyItemsRate: 0.2
   betweenLevelAdShowIntervalInSeconds: 120
   enableExtraLevels: 1
   extraLevelEveryNStage: 3

@@ -42,7 +42,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         #region inject
 
         private GlobalGameSettings          GlobalGameSettings { get; }
-        private ViewSettings                ViewSettings       { get; }
         private IManagersGetter             Managers           { get; }
         private IViewInputCommandsProceeder CommandsProceeder  { get; }
         private ILevelsLoader               LevelsLoader       { get; }
@@ -52,7 +51,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public ViewLevelStageControllerOnLevelFinished(
             GlobalGameSettings          _GlobalGameSettings,
-            ViewSettings                _ViewSettings,
             IModelGame                  _Model,
             IManagersGetter             _Managers,
             IViewInputCommandsProceeder _CommandsProceeder,
@@ -63,7 +61,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             : base(_Model, _GameLogo)
         {
             GlobalGameSettings = _GlobalGameSettings;
-            ViewSettings       = _ViewSettings;
             Managers           = _Managers;
             CommandsProceeder  = _CommandsProceeder;
             LevelsLoader       = _LevelsLoader;
@@ -85,7 +82,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
-            // ViewLevelStageControllerUtils.SaveGame(_Args, Managers.ScoreManager);
             StartUnloadLevelWithDelay(_Args);
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
             CheckForAllLevelsPassed(_Args);
@@ -173,7 +169,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
             bool allLevelsPassed = SaveUtils.GetValue(SaveKeysRmazor.AllLevelsPassed);
-            if (!allLevelsPassed && _Args.LevelIndex + 1 >= ViewSettings.levelsCountMain)
+            if (!allLevelsPassed && _Args.LevelIndex + 1 >= 400)
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
         }
 
@@ -236,7 +232,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 case ELevelStage.Finished when _Args.PreviousStage != ELevelStage.Paused:
                     var audioClipArgs = AudioClipArgsLevelComplete;
                     if ((string)_Args.Arguments[KeyGameMode] == ParameterGameModeDailyChallenge
-                        && (bool)_Args.Arguments[KeyIsDailyChallengeSuccess])
+                        && !(bool)_Args.Arguments[KeyIsDailyChallengeSuccess])
                     {
                         audioClipArgs = AudioClipArgsLevelFail;
                     }

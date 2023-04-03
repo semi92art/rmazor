@@ -793,7 +793,7 @@ namespace SRDebuggerCustomOptions
                     _levelIndex = MathUtils.ClampInverse(
                         _levelIndex + levels,
                         0,
-                        settings.levelsCountMain - 1);
+                        400 - 1);
                     var args = new Dictionary<string, object>()
                     {
                         { KeySetBackgroundFromEditor, true}

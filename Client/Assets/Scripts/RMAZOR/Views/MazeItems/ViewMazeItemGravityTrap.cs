@@ -229,7 +229,7 @@ namespace RMAZOR.Views.MazeItems
 
         private void DoRotation()
         {
-            m_Angles += m_RotateDirection * (GameTicker.DeltaTime * ViewSettings.gravityTrapRotationSpeed);
+            m_Angles += m_RotateDirection * (GameTicker.DeltaTime * 1000f);
             m_Angles = ClampAngles(m_Angles);
             m_MaceTr.rotation = Quaternion.Euler(m_Angles);
         }

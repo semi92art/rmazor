@@ -73,9 +73,6 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         public void Select(bool _Selected)
         {
-            priceBackground.enabled = !_Selected;
-            priceText.enabled       = !_Selected;
-            gameMoneyIcon.enabled   = !_Selected;
             checkMarkIcon.enabled   = _Selected;
             if (!_Selected)
                 return;
@@ -117,6 +114,7 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
         private void UpdateAccessState()
         {
             bool accessibleForUse      = IsItemAccessibleForUse();
+            priceBackground.SetGoActive(!accessibleForUse);
             buyForGameMoneyButton.SetGoActive(!accessibleForUse);
             button.interactable = accessibleForUse;
         }
