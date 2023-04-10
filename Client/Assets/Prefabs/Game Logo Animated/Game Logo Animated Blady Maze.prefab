@@ -102,7 +102,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ball escape
+  m_text: ball esc.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f500690dbcd77b74490a1012a8eff488, type: 2}
   m_sharedMaterial: {fileID: 6299018223239539106, guid: f500690dbcd77b74490a1012a8eff488,
@@ -514,7 +514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Blady Maze
+  m_text: peaky mazes
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f500690dbcd77b74490a1012a8eff488, type: 2}
   m_sharedMaterial: {fileID: 6299018223239539106, guid: f500690dbcd77b74490a1012a8eff488,
