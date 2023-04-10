@@ -125,7 +125,6 @@ namespace RMAZOR.Views.Characters
             IViewCharacterHead head = GetAllHeads().FirstOrDefault(_Head => _Head.Id == _CharacterId);
             IViewCharacterLegs legs = _CharacterId switch
             {
-                "01" => Legs01,
                 "02" => Legs01,
                 _    => LegsFake
             };

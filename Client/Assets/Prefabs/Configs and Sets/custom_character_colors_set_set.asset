@@ -14,19 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
+    - id: white
+      inUse: 1
+      gameMoneyCoast: 0
+      characterLevelToOpen: 0
+      color1: {r: 1, g: 1, b: 1, a: 1}
     - id: yellow
       inUse: 1
       gameMoneyCoast: 0
       characterLevelToOpen: 0
-      colorSetId: yellow
-      color1: {r: 0.80225706, g: 0.8113208, b: 0, a: 1}
-    - id: white
-      inUse: 1
-      purchaseKey: 202
-      gameMoneyCoast: 200
-      characterLevelToOpen: 0
-      colorSetId: white
-      color1: {r: 1, g: 1, b: 1, a: 1}
+      color1: {r: 0.80392164, g: 0.8117648, b: 0, a: 1}
     - id: orange
       inUse: 1
       gameMoneyCoast: 200

@@ -9,7 +9,7 @@ namespace RMAZOR
     {
         public const int    RetroModeCharacterLevelToUnlock = 5;
         public const string CharacterIdDefault              = "01";
-        public const string ColorSetIdDefault               = "yellow";
+        public const string ColorSetIdDefault               = "white";
         
         public const int CharacterLevelOnStart = 1;
         
