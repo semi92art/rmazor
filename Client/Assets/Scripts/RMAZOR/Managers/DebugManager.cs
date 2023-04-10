@@ -93,7 +93,6 @@ namespace RMAZOR.Managers
             if (Initialized)
                 return;
             DebugSetting.ValueSet += EnableDebug;
-            InitDebugConsole(false);
             EnableDebug(DebugSetting.Get());
             base.Init();
         }
@@ -104,7 +103,9 @@ namespace RMAZOR.Managers
 
         private void InitDebugConsole(bool _Forced)
         {
-            if (!Application.isEditor && !RemoteProperties.DebugEnabled && !_Forced)
+            if (m_DebugConsoleInitialized)
+                return;
+            if (!Application.isEditor && !_Forced)
                 return;
             DebugConsoleView.VisibilityChanged += _Value =>
             {
@@ -127,6 +128,7 @@ namespace RMAZOR.Managers
     
         private void EnableDebug(bool _Enable)
         {
+            InitDebugConsole(false);
             if (!m_DebugConsoleInitialized && _Enable)
                 InitDebugConsole(true);
             DebugConsoleView.EnableDebug(_Enable);

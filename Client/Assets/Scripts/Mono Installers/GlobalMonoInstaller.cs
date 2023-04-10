@@ -56,11 +56,6 @@ namespace Mono_Installers
         
         public override void InstallBindings()
         {
-            Dbg.Log(Container.AllContracts.Count());
-            foreach (var bindingId in Container.AllContracts)
-            {
-                Dbg.Log($"Binded type: {bindingId.Type}");
-            }
             BindCamera();
             BindModel();
             BindSettings();
@@ -260,14 +255,16 @@ namespace Mono_Installers
             }
             
             Container.Bind<IFpsCounter>()
-                // .To<FpsCounter>()
-                .To<FpsCounterFake>()
+                .To<FpsCounterRmazor>()
+                // .To<FpsCounterFake>()
                 .AsSingle();
             
-            Container.Bind<IDebugConsoleView>()
-                .FromComponentInNewPrefab(debugConsoleView)
-                // .FromComponentInNewPrefab(debugConsoleViewFake)
-                .AsSingle();
+#if UNITY_EDITOR
+            Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleView).AsSingle();
+#else
+            Container.Bind<IDebugConsoleView>().FromComponentInNewPrefab(debugConsoleViewFake).AsSingle();
+#endif
+
             
             Container.Bind<IAssetBundleManager>()
                 // .To<AssetBundleManager>()

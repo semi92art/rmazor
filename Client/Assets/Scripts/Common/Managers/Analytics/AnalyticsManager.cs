@@ -5,8 +5,6 @@ using mazing.common.Runtime.Utils;
 
 namespace Common.Managers.Analytics
 {
-    
-    
     public class AnalyticsManager : InitBase, IAnalyticsManager
     {
         #region inject

@@ -18,6 +18,7 @@ using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.Video;
 
@@ -45,9 +46,10 @@ namespace RMAZOR.UI.Panels
     
     public interface ITutorialDialogPanel : IDialogPanel
     {
-        bool IsVideoReady { get; }
-        void SetPanelInfo(TutorialDialogPanelInfo _Info);
-        void PrepareVideo();
+        UnityAction OnPanelCloseAction { get; set; }
+        bool        IsVideoReady       { get; }
+        void        SetPanelInfo(TutorialDialogPanelInfo _Info);
+        void        PrepareVideo();
     }
     
     public class TutorialDialogPanel : DialogPanelBase, ITutorialDialogPanel
@@ -99,7 +101,8 @@ namespace RMAZOR.UI.Panels
         public override    int      DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
         public override    Animator Animator       => m_Animator;
 
-        public bool IsVideoReady => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
+        public UnityAction OnPanelCloseAction { get; set; }
+        public bool        IsVideoReady       => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
 
         public void SetPanelInfo(TutorialDialogPanelInfo _Info)
         {
@@ -152,16 +155,11 @@ namespace RMAZOR.UI.Panels
 
         protected override void OnDialogDisappeared()
         {
-            if (m_Info.TutorialName != "movement")
-            {
-                var saveKeyCurrentTutorial = SaveKeysRmazor.IsTutorialFinished(m_Info.TutorialName);
-                SaveUtils.PutValue(saveKeyCurrentTutorial, true);
-            }
-            TimePauser.UnpauseTimeInGame();
+
             m_VideoPlayer.Stop();
             m_VideoPlayer.clip = null;
             m_VideoPlayer.enabled = false;
-            LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
+            TimePauser.UnpauseTimeInGame();
             base.OnDialogDisappeared();
         }
 
@@ -183,7 +181,7 @@ namespace RMAZOR.UI.Panels
 
         private void OnCloseButtonClick()
         {
-            OnClose();
+            OnClose(OnPanelCloseAction);
         }
 
         private void InitVideoPlayer()

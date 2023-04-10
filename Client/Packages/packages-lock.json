@@ -16,9 +16,10 @@
         "com.unity.textmeshpro": "3.0.6",
         "com.unity.purchasing": "4.7.0",
         "com.unity.mobile.notifications": "2.1.1",
-        "com.unity.modules.androidjni": "1.0.0"
+        "com.unity.modules.androidjni": "1.0.0",
+        "com.unity.services.core": "1.8.2"
       },
-      "hash": "bd1146c161047fe6815af00f621d56f431900c26"
+      "hash": "32f1194a207aa5fb2d0130dcdd2a0277a8101979"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -194,8 +195,8 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.services.core": {
-      "version": "1.8.1",
-      "depth": 1,
+      "version": "1.8.2",
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.unitywebrequest": "1.0.0",

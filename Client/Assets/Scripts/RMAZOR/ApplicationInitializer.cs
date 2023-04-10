@@ -34,7 +34,7 @@ using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR
 {
-    public class ApplicationInitializerRmazor : MonoBehaviour
+    public class ApplicationInitializer : MonoBehaviour
     {
         #region inject
 
@@ -116,7 +116,7 @@ namespace RMAZOR
             yield return PermissionsRequestCoroutine();
             yield return InitStartDataCoroutine();
             yield return InitGameManagersCoroutine();
-            yield return LoadSceneLevelCoroutine();
+            yield return LoadGameSceneCoroutine();
         }
 
         private IEnumerator PermissionsRequestCoroutine()
@@ -154,7 +154,7 @@ namespace RMAZOR
             yield return null;
         }
 
-        private IEnumerator LoadSceneLevelCoroutine()
+        private IEnumerator LoadGameSceneCoroutine()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -254,6 +254,7 @@ namespace RMAZOR
         {
             TryExecute(() =>
             {
+                
                 ShopManager.RegisterProductInfos(GetProductInfos());
                 ShopManager.Init();
             });

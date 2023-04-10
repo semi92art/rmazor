@@ -82,9 +82,6 @@ namespace RMAZOR.Views.UI
                 case EInputCommand.FinishLevelGroupPanel:
                     ShowDialogPanel<IFinishLevelGroupDialogPanel>(EInputCommand.PauseLevel, _Args);
                     break;
-                case EInputCommand.TutorialPanel:
-                    ShowDialogPanel<ITutorialDialogPanel>(EInputCommand.PauseLevel, _Args, 3f);
-                    break;
                 case EInputCommand.DisableAdsPanel:
                     ShowDialogPanel<IDisableAdsDialogPanel>(EInputCommand.PauseLevel, _Args, 3f);
                     break;

@@ -169,6 +169,7 @@ namespace SRDebuggerCustomOptions
                     return;
                 var args = new Dictionary<string, object>
                 {
+                    {KeyGameMode,      ParameterGameModeMain},
                     {KeyNextLevelType, ParameterLevelTypeDefault},
                     {KeyLevelIndex,    Level_Index - 1}
                 };
@@ -186,6 +187,7 @@ namespace SRDebuggerCustomOptions
                     return;
                 var args = new Dictionary<string, object>
                 {
+                    {KeyGameMode,      ParameterGameModeMain},
                     {KeyNextLevelType, ParameterLevelTypeDefault},
                     {KeyLevelIndex,    _levelStaging.LevelIndex + 1}
                 };
@@ -204,6 +206,7 @@ namespace SRDebuggerCustomOptions
                 long levelIndex = _levelStaging.LevelIndex;
                 var args = new Dictionary<string, object>
                 {
+                    {KeyGameMode,      ParameterGameModeMain},
                     {KeyNextLevelType, ParameterLevelTypeDefault},
                     {KeyLevelIndex,    levelIndex - 1}
                 };
@@ -212,7 +215,7 @@ namespace SRDebuggerCustomOptions
         }
 
         [Category(CategoryLevels)]
-        public bool Load_Current_Level
+        public bool Reload_Current_Level
         {
             get => false;
             set
@@ -222,6 +225,7 @@ namespace SRDebuggerCustomOptions
                 long levelIndex = _levelStaging.LevelIndex;
                 var args = new Dictionary<string, object>
                 {
+                    {KeyGameMode,      ParameterGameModeMain},
                     {KeyNextLevelType, ParameterLevelTypeDefault},
                     {KeyLevelIndex,    levelIndex}
                 };

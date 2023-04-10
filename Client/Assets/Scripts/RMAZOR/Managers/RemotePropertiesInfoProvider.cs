@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Common.Entities;
 using Common.Helpers;
 using Common.Utils;
 using mazing.common.Runtime;
@@ -26,12 +25,10 @@ namespace RMAZOR.Managers
     {
         #region constants
 
-        private const string IdAdditionalColorPropsSet              = "additional_color_props_set";
         private const string IdFirstLevelToShowAds                  = "ads_first_level_to_show_ads";
         private const string IdAdsProvidersInfos                    = "ads_providers_infos_v2";
         private const string IdAnimatePathFill                      = "animate_path_fill";
         private const string IdBackgroundTextureTriangles2PropsSet  = "background_texture_triangles2_props_set";
-        private const string IdCharacterSpeed                       = "character_speed";
         private const string IdColorGradingProps                    = "color_grading_props_1";
         private const string IdFirstLevelToRateGame                 = "first_level_to_rate_game";
         private const string IdHammerShotPause                      = "hammer_shot_pause";
@@ -39,7 +36,6 @@ namespace RMAZOR.Managers
         private const string IdInterstitialAdsRatio                 = "interstitial_ads_ratio";
         private const string IdLineThickness                        = "line_thickness";
         private const string IdPathItemBorderThickness              = "path_item_border_thickness";
-        private const string IdMainColorPropsSet                    = "main_color_props_set";
         private const string IdMazeItemTransitionTime               = "maze_item_transition_time";
         private const string IdMazeRotationSpeed                    = "maze_rotation_speed";
         private const string IdGravityBlockSpeed                    = "mazeitems_gravityblock_speed";
@@ -52,12 +48,8 @@ namespace RMAZOR.Managers
         private const string IdTrapIncreasingIdleTime               = "trap_increasing_idle_time";
         private const string IdTrapIncreasingIncreasedTime          = "trap_increasing_increased_time";
         private const string IdMoneyItemsFillRate                   = "money_items_fill_rate";
-        private const string IdFinishLevelGroupPanelGetMoneyTextVar = "fin_lev_g_pan_get_money_button_text_variant";
         private const string IdBackgroundTextures                   = "background_textures_v2";
-        private const string IdAdditionalBackgroundType             = "additional_background_type";
         private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
-        private const string IdEnableExtraLevels                    = "enable_extra_levels";
-        private const string IdExtraLevelEveryNStage                = "extra_level_every_n_stage";
         private const string IdShowOnlyRewardedAds                  = "show_only_rewarded_ads";
         private const string IdDrawAdditionalMazeNet                = "draw_additional_maze_net";
         private const string IdPathItemContentShapeType             = "path_item_content_shape_type";
@@ -117,9 +109,6 @@ namespace RMAZOR.Managers
         {
             return new List<RemoteConfigPropertyInfo>
             {
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdCharacterSpeed,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.characterSpeed = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdGravityBlockSpeed,
                     _Value => Execute(
                         _Value, _V => ModelSettings.gravityBlockSpeed = ToFloat(_V))),
@@ -169,9 +158,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeItemTransitionTime,
                     _Value => Execute(
                         _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFinishLevelGroupPanelGetMoneyTextVar,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.finishLevelGroupPanelGetMoneyButtonTextVariant = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextures,
                     _Value => Execute(
                         _Value, _V =>
@@ -179,9 +165,6 @@ namespace RMAZOR.Managers
                             ViewSettings.BackgroundTextures = 
                                 JsonConvert.DeserializeObject<List<string>>(ToString(_V));
                         })),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdAdditionalBackgroundType,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.additionalBackgroundType = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdDrawAdditionalMazeNet,
                     _Value => Execute(
                         _Value, _V => ViewSettings.drawAdditionalMazeNet = ToBool(_V))),
@@ -219,12 +202,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdBetweenLevelAdShowIntervalInSeconds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.betweenLevelAdShowIntervalInSeconds = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdEnableExtraLevels,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.enableExtraLevels = ToBool(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(int), IdExtraLevelEveryNStage,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.extraLevelEveryNStage = ToInt(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowOnlyRewardedAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.showOnlyRewardedAds = ToBool(_V))),
@@ -243,30 +220,12 @@ namespace RMAZOR.Managers
                     _Value => Execute(
                         _Value, _V => RemoteProperties.Notifications =
                         JsonConvert.DeserializeObject<IList<NotificationInfoEx>>(_V.ToString()))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdAdditionalColorPropsSet,
-                    _Value => Execute(
-                        _Value, _V =>
-                    {
-                        RemoteProperties.BackAndFrontColorsSet =
-                            JsonConvert.DeserializeObject<IList<AdditionalColorsPropsAssetItem>>(
-                                Convert.ToString(_Value), new ColorJsonConverter());
-                    }),
-                    true),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextureTriangles2PropsSet,
                     _Value => Execute(
                         _Value, _V =>
                     {
                         RemoteProperties.Tria2TextureSet =
                             JsonConvert.DeserializeObject<IList<Triangles2TextureProps>>(Convert.ToString(_V));
-                    }),
-                    true),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdMainColorPropsSet,
-                    _Value => Execute(
-                        _Value, _V =>
-                    {
-                        var converter = new ColorJsonConverter();
-                        RemoteProperties.MainColorsSet = JsonConvert.DeserializeObject<IList<MainColorsProps>>(
-                            Convert.ToString(_V), converter);
                     }),
                     true),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdColorGradingProps,

@@ -1,5 +1,4 @@
-﻿using Common.Entities;
-using mazing.common.Runtime.Entities;
+﻿using mazing.common.Runtime.Entities;
 
 namespace RMAZOR.Helpers
 {

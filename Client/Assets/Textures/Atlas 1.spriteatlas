@@ -132,6 +132,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 22195a8570d16db44a4ade235add6df4, type: 3}
   - {fileID: 21300000, guid: e15e0d9506942f249bb317c7cd9fb1dc, type: 3}
   - {fileID: 21300000, guid: f4f151a5ee5d4481aa3b02b2d79d33b2, type: 3}
+  - {fileID: 21300000, guid: c4e049b5e1f89254fa1a78cf35d5987c, type: 3}
   - {fileID: 21300000, guid: dd6262c55aabe0449908497007373b6a, type: 3}
   - {fileID: 21300000, guid: 165fa3c519486b24c825895beee1992a, type: 3}
   - {fileID: 21300000, guid: 74114cc50585c4f6785798e3d7f07fc8, type: 3}
@@ -362,6 +363,7 @@ SpriteAtlas:
   - coins_item_2_picture
   - sickle
   - Label_LeftLabel01_Blue
+  - icon_home_2
   - icon_steps_menu
   - icon_settings_2
   - Frame_SpeechBubble04_White

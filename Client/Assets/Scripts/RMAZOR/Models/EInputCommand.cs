@@ -31,7 +31,6 @@
         RateGamePanel,
         FinishLevelGroupPanel,
         PlayBonusLevelPanel,
-        TutorialPanel,
         MainMenuPanel,
         RateGameFromGameUi,
         DailyChallengePanel,

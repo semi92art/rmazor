@@ -1031,9 +1031,10 @@ PlayerSettings:
     ErrorHub: 0
     Game Performance: 1
     Hub: 0
+    Legacy Analytics: 0
     Purchasing: 1
     UNet: 1
-    Unity Ads: 1
+    Unity Ads: 0
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 

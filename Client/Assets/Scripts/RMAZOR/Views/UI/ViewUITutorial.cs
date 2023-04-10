@@ -8,6 +8,7 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
+using mazing.common.Runtime.UI;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
@@ -118,23 +119,19 @@ namespace RMAZOR.Views.UI
                         return;
                     FinishMovementTutorial();
                     break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
+                case ELevelStage.Loaded:
                     string tutorialName = CurrentLevelTutorialName();
                     if (string.IsNullOrEmpty(tutorialName))
                         return;
                     if (SaveUtils.GetValue(SaveKeysRmazor.IsTutorialFinished(tutorialName)))
                         return;
-                    if (tutorialName == "timer")
+                    if (tutorialName == "movement")
+                        StartMovementTutorial();
+                    if (!GetValidSystemLanguages().Contains(Application.systemLanguage))
                         return;
-                    Cor.Run(Cor.WaitWhile(() => !GameLogo.WasShown,
-                        () =>
-                        {
-                            if (tutorialName == "movement")
-                                StartMovementTutorial();
-                            if (!GetValidSystemLanguages().Contains(Application.systemLanguage))
-                                return;
-                            ShowTutorialPanel(tutorialName);
-                        }));
+                    ShowTutorialPanel(tutorialName);
+                    break;
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     break;
             }
         }
@@ -204,14 +201,22 @@ namespace RMAZOR.Views.UI
                 m_TutorialPanelLoaded = true;
             }
             TutorialDialogPanel.PrepareVideo();
-            Cor.Run(Cor.WaitWhile(() => !TutorialDialogPanel.IsVideoReady,
-                () =>
-                {
-                    CommandsProceeder.RaiseCommand(
-                        EInputCommand.TutorialPanel, 
-                        null, 
-                        true);
-                }));
+            TutorialDialogPanel.OnPanelCloseAction = () =>
+            {
+                if (_TutorialName == "movement")
+                    return;
+                var saveKeyCurrentTutorial = SaveKeysRmazor.IsTutorialFinished(_TutorialName);
+                SaveUtils.PutValue(saveKeyCurrentTutorial, true);
+            };
+            Cor.Run(ShowTutorialDialogPanelCoroutine());
+        }
+
+        private IEnumerator ShowTutorialDialogPanelCoroutine()
+        {
+            var dv = DialogViewersController.GetViewer(TutorialDialogPanel.DialogViewerId);
+            yield return Cor.WaitNextFrame(null);
+            yield return Cor.WaitWhile(() => !TutorialDialogPanel.IsVideoReady);
+            dv.Show(TutorialDialogPanel, 3f);
         }
 
         private IEnumerator MovementTutorialFirstStepCoroutine()

@@ -38,18 +38,18 @@ namespace RMAZOR
 
         private ViewSettings                             ViewSettings        { get; }
         private ICameraProvider                          CameraProvider      { get; }
-        private IViewGameTicker                          GameTicker          { get; }
+        private ICommonTicker                            CommonTicker        { get; }
         private IFullscreenTransitionTextureProvidersSet TextureProvidersSet { get; }
 
         private ViewFullscreenTransitioner(
             ViewSettings                             _ViewSettings,
             ICameraProvider                          _CameraProvider,
-            IViewGameTicker                          _GameTicker,
+            ICommonTicker                            _CommonTicker,
             IFullscreenTransitionTextureProvidersSet _TextureProvidersSet)
         {
             ViewSettings        = _ViewSettings;
             CameraProvider      = _CameraProvider;
-            GameTicker          = _GameTicker;
+            CommonTicker        = _CommonTicker;
             TextureProvidersSet = _TextureProvidersSet;
         }
 
@@ -125,7 +125,7 @@ namespace RMAZOR
             if (_Appear)
                 CurrentProvider.Activate(true);
             yield return Cor.Lerp(
-                GameTicker,
+                CommonTicker,
                 _Duration,
                 _Appear ? 0f : 1f,
                 _Appear ? 1f : 0f,
