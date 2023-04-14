@@ -1,5 +1,4 @@
 ﻿#if NICE_VIBRATIONS_3_9
-using Common.Helpers;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Settings;
@@ -8,6 +7,7 @@ using Zenject;
 
 namespace Common.Managers
 {
+    // ReSharper disable once InconsistentNaming
     public class HapticsManagerNiceVibrations_3_9 : InitBase, IHapticsManager
     {
         #region inject

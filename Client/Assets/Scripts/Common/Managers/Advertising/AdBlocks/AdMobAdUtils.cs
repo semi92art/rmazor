@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿#if ADMOB_API
+using System.Text;
 using GoogleMobileAds.Api;
 using mazing.common.Runtime;
 
@@ -31,3 +32,4 @@ namespace Common.Managers.Advertising.AdBlocks
         private static string Join(params object[]      _Args)                      => string.Join(": ", _Args);
     }
 }
+#endif
