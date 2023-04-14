@@ -59,7 +59,7 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: fibrous_rings
+        backgroundName: white_fire
         additionalBackgroundName: additional_background_texture_1
         arguments:
         - daily_challenge
