@@ -317,6 +317,7 @@ namespace Mono_Installers
                 Container.Bind<IRandomGenerationParamsPanel>().To<RandomGenerationParamsPanelFake>().AsSingle();
                 Container.Bind<ICustomizeCharacterPanel>()    .To<CustomizeCharacterPanelFake>()    .AsSingle();
                 Container.Bind<IConfirmGoToMainMenuPanel>()   .To<ConfirmGoToMainMenuPanelFake>()   .AsSingle();
+                Container.Bind<ISpecialOfferDialogPanel>()    .To<SpecialOfferDialogPanelFake>()    .AsSingle();
             }
             else
             {

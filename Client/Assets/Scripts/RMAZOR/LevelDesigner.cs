@@ -10,9 +10,11 @@ using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Exceptions;
 using mazing.common.Runtime.Extensions;
+using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Controllers;
 using RMAZOR.Models.MazeInfos;
+using RMAZOR.Views.Common;
 using RMAZOR.Views.MazeItems;
 using UnityEditor;
 using UnityEngine;
@@ -192,6 +194,11 @@ namespace RMAZOR
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += OnSceneUnloaded;
 #endif
+            var compLogo = FindObjectOfType<CompanyLogoMonoBeh>();
+            if (compLogo.IsNotNull())
+                compLogo.EnableLogo(false);
+            var colorProvider = FindObjectOfType<ColorProvider>();
+            colorProvider.SetColor(ColorIds.Character2, Color.black);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             var controller = GameControllerMVC.CreateInstance();
             controller.Initialize += () =>

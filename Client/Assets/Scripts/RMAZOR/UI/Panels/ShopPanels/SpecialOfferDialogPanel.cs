@@ -22,6 +22,11 @@ namespace RMAZOR.UI.Panels.ShopPanels
     {
         UnityAction OnPanelClosedAction { get; set; }
     }
+
+    public class SpecialOfferDialogPanelFake : DialogPanelFake, ISpecialOfferDialogPanel
+    {
+        public UnityAction OnPanelClosedAction { get; set; }
+    }
     
     public class SpecialOfferDialogPanel : DialogPanelBase, ISpecialOfferDialogPanel
     {
