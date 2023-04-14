@@ -29,7 +29,9 @@ MonoBehaviour:
     - name: Money Item
       color: {r: 1, g: 0.9803922, b: 0, a: 1}
     - name: Character
-      color: {r: 1, g: 0.97981787, b: 0, a: 1}
+      color: {r: 1, g: 1, b: 1, a: 1}
+    - name: Character 2
+      color: {r: 0, g: 0, b: 0, a: 1}
     - name: Character Tail
       color: {r: 1, g: 0.9803922, b: 0, a: 1}
     - name: Background 1
