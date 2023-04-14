@@ -32,9 +32,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             new AudioClipArgs("main_menu_theme",
                 EAudioClipType.Music, 
                 0.25f,
-                true, 
-                _AttenuationSecondsOnPlay: 1f,
-                _AttenuationSecondsOnStop: 1f);
+                true);
         
         private bool m_StartLogoWasShown;
 
