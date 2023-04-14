@@ -76,9 +76,10 @@ namespace RMAZOR.Views.Common.CongratulationItems
             int count = m_Discs.Length;
             for (int i = 0; i < count; i++)
             {
+                m_RigidBodies[i].Sleep();
                 m_RigidBodies[i].MovePosition(transform.position);
                 m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeAll;
-                m_Discs[i].Color = m_Discs[i].Color.SetA(0f);
+                m_Discs[i].enabled = false;
                 m_Discs[i].SortingOrder = SortingOrders.BackgroundItem;
             }
         }
@@ -103,7 +104,9 @@ namespace RMAZOR.Views.Common.CongratulationItems
             int count = m_Discs.Length;
             for (int i = 0; i < count; i++)
             {
+                m_Discs[i].enabled = true;
                 var dir = new Vector2(RandDir(), RandDir());
+                m_RigidBodies[i].WakeUp();
                 m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeRotation;
                 m_RigidBodies[i].transform.localPosition = Vector3.zero;
                 m_RigidBodies[i].AddForce(force * dir, ForceMode.VelocityChange);
@@ -124,7 +127,7 @@ namespace RMAZOR.Views.Common.CongratulationItems
                     for (int i = 0; i < count; i++)
                     {
                         m_RigidBodies[i].constraints = RigidbodyConstraints.FreezeAll;
-                        m_Discs[i].Color = m_Discs[i].Color.SetA(0f);
+                        m_Discs[i].enabled = false;
                         ActivatedInSpawnPool = false;
                     }
                 });
