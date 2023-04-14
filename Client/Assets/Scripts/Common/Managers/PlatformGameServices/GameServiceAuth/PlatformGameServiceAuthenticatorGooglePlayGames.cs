@@ -33,13 +33,8 @@ namespace Common.Managers.PlatformGameServices.GameServiceAuth
         
         private void AuthenticateAndroid(UnityAction<bool> _OnFinish)
         {
-            var config = new PlayGamesClientConfiguration.Builder()
-                .EnableSavedGames()
-                .Build();
-            PlayGamesPlatform.InitializeInstance(config);
             PlayGamesPlatform.Activate();
             PlayGamesPlatform.Instance.Authenticate(
-                SignInInteractivity.CanPromptOnce,
                 _Status =>
                 {
                     if (_Status == SignInStatus.Success)

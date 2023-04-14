@@ -24,8 +24,20 @@
 
 public static class GooglePlayGameResources
 {
-        public const string achievement_tutorial_finished = "CgkI1IvonNkDEAIQBQ"; // <GPGSID>
-        public const string leaderboard_levels = "CgkI1IvonNkDEAIQBg"; // <GPGSID>
+        public const string achievement_300_levels_finished = "CgkI1IvonNkDEAIQCg"; // <GPGSID>
+        public const string leaderboard_level = "CgkI1IvonNkDEAIQBg"; // <GPGSID>
+        public const string achievement_50_levels_finished = "CgkI1IvonNkDEAIQCA"; // <GPGSID>
+        public const string achievement_800_levels_finished = "CgkI1IvonNkDEAIQDw"; // <GPGSID>
+        public const string achievement_600_levels_finished = "CgkI1IvonNkDEAIQDQ"; // <GPGSID>
+        public const string achievement_10_levels_finished = "CgkI1IvonNkDEAIQBQ"; // <GPGSID>
+        public const string achievement_200_levels_finished = "CgkI1IvonNkDEAIQCQ"; // <GPGSID>
+        public const string achievement_500_levels_finished = "CgkI1IvonNkDEAIQDA"; // <GPGSID>
+        public const string achievement_400_levels_finished = "CgkI1IvonNkDEAIQCw"; // <GPGSID>
+        public const string achievement_700_levels_finished = "CgkI1IvonNkDEAIQDg"; // <GPGSID>
+        public const string achievement_900_levels_finished = "CgkI1IvonNkDEAIQEA"; // <GPGSID>
+        public const string achievement_1000_levels_finished = "CgkI1IvonNkDEAIQEQ"; // <GPGSID>
+        public const string achievement_100_levels_finished = "CgkI1IvonNkDEAIQBw"; // <GPGSID>
+        public const string achievement_25_levels_finished = "CgkI1IvonNkDEAIQEg"; // <GPGSID>
 
 }
 
