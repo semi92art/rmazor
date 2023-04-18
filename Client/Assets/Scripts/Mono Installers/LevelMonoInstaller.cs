@@ -71,11 +71,15 @@ namespace Mono_Installers
             Container.Bind<IViewMazeBackgroundIdleItemDisc>()    .To<ViewMazeBackgroundIdleItemDisc>()    .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemSquare>()  .To<ViewMazeBackgroundIdleItemSquare>()  .AsSingle();
             Container.Bind<IViewMazeBackgroundIdleItemTriangle>().To<ViewMazeBackgroundIdleItemTriangle>().AsSingle();
-            Container.Bind<IViewMazeBackgroundCongratItems>()    .To<ViewMazeBackgroundCongratItems2>()   .AsSingle();
             Container.Bind<IRendererAppearTransitioner>()        .To<RendererAppearTransitioner>()        .AsSingle();
             Container.Bind<IViewFullscreenTransitioner>()        .To<ViewFullscreenTransitioner>()        .AsSingle();
             Container.Bind<IViewCameraEffectsCustomAnimator>()   .To<ViewCameraEffectsCustomAnimator>()   .AsSingle();
             Container.Bind<IViewLevelStageController>()          .To<ViewLevelStageController>()          .AsSingle();
+            
+            Container.Bind<IViewMazeBackgroundCongratItems>()  
+                // .To<ViewMazeBackgroundCongratItems2>()
+                .To<ViewMazeBackgroundCongratItemsFake>()
+                .AsSingle();
             
             Container.Bind<IViewLevelStageControllerOnLevelLoaded>()     
                 .To<ViewLevelStageControllerOnLevelLoaded>()  
@@ -408,7 +412,7 @@ namespace Mono_Installers
                 .To<AudioManagerRmazor>()
                 .AsSingle();
 
-            Container.Bind<IViewInputCommandsReplayer>()          .To<ViewInputCommandsReplayer>()          .AsSingle();
+            Container.Bind<IViewInputCommandsReplayer>()        .To<ViewInputCommandsReplayer>()        .AsSingle();
             Container.Bind<IViewInputCommandsRecorder>()        .To<ViewInputCommandsRecorder>()        .AsSingle();
             Container.Bind<IViewGameUiCreatingLevelMessage>()   .To<ViewGameUiCreatingLevelMessage>()   .AsSingle();
             Container.Bind<IViewGameUiHintPlayingMessage>()     .To<ViewGameUiHintPlayingMessage>()     .AsSingle();
