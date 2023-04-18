@@ -58,7 +58,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
 
         protected override void InitButton()
         {
-            DailyGiftPanel.OnClose += () => ShowControls(CanShow, true);
+            DailyGiftPanel.OnPanelCloseAction += () => ShowControls(CanShow, true);
             base.InitButton();
         }
 

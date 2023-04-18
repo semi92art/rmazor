@@ -39,7 +39,9 @@ namespace RMAZOR.UI.Panels
     
     public class CustomizeCharacterPanelFake : DialogPanelFake, ICustomizeCharacterPanel
     {
+        #pragma warning disable 0067
         public event UnityAction<int> BadgesNumberChanged;
+        #pragma warning restore 0067
 
         public int GetBadgesCount() => default;
     }

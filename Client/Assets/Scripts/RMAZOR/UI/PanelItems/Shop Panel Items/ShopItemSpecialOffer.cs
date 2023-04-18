@@ -66,8 +66,10 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
                 _AnalyticsManager, _ShopManager, _ShopItemInfoInfo);
         }
 
+#pragma warning disable 0809
         [Obsolete]
         public override void Init(
+#pragma warning restore 0809
             IUITicker                      _UITicker,
             IAudioManager                  _AudioManager,
             ILocalizationManager           _LocalizationManager,

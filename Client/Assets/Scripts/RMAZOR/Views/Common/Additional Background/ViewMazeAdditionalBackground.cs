@@ -38,7 +38,9 @@ namespace RMAZOR.Views.Common.Additional_Background
 
     public class ViewMazeAdditionalBackgroundFake : InitBase, IViewMazeAdditionalBackground
     {
+#pragma warning disable 0067
         public event UnityAction<List<PointsGroupArgs>> GroupsCollected;
+#pragma warning restore 0067
         public void OnLevelStageChanged(LevelStageArgs _Args) { }
     }
     

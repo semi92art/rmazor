@@ -85,7 +85,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             InitRenderCameraAndRawTexture();
             LocalizeTextObjects();
             SubscribeButtonEvents();
-            DailyGiftPanel.OnClose += RecalculateBankMoneyCount;
+            DailyGiftPanel.OnPanelCloseAction += RecalculateBankMoneyCount;
             ScoreManager.GameSaved += OnGameSaved;
             buttonCustomizeCharacter.Init(
                 _UITicker, 

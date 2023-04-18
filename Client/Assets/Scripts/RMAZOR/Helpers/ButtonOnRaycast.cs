@@ -55,7 +55,6 @@ namespace RMAZOR.Helpers
                 case ELevelStage.Paused:
                 case ELevelStage.CharacterKilled:
                     return;
-                    break;
             }
             m_PrevFingerState = m_FingerState;
             if (m_ViewInputTouchProceeder.AreFingersOnScreen(1))

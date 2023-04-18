@@ -50,8 +50,10 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             LocalizationManager.AddLocalization(locTextInfo);
         }
         
+#pragma warning disable 0809
         [Obsolete]
         public override void Init(
+#pragma warning restore 0809
             IUITicker            _UITicker,
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager)

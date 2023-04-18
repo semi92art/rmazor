@@ -1,6 +1,4 @@
-﻿using Common.Managers;
-using Common.Managers.Advertising;
-using Common.Managers.Analytics;
+﻿using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using mazing.common.Runtime.Debugging;
 using mazing.common.Runtime.Managers;
@@ -12,7 +10,9 @@ namespace RMAZOR
 {
     public class DebugConsoleViewFake : MonoBehaviour, IDebugConsoleView
     {
+#pragma warning disable 0067
         public event VisibilityChangedHandler VisibilityChanged;
+#pragma warning restore 0067
         public bool                           Visible => false;
 
         public void Init(

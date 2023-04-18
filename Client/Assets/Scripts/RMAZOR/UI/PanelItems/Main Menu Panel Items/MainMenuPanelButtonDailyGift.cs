@@ -47,7 +47,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
                 CommonPrefabSetNames.Views, "daily_gift_icon_disabled");
             if (!DailyGiftPanel.IsDailyGiftAvailableToday)
                 Cor.Run(Cor.WaitNextFrame(DisableDailyGiftButton));
-            DailyGiftPanel.OnClose += DisableDailyGiftButton;
+            DailyGiftPanel.OnPanelCloseAction += DisableDailyGiftButton;
             dailyGiftButton.SetOnClick(_OnClick);
         }
 

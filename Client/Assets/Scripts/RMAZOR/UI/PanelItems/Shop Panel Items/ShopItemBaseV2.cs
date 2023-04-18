@@ -54,8 +54,10 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             SubscribeButtonEvents();
         }
         
+#pragma warning disable 0809
         [Obsolete]
         public override void Init(
+#pragma warning restore 0809
             IUITicker            _UITicker, 
             IAudioManager        _AudioManager,
             ILocalizationManager _LocalizationManager)
@@ -63,8 +65,10 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
             throw new NotSupportedException();
         }
 
+#pragma warning disable 0809
         [Obsolete]
         public override void Init()
+#pragma warning restore 0809
         {
             throw new NotSupportedException();
         }

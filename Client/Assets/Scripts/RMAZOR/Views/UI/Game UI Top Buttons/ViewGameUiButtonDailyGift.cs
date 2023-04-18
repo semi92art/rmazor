@@ -75,7 +75,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
 
         protected override void InitButton()
         {
-            DailyGiftPanel.OnClose += () => ShowControls(false, true);
+            DailyGiftPanel.OnPanelCloseAction += () => ShowControls(false, true);
             base.InitButton();
             var renderer1 = ButtonOnRaycast.GetCompItem<SpriteRenderer>("sprite_2");
             renderer1.sortingOrder = SortingOrders.GameUI;

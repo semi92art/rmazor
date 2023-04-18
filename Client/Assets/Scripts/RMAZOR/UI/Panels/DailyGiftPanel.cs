@@ -28,13 +28,17 @@ namespace RMAZOR.UI.Panels
 {
     public interface IDailyGiftPanel : IDialogPanel
     {
-        UnityAction OnClose                   { get; set; }
+        UnityAction OnPanelCloseAction                   { get; set; }
         bool        IsDailyGiftAvailableToday { get; }
     }
     
     public class DailyGiftPanelFake : DialogPanelFake, IDailyGiftPanel
     {
-        public UnityAction OnClose                   { get; set; }
+#pragma warning disable 0067
+
+        public UnityAction OnPanelCloseAction                   { get; set; }
+#pragma warning restore 0067
+
         public bool        IsDailyGiftAvailableToday => default;
     }
      
@@ -110,7 +114,7 @@ namespace RMAZOR.UI.Panels
 
         #region api
 
-        public          UnityAction OnClose        { get; set; }
+        public          UnityAction OnPanelCloseAction        { get; set; }
         public override int         DialogViewerId => DialogViewerIdsCommon.MediumCommon;
         public override Animator    Animator       => m_PanelAnimator;
 
@@ -153,7 +157,7 @@ namespace RMAZOR.UI.Panels
 
         protected override void OnDialogDisappeared()
         {
-            OnClose?.Invoke();
+            OnPanelCloseAction?.Invoke();
             base.OnDialogDisappeared();
         }
 
