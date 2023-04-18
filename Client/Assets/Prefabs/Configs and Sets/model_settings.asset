@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: model_settings
   m_EditorClassIdentifier: 
   characterSpeed: 30
-  movingItemsSpeed: 6
+  movingItemsSpeed: 4
   gravityBlockSpeed: 15
   movingItemsPause: 1
   trapPreReactTime: 0.5
