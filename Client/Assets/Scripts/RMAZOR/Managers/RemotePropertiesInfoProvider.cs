@@ -32,7 +32,7 @@ namespace RMAZOR.Managers
         private const string IdColorGradingProps                    = "color_grading_props_1";
         private const string IdFirstLevelToRateGame                 = "first_level_to_rate_game";
         private const string IdHammerShotPause                      = "hammer_shot_pause";
-        private const string IdInAppNotificationList                = "inapp_notifications_list_v2";
+        private const string IdInAppNotificationList                = "inapp_notifications_list_v3";
         private const string IdInterstitialAdsRatio                 = "interstitial_ads_ratio";
         private const string IdLineThickness                        = "line_thickness";
         private const string IdPathItemBorderThickness              = "path_item_border_thickness";

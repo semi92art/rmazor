@@ -139,7 +139,7 @@ namespace RMAZOR.Views
             IViewGameIdleQuitter           _IdleQuitter,
             IViewMobileNotificationsSender _MobileNotificationsSender,
             IViewInputCommandsRecorder     _InputCommandsRecorder,
-            IViewInputCommandsReplayer       _InputCommandsReplayer,
+            IViewInputCommandsReplayer     _InputCommandsReplayer,
             IUITicker                      _UiTicker,
             IRewardCounter                 _RewardCounter,
             IRemoteConfigManager           _RemoteConfigManager,
@@ -174,7 +174,7 @@ namespace RMAZOR.Views
             IdleQuitter                  = _IdleQuitter;
             MobileNotificationsSender    = _MobileNotificationsSender;
             InputCommandsRecorder        = _InputCommandsRecorder;
-            InputCommandsReplayer          = _InputCommandsReplayer;
+            InputCommandsReplayer        = _InputCommandsReplayer;
             UiTicker                     = _UiTicker;
             RewardCounter                = _RewardCounter;
             RemoteConfigManager          = _RemoteConfigManager;

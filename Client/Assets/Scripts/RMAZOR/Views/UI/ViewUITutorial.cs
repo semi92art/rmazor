@@ -8,14 +8,12 @@ using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
-using mazing.common.Runtime.UI;
 using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
-using RMAZOR.Views.UI.Game_Logo;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -67,7 +65,6 @@ namespace RMAZOR.Views.UI
         private IViewGameTicker             Ticker                  { get; }
         private IDialogViewersController    DialogViewersController { get; }
         private ITutorialDialogPanel        TutorialDialogPanel     { get; }
-        private IViewUIGameLogo             GameLogo                { get; }
 
         private ViewUITutorial(
             IModelGame                  _Model,
@@ -79,8 +76,7 @@ namespace RMAZOR.Views.UI
             IColorProvider              _ColorProvider,
             IViewGameTicker             _Ticker,
             IDialogViewersController    _DialogViewersController,
-            ITutorialDialogPanel        _TutorialDialogPanel,
-            IViewUIGameLogo             _GameLogo)
+            ITutorialDialogPanel        _TutorialDialogPanel)
         {
             Model                   = _Model;
             PrefabSetManager        = _PrefabSetManager;
@@ -92,7 +88,6 @@ namespace RMAZOR.Views.UI
             Ticker                  = _Ticker;
             DialogViewersController = _DialogViewersController;
             TutorialDialogPanel     = _TutorialDialogPanel;
-            GameLogo                = _GameLogo;
         }
 
         #endregion
@@ -127,8 +122,6 @@ namespace RMAZOR.Views.UI
                         return;
                     if (tutorialName == "movement")
                         StartMovementTutorial();
-                    if (!GetValidSystemLanguages().Contains(Application.systemLanguage))
-                        return;
                     ShowTutorialPanel(tutorialName);
                     break;
                 case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
@@ -274,22 +267,6 @@ namespace RMAZOR.Views.UI
         private static string GetGroupName()
         {
             return nameof(IViewUITutorial);
-        }
-
-        private static IEnumerable<SystemLanguage> GetValidSystemLanguages()
-        {
-            return new[]
-            {
-                SystemLanguage.English,
-                SystemLanguage.Russian,
-                SystemLanguage.Belarusian,
-                SystemLanguage.Ukrainian,
-                SystemLanguage.German,
-                SystemLanguage.Spanish,
-                SystemLanguage.Portuguese,
-                SystemLanguage.Japanese,
-                SystemLanguage.Korean,
-            };
         }
 
         #endregion
