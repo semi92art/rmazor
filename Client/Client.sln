@@ -103,6 +103,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor-firs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StansAssets.Plugins.Editor", "StansAssets.Plugins.Editor.csproj", "{46a768cf-0c9b-596d-69cb-da65ad487ead}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirebaseMessagingActivityGenerator", "FirebaseMessagingActivityGenerator.csproj", "{8e7f954e-8056-b14b-8491-856c5e53d186}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoreMountains.NiceVibrations.Editor", "MoreMountains.NiceVibrations.Editor.csproj", "{542d7cc5-ff84-220e-82cb-600dcd89302d}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject-ReflectionBaking-Editor", "Zenject-ReflectionBaking-Editor.csproj", "{4e3d4c2c-836e-080c-5950-b3af7e3c0286}"
@@ -116,8 +118,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy2.Editor", "Hierarchy2.Editor.csproj", "{b898a651-6f82-fbed-dad4-ba57469584ee}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lofelt.NiceVibrations.Editor", "Lofelt.NiceVibrations.Editor.csproj", "{e23a20b8-bdc8-3ba8-140b-6724d85f8207}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FirebaseMessagingActivityGenerator", "FirebaseMessagingActivityGenerator.csproj", "{8e7f954e-8056-b14b-8491-856c5e53d186}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -226,6 +226,8 @@ Global
 		{6c069222-a403-3357-4636-43653c20a180}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46a768cf-0c9b-596d-69cb-da65ad487ead}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8e7f954e-8056-b14b-8491-856c5e53d186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8e7f954e-8056-b14b-8491-856c5e53d186}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{542d7cc5-ff84-220e-82cb-600dcd89302d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{542d7cc5-ff84-220e-82cb-600dcd89302d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4e3d4c2c-836e-080c-5950-b3af7e3c0286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -240,8 +242,6 @@ Global
 		{b898a651-6f82-fbed-dad4-ba57469584ee}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{e23a20b8-bdc8-3ba8-140b-6724d85f8207}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8e7f954e-8056-b14b-8491-856c5e53d186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8e7f954e-8056-b14b-8491-856c5e53d186}.Debug|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
