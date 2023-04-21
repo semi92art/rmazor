@@ -169,7 +169,7 @@ namespace Mono_Installers
 #if UNITY_EDITOR || UNITY_WEBGL
             Container.Bind<IPermissionsRequester>() .To<PermissionsRequesterFake>().AsSingle();
 #elif UNITY_ANDROID
-            Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>() .AsSingle();
+            Container.Bind<IPermissionsRequester>().To<PermissionsRequesterFake>() .AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
             Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()  .AsSingle();
 #endif

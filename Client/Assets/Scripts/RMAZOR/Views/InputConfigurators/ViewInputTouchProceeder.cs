@@ -259,10 +259,11 @@ namespace RMAZOR.Views.InputConfigurators
         
         public Vector2 GetFingerPosition(int _Index)
         {
+            
 #if UNITY_EDITOR || UNITY_WEBGL
             return LeanInput.GetMousePosition();
 #else
-            Common.Utils.MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
+            global::Common.Utils.MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
             return pos;
 #endif
         }
