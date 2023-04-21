@@ -10,14 +10,27 @@ namespace Common
 {
     public class FirebaseInitializer : InitBase, IFirebaseInitializer
     {
-        private DependencyStatus DependencyStatus { get; set; }
-        private FirebaseApp      FirebaseApp      { get; set; }
+        #region nonpublic members
+        
+        private DependencyStatus m_DependencyStatus;
+        private FirebaseApp      m_FirebaseApp;
 
+        #endregion
+
+        #region api
+        
+        public bool   DependenciesAreOk => m_DependencyStatus == Firebase.DependencyStatus.Available;
+        public string DependencyStatus  => m_DependencyStatus.ToString();
+        
         public override void Init()
         {
             InitializeFirebase();
         }
 
+        #endregion
+
+        #region nonpublic methods
+        
         private void InitializeFirebase()
         {
             if (Application.isEditor)
@@ -26,14 +39,14 @@ namespace Common
             {
                 FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(_Task =>
                 {
-                    if (_Task.Result == DependencyStatus.Available)
+                    if (_Task.Result == Firebase.DependencyStatus.Available)
                     {
-                        FirebaseApp = FirebaseApp.DefaultInstance;
+                        m_FirebaseApp = FirebaseApp.DefaultInstance;
                         Dbg.Log("Firebase initialized successfully");
                     } 
                     else
                         Dbg.LogError($"Could not resolve all Firebase dependencies: {_Task.Result}");
-                    DependencyStatus = _Task.Result;
+                    m_DependencyStatus = _Task.Result;
                     Cor.Run(Cor.WaitNextFrame(() => base.Init()));
                 });
             }
@@ -42,6 +55,8 @@ namespace Common
                 Dbg.LogError(ex);
             }
         }
+
+        #endregion
     }
 }
 #endif

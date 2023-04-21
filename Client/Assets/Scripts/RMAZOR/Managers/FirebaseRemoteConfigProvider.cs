@@ -35,7 +35,7 @@ namespace RMAZOR.Managers
         {
             if (!FirebaseInitializer.Initialized)
                 yield return null;
-            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
+            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available.ToString())
             {
                 Dbg.LogError("Failed to initialize Firebase Remote Config," +
                              $" dependency status: {FirebaseInitializer.DependencyStatus}");
