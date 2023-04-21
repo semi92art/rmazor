@@ -19,7 +19,7 @@
         "com.unity.modules.androidjni": "1.0.0",
         "com.unity.services.core": "1.8.2"
       },
-      "hash": "32f1194a207aa5fb2d0130dcdd2a0277a8101979"
+      "hash": "274e1de59842ea202e9743d94e7e77cab238aea2"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -61,7 +61,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.20",
+      "version": "3.0.21",
       "depth": 0,
       "source": "registry",
       "dependencies": {
