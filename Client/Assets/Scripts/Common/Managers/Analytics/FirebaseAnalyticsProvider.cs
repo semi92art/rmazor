@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Firebase;
 using Firebase.Analytics;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
@@ -43,7 +42,7 @@ namespace Common.Managers.Analytics
         {
             if (!FirebaseInitializer.Initialized)
                 yield return null;
-            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
+            if (!FirebaseInitializer.DependenciesAreOk)
             {
                 Dbg.LogError("Failed to initialize Firebase Analytics," +
                              $" dependency status: {FirebaseInitializer.DependencyStatus}");
@@ -62,9 +61,7 @@ namespace Common.Managers.Analytics
         {
             if (_AnalyticId == "session_start")
                 return;
-            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
-                return;
-            if (FirebaseInitializer.FirebaseApp == null)
+            if (!FirebaseInitializer.DependenciesAreOk)
                 return;
             Parameter[] @params = _EventData?.Select(_Kvp =>
             {

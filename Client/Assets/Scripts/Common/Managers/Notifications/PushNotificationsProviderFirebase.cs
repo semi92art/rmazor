@@ -45,7 +45,7 @@ namespace Common.Managers.Notifications
         {
             if (!FirebaseInitializer.Initialized)
                 yield return null;
-            if (FirebaseInitializer.DependencyStatus != DependencyStatus.Available)
+            if (!FirebaseInitializer.DependenciesAreOk)
             {
                 Dbg.LogError("Failed to initialize Firebase Messaging," +
                              $" dependency status: {FirebaseInitializer.DependencyStatus}");
