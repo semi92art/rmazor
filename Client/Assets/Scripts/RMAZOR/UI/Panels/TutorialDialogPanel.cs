@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using Common.Helpers;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Enums;
@@ -70,10 +71,12 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
+        private GlobalGameSettings      GlobalGameSettings { get; }
         private IContainersGetter       ContainersGetter   { get; }
         private IViewLevelStageSwitcher LevelStageSwitcher { get; }
 
-        public TutorialDialogPanel(
+        private TutorialDialogPanel(
+            GlobalGameSettings          _GlobalGameSettings,
             IManagersGetter             _Managers,
             IUITicker                   _Ticker,
             ICameraProvider             _CameraProvider,
@@ -90,6 +93,7 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
+            GlobalGameSettings = _GlobalGameSettings;
             ContainersGetter   = _ContainersGetter;
             LevelStageSwitcher = _LevelStageSwitcher;
         }
@@ -113,8 +117,15 @@ namespace RMAZOR.UI.Panels
         {
             if (m_VideoPlayer.IsNull())
                 InitVideoPlayer();
-            m_VideoPlayer.clip = Managers.PrefabSetManager.GetObject<VideoClip>(
+            var clip = Managers.PrefabSetManager.GetObject<VideoClip>(
                 "tutorial_clips", m_Info.VideoClipAssetKey);
+#if UNITY_WEBGL
+            m_VideoPlayer.url = GlobalGameSettings.urlOtherAssets
+                                + "/videos/" 
+                                + clip.originalPath.Split('\\', '/').Last(); 
+#else
+            m_VideoPlayer.clip = clip;
+#endif
             m_VideoPlayer.enabled = true;
             m_VideoPlayer.Play();
         }

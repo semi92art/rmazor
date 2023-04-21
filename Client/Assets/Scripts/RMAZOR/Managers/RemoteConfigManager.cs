@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Common.Helpers;
 using Common.Utils;
-using Firebase.Crashlytics;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Extensions;
@@ -151,7 +150,9 @@ namespace RMAZOR.Managers
                     }
                     catch (SerializationException ex)
                     {
-                        Crashlytics.LogException(ex);
+#if FIREBASE
+                        Firebase.Crashlytics.LogException(ex);
+#endif
                         Dbg.LogException(ex);
                         m_FetchCompletedActionDone = true;
                         return;

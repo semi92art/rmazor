@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if FIREBASE
+using System;
 using Firebase;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Helpers;
@@ -7,16 +8,10 @@ using UnityEngine;
 
 namespace Common
 {
-    public interface IFirebaseInitializer : IInit
-    {
-        DependencyStatus DependencyStatus { get; }
-        FirebaseApp      FirebaseApp      { get; }
-    }
-    
     public class FirebaseInitializer : InitBase, IFirebaseInitializer
     {
-        public DependencyStatus DependencyStatus { get; private set; }
-        public FirebaseApp      FirebaseApp      { get; private set; }
+        private DependencyStatus DependencyStatus { get; set; }
+        private FirebaseApp      FirebaseApp      { get; set; }
 
         public override void Init()
         {
@@ -49,3 +44,4 @@ namespace Common
         }
     }
 }
+#endif

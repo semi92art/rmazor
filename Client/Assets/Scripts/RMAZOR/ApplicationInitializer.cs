@@ -162,7 +162,6 @@ namespace RMAZOR
                 () => !FirebaseInitializer.Initialized,
                 () =>
                 {
-                    // SceneManager.LoadScene(SceneNames.Level);
                     var @params = new LoadSceneParameters(LoadSceneMode.Single);
                     SceneManager.LoadSceneAsync(SceneNames.Level, @params);
                 }, 3f);

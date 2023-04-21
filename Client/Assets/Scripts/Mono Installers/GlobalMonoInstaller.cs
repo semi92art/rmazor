@@ -134,25 +134,19 @@ namespace Mono_Installers
         
         private void BindStoreAndGameServices()
         {
-            if (Application.isEditor)
-            {
-                Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
-                Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
-                Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorFake>().AsSingle();
-            }
-            else
-            {
-#if UNITY_ANDROID
-                Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
-                Container.Bind<ILeaderboardProvider>().To<LeaderboardProviderGooglePlayGames>().AsSingle();
-                Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
+#if UNITY_EDITOR || UNITY_WEBGL
+            Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
+            Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorFake>().AsSingle();
+#elif UNITY_ANDROID
+            Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
+            Container.Bind<ILeaderboardProvider>().To<LeaderboardProviderGooglePlayGames>().AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
-            Container.Bind<IShopManager>()        .To<AppleUnityIAPShopManager>()        .AsSingle();
+            Container.Bind<IShopManager>()         .To<AppleUnityIAPShopManager>()        .AsSingle();
             Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderIos>()         .AsSingle();
             Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorIos>().AsSingle();
 #endif
-            }
-            
             Container.Bind<IScoreManager>()             .To<ScoreManager>()                 .AsSingle();
             Container.Bind<IAchievementsProvider>()     .To<AchievementsProvider>()         .AsSingle();
             Container.Bind<ILeaderboardsSet>()          .To<LeaderboardsSetRmazor>()        .AsSingle();
@@ -162,26 +156,23 @@ namespace Mono_Installers
         private void BindHaptics()
         {
 #if NICE_VIBRATIONS_3_9
-            Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_3_9>().AsSingle();
-#else
+            Container.Bind<IHapticsManager>()           .To<HapticsManagerFake>().AsSingle();
+#elif NICE_VIBRATIONS_4_1
             Container.Bind<IHapticsManager>()           .To<HapticsManagerNiceVibrations_4_1>().AsSingle();
+#else
+            Container.Bind<IHapticsManager>()           .To<HapticsManagerFake>().AsSingle();
 #endif
         }
 
         private void BindPermissionsRequester()
         {
-            if (Application.isEditor)
-            {
-                Container.Bind<IPermissionsRequester>() .To<FakePermissionsRequester>().AsSingle();
-            }
-            else
-            {
-#if UNITY_ANDROID
-                Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>() .AsSingle();
+#if UNITY_EDITOR || UNITY_WEBGL
+            Container.Bind<IPermissionsRequester>() .To<PermissionsRequesterFake>().AsSingle();
+#elif UNITY_ANDROID
+            Container.Bind<IPermissionsRequester>().To<FakePermissionsRequester>() .AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
-                Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()  .AsSingle();
+            Container.Bind<IPermissionsRequester>().To<IosPermissionsRequester>()  .AsSingle();
 #endif
-            }
         }
         
         private void BindModel()
@@ -240,20 +231,23 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()                .AsSingle();
             Container.Bind<IFontProvider>()                .To<FontProviderMazor>()                .AsSingle();
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()     .AsSingle();
-            Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFirebase>().AsSingle();
+
             
-            if (Application.isEditor)
-            {
-                Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
+#if UNITY_EDITOR || UNITY_WEBGL
                 Container.Bind<INotificationsManager>().To<NotificationsManagerFake>()      .AsSingle();
-            }
-            else
-            {
+#elif UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
                 Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
+#endif
+#if FIREBASE
+                Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFirebase>().AsSingle();
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManager>()           .AsSingle();
                 Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
-            }
-            
+#else
+                Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()   .AsSingle();
+                Container.Bind<IRemoteConfigProvider>().To<RemoteConfigProviderFake>()  .AsSingle();
+                Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFake>().AsSingle();
+#endif
+
             Container.Bind<IFpsCounter>()
                 .To<FpsCounterRmazor>()
                 // .To<FpsCounterFake>()
@@ -275,6 +269,8 @@ namespace Mono_Installers
             
 #if FIREBASE
             Container.Bind<IFirebaseInitializer>().To<FirebaseInitializer>().AsSingle();
+#else
+            Container.Bind<IFirebaseInitializer>().To<FirebaseInitializerFake>().AsSingle();
 #endif
             
             Container.Bind<IColorProvider>()             

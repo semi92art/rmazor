@@ -1,4 +1,5 @@
 ﻿using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
 
 namespace Common.Managers
 {
@@ -19,6 +20,14 @@ namespace Common.Managers
     public interface IHapticsManager : IInit
     {
         void PlayPreset(EHapticsPresetType _Preset);
-        void Play(float                    _Amplitude, float _Frequency, float? _Duration = null);
+        
+        void Play(float _Amplitude, float _Frequency, float? _Duration = null);
+    }
+
+    public class HapticsManagerFake : InitBase, IHapticsManager
+    {
+        public void PlayPreset(EHapticsPresetType _Preset) { }
+
+        public void Play(float _Amplitude, float _Frequency, float? _Duration = null) { }
     }
 }

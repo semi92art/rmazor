@@ -25,37 +25,40 @@ namespace RMAZOR.Managers
     {
         #region constants
 
-        private const string IdFirstLevelToShowAds                  = "ads_first_level_to_show_ads";
-        private const string IdAdsProvidersInfos                    = "ads_providers_infos_v2";
-        private const string IdAnimatePathFill                      = "animate_path_fill";
-        private const string IdBackgroundTextureTriangles2PropsSet  = "background_texture_triangles2_props_set";
-        private const string IdColorGradingProps                    = "color_grading_props_1";
-        private const string IdFirstLevelToRateGame                 = "first_level_to_rate_game";
-        private const string IdHammerShotPause                      = "hammer_shot_pause";
-        private const string IdInAppNotificationList                = "inapp_notifications_list_v3";
-        private const string IdInterstitialAdsRatio                 = "interstitial_ads_ratio";
-        private const string IdLineThickness                        = "line_thickness";
-        private const string IdPathItemBorderThickness              = "path_item_border_thickness";
-        private const string IdMazeItemTransitionTime               = "maze_item_transition_time";
-        private const string IdMazeRotationSpeed                    = "maze_rotation_speed";
-        private const string IdGravityBlockSpeed                    = "mazeitems_gravityblock_speed";
-        private const string IdMovingTrapPause                      = "moving_trap_pause";
-        private const string IdMovingTrapSpeed                      = "moving_trap_speed";
-        private const string IdPayToContinueMoneyCount              = "pay_to_continue_money_count";
-        private const string IdShredingerBlockTime                  = "shredinger_block_time";
-        private const string IdSkipButtonDelay                      = "skip_button_seconds";
-        private const string IdTestDeviceIds                        = "test_device_ids";
-        private const string IdTrapIncreasingIdleTime               = "trap_increasing_idle_time";
-        private const string IdTrapIncreasingIncreasedTime          = "trap_increasing_increased_time";
-        private const string IdMoneyItemsFillRate                   = "money_items_fill_rate";
-        private const string IdBackgroundTextures                   = "background_textures_v2";
-        private const string IdBetweenLevelAdShowIntervalInSeconds  = "between_level_ad_show_interval_in_seconds";
-        private const string IdShowOnlyRewardedAds                  = "show_only_rewarded_ads";
-        private const string IdDrawAdditionalMazeNet                = "draw_additional_maze_net";
-        private const string IdPathItemContentShapeType             = "path_item_content_shape_type";
-        private const string IdMazeItemBlockColorEqualsMainColor    = "maze_item_block_color_equals_main_color";
-        private const string IdBetweenLevelsTransitionTextureName   = "between_levels_transition_texture_name";
-        private const string IdSpecialOfferDurationInMinutes        = "special_offer_duration_in_minutes";
+        private const string IdFirstLevelToShowAds                 = "ads_first_level_to_show_ads";
+        private const string IdAdsProvidersInfos                   = "ads_providers_infos_v2";
+        private const string IdAnimatePathFill                     = "animate_path_fill";
+        private const string IdBackgroundTextureTriangles2PropsSet = "background_texture_triangles2_props_set";
+        private const string IdColorGradingProps                   = "color_grading_props_1";
+        private const string IdFirstLevelToRateGame                = "first_level_to_rate_game";
+        private const string IdHammerShotPause                     = "hammer_shot_pause";
+        private const string IdInAppNotificationList               = "inapp_notifications_list_v3";
+        private const string IdInterstitialAdsRatio                = "interstitial_ads_ratio";
+        private const string IdLineThickness                       = "line_thickness";
+        private const string IdPathItemBorderThickness             = "path_item_border_thickness";
+        private const string IdMazeItemTransitionTime              = "maze_item_transition_time";
+        private const string IdMazeRotationSpeed                   = "maze_rotation_speed";
+        private const string IdGravityBlockSpeed                   = "mazeitems_gravityblock_speed";
+        private const string IdMovingTrapPause                     = "moving_trap_pause";
+        private const string IdMovingTrapSpeed                     = "moving_trap_speed";
+        private const string IdPayToContinueMoneyCount             = "pay_to_continue_money_count";
+        private const string IdShredingerBlockTime                 = "shredinger_block_time";
+        private const string IdSkipButtonDelay                     = "skip_button_seconds";
+        private const string IdTestDeviceIds                       = "test_device_ids";
+        private const string IdTrapIncreasingIdleTime              = "trap_increasing_idle_time";
+        private const string IdTrapIncreasingIncreasedTime         = "trap_increasing_increased_time";
+        private const string IdMoneyItemsFillRate                  = "money_items_fill_rate";
+        private const string IdBackgroundTextures                  = "background_textures_v2";
+        private const string IdBetweenLevelAdShowIntervalInSeconds = "between_level_ad_show_interval_in_seconds";
+        private const string IdShowOnlyRewardedAds                 = "show_only_rewarded_ads";
+        private const string IdDrawAdditionalMazeNet               = "draw_additional_maze_net";
+        private const string IdPathItemContentShapeType            = "path_item_content_shape_type";
+        private const string IdMazeItemBlockColorEqualsMainColor   = "maze_item_block_color_equals_main_color";
+        private const string IdBetweenLevelsTransitionTextureName  = "between_levels_transition_texture_name";
+        private const string IdSpecialOfferDurationInMinutes       = "special_offer_duration_in_minutes";
+        private const string IdGameServerUrl                       = "game_server_url";
+        private const string IdBundlesUrl                          = "bundles_url";
+        private const string IdOtherContentUrl                     = "other_content_url";
 
         #endregion
         
@@ -205,6 +208,15 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowOnlyRewardedAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.showOnlyRewardedAds = ToBool(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdGameServerUrl,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.urlGameServer = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBundlesUrl,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.urlOtherAssets = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdOtherContentUrl,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.urlBundles = ToString(_V))),
             };
         }
 

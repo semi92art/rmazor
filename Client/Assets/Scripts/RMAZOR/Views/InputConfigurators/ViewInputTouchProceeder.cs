@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Common.Utils;
 using Lean.Common;
 using Lean.Touch;
 using mazing.common.Runtime;
@@ -37,7 +36,6 @@ namespace RMAZOR.Views.InputConfigurators
         
         #region nonpublic members
 
-        private          LeanFingerTap         m_LeanFingerTap;
         private readonly List<Vector2>         m_TouchPositionsQueue  = new List<Vector2>();
         private readonly List<Vector2>         m_TouchPositionsQueue2 = new List<Vector2>();
         private          EDirection?   m_PrevMoveDirection;
@@ -169,7 +167,6 @@ namespace RMAZOR.Views.InputConfigurators
             goLeanFingerTap.SetParent(GetContainer());
             var lft = goLeanFingerTap.AddComponent<LeanFingerTap>();
             lft.OnFinger.AddListener(OnTapCore);
-            m_LeanFingerTap = lft;
         }
         
         private void OnLeanMultiUpdateFingers(List<LeanFinger> _Fingers)
@@ -188,12 +185,12 @@ namespace RMAZOR.Views.InputConfigurators
         
         private void OnFingerUp(LeanFinger _Finger)
         {
-            m_PrevMoveDirection = null;
+            m_PrevMoveDirection   = null;
             m_TouchPositionsQueue.Clear();
-            m_TouchForMoveTimer = 0;
+            m_TouchForMoveTimer   = 0;
             m_PrevRotateDirection = null;
             m_TouchPositionsQueue2.Clear();
-            m_EnableRotation = true;
+            m_EnableRotation      = true;
         }
         
         private void ProceedTouchForMove(LeanFinger _Finger)
@@ -262,10 +259,12 @@ namespace RMAZOR.Views.InputConfigurators
         
         public Vector2 GetFingerPosition(int _Index)
         {
-            if (Application.isEditor)
-                return LeanInput.GetMousePosition();
-            MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
+#if UNITY_EDITOR || UNITY_WEBGL
+            return LeanInput.GetMousePosition();
+#else
+            Common.Utils.MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
             return pos;
+#endif
         }
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)

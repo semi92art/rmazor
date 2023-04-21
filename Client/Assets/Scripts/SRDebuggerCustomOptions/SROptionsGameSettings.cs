@@ -13,7 +13,6 @@ using Common;
 using Common.Constants;
 using Common.Managers;
 using Common.Utils;
-using Firebase.Extensions;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
@@ -35,6 +34,9 @@ using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 using static RMAZOR.Models.ComInComArg;
+#if FIREBASE
+using Firebase.Extensions;
+#endif
 
 namespace SRDebuggerCustomOptions
 {
@@ -525,6 +527,7 @@ namespace SRDebuggerCustomOptions
             }
         }
 
+#if FIREBASE
         [Category(CategoryCommon)]
         public bool Get_FCM_Token
         {
@@ -542,6 +545,7 @@ namespace SRDebuggerCustomOptions
                     });
             }
         }
+#endif
 
         // [Category(CategoryCommon)]
         // public bool Show_Money

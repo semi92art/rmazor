@@ -24,3 +24,6 @@ MonoBehaviour:
   enableExtraLevels: 1
   extraLevelEveryNStage: 3
   showOnlyRewardedAds: 0
+  urlGameServer: http://77.37.152.15:7000
+  urlBundles: https://raw.githubusercontent.com/semi92art/bundles/main/mgc
+  urlOtherAssets: https://raw.githubusercontent.com/semi92art/mazinglabs/gh-pages

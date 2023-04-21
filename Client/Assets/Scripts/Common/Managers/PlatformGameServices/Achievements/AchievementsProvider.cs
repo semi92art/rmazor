@@ -76,7 +76,6 @@ namespace Common.Managers.PlatformGameServices.Achievements
                 entity.Result = _Success ? EEntityResult.Success : EEntityResult.Fail;
             });
             entity.Value = achievement;
-            return entity;
 #elif UNITY_IOS
             string id = m_AssumedAchievementsSet.GetSafe(_Key, out bool containsKey);
             if (!containsKey)
@@ -94,8 +93,10 @@ namespace Common.Managers.PlatformGameServices.Achievements
                     Dbg.LogError($"Achievement report failed! Code: {result.Error.Code} Message: {result.Error.Message}");
                 }
             });
-            return entity;
+#elif UNITY_WEBGL
+            entity.Result = EEntityResult.Fail;
 #endif
+            return entity;
         }
 
         public Entity<IAchievement> GetAchievement(ushort _Key)

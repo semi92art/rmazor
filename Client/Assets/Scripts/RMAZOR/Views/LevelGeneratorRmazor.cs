@@ -100,6 +100,9 @@ namespace RMAZOR.Views
 
         public Entity<MazeInfo> GetLevelInfoRandomAsync(LevelGenerationParams _GenerationParams)
         {
+#if UNITY_WEBGL
+            return GetLevelInfoRandom(_GenerationParams);
+#else
             var entity = new Entity<MazeInfo>();
             var pathLengths = _GenerationParams.pathLengths;
             if (pathLengths == null || !pathLengths.Any())
@@ -115,6 +118,7 @@ namespace RMAZOR.Views
                     CreateRandomLevelInfoCore(_GenerationParams, entity);
             });
             return entity;
+#endif
         }
 
         private void CreateRandomLevelInfoCore(

@@ -5,12 +5,7 @@ using mazing.common.Runtime.Utils;
 
 namespace RMAZOR.Managers
 {
-    public interface IRemoteConfigProvider : IInit
-    {
-        void SetRemoteCachedPropertyInfos(List<RemoteConfigPropertyInfo> _Infos);
-        
-        IEnumerable<RemoteConfigPropertyInfo> GetFetchedInfos();
-    }
+
     
     public abstract class RemoteConfigProviderBase : InitBase, IRemoteConfigProvider
     {

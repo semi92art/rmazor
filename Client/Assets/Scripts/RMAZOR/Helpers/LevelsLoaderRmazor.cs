@@ -220,35 +220,42 @@ namespace RMAZOR.Helpers
                 if (!_Local && m_SerializedLevelsDict[key].BundleLevelsLoaded)
                     return;
             }
-            var asset = PrefabSetManager.GetObject<TextAsset>(PrefabSetName,
+            var mazeInfoAssetText = PrefabSetManager.GetObject<TextAsset>(PrefabSetName,
                 LevelsAssetName(_GameMode, _LevelType),
                 _Local ? EPrefabSource.Asset : EPrefabSource.Bundle);
-            string[] serializedLevels;
+#if UNITY_WEBGL
+            LoadLevels(mazeInfoAssetText.text, key, _Local);
+#else
+            Task.Run(() => LoadLevels(mazeInfoAssetText.text, key, _Local));
+#endif
+        }
+
+        private void LoadLevels(
+            string                   _MazeInfoSerialized,
+            GameModeAndLevelTypePair _Key,
+            bool                     _Local)
+        {
             var t = typeof(MazeInfo);
             var firstProp = t.GetProperties()[0];
-            string levelsText = asset.text;
-            Task.Run(() =>
+            _MazeInfoSerialized = _MazeInfoSerialized.Remove(_MazeInfoSerialized.Length - 2, 2);
+            string splitter = "{" + "\"" + firstProp.Name + "\"";
+            var levelsSerialized = _MazeInfoSerialized.Split(new[] {splitter, "," + splitter}, StringSplitOptions.None);
+            levelsSerialized = levelsSerialized
+                .RemoveRange(new[] {levelsSerialized[0]})
+                .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
+            lock (m_PreloadLevelLock)
             {
-                levelsText = levelsText.Remove(levelsText.Length - 2, 2);
-                string splitter = "{" + "\"" + firstProp.Name + "\"";
-                serializedLevels = levelsText.Split(new[] {splitter, "," + splitter}, StringSplitOptions.None);
-                serializedLevels = serializedLevels
-                    .RemoveRange(new[] {serializedLevels[0]})
-                    .Select(_MazeSerialized => splitter + _MazeSerialized).ToArray();
-                lock (m_PreloadLevelLock)
+                if (!m_SerializedLevelsDict.ContainsKey(_Key))
                 {
-                    if (!m_SerializedLevelsDict.ContainsKey(key))
-                    {
-                        var newVal = new SerializedLevelsAndLoadedPair();
-                        m_SerializedLevelsDict.Add(key, newVal);
-                    }
-                    var val = m_SerializedLevelsDict[key];
-                    if (!_Local)
-                        (val.SerializedLevelsBundle, val.BundleLevelsLoaded) = (serializedLevels, true);
-                    else
-                        (val.SerializedLevelsLocal, val.LocalLevelsLoaded) = (serializedLevels, true);
+                    var newVal = new SerializedLevelsAndLoadedPair();
+                    m_SerializedLevelsDict.Add(_Key, newVal);
                 }
-            });
+                var val = m_SerializedLevelsDict[_Key];
+                if (!_Local)
+                    (val.SerializedLevelsBundle, val.BundleLevelsLoaded) = (levelsSerialized, true);
+                else
+                    (val.SerializedLevelsLocal, val.LocalLevelsLoaded) = (levelsSerialized, true);
+            }
         }
 
         private static string LevelsAssetName(

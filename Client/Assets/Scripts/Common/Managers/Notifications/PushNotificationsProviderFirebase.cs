@@ -11,8 +11,6 @@ using UnityEngine;
 
 namespace Common.Managers.Notifications
 {
-public interface IPushNotificationsProvider : IInit { }
-    
     public class PushNotificationsProviderFirebase : InitBase, IPushNotificationsProvider
     {
         #region constants

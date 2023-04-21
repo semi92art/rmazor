@@ -1,7 +1,9 @@
-﻿namespace Common
+﻿using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+
+namespace Common
 {
-    public class IFirebaseInitializer
-    {
-        
-    }
+    public interface IFirebaseInitializer : IInit { }
+    
+    public class FirebaseInitializerFake : InitBase, IFirebaseInitializer { }
 }

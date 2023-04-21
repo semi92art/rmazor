@@ -1,4 +1,9 @@
-﻿$HEADER$namespace $NAMESPACE$
+﻿using mazing.common.Runtime;
+using mazing.common.Runtime.Helpers;
+
+namespace Common.Managers.Notifications
 {
-  public interface $INTERFACE$ {$END$}
+    public interface IPushNotificationsProvider : IInit { }
+    
+    public class PushNotificationsProviderFake : InitBase, IPushNotificationsProvider { }
 }

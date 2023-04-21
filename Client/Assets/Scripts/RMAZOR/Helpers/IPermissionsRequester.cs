@@ -7,7 +7,7 @@ namespace RMAZOR.Helpers
         Entity<bool> RequestPermissions();
     }
 
-    public class FakePermissionsRequester : IPermissionsRequester
+    public class PermissionsRequesterFake : IPermissionsRequester
     {
         public Entity<bool> RequestPermissions()
         {

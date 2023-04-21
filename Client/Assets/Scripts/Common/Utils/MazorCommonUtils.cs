@@ -130,6 +130,8 @@ namespace Common.Utils
 #elif UNITY_IOS
             var userInterfaceStyle = SA.iOS.UIKit.ISN_UIScreen.MainScreen.TraitCollection.UserInterfaceStyle;
             return userInterfaceStyle == SA.iOS.UIKit.ISN_UIUserInterfaceStyle.Dark;
+#else
+            return false;
 #endif
         }
     }

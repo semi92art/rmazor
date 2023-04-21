@@ -18,5 +18,8 @@ namespace Common.Helpers
         public bool      enableExtraLevels;
         public int       extraLevelEveryNStage;
         public bool      showOnlyRewardedAds;
+        public string    urlGameServer;
+        public string    urlBundles;
+        public string    urlOtherAssets;
     }
 }
