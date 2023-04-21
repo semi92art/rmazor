@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"094d7599-227a-40d0-b642-320159af0427\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2746b512-7301-4c62-b7f1-7ac4b1b9b336\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"additional_color_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"main\": \"{\\\"Hex\\\":\\\"FF7D25FF\\\"}\",\r\n          \"bacground1\":
@@ -69,23 +69,23 @@ MonoBehaviour:
     0\r\n          },\r\n          \"additionalInfo\": {\r\n            \"A0\": false,\r\n           
     \"A1\": 0.1,\r\n            \"A2\": 1,\r\n            \"A3\": 4\r\n         
     }\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"3d2ee5c7-1b96-45bd-be3c-29a7d95652f2\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"8483dc0f-4a2b-4d2a-a3e7-2b8b4b839ad5\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads_first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"2780f995-0d35-44be-b0d4-9dd016b87915\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"1db77316-3147-4104-b95e-2dbd6ef0a0be\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads_providers_infos\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": [\r\n        {\r\n          \"Source\": \"admob\",\r\n         
     \"ShowRate\": 1,\r\n          \"Enabled\": true\r\n        },\r\n        {\r\n         
     \"Source\": \"unity_ads\",\r\n          \"ShowRate\": 1,\r\n          \"Enabled\":
     true\r\n        },\r\n        {\r\n          \"Source\": \"appodeal\",\r\n         
     \"ShowRate\": 100,\r\n          \"Enabled\": true\r\n        }\r\n      ]\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"fb302158-77b4-4c2d-87b2-f04f7cb12c1e\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c707d917-addb-4cfb-8b9e-cdf832ce6968\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads_show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"3a8ba06e-79a2-4941-a746-4e447c6f8f2c\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"beb1ce64-a467-481f-aca4-467a71d2ce35\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"animate_path_fill\",\r\n      \"type\": \"bool\",\r\n     
     \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"314c658e-e4ac-4987-8423-d672ec5d6357\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f28563ee-caff-4d2b-92b8-a35522b5a018\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"background_texture_triangles2_props_set\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"U\": false,\r\n         
     \"T1\": 84.1,\r\n          \"T2\": 20.4,\r\n          \"T3\": 0.98,\r\n         
@@ -158,25 +158,25 @@ MonoBehaviour:
     \"T7\": 0.275,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
     \"T10\": false,\r\n          \"T11\": false,\r\n          \"T12\": true,\r\n         
     \"T13\": 0.665\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"51de8878-01ff-445b-92f8-b8239b4b6747\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"6bf329dc-33bb-4043-be90-3974e6cc6399\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"character_speed\",\r\n      \"type\": \"float\",\r\n     
-    \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"779bacaf-ed98-4cfd-befb-f535ed5eb491\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"value\": 3.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"9a9e9913-1bca-4223-bf58-d1897f9d9e85\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"color_grading_props_1\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"Color\": null,\r\n        \"Hue\": null,\r\n       
     \"Contrast\": 0.35,\r\n        \"Brightness\": null,\r\n        \"Saturation\":
     0,\r\n        \"Exposure\": null,\r\n        \"Gamma\": null,\r\n        \"Sharpness\":
     null,\r\n        \"Blur\": 0.2,\r\n        \"VignetteColor\": null,\r\n       
     \"VignetteAmount\": 0.05,\r\n        \"VignetteSoftness\": null\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"186c8474-37f8-45b7-ab46-05c0912edfa0\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"8c84b1d5-5c9f-41a1-91e7-fe3364f51b27\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"corner_radius\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"e950059e-3a8f-4af4-a00d-833f3b6afd01\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"cd4e2be0-f051-4261-9d52-7ff3dc732e9d\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"52dfa764-9627-4d3a-8063-ae9a1219801a\"\r\n   
+    4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6153ed7e-3eb0-4322-8f17-2ca7a14f79f7\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"hammer_shot_pause\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 1.5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d44801c6-93c2-4e2c-9c46-f99ec981587c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"580dfca5-0cea-41b6-bea3-eb86783cfbcc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"inapp_notifications_list\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
     \"Message\": \"The next maze is waiting for you! Hurry up!\",\r\n          \"TimeSpan\":
@@ -185,16 +185,16 @@ MonoBehaviour:
     \"3.00:00:00\"\r\n        },\r\n        {\r\n          \"Message\": \"Come back!
     We are waiting for you!\",\r\n          \"TimeSpan\": \"5.00:00:00\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"1a46072e-6ac5-47db-a941-146118083b18\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9277ff6e-5614-4ecc-9d6f-4978e5ec0a07\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"interstitial_ads_ratio\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    0.1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bc2dd865-80ea-4675-85d4-29e355f99081\"\r\n   
+    0.1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"dd449122-920a-447a-ba4d-d5027b258149\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"levels_in_group\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        3,\r\n       
     4,\r\n        5\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"b23efa60-0ab5-44ee-8ef5-925bf143fc5b\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"d560f661-76fa-44d2-a56c-67d0b3497658\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"line_thickness\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"82b6ab7b-cac9-443f-aea4-f40970bc665c\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"2e296ff1-ca3a-423a-9e7a-7833e8ce0e10\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"main_color_props_set\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": [\r\n        {\r\n          \"name\": \"Main\",\r\n         
     \"color\": \"{\\\"Hex\\\":\\\"A17700FF\\\"}\"\r\n        },\r\n        {\r\n         
@@ -227,65 +227,65 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"FFFFFF12\\\"}\"\r\n        },\r\n        {\r\n          \"name\":
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"ee2ea6b6-5620-4ec0-8d2d-46bd9ce6500e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"bb56d4da-27f1-4cca-aee6-c6ef11e6bb86\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"74c247d0-f524-494c-8115-807554fc764a\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b19c1d34-0fd5-485d-9550-bdb97859454b\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"maze_rotation_speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    5.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"34f26e9e-5ae0-4728-a3f3-c2263cba253a\"\r\n   
+    5.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"290c1a1a-87d3-40e6-9bc9-49a987b9d635\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems_gravityblock_speed\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"a9fa5ebf-b56c-4319-bd96-84d5420fb6c7\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"cf93d123-b9d9-4a10-a032-f547cd6480dc\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems_movingtrap_speed\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"abf76835-80cd-4b3a-b0ce-3e974a2f17a1\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"939c92ad-516f-48e9-87ab-2e9869d20e5d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"money_item_coast\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"3c28c799-1665-4386-a207-e26c3d9eaf1e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"32d6efc1-6110-4d9f-b451-cbc123d864af\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"moving_trap_pause\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"7c402df2-eee2-4346-91aa-ef27e7593a15\"\r\n   
+    1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6f46d0cf-9fae-4d74-aea4-0df99ffae61d\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"pay_to_continue_money_count\",\r\n     
     \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"2ff91037-2d64-43ac-b541-2c5c348e1b06\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"30e652b0-4f5e-485a-b224-9f3961af978d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"rate_requests_frequency\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 20.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"78bd6bf6-f94e-4ece-9bed-e8b765aa451e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"fcafc6b0-a141-4622-bcf3-3c1e5587e6c3\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"show_full_tutorial\",\r\n      \"type\": \"bool\",\r\n      \"value\":
-    false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"7d87b7f2-3d34-4516-9646-18ccb39c7238\"\r\n   
+    false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2b5df0f2-5ee5-4046-9771-4f26770fc2a1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"shredinger_block_time\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 3.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d5882dd0-1601-4d82-a602-95e902afe748\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"68a212be-372c-464d-bd3e-736ea89a27fc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"skip_button_seconds\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"799bb305-ae84-45b1-804f-45a7ceae783b\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"51d02cd8-c2f4-45fa-b649-9674fc934a22\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"spear_projectile_speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"719070f5-3eb5-4d27-9a58-e3bc88ef98ce\"\r\n   
+    0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"246a93a3-56bf-4c4a-8f4e-9530e523a5e1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"test_device_ids\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n       
-    \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n        \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n       
-    \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n        \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n       
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
+    \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
+    \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n       
     \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n        \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n       
     \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"7b976a4d-c219-4f55-89e0-b6f4e406f883\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"6cdcca87-8161-4c14-8ad2-ed77362124ac\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"test_device_ids_for_admob\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     \"FE989E63CDFFFB64D9E6A288C137E1E2\",\r\n        \"16DB30D44D674B09110966E0648E783D\",\r\n       
     \"A7BDF038439EAB9E32977E9485093F43\",\r\n        \"B648AEC33D2557D0BFD1FD486B3E7678\",\r\n       
     \"7D516587810FD383626B5C782FB4078A\",\r\n        \"CCF954D464D11BD437D3885E0CDAE854\",\r\n       
     \"424e829327c47a4cad00e0f8be6b2771\"\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"261db3d1-2d29-42f8-add9-ebbeec2134dd\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"a1a9b570-5f9b-4717-9e6e-88b4eec3167b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"trap_increasing_idle_time\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 2.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5ea9ed96-b269-4be4-88a7-a13361726397\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8cf564f9-271f-47dc-bdc6-ba13cf70c5ca\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"trap_increasing_increased_time\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 2.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f3ef308e-2f54-4742-824d-02dc38a142f7\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"28c4250a-fb6c-490a-b26f-94179a3440c9\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"turret_pre_shoot_interval\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 1.5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"ea619ade-c465-40f3-aa15-6ce53063fe7d\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5037df3c-adb0-4832-8312-a3cb18e6f635\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"turret_projectile_speed\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 20.0\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"094d7599-227a-40d0-b642-320159af0427\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2746b512-7301-4c62-b7f1-7ac4b1b9b336\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"additional_color_props_set\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     {\r\n          \"main\": \"{\\\"Hex\\\":\\\"FF7D25FF\\\"}\",\r\n          \"bacground1\":
@@ -342,23 +342,23 @@ MonoBehaviour:
     0\r\n          },\r\n          \"additionalInfo\": {\r\n            \"A0\": false,\r\n           
     \"A1\": 0.1,\r\n            \"A2\": 1,\r\n            \"A3\": 4\r\n         
     }\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"3d2ee5c7-1b96-45bd-be3c-29a7d95652f2\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"8483dc0f-4a2b-4d2a-a3e7-2b8b4b839ad5\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"ads_first_level_to_show_ads\",\r\n      \"type\": \"int\",\r\n     
     \"value\": 10\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"2780f995-0d35-44be-b0d4-9dd016b87915\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"1db77316-3147-4104-b95e-2dbd6ef0a0be\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"ads_providers_infos\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": [\r\n        {\r\n          \"Source\": \"admob\",\r\n         
     \"ShowRate\": 1,\r\n          \"Enabled\": true\r\n        },\r\n        {\r\n         
     \"Source\": \"unity_ads\",\r\n          \"ShowRate\": 1,\r\n          \"Enabled\":
     true\r\n        },\r\n        {\r\n          \"Source\": \"appodeal\",\r\n         
     \"ShowRate\": 100,\r\n          \"Enabled\": true\r\n        }\r\n      ]\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"fb302158-77b4-4c2d-87b2-f04f7cb12c1e\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"c707d917-addb-4cfb-8b9e-cdf832ce6968\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"ads_show_ad_every_level\",\r\n      \"type\":
     \"int\",\r\n      \"value\": 3\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"3a8ba06e-79a2-4941-a746-4e447c6f8f2c\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"beb1ce64-a467-481f-aca4-467a71d2ce35\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"animate_path_fill\",\r\n      \"type\": \"bool\",\r\n     
     \"value\": true\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"314c658e-e4ac-4987-8423-d672ec5d6357\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"f28563ee-caff-4d2b-92b8-a35522b5a018\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"background_texture_triangles2_props_set\",\r\n      \"type\": \"json\",\r\n     
     \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n          \"U\": false,\r\n         
     \"T1\": 84.1,\r\n          \"T2\": 20.4,\r\n          \"T3\": 0.98,\r\n         
@@ -431,25 +431,25 @@ MonoBehaviour:
     \"T7\": 0.275,\r\n          \"T8\": 9,\r\n          \"T9\": true,\r\n         
     \"T10\": false,\r\n          \"T11\": false,\r\n          \"T12\": true,\r\n         
     \"T13\": 0.665\r\n        }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"51de8878-01ff-445b-92f8-b8239b4b6747\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"6bf329dc-33bb-4043-be90-3974e6cc6399\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"character_speed\",\r\n      \"type\": \"float\",\r\n     
-    \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"779bacaf-ed98-4cfd-befb-f535ed5eb491\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"value\": 3.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
+    \"9a9e9913-1bca-4223-bf58-d1897f9d9e85\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"color_grading_props_1\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": {\r\n        \"Color\": null,\r\n        \"Hue\": null,\r\n       
     \"Contrast\": 0.35,\r\n        \"Brightness\": null,\r\n        \"Saturation\":
     0,\r\n        \"Exposure\": null,\r\n        \"Gamma\": null,\r\n        \"Sharpness\":
     null,\r\n        \"Blur\": 0.2,\r\n        \"VignetteColor\": null,\r\n       
     \"VignetteAmount\": 0.05,\r\n        \"VignetteSoftness\": null\r\n      }\r\n   
-    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"186c8474-37f8-45b7-ab46-05c0912edfa0\"\r\n   
+    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"8c84b1d5-5c9f-41a1-91e7-fe3364f51b27\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"corner_radius\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"e950059e-3a8f-4af4-a00d-833f3b6afd01\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"cd4e2be0-f051-4261-9d52-7ff3dc732e9d\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"first_level_to_rate_game\",\r\n      \"type\": \"int\",\r\n      \"value\":
-    4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"52dfa764-9627-4d3a-8063-ae9a1219801a\"\r\n   
+    4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6153ed7e-3eb0-4322-8f17-2ca7a14f79f7\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"hammer_shot_pause\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 1.5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d44801c6-93c2-4e2c-9c46-f99ec981587c\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"580dfca5-0cea-41b6-bea3-eb86783cfbcc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"inapp_notifications_list\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        {\r\n         
     \"Message\": \"The next maze is waiting for you! Hurry up!\",\r\n          \"TimeSpan\":
@@ -458,16 +458,16 @@ MonoBehaviour:
     \"3.00:00:00\"\r\n        },\r\n        {\r\n          \"Message\": \"Come back!
     We are waiting for you!\",\r\n          \"TimeSpan\": \"5.00:00:00\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"1a46072e-6ac5-47db-a941-146118083b18\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"9277ff6e-5614-4ecc-9d6f-4978e5ec0a07\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"interstitial_ads_ratio\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    0.1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"bc2dd865-80ea-4675-85d4-29e355f99081\"\r\n   
+    0.1\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"dd449122-920a-447a-ba4d-d5027b258149\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"levels_in_group\",\r\n      \"type\":
     \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        3,\r\n       
     4,\r\n        5\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n     
-    \"entityId\": \"b23efa60-0ab5-44ee-8ef5-925bf143fc5b\"\r\n    },\r\n    \"rs\":
+    \"entityId\": \"d560f661-76fa-44d2-a56c-67d0b3497658\"\r\n    },\r\n    \"rs\":
     {\r\n      \"key\": \"line_thickness\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"82b6ab7b-cac9-443f-aea4-f40970bc665c\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"2e296ff1-ca3a-423a-9e7a-7833e8ce0e10\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"main_color_props_set\",\r\n      \"type\": \"json\",\r\n      \"schemaId\":
     null,\r\n      \"value\": [\r\n        {\r\n          \"name\": \"Main\",\r\n         
     \"color\": \"{\\\"Hex\\\":\\\"A17700FF\\\"}\"\r\n        },\r\n        {\r\n         
@@ -500,69 +500,68 @@ MonoBehaviour:
     \"{\\\"Hex\\\":\\\"FFFFFF12\\\"}\"\r\n        },\r\n        {\r\n          \"name\":
     \"Ui Item Highlighted\",\r\n          \"color\": \"{\\\"Hex\\\":\\\"DD3F35FF\\\"}\"\r\n       
     }\r\n      ]\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"ee2ea6b6-5620-4ec0-8d2d-46bd9ce6500e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"bb56d4da-27f1-4cca-aee6-c6ef11e6bb86\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"maze_item_transition_time\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 0.6\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"74c247d0-f524-494c-8115-807554fc764a\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"b19c1d34-0fd5-485d-9550-bdb97859454b\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"maze_rotation_speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    5.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"34f26e9e-5ae0-4728-a3f3-c2263cba253a\"\r\n   
+    5.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"290c1a1a-87d3-40e6-9bc9-49a987b9d635\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems_gravityblock_speed\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 15.0\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"a9fa5ebf-b56c-4319-bd96-84d5420fb6c7\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"cf93d123-b9d9-4a10-a032-f547cd6480dc\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"mazeitems_movingtrap_speed\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 6.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"abf76835-80cd-4b3a-b0ce-3e974a2f17a1\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"939c92ad-516f-48e9-87ab-2e9869d20e5d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"money_item_coast\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"3c28c799-1665-4386-a207-e26c3d9eaf1e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"32d6efc1-6110-4d9f-b451-cbc123d864af\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"moving_trap_pause\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"7c402df2-eee2-4346-91aa-ef27e7593a15\"\r\n   
+    1.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"6f46d0cf-9fae-4d74-aea4-0df99ffae61d\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"pay_to_continue_money_count\",\r\n     
     \"type\": \"int\",\r\n      \"value\": 100\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"2ff91037-2d64-43ac-b541-2c5c348e1b06\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"30e652b0-4f5e-485a-b224-9f3961af978d\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"rate_requests_frequency\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 20.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"78bd6bf6-f94e-4ece-9bed-e8b765aa451e\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"fcafc6b0-a141-4622-bcf3-3c1e5587e6c3\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"show_full_tutorial\",\r\n      \"type\": \"bool\",\r\n      \"value\":
-    false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"7d87b7f2-3d34-4516-9646-18ccb39c7238\"\r\n   
+    false\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"2b5df0f2-5ee5-4046-9771-4f26770fc2a1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"shredinger_block_time\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 3.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"d5882dd0-1601-4d82-a602-95e902afe748\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"68a212be-372c-464d-bd3e-736ea89a27fc\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"skip_button_seconds\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 10.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\":
-    \"799bb305-ae84-45b1-804f-45a7ceae783b\"\r\n    },\r\n    \"rs\": {\r\n     
+    \"51d02cd8-c2f4-45fa-b649-9674fc934a22\"\r\n    },\r\n    \"rs\": {\r\n     
     \"key\": \"spear_projectile_speed\",\r\n      \"type\": \"float\",\r\n      \"value\":
-    0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"719070f5-3eb5-4d27-9a58-e3bc88ef98ce\"\r\n   
+    0.4\r\n    }\r\n  },\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"246a93a3-56bf-4c4a-8f4e-9530e523a5e1\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"test_device_ids\",\r\n      \"type\":
-    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n       
-    \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n        \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n       
-    \"7c70beec-8b2d-4d94-9138-5541bbe15fc2\",\r\n        \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n       
+    \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n        \"4dd10f5b-e3ee-4691-9579-25d5d1ea144c\",\r\n       
+    \"0955E1DE-1A7E-49A5-8355-687EA36E0A38\",\r\n        \"10806D1C-07BC-41FA-B3B6-F881F0FF2FA7\",\r\n       
+    \"c241d505-f4c4-4b96-b6ff-4f750511e6c9\",\r\n        \"bcccedd5-56b0-403f-ad71-8ce181092336\",\r\n       
     \"c0c77237-a97d-41f6-924f-9a5f82310cee\",\r\n        \"95c56191-0873-4a4d-84ba-4f6b85d81096\",\r\n       
     \"70fd3de8-4462-4320-a2e9-116f6b31b002\"\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"7b976a4d-c219-4f55-89e0-b6f4e406f883\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"6cdcca87-8161-4c14-8ad2-ed77362124ac\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"test_device_ids_for_admob\",\r\n     
     \"type\": \"json\",\r\n      \"schemaId\": null,\r\n      \"value\": [\r\n       
     \"FE989E63CDFFFB64D9E6A288C137E1E2\",\r\n        \"16DB30D44D674B09110966E0648E783D\",\r\n       
     \"A7BDF038439EAB9E32977E9485093F43\",\r\n        \"B648AEC33D2557D0BFD1FD486B3E7678\",\r\n       
     \"7D516587810FD383626B5C782FB4078A\",\r\n        \"CCF954D464D11BD437D3885E0CDAE854\",\r\n       
     \"424e829327c47a4cad00e0f8be6b2771\"\r\n      ]\r\n    }\r\n  },\r\n  {\r\n   
-    \"metadata\": {\r\n      \"entityId\": \"261db3d1-2d29-42f8-add9-ebbeec2134dd\"\r\n   
+    \"metadata\": {\r\n      \"entityId\": \"a1a9b570-5f9b-4717-9e6e-88b4eec3167b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"trap_increasing_idle_time\",\r\n     
     \"type\": \"float\",\r\n      \"value\": 2.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"5ea9ed96-b269-4be4-88a7-a13361726397\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"8cf564f9-271f-47dc-bdc6-ba13cf70c5ca\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"trap_increasing_increased_time\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 2.0\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"f3ef308e-2f54-4742-824d-02dc38a142f7\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"28c4250a-fb6c-490a-b26f-94179a3440c9\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"turret_pre_shoot_interval\",\r\n      \"type\":
     \"float\",\r\n      \"value\": 1.5\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"ea619ade-c465-40f3-aa15-6ce53063fe7d\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5037df3c-adb0-4832-8312-a3cb18e6f635\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"turret_projectile_speed\",\r\n      \"type\": \"float\",\r\n     
     \"value\": 20.0\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
+    \"name\": \"production\",\r\n    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n   
+    \"isDefault\": true,\r\n    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\":
+    \"2021-08-16T21:54:30Z\"\r\n  },\r\n  {\r\n    \"projectId\": \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n   
     \"name\": \"development\",\r\n    \"id\": \"9b09469f-7e65-47c3-8c6f-0114f498ff8e\",\r\n   
     \"isDefault\": false,\r\n    \"createdAt\": \"2022-05-16T06:48:48Z\",\r\n   
-    \"updatedAt\": \"2022-05-16T06:48:48Z\"\r\n  },\r\n  {\r\n    \"projectId\":
-    \"abcef6a4-92c3-4c35-894e-21fc8a854301\",\r\n    \"name\": \"production\",\r\n   
-    \"id\": \"1d652336-ffe1-4303-b76b-bf9a581cf50a\",\r\n    \"isDefault\": true,\r\n   
-    \"createdAt\": \"2021-08-16T21:54:30Z\",\r\n    \"updatedAt\": \"2021-08-16T21:54:30Z\"\r\n 
-    }\r\n]"
+    \"updatedAt\": \"2022-05-16T06:48:48Z\"\r\n  }\r\n]"
