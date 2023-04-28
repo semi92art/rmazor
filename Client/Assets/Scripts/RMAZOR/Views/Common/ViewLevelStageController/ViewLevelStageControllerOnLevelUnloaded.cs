@@ -65,6 +65,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnLevelUnloaded(LevelStageArgs _Args)
         {
+            GC.Collect();
             SetLevelTimeRecord(_Args);
             CheckIfLevelWasFinishedAtLeastOnce(_Args);
             var scoreEntity = ScoreManager.GetScoreFromLeaderboard(DataFieldIds.Level, false);
