@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if YANDEX_GAMES
+using System.Collections.Generic;
 using System.Linq;
 using Common.Helpers;
 using Common.Utils;
@@ -159,3 +160,4 @@ namespace Common.Managers.IAP
         #endregion
     }
 }
+#endif
