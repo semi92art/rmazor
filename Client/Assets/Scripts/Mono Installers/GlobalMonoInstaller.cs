@@ -6,6 +6,7 @@ using Common.Managers.Advertising;
 using Common.Managers.Advertising.AdBlocks;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Analytics;
+using Common.Managers.IAP;
 using Common.Managers.Notifications;
 using Common.Managers.PlatformGameServices;
 using Common.Managers.PlatformGameServices.Achievements;
@@ -38,6 +39,7 @@ using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
 using UnityEngine;
+using YG;
 using Zenject;
 using ZMAZOR.Views.Camera_Providers;
 using ZMAZOR.Views.Coordinate_Converters;
@@ -46,14 +48,15 @@ namespace Mono_Installers
 {
     public class GlobalMonoInstaller : MonoInstaller
     {
-        public GameObject         colorProvider;
-        public GameObject         companyLogo;
         public GlobalGameSettings globalGameSettings;
         public ModelSettings      modelSettings;
         public ViewSettings       viewSettings;
-        public GameObject         debugConsoleView;
-        public GameObject         debugConsoleViewFake;
-        
+
+        public GameObject colorProvider;
+        public GameObject companyLogo;
+        public GameObject debugConsoleView;
+        public GameObject debugConsoleViewFake;
+
         public override void InstallBindings()
         {
             BindCamera();
@@ -129,23 +132,41 @@ namespace Mono_Installers
             Container.Bind<IAppodealInterstitialAd>()   .To<AppodealInterstitialAd>()       .AsSingle();
             Container.Bind<IAppodealRewardedAd>()       .To<AppodealRewardedAd>()           .AsSingle();
 #endif
+#if YANDEX_GAMES
+            Container.Bind<IYandexGamesAdsProvider>()    .To<YandexGamesAdsProvider>()       .AsSingle();
+            Container.Bind<IYandexGamesInterstitialAd>() .To<YandexGamesInterstitialAd>()    .AsSingle();
+            Container.Bind<IYandexGamesRewardedAd>()     .To<YandexGamesRewardedAd>()        .AsSingle();
+#endif
             Container.Bind<IAdsProvidersSet>()          .To<AdsProvidersSet>()              .AsSingle();
         }
         
         private void BindStoreAndGameServices()
         {
-#if UNITY_EDITOR || UNITY_WEBGL
+#if UNITY_EDITOR
             Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
             Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
-            Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorFake>().AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>()
+                .To<PlatformGameServiceAuthenticatorFake>()
+                .AsSingle();
 #elif UNITY_ANDROID
             Container.Bind<IShopManager>()         .To<AndroidUnityIAPShopManager>()    .AsSingle();
             Container.Bind<ILeaderboardProvider>().To<LeaderboardProviderGooglePlayGames>().AsSingle();
-            Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorGooglePlayGames>().AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>()
+                .To<PlatformGameServiceAuthenticatorGooglePlayGames>()
+                .AsSingle();
 #elif UNITY_IOS || UNITY_IPHONE
             Container.Bind<IShopManager>()         .To<AppleUnityIAPShopManager>()        .AsSingle();
             Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderIos>()         .AsSingle();
-            Container.Bind<IPlatformGameServiceAuthenticator>().To<PlatformGameServiceAuthenticatorIos>().AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>()
+                .To<PlatformGameServiceAuthenticatorIos>()
+                .AsSingle();
+#elif UNITY_WEBGL && YANDEX_GAMES
+            Container.Bind<IShopManager>()         .To<ShopManagerFake>()               .AsSingle();
+            //Container.Bind<IShopManager>()         .To<IAP_ShopManagerYandexGames>()    .AsSingle();
+            Container.Bind<ILeaderboardProvider>() .To<LeaderboardProviderFake>()       .AsSingle();
+            Container.Bind<IPlatformGameServiceAuthenticator>()
+                .To<PlatformGameServiceAuthenticatorFake>()
+                .AsSingle();
 #endif
             Container.Bind<IScoreManager>()             .To<ScoreManager>()                 .AsSingle();
             Container.Bind<IAchievementsProvider>()     .To<AchievementsProvider>()         .AsSingle();
@@ -213,6 +234,11 @@ namespace Mono_Installers
 
         private void BindOther()
         {
+#if YANDEX_GAMES
+            Container.Bind<IYandexGameFacade>().To<YandexGameFacade>().AsSingle();
+            Container.Bind<IYandexGameActionsProvider>().To<YandexGameActionsProvider>().AsSingle();
+#endif
+            
             Container.Bind<CompanyLogoMonoBeh>()             
                 .FromComponentInNewPrefab(companyLogo)
                 .AsSingle();
@@ -293,11 +319,15 @@ namespace Mono_Installers
                     Container.Bind<ICoordinateConverter>().To<CoordinateConverterZmazor>().AsSingle();
                     break;
             }
-            var inputControllerType = Application.isEditor ? 
-                typeof(ViewCommandsProceederInEditor) : typeof(ViewInputCommandsProceeder);
-            Container.Bind<IViewInputCommandsProceeder>()
-                .To(inputControllerType) 
-                .AsSingle();
+            
+#if UNITY_EDITOR
+            Container.Bind<IViewInputCommandsProceeder>().To<ViewCommandsProceederInEditor>().AsSingle();
+#elif UNITY_WEBGL
+            Container.Bind<IViewInputCommandsProceeder>().To<ViewCommandsProceederWebGl>().AsSingle();
+#else
+            Container.Bind<IViewInputCommandsProceeder>().To<ViewInputCommandsProceeder>().AsSingle();
+#endif
+            
         }
         
         private void BindCamera()

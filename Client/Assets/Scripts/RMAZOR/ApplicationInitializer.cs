@@ -57,6 +57,10 @@ namespace RMAZOR
         private IPushNotificationsProvider PushNotificationsProvider { get; set; }
         private IViewUIGameLogo            GameLogo                  { get; set; }
         private IFirebaseInitializer       FirebaseInitializer       { get; set; }
+        
+#if YANDEX_GAMES
+        [Inject] private IYandexGameFacade YandexGame { get; set; }
+#endif
 
         [Inject] 
         private void Inject(
@@ -108,6 +112,9 @@ namespace RMAZOR
 
         private IEnumerator Start()
         {
+#if YANDEX_GAMES
+            YandexGame.Init();
+#endif
             FirebaseInitializer.Init();
             yield return UpdateTodaySessionsCountCoroutine();
             ApplicationVersionUpdater.UpdateToCurrentVersion();
@@ -150,6 +157,8 @@ namespace RMAZOR
             sb.AppendLine("Streaming assets path: " + Application.streamingAssetsPath);
             sb.AppendLine("Temporary cache path: "  + Application.temporaryCachePath);
             sb.AppendLine("Absolute url: "          + Application.absoluteURL);
+            sb.AppendLine("Device type: "           + SystemInfo.deviceType);
+            sb.AppendLine("Graphics device type: "  + SystemInfo.graphicsDeviceType);
             Dbg.Log(sb.ToString());
             yield return null;
         }
