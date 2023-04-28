@@ -16,7 +16,7 @@ namespace RMAZOR.Views.InputConfigurators
         event UnityAction<EInputCommand, Dictionary<string, object>> Command;
         event UnityAction<EInputCommand, Dictionary<string, object>> InternalCommand;
         
-        float                                                        TimeFromLastCommandInSecs { get; }
+        float                                                        TimeFromLastCommandInSecs { get; set; }
         List<Tuple<EInputCommand, Dictionary<string, object>>>       CommandsHistory           { get; }
         
         IEnumerable<EInputCommand> GetAllCommands();
@@ -59,7 +59,7 @@ namespace RMAZOR.Views.InputConfigurators
         public List<Tuple<EInputCommand, Dictionary<string, object>>> CommandsHistory { get; } =
             new List<Tuple<EInputCommand, Dictionary<string, object>>>();
 
-        public float TimeFromLastCommandInSecs { get; private set; }
+        public float TimeFromLastCommandInSecs { get; set; }
         
         public event UnityAction<EInputCommand, Dictionary<string, object>> Command;
         public event UnityAction<EInputCommand, Dictionary<string, object>> InternalCommand;
@@ -73,9 +73,7 @@ namespace RMAZOR.Views.InputConfigurators
         
         public virtual void UpdateTick()
         {
-            if (CommonTicker == null)
-                return;
-            TimeFromLastCommandInSecs += CommonTicker.DeltaTime;
+            UpdateTimeFromLastCommand();
         }
         
         public void LockCommand(EInputCommand _Key, string _Group)

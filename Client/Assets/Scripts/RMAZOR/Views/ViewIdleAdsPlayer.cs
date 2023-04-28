@@ -71,6 +71,7 @@ namespace RMAZOR.Views
             {
                 return;
             }
+            CommandsProceeder.TimeFromLastCommandInSecs = 0f;
             void OnBeforeAdShown() => AudioManager.MuteAudio(EAudioClipType.Music);
             void OnAdClosed()      => AudioManager.UnmuteAudio(EAudioClipType.Music);
             AdsManager.ShowRewardedAd(OnBeforeAdShown, _OnClosed: OnAdClosed);
