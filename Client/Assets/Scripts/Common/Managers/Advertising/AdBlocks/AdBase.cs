@@ -47,7 +47,7 @@ namespace Common.Managers.Advertising.AdBlocks
         #region inject
 
         private GlobalGameSettings GlobalGameSettings { get; }
-        private ICommonTicker      CommonTicker       { get; }
+        protected ICommonTicker      CommonTicker       { get; }
 
         protected AdBase(
             GlobalGameSettings _GlobalGameSettings, 

@@ -6,13 +6,11 @@ using mazing.common.Runtime.Ticker;
 using Newtonsoft.Json;
 using RMAZOR.Models;
 using RMAZOR.Models.MazeInfos;
-using RMAZOR.Views.Controllers;
 using UnityEngine;
-using UnityEngine.Events;
 
 namespace RMAZOR.Views.InputConfigurators
 {
-    public class ViewCommandsProceederInEditor : ViewInputCommandsProceeder
+    public class ViewCommandsProceederInEditor : ViewCommandsProceederWithKeyboardBase
     {
         #region nonpublic members
 
@@ -23,12 +21,11 @@ namespace RMAZOR.Views.InputConfigurators
         #region inject
 
         private IModelGame Model  { get; }
-        private IUITicker  Ticker { get; }
 
-        private ViewCommandsProceederInEditor(IModelGame _Model, IUITicker _UITicker)
+        private ViewCommandsProceederInEditor(IModelGame _Model, ICommonTicker _CommonTicker) 
+            : base(_CommonTicker)
         {
             Model  = _Model;
-            Ticker = _UITicker;
         }
 
         #endregion
@@ -39,13 +36,12 @@ namespace RMAZOR.Views.InputConfigurators
         {
             if (!MazorCommonData.Release)
                 m_DoProceed = true;
-            Ticker.Register(this);
             base.Init();
         }
 
         public override void UpdateTick()
         {
-            base.UpdateTick();
+            UpdateTimeFromLastCommand();
             if (!m_DoProceed)
                 return;
             const bool forced = true;
@@ -76,20 +72,6 @@ namespace RMAZOR.Views.InputConfigurators
         #endregion
 
         #region nonpublic methods
-
-        private static void ProceedMovement(ref EInputCommand? _CommandKey)
-        {
-            ProceedInput(EInputCommand.MoveLeft,  ref _CommandKey, KeyCode.A, KeyCode.LeftArrow);
-            ProceedInput(EInputCommand.MoveRight, ref _CommandKey, KeyCode.D, KeyCode.RightArrow);
-            ProceedInput(EInputCommand.MoveUp,    ref _CommandKey, KeyCode.W, KeyCode.UpArrow);
-            ProceedInput(EInputCommand.MoveDown,  ref _CommandKey, KeyCode.S, KeyCode.DownArrow);
-        }
-
-        private static void ProceedRotation(ref EInputCommand? _CommandKey)
-        {
-            ProceedInput(EInputCommand.RotateClockwise,        ref _CommandKey, KeyCode.E);
-            ProceedInput(EInputCommand.RotateCounterClockwise, ref _CommandKey, KeyCode.Q);
-        }
 
         private void ProceedLevelStatement(
             ref EInputCommand?         _CommandKey,
@@ -125,43 +107,6 @@ namespace RMAZOR.Views.InputConfigurators
                         Model.Data.Info.AdditionalInfo.PassCommandsRecord);
                 },
                 KeyCode.Alpha8);
-        }
-
-        private static void ProceedInput(
-            EInputCommand         _InputCommand,
-            ref    EInputCommand? _ExistingCommand,
-            params KeyCode[]      _KeyCodes)
-        {
-            ProceedInput(_InputCommand, ref _ExistingCommand, null, _KeyCodes);
-        }
-
-        private static void ProceedInput(
-            EInputCommand      _InputCommand,
-            ref EInputCommand? _ExistingCommand,
-            UnityAction        _Action,
-            params KeyCode[]   _KeyCodes)
-        {
-            foreach (var keyCode in _KeyCodes)
-                ProceedInput(keyCode, _InputCommand, ref _ExistingCommand, _Action);
-        }
-        
-        private static void ProceedInput(
-            KeyCode                        _KeyCode,
-            EInputCommand                  _InputCommand,
-            ref EInputCommand?             _ExistingCommand,
-            UnityAction                    _Action)
-        {
-            if (_ExistingCommand.HasValue)
-                return;
-            bool isKeyDown = IsKeyDown(_KeyCode);
-            if (isKeyDown)
-                _Action?.Invoke();
-            _ExistingCommand = isKeyDown? _InputCommand : (EInputCommand?)null;
-        }
-        
-        private static bool IsKeyDown(KeyCode _KeyCode)
-        {
-            return LeanInput.GetDown(_KeyCode);
         }
 
         #endregion

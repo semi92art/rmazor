@@ -13,20 +13,32 @@ namespace Common.Managers.Advertising.AdsProviders
 #if APPODEAL_3
         [Zenject.Inject] private IAppodealAdsProvider AppodealAdsProvider { get; }
 #endif
+#if YANDEX_GAMES
+        private IYandexGamesAdsProvider YandexGamesAdsProvider { get; }
+#endif
+
+        public AdsProvidersSet(IYandexGamesAdsProvider _YandexGamesAdsProvider)
+        {
+            YandexGamesAdsProvider = _YandexGamesAdsProvider;
+        }
 
         public List<IAdsProvider> GetProviders()
         {
-            var result = new List<IAdsProvider>();
+            return new List<IAdsProvider>
+            {
 #if ADMOB_API
-            result.Add(AdMobAdsProvider);
+                AdMobAdsProvider,
 #endif
 #if UNITY_ADS_API
-            result.Add(UnityAdsProvider);
+                UnityAdsProvider;
 #endif
 #if APPODEAL_3
-            result.Add(AppodealAdsProvider);
+                AppodealAdsProvider,
 #endif
-            return result;
+#if YANDEX_GAMES
+                YandexGamesAdsProvider,
+#endif
+            };
         }
     }
 }
