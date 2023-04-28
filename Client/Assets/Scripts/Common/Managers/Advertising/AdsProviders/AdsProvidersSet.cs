@@ -14,14 +14,9 @@ namespace Common.Managers.Advertising.AdsProviders
         [Zenject.Inject] private IAppodealAdsProvider AppodealAdsProvider { get; }
 #endif
 #if YANDEX_GAMES
-        private IYandexGamesAdsProvider YandexGamesAdsProvider { get; }
+        [Zenject.Inject] private IYandexGamesAdsProvider YandexGamesAdsProvider { get; }
 #endif
-
-        public AdsProvidersSet(IYandexGamesAdsProvider _YandexGamesAdsProvider)
-        {
-            YandexGamesAdsProvider = _YandexGamesAdsProvider;
-        }
-
+        
         public List<IAdsProvider> GetProviders()
         {
             return new List<IAdsProvider>

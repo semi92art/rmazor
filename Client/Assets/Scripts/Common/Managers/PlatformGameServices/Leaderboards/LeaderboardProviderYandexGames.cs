@@ -1,4 +1,5 @@
-﻿using Common.Entities;
+﻿#if YANDEX_GAMES
+using Common.Entities;
 using Common.Helpers;
 using Common.Managers.PlatformGameServices.GameServiceAuth;
 using mazing.common.Runtime.Managers;
@@ -46,3 +47,4 @@ namespace Common.Managers.PlatformGameServices.Leaderboards
         }
     }
 }
+#endif
