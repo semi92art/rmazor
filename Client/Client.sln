@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Android", "SA.Android.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zenject", "Zenject.csproj", "{1cfb9808-d979-347d-fc5a-21903b2631da}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Common", "Client.Common.csproj", "{ec10a1ec-e58e-a37b-9557-808f23aa10e1}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.iOS", "SA.iOS.csproj", "{9084c752-ba18-93d1-6e93-3428648c682d}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RMAZOR", "RMAZOR.csproj", "{92a482b9-d6ff-fdc6-3a70-65826a212f32}"
@@ -16,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRF", "StompyRobot.SRF.csproj", "{dbc59b87-3b94-d785-128c-d2a350190458}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StompyRobot.SRDebugger", "StompyRobot.SRDebugger.csproj", "{fbf98fed-bc4f-721b-eb29-3a3e15acdd8e}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YandexGames", "YandexGames.csproj", "{8cbaaeb0-e7aa-273d-794a-1188876c244e}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShapesRuntime", "ShapesRuntime.csproj", "{99fc1111-4b63-5864-f1e8-50ea98afe3eb}"
 EndProject
@@ -40,8 +44,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LeTai.TranslucentImage", "LeTai.TranslucentImage.csproj", "{8fa200cd-f859-95b4-8c64-e2b8ecf5583a}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{8441f412-22a4-275f-22e6-507969043f15}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Common", "Client.Common.csproj", "{ec10a1ec-e58e-a37b-9557-808f23aa10e1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SA.Foundation", "SA.Foundation.csproj", "{603797c3-be06-50b9-a839-369f4cb8af60}"
 EndProject
@@ -120,6 +122,8 @@ Global
 		{7575140c-e7c7-05a5-f0e3-c8d1990a3b39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1cfb9808-d979-347d-fc5a-21903b2631da}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1cfb9808-d979-347d-fc5a-21903b2631da}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9084c752-ba18-93d1-6e93-3428648c682d}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92a482b9-d6ff-fdc6-3a70-65826a212f32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -132,6 +136,8 @@ Global
 		{dbc59b87-3b94-d785-128c-d2a350190458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{fbf98fed-bc4f-721b-eb29-3a3e15acdd8e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{fbf98fed-bc4f-721b-eb29-3a3e15acdd8e}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8cbaaeb0-e7aa-273d-794a-1188876c244e}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8cbaaeb0-e7aa-273d-794a-1188876c244e}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99fc1111-4b63-5864-f1e8-50ea98afe3eb}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{99fc1111-4b63-5864-f1e8-50ea98afe3eb}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91d5eed8-60af-c338-3b96-f841e164ad5a}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -156,8 +162,6 @@ Global
 		{8fa200cd-f859-95b4-8c64-e2b8ecf5583a}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8441f412-22a4-275f-22e6-507969043f15}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ec10a1ec-e58e-a37b-9557-808f23aa10e1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{603797c3-be06-50b9-a839-369f4cb8af60}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{fabab6fd-ce5d-b8e9-c7f1-00dab331447b}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
