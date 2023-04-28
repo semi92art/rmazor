@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common;
 using Common.Managers.Advertising;
 using Common.Managers.PlatformGameServices;
 using Lean.Common;
@@ -199,6 +200,8 @@ namespace RMAZOR
         private void Update()
         {
             if (!m_EnableDebug && !Application.isEditor)
+                return;
+            if (!MazorCommonData.Release)
                 return;
             ProceedInputCommands();
             ProceedTouchScreenKeyboard();
