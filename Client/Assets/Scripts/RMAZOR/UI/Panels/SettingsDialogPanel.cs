@@ -171,15 +171,20 @@ namespace RMAZOR.UI.Panels
         {
             InitSettingItem(SettingsGetter.MusicSetting);
             InitSettingItem(SettingsGetter.SoundSetting);
+#if !YANDEX_GAMES
             InitSettingItem(SettingsGetter.NotificationSetting);
             InitSettingItem(SettingsGetter.HapticsSetting);
+#endif
             InitSettingItem(SettingsGetter.LanguageSetting);
         }
 
         private void InitOtherButtons()
         {
+            // TODO доработать лидерборды для яндекса
+#if !YANDEX_GAMES
             InitLeaderboardsButton();
             InitRestorePurchasesButton();
+#endif
             InitRateUsButton();
             InitRetroModeSettingItem(SettingsGetter.RetroModeSetting);
         }
