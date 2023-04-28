@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading.Tasks;
 using Common.Constants;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Entities;
@@ -202,6 +201,12 @@ namespace RMAZOR.Helpers
             var levels = _Local ? val.SerializedLevelsLocal : val.SerializedLevelsBundle;
             return levels;
         }
+        
+        private void PreloadLevelsIfWereNotLoaded()
+        {
+            PreloadLevels(true);
+            PreloadLevels(false);
+        }
 
         private void PreloadLevels(bool _Local)
         {
@@ -223,11 +228,7 @@ namespace RMAZOR.Helpers
             var mazeInfoAssetText = PrefabSetManager.GetObject<TextAsset>(PrefabSetName,
                 LevelsAssetName(_GameMode, _LevelType),
                 _Local ? EPrefabSource.Asset : EPrefabSource.Bundle);
-#if UNITY_WEBGL
             LoadLevels(mazeInfoAssetText.text, key, _Local);
-#else
-            Task.Run(() => LoadLevels(mazeInfoAssetText.text, key, _Local));
-#endif
         }
 
         private void LoadLevels(
@@ -352,12 +353,6 @@ namespace RMAZOR.Helpers
                     _LevelInfo.PathItems.Add(pathItem);
                 }
             }
-        }
-        
-        private void PreloadLevelsIfWereNotLoaded()
-        {
-            PreloadLevels(true);
-            PreloadLevels(false);
         }
 
         #endregion

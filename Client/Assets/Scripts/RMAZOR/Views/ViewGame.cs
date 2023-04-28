@@ -321,7 +321,7 @@ namespace RMAZOR.Views
         {
             CoordinateConverter.GetContainer = ContainersGetter.GetContainer;
             CoordinateConverter.Init();
-            CommonUtils.DoOnInitializedEx(RemoteConfigManager, () => Managers.AnalyticsManager.Init());
+            CommonUtils.DoOnInitializedEx(RemoteConfigManager, Managers.AnalyticsManager.Init);
             m_ProceedersCached = GetOrderedViewGameProceedersToExecute().Values.ToArray();
             ColorProvider            .Init();
             CameraProvider           .Init();

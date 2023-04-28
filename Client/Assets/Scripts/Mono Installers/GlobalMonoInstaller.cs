@@ -6,7 +6,6 @@ using Common.Managers.Advertising;
 using Common.Managers.Advertising.AdBlocks;
 using Common.Managers.Advertising.AdsProviders;
 using Common.Managers.Analytics;
-using Common.Managers.IAP;
 using Common.Managers.Notifications;
 using Common.Managers.PlatformGameServices;
 using Common.Managers.PlatformGameServices.Achievements;
@@ -39,10 +38,13 @@ using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.UI.Game_Logo;
 using UnityEngine;
-using YG;
 using Zenject;
 using ZMAZOR.Views.Camera_Providers;
 using ZMAZOR.Views.Coordinate_Converters;
+#if YANDEX_GAMES
+using Common.Managers.IAP;
+using YG;
+#endif
 
 namespace Mono_Installers
 {
@@ -257,21 +259,25 @@ namespace Mono_Installers
             Container.Bind<IMazeInfoValidator>()           .To<MazeInfoValidator>()                .AsSingle();
             Container.Bind<IFontProvider>()                .To<FontProviderMazor>()                .AsSingle();
             Container.Bind<IRemotePropertiesInfoProvider>().To<RemotePropertiesInfoProvider>()     .AsSingle();
-
             
 #if UNITY_EDITOR || UNITY_WEBGL
                 Container.Bind<INotificationsManager>().To<NotificationsManagerFake>()      .AsSingle();
 #elif UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
-                Container.Bind<INotificationsManager>().To<NotificationsManagerUnity>()     .AsSingle();
+                Container.Bind<INotificationsManager>()
+                    .To<NotificationsManagerUnity>()  
+                    .AsSingle();
 #endif
-#if FIREBASE
-                Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFirebase>().AsSingle();
+            
+#if FIREBASE && !UNITY_EDITOR && !YANDEX_GAMES
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManager>()           .AsSingle();
+                Container.Bind<IPushNotificationsProvider>()
+                    .To<PushNotificationsProviderFirebase>()
+                    .AsSingle();
                 Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
 #else
-                Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()   .AsSingle();
-                Container.Bind<IRemoteConfigProvider>().To<RemoteConfigProviderFake>()  .AsSingle();
-                Container.Bind<IPushNotificationsProvider>()   .To<PushNotificationsProviderFake>().AsSingle();
+            Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
+                Container.Bind<IPushNotificationsProvider>()  .To<PushNotificationsProviderFake>()
+                    .AsSingle();
 #endif
 
             Container.Bind<IFpsCounter>()

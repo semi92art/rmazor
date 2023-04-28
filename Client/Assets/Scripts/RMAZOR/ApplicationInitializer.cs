@@ -201,7 +201,7 @@ namespace RMAZOR
         
         private IEnumerator InitGameControllerCoroutine()
         {
-            const float waitingTime = 3f;
+            float waitingTime = Application.platform == RuntimePlatform.WebGLPlayer ? 0f : 3f;
             yield return Cor.WaitWhile(
                 () => !RemoteConfigManager.Initialized || !AssetBundleManager.Initialized,
                 () =>
@@ -262,7 +262,6 @@ namespace RMAZOR
         {
             TryExecute(() =>
             {
-                
                 ShopManager.RegisterProductInfos(GetProductInfos());
                 ShopManager.Init();
             });
