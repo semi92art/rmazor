@@ -24,12 +24,6 @@ namespace RMAZOR.Managers
 
     public class DebugManager : InitBase, IDebugManager
     {
-        #region nonpublic members
-
-        private bool m_DebugConsoleInitialized;
-
-        #endregion
-        
         #region inject
 
         private IRemotePropertiesRmazor     RemoteProperties      { get; }
@@ -93,6 +87,7 @@ namespace RMAZOR.Managers
             if (Initialized)
                 return;
             DebugSetting.ValueSet += EnableDebug;
+            InitDebugConsoleIfWasNot();
             EnableDebug(DebugSetting.Get());
             base.Init();
         }
@@ -101,11 +96,9 @@ namespace RMAZOR.Managers
 
         #region nonpublic methods
 
-        private void InitDebugConsole(bool _Forced)
+        private void InitDebugConsoleIfWasNot()
         {
-            if (m_DebugConsoleInitialized)
-                return;
-            if (!Application.isEditor && !_Forced)
+            if (!Application.isEditor)
                 return;
             DebugConsoleView.VisibilityChanged += _Value =>
             {
@@ -123,14 +116,10 @@ namespace RMAZOR.Managers
                 AudioManager,
                 AnalyticsManager,
                 FpsCounter);
-            m_DebugConsoleInitialized = true;
         }
     
         private void EnableDebug(bool _Enable)
         {
-            InitDebugConsole(false);
-            if (!m_DebugConsoleInitialized && _Enable)
-                InitDebugConsole(true);
             DebugConsoleView.EnableDebug(_Enable);
         }
 
