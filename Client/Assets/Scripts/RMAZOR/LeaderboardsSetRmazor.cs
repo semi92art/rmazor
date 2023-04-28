@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Common;
 using Common.Constants;
-using Common.Utils;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Utils;
 using UnityEngine;
@@ -12,11 +10,14 @@ namespace RMAZOR
     {
         public Dictionary<ushort, string> GetSet()
         {
-            bool ios = CommonUtils.Platform == RuntimePlatform.IPhonePlayer;
-            return new Dictionary<ushort, string>
+            string leaderboardId = CommonUtils.Platform switch
             {
-                { DataFieldIds.Level, ios ? "level" : "CgkI1IvonNkDEAIQBg"}
+                RuntimePlatform.Android      => "CgkI1IvonNkDEAIQBg",
+                RuntimePlatform.IPhonePlayer => "level",
+                RuntimePlatform.WebGLPlayer  => "levels",
+                _                            => null
             };
+            return new Dictionary<ushort, string> {{DataFieldIds.Level, leaderboardId}};
         }
     }
 }

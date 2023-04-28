@@ -152,6 +152,15 @@ namespace RMAZOR.Views.InputConfigurators
 
         #endregion
 
+        #region nonpublic methods
 
+        protected void UpdateTimeFromLastCommand()
+        {
+            if (CommonTicker == null)
+                return;
+            TimeFromLastCommandInSecs += CommonTicker.DeltaTime;
+        }
+
+        #endregion
     }
 }
