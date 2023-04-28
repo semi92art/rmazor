@@ -21,7 +21,7 @@ MonoBehaviour:
   interstitialAdsRatio: 0.3
   moneyItemsRate: 0.2
   betweenLevelAdShowIntervalInSeconds: 120
-  enableExtraLevels: 1
+  enableExtraLevels: 0
   extraLevelEveryNStage: 3
   showOnlyRewardedAds: 0
   urlGameServer: http://77.37.152.15:7000
