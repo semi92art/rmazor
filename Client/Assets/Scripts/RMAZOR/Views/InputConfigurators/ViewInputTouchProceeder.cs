@@ -133,20 +133,24 @@ namespace RMAZOR.Views.InputConfigurators
                 lt.FingerTexture = PrefabSetManager.GetObject<Texture2D>(
                     "icons", "finger_texture");
             }
-            LeanTouch.OnFingerUp   -= OnFingerUp;
-            LeanTouch.OnFingerUp   += OnFingerUp;
+            LeanTouch.OnFingerUp   -= OnFingerUpAdditional;
+            LeanTouch.OnFingerUp   += OnFingerUpAdditional;
             LeanTouch.OnFingerDown -= LeanTouchOnOnFingerDown;
             LeanTouch.OnFingerDown += LeanTouchOnOnFingerDown;
             LeanTouch.OnFingerUp   -= LeanTouchOnOnFingerUp;
             LeanTouch.OnFingerUp   += LeanTouchOnOnFingerUp;
         }
+
+        private Vector2 m_LastFingerDownPos;
         
-        private void LeanTouchOnOnFingerDown(LeanFinger _Obj)
+
+        private void LeanTouchOnOnFingerDown(LeanFinger _Finger)
         {
+            m_LastFingerDownPos = _Finger.ScreenPosition;
             m_FingerOnScreen = true;
         }
         
-        private void LeanTouchOnOnFingerUp(LeanFinger _Obj)
+        private void LeanTouchOnOnFingerUp(LeanFinger _Finger)
         {
             m_FingerOnScreen = false;
         }
@@ -183,7 +187,7 @@ namespace RMAZOR.Views.InputConfigurators
             }
         }
         
-        private void OnFingerUp(LeanFinger _Finger)
+        private void OnFingerUpAdditional(LeanFinger _Finger)
         {
             m_PrevMoveDirection   = null;
             m_TouchPositionsQueue.Clear();
@@ -259,13 +263,10 @@ namespace RMAZOR.Views.InputConfigurators
         
         public Vector2 GetFingerPosition(int _Index)
         {
-            
-#if UNITY_EDITOR || UNITY_WEBGL
-            return LeanInput.GetMousePosition();
-#else
-            global::Common.Utils.MazorCommonUtils.GetTouch(_Index, out _, out var pos, out _, out _, out _);
+            if (_Index == 0)
+                return m_LastFingerDownPos;
+            LeanInput.GetTouch(_Index, out _, out var pos, out _, out _);
             return pos;
-#endif
         }
 
         public void OnRotationFinished(MazeRotationEventArgs _Args)
