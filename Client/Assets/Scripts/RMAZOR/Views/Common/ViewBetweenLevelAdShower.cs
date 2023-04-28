@@ -158,7 +158,12 @@ namespace RMAZOR.Views.Common
             }
             if (!showRewarded.HasValue)
                 return;
+#if YANDEX_GAMES
+            ShowAd(false, null, null, null);
+            _OnAdClosed?.Invoke();
+#else
             ShowAd(showRewarded.Value, _OnBeforeAdShown, _OnAdClosed, _OnAdFailedToShow);
+#endif
         }
 
         private void ShowAd(
