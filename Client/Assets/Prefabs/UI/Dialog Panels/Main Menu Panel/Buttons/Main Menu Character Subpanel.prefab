@@ -288,7 +288,7 @@ PrefabInstance:
     - target: {fileID: 1094454376985277043, guid: 7144b219ed0e91744b333d3fcb0b67c7,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -88.20004
+      value: -377.10004
       objectReference: {fileID: 0}
     - target: {fileID: 1094454376985277043, guid: 7144b219ed0e91744b333d3fcb0b67c7,
         type: 3}
@@ -647,7 +647,7 @@ PrefabInstance:
     - target: {fileID: 7105828786101726157, guid: 5dc6d1dbd896d764e9d7bf1e08d16d5f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -246.90002
+      value: -101
       objectReference: {fileID: 0}
     - target: {fileID: 7105828786101726157, guid: 5dc6d1dbd896d764e9d7bf1e08d16d5f,
         type: 3}
@@ -955,6 +955,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Stats_Gold
+      objectReference: {fileID: 0}
+    - target: {fileID: 5119235767967264354, guid: 048913c4a6b57384aad5af9856568e57,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5119235768466032264, guid: 048913c4a6b57384aad5af9856568e57,
         type: 3}
