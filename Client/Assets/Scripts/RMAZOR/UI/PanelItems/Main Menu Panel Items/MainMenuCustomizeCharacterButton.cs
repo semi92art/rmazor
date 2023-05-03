@@ -2,6 +2,6 @@
 {
     public class MainMenuCustomizeCharacterButton : MainMenuButtonWithBadgeBase
     {
-        
+        public override bool CanBeVisible => true;
     }
 }

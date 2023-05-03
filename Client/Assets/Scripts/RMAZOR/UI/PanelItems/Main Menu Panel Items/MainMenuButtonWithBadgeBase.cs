@@ -22,6 +22,8 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         private Func<int> m_GetBadgeNumber;
         private string    m_TitleLocKey;
+        
+        public abstract bool CanBeVisible { get; }
 
         public void Init(
             IUITicker            _UITicker,
@@ -31,6 +33,11 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             Func<int>            _GetBadgeNumber,
             string               _TitleLocKey)
         {
+            if (!CanBeVisible)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             button.SetOnClick(_OnClick);
             m_TitleLocKey = _TitleLocKey;
@@ -40,6 +47,8 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         public virtual void UpdateState()
         {
+            if (!CanBeVisible)
+                return;
             int badgeNumber = m_GetBadgeNumber();
             badgeIcon.enabled = badgeNumber > 0;
             badgeText.enabled = badgeNumber > 0;

@@ -33,15 +33,16 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         [SerializeField] private Button                           buyMoneyButton;
         [SerializeField] private Slider                           xpSlider;
         [SerializeField] private TextMeshProUGUI                  xpSliderTitleText, xpSliderBodyText;
-
-
-
+        
         #endregion
 
         #region nonpublic members
         
-        private UnityAction m_OnAddMoneyButtonClick;
-        
+        private UnityAction 
+            m_OnAddMoneyButtonClick,
+            m_OnCustomizeCharacterButtonClick,
+            m_OnShopButtonClick;
+
         private LocTextInfo MoneyTextLocTextInfo => new LocTextInfo(
             moneyText, ETextType.MenuUI_H1, "empty_key",
             _T => GetBankMoneyCount().ToString("N0"));
@@ -82,25 +83,15 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             CustomizeCharacterPanel   = _CustomizeCharacterPanel;
             ShopDialogPanel           = _ShopDialogPanel;
             m_OnAddMoneyButtonClick   = _OnAddMoneyButtonClick;
+            m_OnCustomizeCharacterButtonClick = _OnCustomizeCharacterButtonClick;
+            m_OnShopButtonClick       = _OnShopButtonClick;
             InitRenderCameraAndRawTexture();
             LocalizeTextObjects();
             SubscribeButtonEvents();
             DailyGiftPanel.OnPanelCloseAction += RecalculateBankMoneyCount;
             ScoreManager.GameSaved += OnGameSaved;
-            buttonCustomizeCharacter.Init(
-                _UITicker, 
-                _AudioManager,
-                _LocalizationManager,
-                _OnCustomizeCharacterButtonClick,
-                GetCustomizeCharacterBadgeNum, 
-                "choose");
-            buttonShop.Init(
-                _UITicker, 
-                _AudioManager,
-                _LocalizationManager,
-                _OnShopButtonClick,
-                GetShopBadgeNum, 
-                "shop");
+            InitButtonCustomizeCharacter();
+            InitButtonShop();
             CustomizeCharacterPanel.BadgesNumberChanged += OnCustomizeCharacterPanelBadgesNumberChanged;
             ShopDialogPanel        .BadgesNumberChanged += OnShopPanelBadgesNumberChanged;
         }
@@ -132,6 +123,28 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         private void OnShopPanelBadgesNumberChanged(int _BadgesNum)
         {
             buttonShop.UpdateState();
+        }
+
+        private void InitButtonCustomizeCharacter()
+        {
+            buttonCustomizeCharacter.Init(
+                Ticker, 
+                AudioManager,
+                LocalizationManager,
+                m_OnCustomizeCharacterButtonClick,
+                GetCustomizeCharacterBadgeNum, 
+                "choose");
+        }
+
+        private void InitButtonShop()
+        {
+            buttonShop.Init(
+                Ticker, 
+                AudioManager,
+                LocalizationManager,
+                m_OnShopButtonClick,
+                GetShopBadgeNum, 
+                "shop");
         }
         
         private int GetCustomizeCharacterBadgeNum()

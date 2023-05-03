@@ -105,8 +105,12 @@ namespace RMAZOR.Views.Common
                 {
                     TimePauser.UnpauseTimeInGame();
                     m_TimeWithoutAdsInSeconds = 0f;
-                    if (!SpecialOfferTimerController.ShownThisSession && !SpecialOfferTimerController.IsTimeGone)
+                    if (SpecialOfferDialogPanel.CanBeShown
+                        &&!SpecialOfferTimerController.ShownThisSession 
+                        && !SpecialOfferTimerController.IsTimeGone)
+                    {
                         ShowSpecialOffer(() => _OnAdClosed?.Invoke());
+                    }
                     else
                         _OnAdClosed?.Invoke();
                 }

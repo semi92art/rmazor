@@ -2,6 +2,16 @@
 {
     public class MainMenuShopButton : MainMenuButtonWithBadgeBase
     {
-        
+        public override bool CanBeVisible
+        {
+            get
+            {
+#if YANDEX_GAMES
+                return false;
+#else
+                return true;
+#endif
+            }
+        }
     }
 }

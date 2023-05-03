@@ -55,9 +55,15 @@ namespace RMAZOR.Views.UI
             switch (_Key)
             {
                 case EInputCommand.ShopMoneyPanel:
+#if YANDEX_GAMES
+                    return;
+#endif
                     ShowShopPanel<IShopMoneyDialogPanel>(_Args);
                     break;
                 case EInputCommand.ShopPanel:
+#if YANDEX_GAMES
+                    return;
+#endif
                     ShowShopPanel<IShopDialogPanel>(_Args);
                     break;
                 case EInputCommand.RateGameFromGameUi:

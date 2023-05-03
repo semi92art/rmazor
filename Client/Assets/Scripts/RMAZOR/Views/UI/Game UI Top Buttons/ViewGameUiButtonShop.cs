@@ -1,8 +1,6 @@
-﻿using Common;
-using Common.Managers;
+﻿using Common.Managers;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Managers;
-using mazing.common.Runtime.Utils;
 using RMAZOR.Constants;
 using RMAZOR.Models;
 using RMAZOR.Views.InputConfigurators;
@@ -15,17 +13,18 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
     public class ViewGameUiButtonShop : ViewGameUiButtonBase, IViewGameUiButtonShop
     {
         #region nonpublic members
-        
-        // protected override bool CanShow
-        // {
-        //     get
-        //     {
-        //         var saveKeyValue = SaveUtils.GetValue(SaveKeysMazor.DisableAds);
-        //         return saveKeyValue.HasValue && saveKeyValue.Value;
-        //     }
-        // }
 
-        protected override bool CanShow => true;
+        protected override bool CanShow
+        {
+            get
+            {
+#if YANDEX_GAMES
+                return false;
+#else
+                return true;
+#endif
+            }
+        }
 
         protected override string PrefabName => "shop_button";
 
@@ -57,7 +56,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         protected override Vector2 GetPosition(Camera _Camera)
         {
             var visibleBounds = GetVisibleBounds(_Camera);
-            float xPos = visibleBounds.min.x + 1f;
+            float xPos = visibleBounds.min.x + 6f;
             float yPos = visibleBounds.max.y - TopOffset;
             return new Vector2(xPos, yPos);
         }
