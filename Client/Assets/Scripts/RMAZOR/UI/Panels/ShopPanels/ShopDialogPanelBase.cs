@@ -80,13 +80,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         #region api
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            Content.gameObject.DestroyChildrenSafe();
-            InitItems();
-        }
-        
         public void SetOnCloseFinishAction(UnityAction _Action)
         {
             m_OnCloseFinishAction = _Action;
@@ -95,6 +88,13 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            Content.gameObject.DestroyChildrenSafe();
+            InitItems();
+        }
         
         protected override void OnDialogStartAppearing()
         {

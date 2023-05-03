@@ -132,9 +132,13 @@ namespace RMAZOR.UI.Panels
         public override    int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
         public override    Animator Animator       => m_PanelAnimator;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        #endregion
+
+        #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel(_Container, _OnClose);
+            base.LoadPanelCore(_Container, _OnClose);
             var psm = Managers.PrefabSetManager;
             m_SpriteMoney = psm.GetObject<Sprite>(
                 "icons", 
@@ -151,10 +155,6 @@ namespace RMAZOR.UI.Panels
             string backgroundSpriteName = $"{backgroundSpriteNameRaw}_{(backVar < 1 ? 1 : backVar)}";
             m_Background.sprite = psm.GetObject<Sprite>(CommonPrefabSetNames.Views, backgroundSpriteName);
         }
-
-        #endregion
-
-        #region nonpublic methods
         
         protected override void OnDialogStartAppearing()
         {

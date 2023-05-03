@@ -25,9 +25,11 @@ namespace RMAZOR.UI.Panels
         private ClosePanelAction m_OnClose;
 
         protected RectTransform Container;
+
+        private bool m_IsPanelLoaded;
         
         protected abstract string PrefabName { get; }
-
+        
         #endregion
         
         #region inject
@@ -58,6 +60,8 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region api
+        
+        public bool LoadOnFirstAppear { get; set; }
 
         public abstract int DialogViewerId { get; }
 
@@ -81,7 +85,16 @@ namespace RMAZOR.UI.Panels
         public         RectTransform PanelRectTransform { get; protected set; }
         public virtual Animator      Animator    => null;
 
-        public virtual void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        public void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            Container = _Container;
+            m_OnClose = _OnClose;
+            if (LoadOnFirstAppear || m_IsPanelLoaded)
+                return;
+            LoadPanelCore(_Container, _OnClose);
+        }
+
+        protected virtual void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
         {
             Ticker.Register(this);
             ColorProvider.ColorChanged += OnColorChanged;
@@ -98,6 +111,7 @@ namespace RMAZOR.UI.Panels
             GetPrefabContentObjects(go);
             LocalizeTextObjectsOnLoad();
             SubscribeButtonEvents();
+            m_IsPanelLoaded = true;
         }
         
         #endregion
@@ -106,6 +120,8 @@ namespace RMAZOR.UI.Panels
         
         protected virtual void OnDialogStartAppearing()
         {
+            if (LoadOnFirstAppear && !m_IsPanelLoaded)
+                LoadPanelCore(Container, m_OnClose);
             CommandsProceeder.LockCommands(RmazorUtils.GetCommandsToLockInGameUiMenus(), GetType().Name);
         }
 

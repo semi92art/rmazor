@@ -108,15 +108,15 @@ namespace RMAZOR.UI.Panels
         public override    int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
         public override    Animator Animator       => m_PanelAnimator;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            LoadLevelGroupButtonSprites();
-        }
-
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            LoadLevelGroupButtonSprites();
+        }
         
         protected override void OnDialogStartAppearing()
         {

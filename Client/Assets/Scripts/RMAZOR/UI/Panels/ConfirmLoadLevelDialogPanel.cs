@@ -27,7 +27,7 @@ namespace RMAZOR.UI.Panels
             int _LevelIndexInGroup);
     }
     
-    public class ConfirmLoadLevelDialogPanelFake : FakeDialogPanel, IConfirmLoadLevelDialogPanel
+    public class ConfirmLoadLevelDialogPanelFake : DialogPanelFake, IConfirmLoadLevelDialogPanel
     {
         public void SetLevelGroupAndIndex(
             int _LevelGroupIndex,

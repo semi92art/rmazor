@@ -25,7 +25,7 @@ namespace RMAZOR.UI.Panels
 {
     public interface IConfirmGoToMainMenuPanel : IDialogPanel { }
     
-    public class ConfirmGoToMainMenuPanelFake : FakeDialogPanel, IConfirmGoToMainMenuPanel { }
+    public class ConfirmGoToMainMenuPanelFake : DialogPanelFake, IConfirmGoToMainMenuPanel { }
      
     public class ConfirmGoToMainMenuPanel : DialogPanelBase, IConfirmGoToMainMenuPanel
     {

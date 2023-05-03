@@ -23,7 +23,7 @@ namespace RMAZOR.UI.Panels
 {
     public interface IRateGameDialogPanel : IDialogPanel { }
     
-    public class RateGameDialogPanelFake : FakeDialogPanel, IRateGameDialogPanel { }
+    public class RateGameDialogPanelFake : DialogPanelFake, IRateGameDialogPanel { }
     
     public class RateGameDialogPanel : DialogPanelBase, IRateGameDialogPanel
     {

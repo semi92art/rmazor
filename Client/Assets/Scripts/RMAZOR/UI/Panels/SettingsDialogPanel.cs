@@ -109,9 +109,13 @@ namespace RMAZOR.UI.Panels
 
         public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        #endregion
+
+        #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel(_Container, _OnClose);
+            base.LoadPanelCore(_Container, _OnClose);
             m_PanelView.Init(
                 Ticker,
                 Managers.AudioManager,
@@ -121,10 +125,6 @@ namespace RMAZOR.UI.Panels
             InitSettingItems();
             InitOtherButtons();
         }
-
-        #endregion
-
-        #region nonpublic methods
         
         protected override void OnDialogStartAppearing()
         {

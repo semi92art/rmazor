@@ -117,28 +117,28 @@ namespace RMAZOR.UI.Panels
         {
             if (m_VideoPlayer.IsNull())
                 InitVideoPlayer();
-            var clip = Managers.PrefabSetManager.GetObject<VideoClip>(
-                "tutorial_clips", m_Info.VideoClipAssetKey);
 #if UNITY_WEBGL
             m_VideoPlayer.url = GlobalGameSettings.urlOtherAssets
                                 + "/videos/" 
-                                + clip.originalPath.Split('\\', '/').Last(); 
+                                + m_Info.VideoClipAssetKey + ".webm"; 
 #else
+            var clip = Managers.PrefabSetManager.GetObject<VideoClip>(
+                "tutorial_clips", m_Info.VideoClipAssetKey);
             m_VideoPlayer.clip = clip;
 #endif
             m_VideoPlayer.enabled = true;
             m_VideoPlayer.Play();
         }
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            m_PanelView.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
-        }
-
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            m_PanelView.Init(Ticker, Managers.AudioManager, Managers.LocalizationManager);
+        }
         
         protected override void OnDialogStartAppearing()
         {
