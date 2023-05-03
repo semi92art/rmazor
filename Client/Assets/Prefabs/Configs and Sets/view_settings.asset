@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineThickness: 10
   pathItemBorderThickness: 15
-  blockItemsCount: 500
-  pathItemsCount: 2400
+  blockItemsCount: 50
+  pathItemsCount: 500
   mazeRotationSpeed: 5
   bottomScreenOffset: 5
   topScreenOffset: 5
