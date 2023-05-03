@@ -111,17 +111,6 @@ namespace RMAZOR.UI.Panels
         public override    int      DialogViewerId => DialogViewerIdsCommon.MediumCommon;
         public override    Animator Animator       => m_PanelAnimator;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
-                "icons", "icon_coin_ui");
-            m_MoneyInBankIcon.sprite      = moneyIconSprite;
-            m_MoneyIconInPayButton.sprite = moneyIconSprite;
-            m_Countdown.color             = ColorProvider.GetColor(ColorIds.UiBorder);
-            m_CountdownBackground.color   = Color.black;
-        }
-
         public void ReturnFromShopPanel()
         {
             var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
@@ -138,6 +127,17 @@ namespace RMAZOR.UI.Panels
         #endregion
         
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            var moneyIconSprite = Managers.PrefabSetManager.GetObject<Sprite>(
+                "icons", "icon_coin_ui");
+            m_MoneyInBankIcon.sprite      = moneyIconSprite;
+            m_MoneyIconInPayButton.sprite = moneyIconSprite;
+            m_Countdown.color             = ColorProvider.GetColor(ColorIds.UiBorder);
+            m_CountdownBackground.color   = Color.black;
+        }
         
         protected override void OnDialogStartAppearing()
         {

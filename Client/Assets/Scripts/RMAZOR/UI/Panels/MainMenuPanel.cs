@@ -38,7 +38,7 @@ namespace RMAZOR.UI.Panels
 {
     public interface IMainMenuPanel : IDialogPanel { }
 
-    public class MainMenuPanelFake : FakeDialogPanel, IMainMenuPanel { }
+    public class MainMenuPanelFake : DialogPanelFake, IMainMenuPanel { }
     
     public class MainMenuPanel : DialogPanelBase, IMainMenuPanel
     {
@@ -134,19 +134,19 @@ namespace RMAZOR.UI.Panels
         
         public override int      DialogViewerId => DialogViewerIdsMazor.Fullscreen2;
         public override Animator Animator       => m_Animator;
+
+        #endregion
+
+        #region nonpublic methods
         
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel(_Container, _OnClose);
+            base.LoadPanelCore(_Container, _OnClose);
             InitDailyGiftButton();
             InitPlayButtons();
             InitCharacterSubPanel();
             ProceedFirstLaunchPanelOnLoad();
         }
-
-        #endregion
-
-        #region nonpublic methods
 
         protected override void OnDialogStartAppearing()
         {

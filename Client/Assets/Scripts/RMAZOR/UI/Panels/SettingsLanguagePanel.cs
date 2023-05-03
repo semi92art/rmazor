@@ -78,17 +78,17 @@ namespace RMAZOR.UI.Panels
             m_OnSelect    = _OnSelect;
             m_GetIconFunc = _GetIconFunc;
         }
-        
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            m_Content.gameObject.DestroyChildrenSafe();
-            InitItems();
-        }
-        
+
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            m_Content.gameObject.DestroyChildrenSafe();
+            InitItems();
+        }
 
         protected override void OnDialogStartAppearing()
         {

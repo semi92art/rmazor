@@ -99,14 +99,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
             var tabBadgesDict = SaveUtils.GetValue(SaveKeysRmazor.TabBadgesDict);
             return tabBadgesDict.ContainsKey("shop") ? 0 : 1;
         }
-        
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            SpecialOfferTimerController.Init();
-            Cor.Run(InitPanelItemsCoroutine());
-        }
-        
+
         public void SetOnCloseFinishAction(UnityAction _Action)
         {
             m_OnCloseFinishAction = _Action;
@@ -115,6 +108,13 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            SpecialOfferTimerController.Init();
+            Cor.Run(InitPanelItemsCoroutine());
+        }
         
         private void OnButtonCloseClick()
         {

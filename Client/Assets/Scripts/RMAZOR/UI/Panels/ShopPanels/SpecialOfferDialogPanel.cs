@@ -20,11 +20,13 @@ namespace RMAZOR.UI.Panels.ShopPanels
 {
     public interface ISpecialOfferDialogPanel : IDialogPanel
     {
+        bool        CanBeShown          { get; }
         UnityAction OnPanelClosedAction { get; set; }
     }
 
     public class SpecialOfferDialogPanelFake : DialogPanelFake, ISpecialOfferDialogPanel
     {
+        public bool        CanBeShown          => false;
         public UnityAction OnPanelClosedAction { get; set; }
     }
     
@@ -69,20 +71,32 @@ namespace RMAZOR.UI.Panels.ShopPanels
         #endregion
 
         #region api
+
+        public bool CanBeShown
+        {
+            get
+            {
+#if YANDEX_GAMES
+                return false;
+#else
+                return true;
+#endif
+            }
+        }
         
         public UnityAction OnPanelClosedAction { get; set; }
         
         public override int DialogViewerId => DialogViewerIdsCommon.MediumCommon;
-        
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            Cor.Run(InitPanelItemsCoroutine());
-        }
 
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            Cor.Run(InitPanelItemsCoroutine());
+        }
         
         private void OnButtonCloseClick()
         {

@@ -108,15 +108,15 @@ namespace RMAZOR.UI.Panels
 
         public override Animator Animator => m_PanelAnimator;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            CachePuzzlesTotalCount();
-            base.LoadPanel(_Container, _OnClose);
-        }
-
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            CachePuzzlesTotalCount();
+            base.LoadPanelCore(_Container, _OnClose);
+        }
         
         private void CachePuzzlesTotalCount()
         {

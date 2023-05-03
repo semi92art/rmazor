@@ -146,6 +146,8 @@ namespace RMAZOR.UI.Panels
         
         private void LoadDialogPanels()
         {
+            foreach (var panel in m_PanelsCached)
+                panel.LoadOnFirstAppear = false;
             var pansToLoad = m_PanelsCached
                 .Except(new IDialogPanel[] {SettingLanguageDialogPanel, TutorialDialogPanel});
             foreach (var panel in pansToLoad)

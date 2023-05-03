@@ -27,7 +27,7 @@ namespace RMAZOR.UI.Panels
         UnityAction OnReadyToLoadLevelAction { get; set; }
     }
     
-    public class RandomGenerationParamsPanelFake : FakeDialogPanel, IRandomGenerationParamsPanel
+    public class RandomGenerationParamsPanelFake : DialogPanelFake, IRandomGenerationParamsPanel
     {
         public UnityAction OnReadyToLoadLevelAction { get; set; }
     }
@@ -103,15 +103,15 @@ namespace RMAZOR.UI.Panels
 
         public override int DialogViewerId => DialogViewerIdsCommon.FullscreenCommon;
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
-        {
-            base.LoadPanel(_Container, _OnClose);
-            m_ToggleLevelSizeMedium.isOn = true;
-        }
-
         #endregion
 
         #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
+        {
+            base.LoadPanelCore(_Container, _OnClose);
+            m_ToggleLevelSizeMedium.isOn = true;
+        }
 
         protected override void GetPrefabContentObjects(GameObject _Go)
         {

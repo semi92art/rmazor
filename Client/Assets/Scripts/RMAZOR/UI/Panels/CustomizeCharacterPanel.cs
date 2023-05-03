@@ -109,9 +109,13 @@ namespace RMAZOR.UI.Panels
             return m_TabPanelView.GetBadges().Count(_B => _B.Number > 0);
         }
 
-        public override void LoadPanel(RectTransform _Container, ClosePanelAction _OnClose)
+        #endregion
+
+        #region nonpublic methods
+        
+        protected override void LoadPanelCore(RectTransform _Container, ClosePanelAction _OnClose)
         {
-            base.LoadPanel(_Container, _OnClose);
+            base.LoadPanelCore(_Container, _OnClose);
             LoadCustomCharactersArgsList();
             LoadCustomCharacterColorSetsArgsList();
             InitPanelItems();
@@ -121,10 +125,6 @@ namespace RMAZOR.UI.Panels
             Managers.ScoreManager.GameSaved -= OnGameSaved;
             Managers.ScoreManager.GameSaved += OnGameSaved;
         }
-
-        #endregion
-
-        #region nonpublic methods
         
         protected override void OnDialogStartAppearing()
         {
