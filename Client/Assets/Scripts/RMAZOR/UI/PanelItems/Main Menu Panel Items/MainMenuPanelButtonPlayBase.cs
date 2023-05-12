@@ -57,7 +57,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         public virtual void UpdateState()
         {
-            const float fontSize = 32;
+            const float fontSize = 26f;
             const bool enableAutoSizing = true;
             foreach (var text in new [] { title, body}
                 .Where(_T => _T.IsNotNull()))
