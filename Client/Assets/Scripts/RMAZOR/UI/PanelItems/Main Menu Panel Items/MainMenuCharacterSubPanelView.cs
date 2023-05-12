@@ -27,6 +27,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
         #region serialized fields
 
         [SerializeField] private RawImage                         characterIcon;
+        [SerializeField] private Button                           buttonCharacterIcon;
         [SerializeField] private MainMenuCustomizeCharacterButton buttonCustomizeCharacter;
         [SerializeField] private MainMenuShopButton               buttonShop;
         [SerializeField] private TextMeshProUGUI                  moneyText;
@@ -75,16 +76,17 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             UnityAction              _OnShopButtonClick)
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
-            ContainersGetter          = _ContainersGetter;
-            PrefabSetManager          = _PrefabSetManager;
-            ScoreManager              = _ScoreManager;
-            DailyGiftPanel            = _DailyGiftPanel;
-            CoordinateConverter       = _CoordinateConverter;
-            CustomizeCharacterPanel   = _CustomizeCharacterPanel;
-            ShopDialogPanel           = _ShopDialogPanel;
-            m_OnAddMoneyButtonClick   = _OnAddMoneyButtonClick;
+            ContainersGetter                  = _ContainersGetter;
+            PrefabSetManager                  = _PrefabSetManager;
+            ScoreManager                      = _ScoreManager;
+            DailyGiftPanel                    = _DailyGiftPanel;
+            CoordinateConverter               = _CoordinateConverter;
+            CustomizeCharacterPanel           = _CustomizeCharacterPanel;
+            ShopDialogPanel                   = _ShopDialogPanel;
+            m_OnAddMoneyButtonClick           = _OnAddMoneyButtonClick;
             m_OnCustomizeCharacterButtonClick = _OnCustomizeCharacterButtonClick;
-            m_OnShopButtonClick       = _OnShopButtonClick;
+            m_OnShopButtonClick               = _OnShopButtonClick;
+            buttonCharacterIcon.SetOnClick(m_OnCustomizeCharacterButtonClick);
             InitRenderCameraAndRawTexture();
             LocalizeTextObjects();
             SubscribeButtonEvents();
