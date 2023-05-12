@@ -89,7 +89,24 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         private void UpdateColorIcons()
         {
-            color1Icon.color = ColorSetItemArgsFull.Color;
+            color1Icon.color = SetContrast(ColorSetItemArgsFull.Color, 1.5f);
+        }
+        
+        private static Color SetContrast(Color color, float contrastValue)
+        {
+            // Convert color to HSV
+            Color.RGBToHSV(color, out float h, out float s, out float v);
+
+            // Calculate new value for V based on contrastValue
+            float newV = (v > 0.5f) ? v + ((1.0f - v) * contrastValue) : v - (v * contrastValue);
+
+            // Clamp newV value between 0 and 1
+            newV = Mathf.Clamp01(newV);
+
+            // Convert HSV back to RGB
+            Color newColor = Color.HSVToRGB(h, s, newV);
+
+            return newColor;
         }
 
         protected override void BuyForGameMoney()
