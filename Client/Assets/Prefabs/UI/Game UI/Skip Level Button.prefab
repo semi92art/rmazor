@@ -296,10 +296,10 @@ MonoBehaviour:
   stencilWriteMask: 255
   pivot: 1
   width: 30
-  height: 13
+  height: 10
   type: 1
   cornerRadiusMode: 0
-  cornerRadii: {x: 5, y: 5, z: 5, w: 5}
+  cornerRadii: {x: 3, y: 3, z: 3, w: 3}
   thickness: 0.1
   thicknessSpace: 0
   matchDashSpacingToSize: 1
