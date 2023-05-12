@@ -20,20 +20,10 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
     public class ViewGameUiButtonDailyGift : ViewGameUiButtonBase, IViewGameUiButtonDailyGift
     {
         #region nonpublic members
-
-        // private bool IsNextLevelBonus
-        // {
-        //     get
-        //     {
-        //         string nextLevelType = (string) Model.LevelStaging.Arguments.GetSafe(KeyNextLevelType, out _);
-        //         return nextLevelType == ParameterLevelTypeBonus;
-        //     }
-        // }
         
-        // protected override bool CanShow => CanShowDailyGiftPanel 
-        //                                    && (Model.LevelStaging.LevelIndex > 0 || IsNextLevelBonus);
+        protected override bool CanShow => CanShowDailyGiftPanel;
 
-        protected override bool   CanShow    => false;
+        // protected override bool   CanShow    => false;
         protected override string PrefabName => "daily_gift_button";
 
         #endregion
@@ -86,7 +76,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         protected override Vector2 GetPosition(Camera _Camera)
         {
             var visibleBounds = GetVisibleBounds(_Camera);
-            float xPos = visibleBounds.min.x + 6f;
+            float xPos = visibleBounds.min.x + 1f;
             float yPos = visibleBounds.max.y - TopOffset;
             return new Vector2(xPos, yPos);
         }
