@@ -10,9 +10,9 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Settings;
-using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.Utils;
 using UnityEngine;
 using static RMAZOR.Models.ComInComArg;
@@ -55,8 +55,8 @@ namespace RMAZOR.Views.Common
         private BloomPropsArgs m_BloomPropsArgs;
 
         protected AdditionalColorPropsAdditionalInfo AdditionalInfo;
-        
-        private int  m_RandomModeColorPropsIndex;
+
+        private int  m_MainModeBonusLevelsColorPropsIndex;
         private bool m_IsRetroMode;
 
         #endregion
@@ -193,7 +193,7 @@ namespace RMAZOR.Views.Common
                 return GetAdditionalColorPropsForGameModeRandom();
             string levelType = ViewLevelStageSwitcherUtils.GetNextLevelType(_Args.Arguments);
             if (levelType == ParameterLevelTypeBonus)
-                return m_ColorPropsList.FirstOrDefault(_Props => _Props.additionalInfo.arguments.Contains("bonus"));
+                return GetAdditionalColorPropsForGameModeMainBonusLevels(_Args);
             var propsForLevelTypeMain = m_ColorPropsList
                 .Where(_Props => !_Props.additionalInfo.arguments.Contains("disable_for_main"))
                 .ToList();
@@ -210,6 +210,15 @@ namespace RMAZOR.Views.Common
             if (setItemIdx < 0) setItemIdx = 0;
             var colorsSet = propsForLevelTypeMain[setItemIdx];
             return colorsSet;
+        }
+
+        private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeMainBonusLevels(LevelStageArgs _Args)
+        {
+            var subList = m_ColorPropsList
+                .Where(_Props => _Props.additionalInfo.arguments.Contains("bonus"))
+                .ToList();
+            int index = (int)_Args.LevelIndex % subList.Count;
+            return subList[index];
         }
 
         private AdditionalColorsPropsAssetItem GetAdditionalColorPropsForGameModeRandom()
