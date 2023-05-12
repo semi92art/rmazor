@@ -55,7 +55,6 @@ namespace RMAZOR.Views.MazeItemGroups
                 .Distinct())
             {
                 var viewMazeItemKey = Common.GetItem<IViewMazeItemKeyLock>(key);
-                Dbg.Log("key: " + key.StartPosition);
                 viewMazeItemKey.OnKeyLockStateChanged(key, false);
             }
         }
