@@ -1,4 +1,5 @@
-﻿using Common.Managers.Advertising;
+﻿using Common;
+using Common.Managers.Advertising;
 using mazing.common.Runtime;
 using mazing.common.Runtime.Enums;
 using mazing.common.Runtime.Exceptions;
@@ -67,7 +68,8 @@ namespace RMAZOR.Views
         {
             if (!IsValidLevelStage() 
                 || !IsBeenEnoughTime()
-                || !AdsManager.RewardedAdReady)
+                || !AdsManager.RewardedAdReady
+                || !CommonDataMazor.Release)
             {
                 return;
             }
