@@ -87,7 +87,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         private void CheckIfGameModeLocked()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object charXpArg = savedGame.Arguments.GetSafe(ComInComArg.KeyCharacterXp, out _);
             int charXp = Convert.ToInt32(charXpArg);
             int charLevel = RmazorUtils.GetCharacterLevel(
@@ -101,11 +101,6 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
             charLevelToUnlockBackground.enabled = isGameModeLocked;
             lockIcon.enabled                    = isGameModeLocked;
             button.interactable                 = !isGameModeLocked;
-            if (LocalizationManager.GetCurrentLanguage() == ELanguage.Russian)
-                return;
-            title.color = isGameModeLocked ? Color.gray : Color.white;
-            body.color  = isGameModeLocked ? Color.gray : Color.white;
-            icon.color  = isGameModeLocked ? Color.gray : Color.white;
         }
 
         #endregion

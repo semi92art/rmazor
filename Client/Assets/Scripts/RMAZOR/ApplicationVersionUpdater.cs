@@ -73,7 +73,7 @@ namespace RMAZOR
                 return;
             }
 #pragma warning disable 612
-            var entity = ScoreManager.GetSavedGameProgress(MazorCommonData.SavedGameFileName);
+            var entity = ScoreManager.GetSavedGameProgress(CommonDataMazor.SavedGameFileName);
 #pragma warning restore 612
             if (entity == null)
                 return;

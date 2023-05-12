@@ -113,7 +113,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
 
         private void SpentGameCurrency()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             money -= m_ShopItemInfo.Price;
@@ -125,7 +125,7 @@ namespace RMAZOR.UI.PanelItems.Shop_Panel_Items
 
         private bool IsEnoughGameMoney()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             return money >= m_ShopItemInfo.Price;

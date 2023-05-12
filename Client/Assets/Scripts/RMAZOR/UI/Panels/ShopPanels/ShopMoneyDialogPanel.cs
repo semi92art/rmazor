@@ -254,7 +254,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void OnPaid(int _PurchaseKey, long _Reward)
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             var bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             money += _Reward;

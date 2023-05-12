@@ -92,7 +92,7 @@ namespace Common
             background.enabled = true;
             background.material = PrefabSetManager.InitObject<Material>(
                 "materials", "background_solid");
-            background.sharedMaterial.SetColor(Color1Id, MazorCommonData.CompanyLogoBackgroundColor);
+            background.sharedMaterial.SetColor(Color1Id, CommonDataMazor.CompanyLogoBackgroundColor);
             ScaleTextureToViewport(background.transform);
 
             var startCol = Color.white;

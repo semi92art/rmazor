@@ -245,7 +245,7 @@ namespace Mono_Installers
                 .FromComponentInNewPrefab(companyLogo)
                 .AsSingle();
             
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
                 Container.Bind<IViewUIGameLogo>() .To<ViewUIGameLogoFake>()     .AsSingle();
             else
                 Container.Bind<IViewUIGameLogo>().To<ViewUIGameLogoBladyMaze2>().AsSingle();

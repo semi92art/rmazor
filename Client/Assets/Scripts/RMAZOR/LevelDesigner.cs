@@ -161,7 +161,7 @@ namespace RMAZOR
             {
                 case PlayModeStateChange.EnteredPlayMode:
                     MazeInfo = Instance.GetLevelInfoFromScene();
-                    MazorCommonData.Release = false;
+                    CommonDataMazor.Release = false;
                     SceneManager.sceneLoaded -= OnSceneLoaded;
                     SceneManager.sceneLoaded += OnSceneLoaded;
                     Cor.Run(LoadSceneLevel());

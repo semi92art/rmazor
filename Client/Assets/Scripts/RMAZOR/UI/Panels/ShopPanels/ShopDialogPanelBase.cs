@@ -143,7 +143,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void InitMoneyMiniPanel()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object moneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(moneyCountArg);
             m_MoneyText.text = money.ToString("N0");

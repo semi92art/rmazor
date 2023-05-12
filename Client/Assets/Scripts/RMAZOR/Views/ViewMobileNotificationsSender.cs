@@ -35,7 +35,7 @@ namespace RMAZOR.Views
         
         private void SendNotificationsOnInit()
         {
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
                 return;
             if (RemotePropertiesRmazor.Notifications == null)
                 return;

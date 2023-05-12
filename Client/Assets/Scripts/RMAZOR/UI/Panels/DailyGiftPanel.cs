@@ -316,7 +316,7 @@ namespace RMAZOR.UI.Panels
         
         private void Multiply()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             long reward = m_TodayGiftMoneyCount * m_MultiplyCoefficient;

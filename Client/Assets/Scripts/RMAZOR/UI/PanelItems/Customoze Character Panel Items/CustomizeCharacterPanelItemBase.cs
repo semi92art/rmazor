@@ -154,7 +154,7 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         protected virtual void BuyForGameMoney()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             money -= m_Args.CoastArgs.GameMoneyCoast();
@@ -175,7 +175,7 @@ namespace RMAZOR.UI.PanelItems.Customoze_Character_Panel_Items
 
         private bool IsItemAccessibleForPurchase(out bool _AccessibleForGameMoneyPurchase)
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(ComInComArg.KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             _AccessibleForGameMoneyPurchase = money >= m_Args.CoastArgs.GameMoneyCoast();

@@ -306,7 +306,7 @@ namespace RMAZOR
 
         private void OnScoreManagerInitialize()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             if (savedGame != null)
                 return;
             savedGame = new SavedGameV2
@@ -325,7 +325,7 @@ namespace RMAZOR
         private IEnumerator InitStartDataCoroutine()
         {
             ScoreManager.Initialize += OnScoreManagerInitialize;
-            MazorCommonData.Release = true;
+            CommonDataMazor.Release = true;
             SaveUtils.PutValue(SaveKeysMazor.AppVersion, Application.version);
             Application.targetFrameRate = GraphicUtils.GetTargetFps();
             Dbg.LogLevel = GlobalGameSettings.logLevel;

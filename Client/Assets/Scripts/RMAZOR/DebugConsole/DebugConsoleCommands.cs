@@ -319,7 +319,7 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine("Wrong. Need money count!");
                 return;
             }
-            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Controller.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             savedGame.Arguments.SetSafe(KeyMoneyCount, moneyCount);
             Controller.ScoreManager.SaveGame(savedGame);
         }
@@ -337,7 +337,7 @@ namespace RMAZOR.DebugConsole
 
         private static void ShowMoney(string[] _Args)
         {
-            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Controller.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             Dbg.Log("Money: " + money);
@@ -451,7 +451,7 @@ namespace RMAZOR.DebugConsole
                 Controller.AppendLogLine("Wrong character id format.");
                 return;
             }
-            var savedGame = Controller.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Controller.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             savedGame.Arguments.SetSafe(KeyCharacterXp, characterXp);
             Controller.ScoreManager.SaveGame(savedGame);
         }

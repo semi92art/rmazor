@@ -89,7 +89,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                                 Dbg.LogError("Failed to get score from leaderboard");
                                 return;
                             }
-                            Dbg.Log("Level score from server leaderboard: " + score.Value);
                             ScoreManager.SetScoreToLeaderboard(
                                 DataFieldIds.Level, 
                                 score.Value + 1, 
@@ -197,7 +196,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         private void AddDailyChallengeRewardToBank(LevelStageArgs _Args)
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             int rewardMoney = (int) _Args.Arguments.GetSafe(KeyDailyChallengeRewardMoney, out _);

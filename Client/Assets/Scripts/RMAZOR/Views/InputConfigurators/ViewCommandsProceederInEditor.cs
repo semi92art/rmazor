@@ -34,7 +34,7 @@ namespace RMAZOR.Views.InputConfigurators
 
         public override void Init()
         {
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
                 m_DoProceed = true;
             base.Init();
         }

@@ -376,7 +376,7 @@ namespace RMAZOR.Views
         
         private void LoadLastMainLevel(UnityAction _OnReadyToLoadLevel)
         {
-            var sgCache = Managers.ScoreManager.GetSavedGame( MazorCommonData.SavedGameFileName);
+            var sgCache = Managers.ScoreManager.GetSavedGame( CommonDataMazor.SavedGameFileName);
             object levelIndexArg = sgCache.Arguments.GetSafe(KeyLevelIndexMainLevels, out _);
             long levelIndex = Convert.ToInt64(levelIndexArg);
             LoadLevelByIndex(levelIndex, ParameterGameModeMain, sgCache.Arguments, _OnReadyToLoadLevel);

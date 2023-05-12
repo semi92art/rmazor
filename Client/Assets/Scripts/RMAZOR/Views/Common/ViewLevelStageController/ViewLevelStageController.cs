@@ -117,7 +117,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         public void OnPathCompleted(V2Int _LastPath)
         {
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
                 return;
             LevelStageSwitcher.SwitchLevelStage(EInputCommand.FinishLevel);
         }

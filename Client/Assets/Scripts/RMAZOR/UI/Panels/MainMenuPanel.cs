@@ -198,7 +198,7 @@ namespace RMAZOR.UI.Panels
 
         private int GetMainGameModeCurrentStageIndex()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             if (savedGame == null)
             {
                 savedGame = new SavedGameV2 {Arguments = new Dictionary<string, object>()};
@@ -399,7 +399,7 @@ namespace RMAZOR.UI.Panels
 
         private void LoadLastMainLevel(UnityAction _OnReadyToLoadLevel)
         {
-            var sgCache = Managers.ScoreManager.GetSavedGame( MazorCommonData.SavedGameFileName);
+            var sgCache = Managers.ScoreManager.GetSavedGame( CommonDataMazor.SavedGameFileName);
             object levelIndexArg = sgCache.Arguments.GetSafe(KeyLevelIndexMainLevels, out _);
             long levelIndex = Convert.ToInt64(levelIndexArg);
             LoadLevelByIndex(levelIndex, ParameterGameModeMain, sgCache.Arguments, _OnReadyToLoadLevel);

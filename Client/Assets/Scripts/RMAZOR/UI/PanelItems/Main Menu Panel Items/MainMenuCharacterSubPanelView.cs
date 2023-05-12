@@ -202,7 +202,7 @@ namespace RMAZOR.UI.PanelItems.Main_Menu_Panel_Items
 
         private int GetBankMoneyCount()
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out bool keyExist);
             if (keyExist)
                 return Convert.ToInt32(bankMoneyArg);

@@ -113,7 +113,7 @@ namespace RMAZOR.UI.Panels
 
         public void ReturnFromShopPanel()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             m_MoneyCount = Convert.ToInt64(bankMoneyCountArg);
             m_MoneyInBankText.text = m_MoneyCount.ToString();
@@ -155,7 +155,7 @@ namespace RMAZOR.UI.Panels
                 () => !Managers.AdsManager.RewardedAdReady,
                 () => IndicateAdsLoading(false),
                 () => !m_PanelShowing));
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             m_MoneyCount = Convert.ToInt64(bankMoneyCountArg);
             m_MoneyInBankText.text = m_MoneyCount.ToString();
@@ -218,7 +218,7 @@ namespace RMAZOR.UI.Panels
             }
             else
             {
-                var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+                var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
                 var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
                 long money = Convert.ToInt64(bankMoneyCountArg);
                 money -= GlobalGameSettings.payToContinueMoneyCount;
