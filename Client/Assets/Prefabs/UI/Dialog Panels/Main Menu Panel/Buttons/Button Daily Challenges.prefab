@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4800730598360916477
 RectTransform:
   m_ObjectHideFlags: 0
@@ -194,7 +194,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5130464269938231748}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -202,10 +202,10 @@ RectTransform:
   m_Father: {fileID: 5879474802839547837}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0.6832211, y: 0.5}
-  m_AnchoredPosition: {x: 0.7000122, y: 4.8}
-  m_SizeDelta: {x: -2.5740967, y: 100}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -1.0811157, y: -31.33004}
+  m_SizeDelta: {x: -2.1622, y: 62.6601}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7653532481525694308
 CanvasRenderer:
@@ -499,7 +499,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7992178218981937022}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -507,10 +507,10 @@ RectTransform:
   m_Father: {fileID: 5879474802839547837}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.6832211, y: 0.5}
-  m_AnchorMax: {x: 0.88869065, y: 0.5}
-  m_AnchoredPosition: {x: 0.1000061, y: 1.6}
-  m_SizeDelta: {x: 1.4775085, y: 75.9487}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 35.06453}
+  m_SizeDelta: {x: 382.23578, y: 70.12906}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7219487902939289016
 CanvasRenderer:
@@ -604,7 +604,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 0, y: 0, z: 0, w: 8.89436}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
