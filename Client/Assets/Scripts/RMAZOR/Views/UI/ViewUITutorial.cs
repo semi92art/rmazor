@@ -115,6 +115,8 @@ namespace RMAZOR.Views.UI
                     FinishMovementTutorial();
                     break;
                 case ELevelStage.Loaded:
+                    break;
+                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     string tutorialName = CurrentLevelTutorialName();
                     if (string.IsNullOrEmpty(tutorialName))
                         return;
@@ -123,8 +125,6 @@ namespace RMAZOR.Views.UI
                     if (tutorialName == "movement")
                         StartMovementTutorial();
                     ShowTutorialPanel(tutorialName);
-                    break;
-                case ELevelStage.ReadyToStart when _Args.PreviousStage == ELevelStage.Loaded:
                     break;
             }
         }
