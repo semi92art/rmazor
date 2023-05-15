@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Common.Helpers;
+using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Enums;
@@ -64,6 +65,8 @@ namespace RMAZOR.UI.Panels
         private Button                  m_ButtonClose;
         private Animator                m_Animator;
         private SimpleUiItem            m_PanelView;
+
+        private IEnumerator m_PrintCoroutine;
         
         protected override string PrefabName => "tutorial_panel";
 
@@ -106,7 +109,7 @@ namespace RMAZOR.UI.Panels
         public override    Animator Animator       => m_Animator;
 
         public UnityAction OnPanelCloseAction { get; set; }
-        public bool        IsVideoReady       => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPlaying;
+        public bool        IsVideoReady       => m_VideoPlayer.IsNotNull() && m_VideoPlayer.isPrepared;
 
         public void SetPanelInfo(TutorialDialogPanelInfo _Info)
         {
@@ -127,7 +130,7 @@ namespace RMAZOR.UI.Panels
             m_VideoPlayer.clip = clip;
 #endif
             m_VideoPlayer.enabled = true;
-            m_VideoPlayer.Play();
+            m_VideoPlayer.Prepare();
         }
 
         #endregion
@@ -142,6 +145,7 @@ namespace RMAZOR.UI.Panels
         
         protected override void OnDialogStartAppearing()
         {
+            m_VideoPlayer.Play();
             TimePauser.PauseTimeInGame();
             var font =  Managers.LocalizationManager.GetFont(ETextType.MenuUI_H1);
             m_Title.font = m_Description.font = font;
@@ -161,14 +165,17 @@ namespace RMAZOR.UI.Panels
                 .FirstCharToUpper(CultureInfo.CurrentUICulture);
             int currentTutorialNumber = GetNumberOfFinishedTutorials() + 1;
             titleTextLocalized = $"{tutorialWordLocalized} #{currentTutorialNumber}: {titleTextLocalized}";
-            Cor.Run(PrintTutorialTextCoroutine(titleTextLocalized, descriptionTextLocalized));
+            m_PrintCoroutine = PrintTutorialTextCoroutine(titleTextLocalized, descriptionTextLocalized);
+            Cor.Run(m_PrintCoroutine);
         }
 
         protected override void OnDialogDisappeared()
         {
-
+            Cor.Stop(m_PrintCoroutine);
+            m_Title.text          = string.Empty;
+            m_Description.text    = string.Empty;
             m_VideoPlayer.Stop();
-            m_VideoPlayer.clip = null;
+            m_VideoPlayer.clip    = null;
             m_VideoPlayer.enabled = false;
             TimePauser.UnpauseTimeInGame();
             base.OnDialogDisappeared();
