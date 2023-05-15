@@ -22,7 +22,7 @@ MonoBehaviour:
   moveSwipeThreshold: 0.1
   afterRotationEnableMoveDelay: 0.1
   firstLevelToRateGame: 4
-  betweenLevelTransitionTime: 0.6
+  betweenLevelTransitionTime: 1
   spearRotationSpeed: 5
   skipLevelSeconds: 1
   animatePathFill: 1
