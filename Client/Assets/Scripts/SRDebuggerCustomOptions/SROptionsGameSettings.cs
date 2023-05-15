@@ -527,25 +527,25 @@ namespace SRDebuggerCustomOptions
             }
         }
 
-#if FIREBASE
-        [Category(CategoryCommon)]
-        public bool Get_FCM_Token
-        {
-            get => false;
-            set
-            {
-                if (!value)
-                    return;
-                Firebase.Messaging.FirebaseMessaging.GetTokenAsync()
-                    .ContinueWithOnMainThread(_Task =>
-                    {
-                        string token = _Task.Result;
-                        Dbg.Log("FCM Token: " + token);
-                        CommonUtils.CopyToClipboard(token);
-                    });
-            }
-        }
-#endif
+// #if FIREBASE
+//         [Category(CategoryCommon)]
+//         public bool Get_FCM_Token
+//         {
+//             get => false;
+//             set
+//             {
+//                 if (!value)
+//                     return;
+//                 Firebase.Messaging.FirebaseMessaging.GetTokenAsync()
+//                     .ContinueWithOnMainThread(_Task =>
+//                     {
+//                         string token = _Task.Result;
+//                         Dbg.Log("FCM Token: " + token);
+//                         CommonUtils.CopyToClipboard(token);
+//                     });
+//             }
+//         }
+// #endif
 
         // [Category(CategoryCommon)]
         // public bool Show_Money
