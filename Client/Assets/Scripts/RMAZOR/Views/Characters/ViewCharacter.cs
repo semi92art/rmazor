@@ -213,7 +213,7 @@ namespace RMAZOR.Views.Characters
                     Activated = true;
                     break;
                 case ELevelStage.ReadyToStart:
-                    if (!MazorCommonData.Release)
+                    if (!CommonDataMazor.Release)
                         CommandsProceeder.UnlockCommands(RmazorUtils.MoveAndRotateCommands, nameof(IViewCharacter));
                     if (_Args.PreviousStage == ELevelStage.Paused 
                         && _Args.PrePreviousStage == ELevelStage.CharacterKilled)
@@ -303,7 +303,9 @@ namespace RMAZOR.Views.Characters
             Tail.Activated = false;
             var setItem = CharactersSet.GetItem(_Id);
             (Head, Tail, Legs) = (setItem.Head, setItem.Tail, setItem.Legs);
-            Head.Activated = Legs.Activated = Tail.Activated = true;
+            Head.Activated = true;
+            Legs.Activated = true;
+            Head.Activated = true;
         }
 
         private static string GetCharacterIdCached()

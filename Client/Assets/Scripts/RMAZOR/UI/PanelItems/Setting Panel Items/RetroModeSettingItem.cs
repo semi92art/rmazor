@@ -55,7 +55,7 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             }
             else
             {
-                var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+                var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
                 object charXpArg = savedGame.Arguments.GetSafe(ComInComArg.KeyCharacterXp, out _);
                 int charXp = Convert.ToInt32(charXpArg);
                 int charLevel = RmazorUtils.GetCharacterLevel(

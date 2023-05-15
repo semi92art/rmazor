@@ -437,7 +437,7 @@ namespace RMAZOR.UI.Panels
         
         private int GetBankMoneyCount()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object bankMoneyArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out bool keyExist);
             if (keyExist)
                 return Convert.ToInt32(bankMoneyArg);

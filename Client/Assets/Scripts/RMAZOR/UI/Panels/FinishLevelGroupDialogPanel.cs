@@ -270,7 +270,7 @@ namespace RMAZOR.UI.Panels
         private IEnumerator AnimateXpSliderValueCoroutine()
         {
             yield return Cor.Delay(0.3f, Ticker);
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object xpTotalGotArg = savedGame.Arguments.GetSafe(KeyCharacterXp, out _);
             int xpTotalGotStart = Convert.ToInt32(xpTotalGotArg);
             int prevCharacterLevel = RmazorUtils.GetCharacterLevel(xpTotalGotStart, out _, out _);
@@ -431,7 +431,7 @@ namespace RMAZOR.UI.Panels
 
         private void Multiply()
         {
-            var savedGame = Managers.ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = Managers.ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object moneyArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             long money = Convert.ToInt64(moneyArg);
             long reward = RewardCounter.CurrentLevelGroupMoney * m_MultiplyCoefficient;

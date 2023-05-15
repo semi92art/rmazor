@@ -118,7 +118,7 @@ namespace RMAZOR.UI.Panels.ShopPanels
 
         private void BuyCoinItemAction(int _PurchaseKey, long _Reward)
         {
-            var savedGame = ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             var bankMoneyCountArg = savedGame.Arguments.GetSafe(KeyMoneyCount, out _);
             long money = Convert.ToInt64(bankMoneyCountArg);
             money += _Reward;

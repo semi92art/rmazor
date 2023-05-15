@@ -13,7 +13,7 @@ namespace RMAZOR.Views.Utils
     {
         public static void SaveGame(LevelStageArgs _Args, IScoreManager _ScoreManager)
         {
-            var savedGame = _ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName) ?? new SavedGameV2();
+            var savedGame = _ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName) ?? new SavedGameV2();
             RmazorUtils.RemoveMethodArgs(_Args.Arguments);
             foreach ((string key, var value) in _Args.Arguments)
                 savedGame.Arguments.SetSafe(key, value);

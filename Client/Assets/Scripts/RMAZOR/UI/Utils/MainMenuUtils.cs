@@ -47,7 +47,7 @@ namespace RMAZOR.UI.Utils
         
         public static int GetTotalXpGot(IScoreManager _ScoreManager)
         {
-            var savedGame = _ScoreManager.GetSavedGame(MazorCommonData.SavedGameFileName);
+            var savedGame = _ScoreManager.GetSavedGame(CommonDataMazor.SavedGameFileName);
             object xpValue = savedGame.Arguments.GetSafe(KeyCharacterXp, out bool keyExist);
             if (!keyExist)
             {

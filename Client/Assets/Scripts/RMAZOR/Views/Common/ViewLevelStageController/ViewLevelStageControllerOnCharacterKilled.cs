@@ -62,7 +62,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 _MazeItems,
                 () =>
                 {
-                    if (!MazorCommonData.Release)
+                    if (!CommonDataMazor.Release)
                         return;
                     var gravityTraps = Model.GetAllProceedInfos()
                         .Where(_Info => _Info.Type == EMazeItemType.GravityTrap);

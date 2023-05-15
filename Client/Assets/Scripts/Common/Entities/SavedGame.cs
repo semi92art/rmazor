@@ -25,7 +25,7 @@ namespace Common.Entities
 
         public SavedGameV2()
         {
-            FileName = MazorCommonData.SavedGameFileName;
+            FileName = CommonDataMazor.SavedGameFileName;
         }
     }
 }

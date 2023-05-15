@@ -201,7 +201,7 @@ namespace RMAZOR
         {
             if (!m_EnableDebug && !Application.isEditor)
                 return;
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
                 return;
             ProceedInputCommands();
             ProceedTouchScreenKeyboard();

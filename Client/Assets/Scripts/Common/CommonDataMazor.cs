@@ -2,7 +2,7 @@
 
 namespace Common
 {
-    public class MazorCommonData
+    public class CommonDataMazor
     {
         public const string SavedGameFileName = "main_save";
         

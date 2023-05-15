@@ -141,7 +141,7 @@ namespace RMAZOR.Views.UI.Game_Logo
             GetStartGameLogoTransform(out Vector2 position, out float scale);
             SetGameLogoTransform(position, scale);
             LogoTextureProvider.Activate(true);
-            LogoTextureProvider.SetColor(MazorCommonData.CompanyLogoBackgroundColor);
+            LogoTextureProvider.SetColor(CommonDataMazor.CompanyLogoBackgroundColor);
             LogoTextureProvider.SetTransitionValue(1f, true);
             SetColors(ColorProvider.GetColor(ColorIds.UI));
             ShowGameLogoCore();

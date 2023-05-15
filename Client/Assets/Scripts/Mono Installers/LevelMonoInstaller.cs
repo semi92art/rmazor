@@ -252,7 +252,7 @@ namespace Mono_Installers
         private void BindUiCommon()
         {
             Container.Bind<IViewUICanvasGetter>().To<ViewUICanvasGetter>().AsSingle();
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
             {
                 Container.Bind<IViewUI>()            .To<ViewUIFake>()            .AsSingle();
                 Container.Bind<IViewUIGameControls>().To<ViewUIGameControlsFake>().AsSingle();
@@ -300,7 +300,7 @@ namespace Mono_Installers
 
         private void BindUiPanelsAndViewers()
         {
-            if (!MazorCommonData.Release)
+            if (!CommonDataMazor.Release)
             {
                 Container.Bind<IDialogViewersController>()    .To<DialogViewersControllerFake>()    .AsSingle();
                 Container.Bind<IDialogViewerMediumCommon>()   .To<DialogViewerMediumCommonFake>()   .AsSingle();
