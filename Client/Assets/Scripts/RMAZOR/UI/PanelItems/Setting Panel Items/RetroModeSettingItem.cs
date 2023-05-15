@@ -69,9 +69,6 @@ namespace RMAZOR.UI.PanelItems.Setting_Panel_Items
             charLevelToUnlockBackground.enabled = isGameModeLocked;
             lockIcon.enabled                    = isGameModeLocked;
             button.interactable                 = !isGameModeLocked;
-            if (LocalizationManager.GetCurrentLanguage() == ELanguage.Russian)
-                return;
-            title.color = isGameModeLocked ? Color.gray : Color.white;
         }
 
         #endregion
