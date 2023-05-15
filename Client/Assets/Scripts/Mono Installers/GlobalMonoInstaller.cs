@@ -270,15 +270,16 @@ namespace Mono_Installers
             
 #if FIREBASE && !UNITY_EDITOR && !YANDEX_GAMES
                 Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManager>()           .AsSingle();
-                Container.Bind<IPushNotificationsProvider>()
-                    .To<PushNotificationsProviderFirebase>()
-                    .AsSingle();
+                // Container.Bind<IPushNotificationsProvider>()
+                //     .To<PushNotificationsProviderFirebase>()
+                //     .AsSingle();
                 Container.Bind<IRemoteConfigProvider>().To<FirebaseRemoteConfigProvider>()  .AsSingle();
 #else
             Container.Bind<IRemoteConfigManager>() .To<RemoteConfigManagerFake>()       .AsSingle();
-                Container.Bind<IPushNotificationsProvider>()  .To<PushNotificationsProviderFake>()
-                    .AsSingle();
 #endif
+            Container.Bind<IPushNotificationsProvider>() 
+                .To<PushNotificationsProviderFake>()
+                .AsSingle();
 
             Container.Bind<IFpsCounter>()
                 .To<FpsCounterRmazor>()

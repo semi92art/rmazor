@@ -150,9 +150,6 @@ namespace RMAZOR.Managers
                     }
                     catch (SerializationException ex)
                     {
-#if FIREBASE
-                        Firebase.Crashlytics.Crashlytics.LogException(ex);
-#endif
                         Dbg.LogException(ex);
                         m_FetchCompletedActionDone = true;
                         return;
