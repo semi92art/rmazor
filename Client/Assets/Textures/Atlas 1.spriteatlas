@@ -147,6 +147,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4d2b838604b669146bc164b33de3d98d, type: 3}
   - {fileID: 21300000, guid: baa68586e6f6b354b9376c7a48fa9142, type: 3}
   - {fileID: 21300000, guid: 12b82b96221564847823e1178cad079f, type: 3}
+  - {fileID: 21300000, guid: aa8d96a6c16e33842b7a120f6499b515, type: 3}
   - {fileID: 21300000, guid: d48d8ea604092c847a7b717570372136, type: 3}
   - {fileID: 21300000, guid: 2bc701b63b63f40e0893a9fabeaa0a78, type: 3}
   - {fileID: 21300000, guid: 7fe552b69a36a2548a37a14657a4551d, type: 3}
@@ -378,6 +379,7 @@ SpriteAtlas:
   - icon_sound_off
   - icon_discount
   - icon_rate
+  - Popup_Frame01_LightBlue_2
   - icon_timer_menu
   - Btn_MainButton_Orange
   - icon_haptics_on

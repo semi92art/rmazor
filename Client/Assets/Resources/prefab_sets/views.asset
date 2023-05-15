@@ -152,15 +152,6 @@ MonoBehaviour:
     - name: tutorial_character_sprite_5
       item: {fileID: 21300000, guid: 7d95d16f78c92ae4baf0213258c2c1b1, type: 3}
       bundle: 0
-    - name: daily_challenge_money_icon_1
-      item: {fileID: 21300000, guid: 82813c074e2854877b1382f0e987511b, type: 3}
-      bundle: 0
-    - name: daily_challenge_money_icon_2
-      item: {fileID: 21300000, guid: 2340e003a4a6745a8929491f3b365cea, type: 3}
-      bundle: 0
-    - name: daily_challenge_money_icon_3
-      item: {fileID: 21300000, guid: 928516686caa643f5b6615dc945cff34, type: 3}
-      bundle: 0
     - name: daily_gift_icon_disabled
       item: {fileID: 21300000, guid: d8c6fa29b5779fc4c984bf97cd059f18, type: 3}
       bundle: 0
