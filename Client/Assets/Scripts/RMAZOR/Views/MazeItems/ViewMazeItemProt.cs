@@ -115,6 +115,7 @@ namespace RMAZOR.Views.MazeItems
                 props.Directions.Add(_Direction);
             else
                 props.Directions[0] = _Direction;
+            props.Directions = props.Directions.Distinct().ToList();
         }
         
         #endregion

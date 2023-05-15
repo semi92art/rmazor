@@ -39,7 +39,7 @@ namespace RMAZOR.Views.Helpers.MazeItemsCreators
                     var first = g.First();
                     foreach (var item in g.Except(new[] {first}))
                     {
-                        first.Directions = first.Directions.Concat(item.Directions).ToList();
+                        first.Directions = first.Directions.Concat(item.Directions).Distinct().ToList();
                         mazeItems.Remove(item);
                     }
                 }
