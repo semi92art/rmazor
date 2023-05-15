@@ -45,7 +45,7 @@ namespace RMAZOR.Views
             var sessionsDict = SaveUtils.GetValue(SaveKeysRmazor.SessionCountByDays);
             bool needToSendNotifications = false;
             var today = DateTime.Now.Date;
-            for (int iDay = 0; iDay < 5; iDay++)
+            for (int iDay = 0; iDay < 10; iDay++)
             {
                 var iDateTime = today - TimeSpan.FromDays(iDay);
                 int sessionsCount = sessionsDict.GetSafe(iDateTime, out _);
