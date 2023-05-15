@@ -97,7 +97,7 @@ namespace RMAZOR.Views.Common.ViewUILevelSkippers
             }
             var screenBounds = GraphicUtils.GetVisibleBounds(_Camera);
             float xPos = screenBounds.min.x + 5.5f;
-            float yPos = screenBounds.min.y + 5f;
+            float yPos = screenBounds.min.y + 3.5f;
             tr.SetLocalPosXY(xPos, yPos);
         }
 
@@ -107,7 +107,7 @@ namespace RMAZOR.Views.Common.ViewUILevelSkippers
             var go = PrefabSetManager.InitPrefab(
                 parent, CommonPrefabSetNames.UiGame, "skip_level_button");
             m_Background = go.GetCompItem<Rectangle>("background");
-            m_Background.SetColor(ColorProvider.GetColor(ColorIds.UI))
+            m_Background.SetColor(ColorProvider.GetColor(ColorIds.UI).SetA(0.5f))
                 .SetSortingOrder(SortingOrders.GameUI);
             InitButtonCore(go);
             Text.color = Color.black;
