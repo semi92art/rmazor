@@ -26,7 +26,6 @@ namespace RMAZOR.Managers
         #region constants
 
         private const string IdFirstLevelToShowAds                 = "ads_first_level_to_show_ads";
-        private const string IdAdsProvidersInfos                   = "ads_providers_infos_v2";
         private const string IdAnimatePathFill                     = "animate_path_fill";
         private const string IdBackgroundTextureTriangles2PropsSet = "background_texture_triangles2_props_set";
         private const string IdColorGradingProps                   = "color_grading_props_1";
@@ -36,7 +35,6 @@ namespace RMAZOR.Managers
         private const string IdInterstitialAdsRatio                = "interstitial_ads_ratio";
         private const string IdLineThickness                       = "line_thickness";
         private const string IdPathItemBorderThickness             = "path_item_border_thickness";
-        private const string IdMazeItemTransitionTime              = "maze_item_transition_time";
         private const string IdMazeRotationSpeed                   = "maze_rotation_speed";
         private const string IdGravityBlockSpeed                   = "mazeitems_gravityblock_speed";
         private const string IdMovingTrapPause                     = "moving_trap_pause";
@@ -94,7 +92,7 @@ namespace RMAZOR.Managers
             return GetModelSettingsInfos(filter)
                 .Concat(GetViewSettingsInfos(filter))
                 .Concat(GetGlobalSettingsInfos(filter))
-                .Concat(GetRemotePropertiesInfos(filter))
+                // .Concat(GetRemotePropertiesInfos(filter)) // FIXME исправить нерабочую десериализацию
                 .Concat(new[]
                 {
                     new RemoteConfigPropertyInfo(filter, typeof(string), IdTestDeviceIds,
@@ -158,9 +156,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToRateGame,
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGame = ToInt(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeItemTransitionTime,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.betweenLevelTransitionTime = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextures,
                     _Value => Execute(
                         _Value, _V =>
@@ -208,15 +203,16 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowOnlyRewardedAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.showOnlyRewardedAds = ToBool(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdGameServerUrl,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.urlGameServer = ToString(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBundlesUrl,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.urlOtherAssets = ToString(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdOtherContentUrl,
-                    _Value => Execute(
-                        _Value, _V => GlobalGameSettings.urlBundles = ToString(_V))),
+                // TODO добавить эти настройки в Firebase
+                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdGameServerUrl,
+                //     _Value => Execute(
+                //         _Value, _V => GlobalGameSettings.urlGameServer = ToString(_V))),
+                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBundlesUrl,
+                //     _Value => Execute(
+                //         _Value, _V => GlobalGameSettings.urlOtherAssets = ToString(_V))),
+                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdOtherContentUrl,
+                //     _Value => Execute(
+                //         _Value, _V => GlobalGameSettings.urlBundles = ToString(_V))),
             };
         }
 
@@ -224,10 +220,6 @@ namespace RMAZOR.Managers
         {
             return new List<RemoteConfigPropertyInfo>
             {
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdAdsProvidersInfos,
-                    _Value => Execute(
-                        _Value, _V => RemoteProperties.AdsProviders =
-                        JsonConvert.DeserializeObject<IList<AdProviderInfo>>(_V.ToString()))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdInAppNotificationList,
                     _Value => Execute(
                         _Value, _V => RemoteProperties.Notifications =
