@@ -40,7 +40,7 @@ namespace RMAZOR.Views.Common.FullscreenTextureProviders
 
         public override void Activate(bool _Active)
         {
-            Material.SetColor(Color1Id, Color.black);
+            Material.SetColor(Color1Id, Color.white);
             base.Activate(_Active);
         }
 
