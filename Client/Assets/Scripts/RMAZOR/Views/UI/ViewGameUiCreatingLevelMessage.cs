@@ -114,7 +114,7 @@ namespace RMAZOR.Views.UI
                 parent, CommonPrefabSetNames.UiGame, "creating_level_message");
             m_MessageText = go.GetCompItem<TextMeshPro>("text");
             m_MessageText.sortingOrder = SortingOrders.GameLogoBackground;
-            m_MessageText.color = Color.white;
+            m_MessageText.color = Color.black;
             var locTextInfo = new LocTextInfo(
                 m_MessageText, ETextType.GameUI,
                 "creating_level", 
