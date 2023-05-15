@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Common.Constants;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
@@ -50,7 +49,7 @@ namespace RMAZOR.UI.Panels
     {
         #region constants
 
-        private const int DailyChallengesCountTimer = 1;
+        private const int DailyChallengesCountTimer = 2;
         private const int DailyChallengesCountSteps = 2;
 
         #endregion
@@ -333,18 +332,24 @@ namespace RMAZOR.UI.Panels
                 Dbg.LogError("Daily challenge items and infos count are not equal each other.");
                 return;
             }
+            var rewardIconSprite =  prefMan.GetObject<Sprite>(
+                "daily_challenge", $"reward_icon_{_ChallengeType}".ToLower());
+            var backgroundSprite =  prefMan.GetObject<Sprite>(
+                "daily_challenge", $"background_sprite_{_ChallengeType}".ToLower());
+            var moneyIconSprite = prefMan.GetObject<Sprite>(
+                "daily_challenge", "money_icon");
             for (int i = 0; i < dailyChallengeItems.Count; i++)
             {
                 var dailyChallengeItem = dailyChallengeItems[i];
                 var dailyChallengeInfo = dailyChallengeInfos[i];
                 int i1 = i;
-                var moneyIcon = prefMan.GetObject<Sprite>(
-                    CommonPrefabSetNames.Views, $"daily_challenge_money_icon_{i + 1}");
                 var args = new DailyChallengePanelItemArgs
                 {
-                    OnClick     = () => OnDailyChallengeItemClick(i1, _ChallengeType),
-                    RewardIcon  = moneyIcon,
-                    Info        = dailyChallengeInfo
+                    OnClick          = () => OnDailyChallengeItemClick(i1, _ChallengeType),
+                    RewardIconSprite = rewardIconSprite,
+                    BackgroundSprite = backgroundSprite,
+                    MoneyIconSprite  = moneyIconSprite,
+                    Info             = dailyChallengeInfo
                 };
                 dailyChallengeItem.Init(
                     Ticker,

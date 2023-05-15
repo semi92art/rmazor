@@ -26,9 +26,11 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
     
     public class DailyChallengePanelItemArgs
     {
-        public UnityAction        OnClick     { get; set; }
-        public Sprite             RewardIcon  { get; set; }
-        public DailyChallengeInfo Info        { get; set; }
+        public UnityAction        OnClick          { get; set; }
+        public Sprite             RewardIconSprite     { get; set; }
+        public Sprite             BackgroundSprite { get; set; }
+        public Sprite             MoneyIconSprite      { get; set; }
+        public DailyChallengeInfo Info             { get; set; }
     }
     
     public abstract class DailyChallengePanelItemBase : SimpleUiItem
@@ -37,9 +39,11 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
 
         [SerializeField] protected Button          button;
         [SerializeField] protected TextMeshProUGUI title;
+        [SerializeField] protected Image           rewardIcon;
+        [SerializeField] protected Image           backgroundImage;
         [SerializeField] protected TextMeshProUGUI rewardTitle;
         [SerializeField] protected TextMeshProUGUI rewardMoneyCountText;
-        [SerializeField] protected Image           rewardMoneyIcon;
+        [SerializeField] protected Image           moneyIcon;
         [SerializeField] protected Image           iconComplete;
         [SerializeField] private   TextMeshProUGUI rewardXpCountText;
         [SerializeField] private   TextMeshProUGUI rewardXpText;
@@ -64,6 +68,7 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
         {
             base.Init(_UITicker, _AudioManager, _LocalizationManager);
             Arguments = _Args;
+            SetImagesSprites();
             SubscribeButtonEvents();
             LocalizeTextObjects();
             CompleteChallenge(false);
@@ -84,11 +89,18 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
         {
             rewardTitle         .enabled = !_Complete;
             rewardMoneyCountText.enabled = !_Complete;
-            rewardMoneyIcon     .enabled = !_Complete;
+            moneyIcon           .enabled = !_Complete;
             rewardXpCountText   .enabled = !_Complete;
             rewardXpText        .enabled = !_Complete;
             iconComplete        .enabled = _Complete;
             button.interactable          = !_Complete;
+        }
+
+        private void SetImagesSprites()
+        {
+            rewardIcon.sprite      = Arguments.RewardIconSprite;
+            backgroundImage.sprite = Arguments.BackgroundSprite;
+            moneyIcon.sprite       = Arguments.MoneyIconSprite;
         }
 
         private void SubscribeButtonEvents()
@@ -107,7 +119,7 @@ namespace RMAZOR.UI.PanelItems.Daily_Challenge_Panel_Items
                           + " "
                           + LocalizationManager.GetTranslation(GoalMeasureItemsLocalizationKey).ToUpper(CultureInfo.CurrentUICulture)),
                 new LocTextInfo(rewardTitle, ETextType.MenuUI_H1, "reward",
-                    _T => _T.ToUpper(CultureInfo.CurrentUICulture)),
+                    _T => _T.ToUpper(CultureInfo.CurrentUICulture) + ":"),
                 new LocTextInfo(rewardMoneyCountText, ETextType.MenuUI_H1, "empty",
                     _T => Arguments.Info.RewardMoney.ToString()),
                 new LocTextInfo(rewardXpCountText, ETextType.MenuUI_H1, "empty",
