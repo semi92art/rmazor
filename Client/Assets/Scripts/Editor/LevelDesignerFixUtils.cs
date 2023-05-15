@@ -221,6 +221,37 @@ namespace RMAZOR.Editor
         }
         
         [FixUtil(FixUtilColor.Blue)]
+        private void FixTrapsReact()
+        {
+            var levels = LevelsList.Levels;
+            bool errors = false;
+            foreach (var l in levels)
+            {
+                var items = l.MazeItems
+                    .Where(_Item => _Item.Type == EMazeItemType.TrapReact)
+                    .ToList();
+                if (!items.Any())
+                    continue;
+                bool errorsOnLevel = false;
+                foreach (var item in items)
+                {
+                    var dirs = item.Directions;
+                    var newDirs =  dirs.Distinct().ToList();
+                    if (dirs.Count != newDirs.Count)
+                        errorsOnLevel = true;
+                    item.Directions = newDirs;
+                }
+                if (!errorsOnLevel)
+                    continue;
+                Dbg.Log($"Moving traps on level {levels.IndexOf(l) + 1} fixed.");
+                errors = true;
+            }
+            if (!errors)
+                Dbg.Log("All traps moving are valid");
+            LevelsList.Save();
+        }
+        
+        [FixUtil(FixUtilColor.Blue)]
         private void FixTrapsMoving()
         {
             var levels = LevelsList.Levels;
