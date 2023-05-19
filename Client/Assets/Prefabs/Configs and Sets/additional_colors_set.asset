@@ -86,8 +86,7 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
-        arguments:
-        - disable_for_main
+        arguments: []
     - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
       bacground1: {r: 1, g: 0.61960787, b: 0.5254902, a: 1}
       bacground2: {r: 0.4901961, g: 0.24705884, b: 0.32941177, a: 1}
@@ -115,7 +114,7 @@ MonoBehaviour:
     - main: {r: 0.13612497, g: 0.14627092, b: 0.1792453, a: 1}
       bacground1: {r: 0, g: 0.7169812, b: 0.37556168, a: 1}
       bacground2: {r: 0.8207547, g: 0.36282343, b: 0.18195976, a: 1}
-      inUse: 0
+      inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -135,15 +134,14 @@ MonoBehaviour:
         wormHoleColorCoefficient1: 4
         backgroundName: skyline
         additionalBackgroundName: additional_background_texture_1
-        arguments:
-        - disable_for_main
+        arguments: []
     - main: {r: 0.3679245, g: 0.19746408, b: 0, a: 1}
-      bacground1: {r: 0.96470594, g: 0.5686275, b: 0.10980393, a: 1}
-      bacground2: {r: 1, g: 1, b: 1, a: 1}
+      bacground1: {r: 0, g: 0.7921569, b: 0.6117647, a: 1}
+      bacground2: {r: 0.96470594, g: 0.5686275, b: 0.10980393, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
-      pathFillFillType: 0
+      pathFillFillType: 2
       characterBorderFillType: 0
       uiBackgroundFillType: 1
       bloom:
@@ -158,10 +156,9 @@ MonoBehaviour:
         neonStreamColorCoefficient1: 0.1
         swirlForPlanetColorCoefficient1: 1
         wormHoleColorCoefficient1: 4
-        backgroundName: white_fire
+        backgroundName: sunflow
         additionalBackgroundName: additional_background_texture_1
-        arguments:
-        - disable_for_main
+        arguments: []
     - main: {r: 0, g: 0.5397725, b: 1, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
       bacground2: {r: 0.14115341, g: 0.3339328, b: 0.49056602, a: 1}
