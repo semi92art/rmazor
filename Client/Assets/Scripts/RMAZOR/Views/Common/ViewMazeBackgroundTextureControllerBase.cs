@@ -204,7 +204,7 @@ namespace RMAZOR.Views.Common
             else if (_ForNextLevel && !isBonusLevel)
                 levelIndex = (int) _Args.LevelIndex + 1;
             int setItemIdx = isBonusLevel ?
-                levelIndex * GlobalGameSettings.extraLevelEveryNStage
+                levelIndex * GlobalGameSettings.extraLevelEveryNStage - GlobalGameSettings.extraLevelFirstStage
                 : RmazorUtils.GetLevelsGroupIndex(levelIndex) - 1;
             setItemIdx %= propsForLevelTypeMain.Count;
             if (setItemIdx < 0) setItemIdx = 0;
@@ -217,7 +217,7 @@ namespace RMAZOR.Views.Common
             var subList = m_ColorPropsList
                 .Where(_Props => _Props.additionalInfo.arguments.Contains("bonus"))
                 .ToList();
-            int index = (int)_Args.LevelIndex % subList.Count;
+            int index = ((int)_Args.LevelIndex) % subList.Count;
             return subList[index];
         }
 

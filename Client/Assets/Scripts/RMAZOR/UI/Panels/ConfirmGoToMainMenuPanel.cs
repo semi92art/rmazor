@@ -8,6 +8,7 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Providers;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.UI;
+using mazing.common.Runtime.UI.DialogViewers;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Managers;
 using RMAZOR.Models;
@@ -37,7 +38,8 @@ namespace RMAZOR.UI.Panels
             m_ButtonNoText;
         private Button
             m_ButtonYes,
-            m_ButtonNo;
+            m_ButtonNo,
+            m_ButtonSettings;
         
         protected override string PrefabName => "confirm_go_to_main_menu_panel";
         
@@ -45,9 +47,11 @@ namespace RMAZOR.UI.Panels
         
         #region inject
 
-        private ViewSettings                ViewSettings           { get; }
-        private IViewFullscreenTransitioner FullscreenTransitioner { get; }
-        private IViewLevelStageSwitcher     LevelStageSwitcher     { get; }
+        private ViewSettings                ViewSettings            { get; }
+        private IViewFullscreenTransitioner FullscreenTransitioner  { get; }
+        private IViewLevelStageSwitcher     LevelStageSwitcher      { get; }
+        private IDialogViewersController    DialogViewersController { get; }
+        private ISettingDialogPanel         SettingDialogPanel      { get; }
 
         private ConfirmGoToMainMenuPanel(
             ViewSettings                _ViewSettings,
@@ -58,7 +62,9 @@ namespace RMAZOR.UI.Panels
             IColorProvider              _ColorProvider,
             IViewTimePauser             _TimePauser,
             IViewInputCommandsProceeder _CommandsProceeder,
-            IViewLevelStageSwitcher     _LevelStageSwitcher)
+            IViewLevelStageSwitcher     _LevelStageSwitcher,
+            IDialogViewersController    _DialogViewersController,
+            ISettingDialogPanel         _SettingDialogPanel)
             : base(
                 _Managers,
                 _Ticker,
@@ -67,9 +73,11 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
-            ViewSettings           = _ViewSettings;
-            FullscreenTransitioner = _FullscreenTransitioner;
-            LevelStageSwitcher     = _LevelStageSwitcher;
+            ViewSettings            = _ViewSettings;
+            FullscreenTransitioner  = _FullscreenTransitioner;
+            LevelStageSwitcher      = _LevelStageSwitcher;
+            DialogViewersController = _DialogViewersController;
+            SettingDialogPanel      = _SettingDialogPanel;
         }
 
         #endregion
@@ -81,14 +89,27 @@ namespace RMAZOR.UI.Panels
         #endregion
 
         #region nonpublic methods
+        
+        protected override void OnDialogStartAppearing()
+        {
+            TimePauser.PauseTimeInGame();
+            base.OnDialogStartAppearing();
+        }
+
+        protected override void OnDialogDisappeared()
+        {
+            TimePauser.UnpauseTimeInGame();
+            base.OnDialogDisappeared();
+        }
 
         protected override void GetPrefabContentObjects(GameObject _Go)
         {
-            m_ButtonYes     = _Go.GetCompItem<Button>("button_yes");
-            m_ButtonNo      = _Go.GetCompItem<Button>("button_no");
-            m_TitleText     = _Go.GetCompItem<TextMeshProUGUI>("title_text");
-            m_ButtonYesText = _Go.GetCompItem<TextMeshProUGUI>("button_yes_text");
-            m_ButtonNoText  = _Go.GetCompItem<TextMeshProUGUI>("button_no_text");
+            m_ButtonYes      = _Go.GetCompItem<Button>("button_yes");
+            m_ButtonNo       = _Go.GetCompItem<Button>("button_no");
+            m_ButtonSettings = _Go.GetCompItem<Button>("button_settings");
+            m_TitleText      = _Go.GetCompItem<TextMeshProUGUI>("title_text");
+            m_ButtonYesText  = _Go.GetCompItem<TextMeshProUGUI>("button_yes_text");
+            m_ButtonNoText   = _Go.GetCompItem<TextMeshProUGUI>("button_no_text");
         }
 
         protected override void LocalizeTextObjectsOnLoad()
@@ -106,8 +127,9 @@ namespace RMAZOR.UI.Panels
 
         protected override void SubscribeButtonEvents()
         {
-            m_ButtonYes.onClick.AddListener(OnButtonYesClick);
-            m_ButtonNo.onClick.AddListener(OnButtonNoClick);
+            m_ButtonYes     .SetOnClick(OnButtonYesClick);
+            m_ButtonNo      .SetOnClick(OnButtonNoClick);
+            m_ButtonSettings.SetOnClick(OnButtonSettingsClick);
         }
 
         private void OnButtonYesClick()
@@ -117,10 +139,16 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonNoClick()
         {
-            OnClose(() =>
+            Cor.Run(Cor.WaitNextFrame(() =>
             {
-                LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel);
-            });
+                OnClose(() => LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel));
+            }, _FramesNum: 3U));
+        }
+
+        private void OnButtonSettingsClick()
+        {
+            var dv = DialogViewersController.GetViewer(SettingDialogPanel.DialogViewerId);
+            dv.Show(SettingDialogPanel);
         }
 
         private void LoadMainMenu()

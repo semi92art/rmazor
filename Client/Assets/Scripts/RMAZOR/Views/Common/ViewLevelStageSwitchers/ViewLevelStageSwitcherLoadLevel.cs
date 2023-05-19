@@ -77,7 +77,9 @@ namespace RMAZOR.Views.Common.ViewLevelStageSwitchers
         {
             long nextBonusLevelAfterMainLevelIndex = ViewLevelStageSwitcherUtils
                 .GetNextLevelOfBonusTypeAfterLevelOfDefaultTypeIndex(
-                    Model.LevelStaging.LevelIndex, GlobalGameSettings.extraLevelEveryNStage);
+                    Model.LevelStaging.LevelIndex,
+                    GlobalGameSettings.extraLevelEveryNStage, 
+                    GlobalGameSettings.extraLevelFirstStage);
             ViewLevelStageSwitcherUtils.SetLevelIndex(_Args, nextBonusLevelAfterMainLevelIndex);
             _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
             LoadLevelByIndex(_Args);
@@ -90,30 +92,15 @@ namespace RMAZOR.Views.Common.ViewLevelStageSwitchers
             switch (currentLevelType)
             {
                 case ParameterLevelTypeDefault:
-                    string nextLevelType = ViewLevelStageSwitcherUtils.GetNextLevelType(_Args);
-                    switch (nextLevelType)
-                    {
-                        case ParameterLevelTypeDefault:
-                            ViewLevelStageSwitcherUtils.SetLevelIndex(_Args, Model.LevelStaging.LevelIndex + 1);
-                            LoadLevelByIndex(_Args);
-                            return;
-                        case ParameterLevelTypeBonus:
-                        {
-                            long nextBonusLevelAfterMainLevelIndex = ViewLevelStageSwitcherUtils
-                                .GetNextLevelOfBonusTypeAfterLevelOfDefaultTypeIndex(
-                                    Model.LevelStaging.LevelIndex, GlobalGameSettings.extraLevelEveryNStage);
-                            ViewLevelStageSwitcherUtils.SetLevelIndex(_Args, nextBonusLevelAfterMainLevelIndex);
-                            _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
-                            LoadLevelByIndex(_Args);
-                        }
-                            return;
-                    }
-
+                    ViewLevelStageSwitcherUtils.SetLevelIndex(_Args, Model.LevelStaging.LevelIndex + 1);
+                    LoadLevelByIndex(_Args);
                     return;
                 case ParameterLevelTypeBonus:
                     long nextDefaultLevelAfterBonusLevelIndex = ViewLevelStageSwitcherUtils
-                        .GetNExtLevelOfDefaultTypeAfterLEvelOfBonusTypeIndex(
-                            Model.LevelStaging.LevelIndex, GlobalGameSettings.extraLevelEveryNStage);
+                        .GetNextLevelOfDefaultTypeAfterLevelOfBonusTypeIndex(
+                            Model.LevelStaging.LevelIndex,
+                            GlobalGameSettings.extraLevelEveryNStage,
+                            GlobalGameSettings.extraLevelFirstStage);
                     ViewLevelStageSwitcherUtils.SetLevelIndex(_Args, nextDefaultLevelAfterBonusLevelIndex);
                     _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeDefault);
                     LoadLevelByIndex(_Args);
@@ -135,7 +122,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageSwitchers
                     break;
                 case ParameterLevelTypeBonus:
                     long firstLevelInCurrentGroup = RmazorUtils.GetFirstLevelInGroupIndex(
-                        (int) currentLevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1);
+                        (int) currentLevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1 + GlobalGameSettings.extraLevelFirstStage);
                     nextLevelIndex = firstLevelInCurrentGroup;
                     break;
             }

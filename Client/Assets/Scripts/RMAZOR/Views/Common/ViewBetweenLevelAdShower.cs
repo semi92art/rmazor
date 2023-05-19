@@ -72,7 +72,8 @@ namespace RMAZOR.Views.Common
         public override void Init()
         {
             ShowAdEnabled = true;
-            m_TimeWithoutAdsInSeconds = GlobalGameSettings.betweenLevelAdShowIntervalInSeconds;
+            m_TimeWithoutAdsInSeconds = GlobalGameSettings.betweenLevelAdShowIntervalInSeconds
+                - 90f; // https://teletype.in/@belchak/puzzle-arcade-mechanics
             CommonTicker.Register(this);
             base.Init();
         }

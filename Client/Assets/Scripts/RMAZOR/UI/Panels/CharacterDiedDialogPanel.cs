@@ -19,6 +19,7 @@ using RMAZOR.Models;
 using RMAZOR.Views.Common;
 using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.InputConfigurators;
+using RMAZOR.Views.Utils;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -186,7 +187,9 @@ namespace RMAZOR.UI.Panels
         
         private void OnWatchAdsButtonClick()
         {
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInCharacterDiedPanelClick);
+            var args = ViewLevelStageSwitcherUtils.GetLevelParametersForAnalytic(
+                Model.LevelStaging.GetCurrentLevelStageArguments());
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.WatchAdInCharacterDiedPanelClick, args);
             void OnAdReward()
             {
                 m_AdsWatched = true;

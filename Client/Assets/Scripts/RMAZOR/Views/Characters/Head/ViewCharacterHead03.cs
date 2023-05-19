@@ -13,7 +13,7 @@ namespace RMAZOR.Views.Characters.Head
     public interface IViewCharacterHead03 : IViewCharacterHead { }
 
     public class ViewCharacterHead03 
-        : ViewCharacterHeadWithBorderObjectBase, 
+        : ViewCharacterHeadWithBorderObjectAltBase, 
           IViewCharacterHead03
     {
         #region nonpublic members

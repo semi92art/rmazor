@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using Common;
 using Common.Entities;
 using Common.Managers.PlatformGameServices;
+using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Extensions;
+using RMAZOR.Constants;
 using RMAZOR.Models;
 using static RMAZOR.Models.ComInComArg;
 
@@ -62,17 +64,58 @@ namespace RMAZOR.Views.Utils
             _Arguments.SetSafe(KeyLevelIndex, _LevelIndex);
         }
 
-        public static long GetNextLevelOfBonusTypeAfterLevelOfDefaultTypeIndex(long _CurrentMainLevelIndex, int _ExtraLevelEveryNStage)
+        public static long GetNextLevelOfBonusTypeAfterLevelOfDefaultTypeIndex(
+            long _CurrentMainLevelIndex,
+            int  _ExtraLevelEveryNStage,
+            int  _ExtraLevelFirstStage)
         {
             long levelsGroupIndex = RmazorUtils.GetLevelsGroupIndex(_CurrentMainLevelIndex);
-            return (levelsGroupIndex - 1) / _ExtraLevelEveryNStage;
+            return (levelsGroupIndex - 1 - _ExtraLevelFirstStage) / _ExtraLevelEveryNStage;
         }
 
-        public static long GetNExtLevelOfDefaultTypeAfterLEvelOfBonusTypeIndex(long _CurrentBonusLevelIndex, int _ExtraLevelEveryNStage)
+        public static long GetNextLevelOfDefaultTypeAfterLevelOfBonusTypeIndex(
+            long _CurrentBonusLevelIndex,
+            int _ExtraLevelEveryNStage,
+            int  _ExtraLevelFirstStage)
         {
-            long levelsGroupIndex = _CurrentBonusLevelIndex * _ExtraLevelEveryNStage + 1;
+            long levelsGroupIndex = _CurrentBonusLevelIndex * _ExtraLevelEveryNStage + _ExtraLevelFirstStage + 1;
             return RmazorUtils.GetFirstLevelInGroupIndex((int)levelsGroupIndex) +
                    RmazorUtils.GetLevelsInGroup((int)levelsGroupIndex);
+        }
+
+        public static Dictionary<string, object> GetLevelParametersForAnalytic(LevelStageArgs _Args)
+        {
+            string levelType = (string)_Args.Arguments.GetSafe(KeyCurrentLevelType, out _);
+            string gameMode  = (string) _Args.Arguments.GetSafe(KeyGameMode, out _);
+            return new Dictionary<string, object>
+            {
+                {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
+                {AnalyticIdsRmazor.ParameterGameMode, GetGameModeAnalyticParameterValue(gameMode)},
+                {AnalyticIds.ParameterLevelType, GetLevelTypeAnalyticParameterValue(levelType)},
+            };
+        }
+        
+        private static int GetGameModeAnalyticParameterValue(string _GameMode)
+        {
+            return _GameMode switch
+            {
+                ParameterGameModeMain           => 1,
+                ParameterGameModeDailyChallenge => 2,
+                ParameterGameModeRandom         => 3,
+                ParameterGameModePuzzles        => 4,
+                ParameterGameModeBigLevels      => 5,
+                _                               => 0
+            };
+        }
+
+        private static int GetLevelTypeAnalyticParameterValue(string _LevelType)
+        {
+            return _LevelType switch
+            {
+                ParameterLevelTypeDefault => 1,
+                ParameterLevelTypeBonus   => 2,
+                _                         => 0
+            };
         }
     }
 }

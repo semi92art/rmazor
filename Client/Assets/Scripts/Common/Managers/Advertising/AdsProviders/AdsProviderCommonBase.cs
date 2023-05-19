@@ -23,10 +23,10 @@ namespace Common.Managers.Advertising.AdsProviders
         #endregion
 
         #region api
-        
-        public override bool RewardedAdReady             => 
+
+        public override bool RewardedAdReady =>
             m_RewardedAd != null && m_RewardedAd.Ready;
-        public override bool InterstitialAdReady         => 
+        public override bool InterstitialAdReady =>
             m_InterstitialAd != null && m_InterstitialAd.Ready;
 
         public override void LoadRewardedAd()
@@ -64,15 +64,15 @@ namespace Common.Managers.Advertising.AdsProviders
         {
             if (!RewardedAdReady) 
                 return;
-            MuteAudio(true);
+            MuteAudio?.Invoke(true);
             void OnClosed()
             {
-                MuteAudio(false);
+                MuteAudio?.Invoke(false);
                 _OnClosed?.Invoke();
             }
             void OnFailedToShow()
             {
-                MuteAudio(false);
+                MuteAudio?.Invoke(false);
                 _OnFailedToShow?.Invoke();
             }
             m_RewardedAd.ShowAd(_OnShown, _OnClicked, _OnReward, OnClosed, OnFailedToShow);
@@ -86,15 +86,15 @@ namespace Common.Managers.Advertising.AdsProviders
         {
             if (!InterstitialAdReady) 
                 return;
-            MuteAudio(true);
+            MuteAudio?.Invoke(true);
             void OnClosed()
             {
-                MuteAudio(false);
+                MuteAudio?.Invoke(false);
                 _OnClosed?.Invoke();
             }
             void OnFailedToShow()
             {
-                MuteAudio(false);
+                MuteAudio?.Invoke(false);
                 _OnFailedToShow?.Invoke();
             }
             m_InterstitialAd.ShowAd(_OnShown, _OnClicked, OnClosed, OnFailedToShow);

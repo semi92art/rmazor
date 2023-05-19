@@ -245,13 +245,18 @@ namespace RMAZOR.Models
             {
                 return thisCount != m_MovesCount || !Alive;
             }
+            static float ProgressFormula(float _P)
+            {
+                return _P * _P;
+            }
             yield return Cor.Lerp(
                 ModelGameTicker,
                 pathLength / Settings.characterSpeed,
-                _OnProgress:     OnProgress,
-                _OnFinish:       OnFinish,
-                _BreakPredicate: BreakPredicate,
-                _FixedUpdate:    true);
+                _OnProgress:      OnProgress,
+                _OnFinish:        OnFinish,
+                _BreakPredicate:  BreakPredicate,
+                _FixedUpdate:     true,
+                _ProgressFormula: ProgressFormula);
         }
         
         private void Revive(bool _FromStartPosition)

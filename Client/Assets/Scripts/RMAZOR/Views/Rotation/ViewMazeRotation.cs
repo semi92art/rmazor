@@ -41,7 +41,6 @@ namespace RMAZOR.Views.Rotation
 
         #region api
 
-        public sealed override event UnityAction<float>     RotationContinued;
         public sealed override event MazeOrientationHandler RotationFinished;
 
         public override void Init()
@@ -67,11 +66,6 @@ namespace RMAZOR.Views.Rotation
             m_Rb.constraints = RigidbodyConstraints2D.FreezePosition;
         }
 
-        public override void OnLevelStageChanged(LevelStageArgs _Args)
-        {
-            // do nothing
-        }
-
         #endregion
 
         #region nonpublic methods
@@ -83,7 +77,6 @@ namespace RMAZOR.Views.Rotation
                 out float endAngle,
                 out float rotationAngleDistance,
                 out float realSkidAngle);
-            
             yield return Cor.Lerp(
                 GameTicker, 
                 rotationAngleDistance / (90f * ViewSettings.mazeRotationSpeed),
@@ -92,18 +85,24 @@ namespace RMAZOR.Views.Rotation
                 _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
                 () =>
                 {
-                    RotationFinished?.Invoke(_Args);
-                    Cor.Run(Cor.Lerp(
-                        GameTicker,
-                        1 / (ViewSettings.mazeRotationSpeed * 2f),
-                        endAngle + realSkidAngle,
-                        endAngle,
-                        _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
-                        () => Character.OnRotationFinished(_Args)));
+                    var rotationFinishCoroutine = RotationFinishCoroutine(_Args, endAngle, realSkidAngle);
+                    Cor.Run(rotationFinishCoroutine);
                 });
         }
 
-        private void GetRotationParams(MazeRotationEventArgs _Args, 
+        private IEnumerator RotationFinishCoroutine(MazeRotationEventArgs _Args, float _EndAngle, float _RealSkidAngle)
+        {
+            RotationFinished?.Invoke(_Args);
+            yield return Cor.Lerp(
+                GameTicker,
+                1f / ViewSettings.mazeRotationSpeed,
+                _EndAngle + _RealSkidAngle,
+                _EndAngle,
+                _Angle => m_Rb.transform.rotation = Quaternion.Euler(0f, 0f, _Angle),
+                () => Character.OnRotationFinished(_Args));
+        }
+
+        private static void GetRotationParams(MazeRotationEventArgs _Args, 
             out float _StartAngle,
             out float _EndAngle,
             out float _RotationAngleDistance,
@@ -113,7 +112,7 @@ namespace RMAZOR.Views.Rotation
             float dirCoeff = _Args.Direction == EMazeRotateDirection.Clockwise ? -1 : 1;
             _RotationAngleDistance = GetRotationAngleDistance(_Args);
             _EndAngle = _StartAngle + _RotationAngleDistance * dirCoeff;
-            _RealSkidAngle = 3f * dirCoeff;
+            _RealSkidAngle = 5f * dirCoeff;
         }
 
         private static float GetRotationAngleDistance(MazeRotationEventArgs _Args)

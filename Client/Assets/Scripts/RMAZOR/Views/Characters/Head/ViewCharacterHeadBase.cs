@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Common.Constants;
+using mazing.common.Runtime;
 using mazing.common.Runtime.Constants;
 using mazing.common.Runtime.Entities;
 using mazing.common.Runtime.Enums;
@@ -10,6 +11,7 @@ using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.Providers;
+using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
 using RMAZOR.Models;
 using RMAZOR.Models.ItemProceeders.Additional;
@@ -17,6 +19,7 @@ using RMAZOR.Views.Coordinate_Converters;
 using RMAZOR.Views.InputConfigurators;
 using RMAZOR.Views.Rotation;
 using UnityEngine;
+using Zenject;
 
 namespace RMAZOR.Views.Characters.Head
 {
@@ -71,6 +74,8 @@ namespace RMAZOR.Views.Characters.Head
         protected ICoordinateConverter        CoordinateConverter { get; }
         private   IRendererAppearTransitioner AppearTransitioner  { get; }
         private   IViewInputCommandsProceeder CommandsProceeder   { get; }
+        
+        [Inject] private IViewGameTicker Ticker { get; }
 
         protected ViewCharacterHeadBase(
             ViewSettings                _ViewSettings,
@@ -307,8 +312,10 @@ namespace RMAZOR.Views.Characters.Head
             var localScale = scaleCoeff * new Vector3(1f, vertScale, 1f);
             m_HeadObj.transform.localScale = localScale;
         }
+        
 
-        protected static void GetAngleAndVerticalScaleOnMoveFinished(
+
+        protected virtual void GetAngleAndVerticalScaleOnMoveFinished(
             EDirection _Direction,
             out float  _Angle,
             out float  _VertScale)
@@ -342,10 +349,7 @@ namespace RMAZOR.Views.Characters.Head
 
         protected float GetScale()
         {
-            float scale = CoordinateConverter.Scale;
-            if (MathUtils.Equals(scale, 0f))
-                scale = 1f;
-            return scale;
+            return MathUtils.Equals(CoordinateConverter.Scale, 0f) ? 1f : CoordinateConverter.Scale;
         }
 
         #endregion

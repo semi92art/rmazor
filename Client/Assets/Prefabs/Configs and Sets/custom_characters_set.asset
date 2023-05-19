@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   set:
     array:
-    - id: 01
+    - id: 03
       inUse: 1
       gameMoneyCoast: 0
       characterLevelToOpen: 0
-      icon: {fileID: 21300000, guid: ff9c6866d1c20fb4ca3183bb2291140b, type: 3}
+      icon: {fileID: 21300000, guid: 018c0600e85dfde4c8476d09750af723, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: 02
@@ -28,11 +28,11 @@ MonoBehaviour:
       icon: {fileID: 21300000, guid: d7640e1f9e7321b46a8cc2aeacfe0bcd, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
-    - id: 03
+    - id: 01
       inUse: 1
       gameMoneyCoast: 1000
       characterLevelToOpen: 0
-      icon: {fileID: 21300000, guid: 018c0600e85dfde4c8476d09750af723, type: 3}
+      icon: {fileID: 21300000, guid: ff9c6866d1c20fb4ca3183bb2291140b, type: 3}
       overrideCharacterColor2: 0
       characterColor2: {r: 0, g: 0, b: 0, a: 0}
     - id: 04

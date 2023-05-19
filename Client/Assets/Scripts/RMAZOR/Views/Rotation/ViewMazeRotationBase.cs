@@ -10,7 +10,6 @@ namespace RMAZOR.Views.Rotation
 
         public bool                                  Initialized { get; private set; }
         public event          UnityAction            Initialize;
-        public abstract event UnityAction<float>     RotationContinued;
         public abstract event MazeOrientationHandler RotationFinished;
         
         public virtual void Init()
@@ -21,7 +20,6 @@ namespace RMAZOR.Views.Rotation
 
         public abstract void OnMazeRotationStarted(MazeRotationEventArgs _Args);
         public abstract void OnMazeRotationFinished(MazeRotationEventArgs _Args);
-        public abstract void OnLevelStageChanged(LevelStageArgs _Args);
 
 
         #endregion

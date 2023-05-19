@@ -18,7 +18,8 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
     {
         #region nonpublic members
         
-        protected override bool CanShow => !DailyGiftPanel.IsDailyGiftAvailableToday;
+        // protected override bool CanShow => !DailyGiftPanel.IsDailyGiftAvailableToday;
+        protected override bool CanShow => false;
         
         protected override string PrefabName => "rate_game_button";
 

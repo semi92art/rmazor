@@ -30,33 +30,21 @@ namespace RMAZOR.Managers
         private const string IdBackgroundTextureTriangles2PropsSet = "background_texture_triangles2_props_set";
         private const string IdColorGradingProps                   = "color_grading_props_1";
         private const string IdFirstLevelToRateGame                = "first_level_to_rate_game";
-        private const string IdHammerShotPause                     = "hammer_shot_pause";
         private const string IdInAppNotificationList               = "inapp_notifications_list_v3";
         private const string IdInterstitialAdsRatio                = "interstitial_ads_ratio";
-        private const string IdLineThickness                       = "line_thickness";
-        private const string IdPathItemBorderThickness             = "path_item_border_thickness";
-        private const string IdMazeRotationSpeed                   = "maze_rotation_speed";
-        private const string IdGravityBlockSpeed                   = "mazeitems_gravityblock_speed";
-        private const string IdMovingTrapPause                     = "moving_trap_pause";
-        private const string IdMovingTrapSpeed                     = "moving_trap_speed";
         private const string IdPayToContinueMoneyCount             = "pay_to_continue_money_count";
-        private const string IdShredingerBlockTime                 = "shredinger_block_time";
         private const string IdSkipButtonDelay                     = "skip_button_seconds";
         private const string IdTestDeviceIds                       = "test_device_ids";
-        private const string IdTrapIncreasingIdleTime              = "trap_increasing_idle_time";
-        private const string IdTrapIncreasingIncreasedTime         = "trap_increasing_increased_time";
         private const string IdMoneyItemsFillRate                  = "money_items_fill_rate";
         private const string IdBackgroundTextures                  = "background_textures_v2";
         private const string IdBetweenLevelAdShowIntervalInSeconds = "between_level_ad_show_interval_in_seconds";
         private const string IdShowOnlyRewardedAds                 = "show_only_rewarded_ads";
         private const string IdDrawAdditionalMazeNet               = "draw_additional_maze_net";
-        private const string IdPathItemContentShapeType            = "path_item_content_shape_type";
         private const string IdMazeItemBlockColorEqualsMainColor   = "maze_item_block_color_equals_main_color";
         private const string IdBetweenLevelsTransitionTextureName  = "between_levels_transition_texture_name";
         private const string IdSpecialOfferDurationInMinutes       = "special_offer_duration_in_minutes";
         private const string IdGameServerUrl                       = "game_server_url";
         private const string IdBundlesUrl                          = "bundles_url";
-        private const string IdOtherContentUrl                     = "other_content_url";
 
         #endregion
         
@@ -89,10 +77,9 @@ namespace RMAZOR.Managers
         public List<RemoteConfigPropertyInfo> GetInfos()
         {
             var filter = GetFilter();
-            return GetModelSettingsInfos(filter)
-                .Concat(GetViewSettingsInfos(filter))
+            return GetViewSettingsInfos(filter)
                 .Concat(GetGlobalSettingsInfos(filter))
-                // .Concat(GetRemotePropertiesInfos(filter)) // FIXME исправить нерабочую десериализацию
+                .Concat(GetRemotePropertiesInfos(filter)) // FIXME исправить нерабочую десериализацию
                 .Concat(new[]
                 {
                     new RemoteConfigPropertyInfo(filter, typeof(string), IdTestDeviceIds,
@@ -106,34 +93,6 @@ namespace RMAZOR.Managers
 
         #region nonpublic methods
 
-        private IEnumerable<RemoteConfigPropertyInfo> GetModelSettingsInfos(GameDataFieldFilter _Filter)
-        {
-            return new List<RemoteConfigPropertyInfo>
-            {
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdGravityBlockSpeed,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.gravityBlockSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdHammerShotPause,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.hammerShotPause = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdShredingerBlockTime,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.shredingerBlockProceedTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdTrapIncreasingIdleTime,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.trapIncreasingIdleTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdTrapIncreasingIncreasedTime,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.trapIncreasingIncreasedTime = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMovingTrapSpeed,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.movingItemsSpeed = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMovingTrapPause,
-                    _Value => Execute(
-                        _Value, _V => ModelSettings.movingItemsPause = ToFloat(_V))),
-            };
-        }
-
         private IEnumerable<RemoteConfigPropertyInfo> GetViewSettingsInfos(GameDataFieldFilter _Filter)
         {
             return new List<RemoteConfigPropertyInfo>
@@ -144,15 +103,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(float), IdSkipButtonDelay,
                     _Value => Execute(
                         _Value, _V => ViewSettings.skipLevelSeconds = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdLineThickness,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.lineThickness = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdPathItemBorderThickness,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.pathItemBorderThickness = ToFloat(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(float), IdMazeRotationSpeed,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.mazeRotationSpeed = ToFloat(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(int), IdFirstLevelToRateGame,
                     _Value => Execute(
                         _Value, _V => ViewSettings.firstLevelToRateGame = ToInt(_V))),
@@ -166,9 +116,6 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdDrawAdditionalMazeNet,
                     _Value => Execute(
                         _Value, _V => ViewSettings.drawAdditionalMazeNet = ToBool(_V))),
-                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdPathItemContentShapeType,
-                    _Value => Execute(
-                        _Value, _V => ViewSettings.pathItemContentShapeType = ToString(_V))),
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdMazeItemBlockColorEqualsMainColor,
                     _Value => Execute(
                         _Value, _V => ViewSettings.mazeItemBlockColorEqualsMainColor = ToBool(_V))),
@@ -203,16 +150,12 @@ namespace RMAZOR.Managers
                 new RemoteConfigPropertyInfo(_Filter, typeof(bool), IdShowOnlyRewardedAds,
                     _Value => Execute(
                         _Value, _V => GlobalGameSettings.showOnlyRewardedAds = ToBool(_V))),
-                // TODO добавить эти настройки в Firebase
-                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdGameServerUrl,
-                //     _Value => Execute(
-                //         _Value, _V => GlobalGameSettings.urlGameServer = ToString(_V))),
-                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBundlesUrl,
-                //     _Value => Execute(
-                //         _Value, _V => GlobalGameSettings.urlOtherAssets = ToString(_V))),
-                // new RemoteConfigPropertyInfo(_Filter, typeof(string), IdOtherContentUrl,
-                //     _Value => Execute(
-                //         _Value, _V => GlobalGameSettings.urlBundles = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdGameServerUrl,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.urlGameServer = ToString(_V))),
+                new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBundlesUrl,
+                    _Value => Execute(
+                        _Value, _V => GlobalGameSettings.urlBundles = ToString(_V))),
             };
         }
 
@@ -222,14 +165,15 @@ namespace RMAZOR.Managers
             {
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdInAppNotificationList,
                     _Value => Execute(
-                        _Value, _V => RemoteProperties.Notifications =
-                        JsonConvert.DeserializeObject<IList<NotificationInfoEx>>(_V.ToString()))),
+                            _Value, _V => RemoteProperties.Notifications =
+                                JsonConvert.DeserializeObject<List<NotificationInfoEx>>(_V.ToString()))
+                    ),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdBackgroundTextureTriangles2PropsSet,
                     _Value => Execute(
                         _Value, _V =>
                     {
                         RemoteProperties.Tria2TextureSet =
-                            JsonConvert.DeserializeObject<IList<Triangles2TextureProps>>(Convert.ToString(_V));
+                            JsonConvert.DeserializeObject<List<Triangles2TextureProps>>(Convert.ToString(_V));
                     }),
                     true),
                 new RemoteConfigPropertyInfo(_Filter, typeof(string), IdColorGradingProps,
@@ -263,9 +207,16 @@ namespace RMAZOR.Managers
         
         private static void Execute(object _Value, UnityAction<object> _Action)
         {
-            if (_Value == null)
-                return;
-            _Action?.Invoke(_Value);
+            try
+            {
+                if (_Value == null)
+                    return;
+                _Action?.Invoke(_Value);
+            }
+            catch (Exception ex)
+            {
+                Dbg.LogError(ex);                
+            }
         }
 
         private static float ToFloat(object _Value)

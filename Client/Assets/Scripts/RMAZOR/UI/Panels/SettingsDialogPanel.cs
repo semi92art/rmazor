@@ -163,7 +163,8 @@ namespace RMAZOR.UI.Panels
 
         private void OnButtonCloseClick()
         {
-            OnClose(() => LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel));
+            // OnClose(() => LevelStageSwitcher.SwitchLevelStage(EInputCommand.UnPauseLevel));
+            OnClose();
             PlayButtonClickSound();
         }
 

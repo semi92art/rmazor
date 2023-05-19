@@ -15,15 +15,16 @@ MonoBehaviour:
   adsLoadDelay: 10
   debugAnyway: 0
   logLevel: 5
-  firstLevelToShowAds: 0
+  firstLevelToShowAds: 3
   payToContinueMoneyCount: 100
-  moneyItemCoast: 5
-  interstitialAdsRatio: 0.3
+  moneyItemCoast: 3
+  interstitialAdsRatio: 0.1
   moneyItemsRate: 0.2
   betweenLevelAdShowIntervalInSeconds: 120
   enableExtraLevels: 0
   extraLevelEveryNStage: 3
-  showOnlyRewardedAds: 0
+  extraLevelFirstStage: 2
+  showOnlyRewardedAds: 1
   urlGameServer: http://77.37.152.15:7000
   urlBundles: https://raw.githubusercontent.com/semi92art/bundles/main/mgc
   urlOtherAssets: https://raw.githubusercontent.com/semi92art/mazinglabs/gh-pages
