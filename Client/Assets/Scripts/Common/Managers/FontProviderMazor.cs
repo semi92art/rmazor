@@ -43,11 +43,11 @@ namespace Common.Managers
                 },
                 ETextType.MenuUI_H1 => _Language switch
                 {
-                    ELanguage.English  => lilitaRegular,
+                    ELanguage.English  => lilitaRegularExt120,
                     ELanguage.Russian  => multiroundPro,
-                    ELanguage.German   => multiroundPro,
-                    ELanguage.Spanish  => multiroundPro,
-                    ELanguage.Portugal => multiroundPro,
+                    ELanguage.German   => lilitaRegularExt54,
+                    ELanguage.Spanish  => lilitaRegularExt54,
+                    ELanguage.Portugal => lilitaRegularExt54,
                     ELanguage.Japanese => "japanese_menu",
                     ELanguage.Korean   => "korean_menu",
                     _                  => throw new SwitchExpressionException(_Language)
@@ -56,9 +56,9 @@ namespace Common.Managers
                 {
                     ELanguage.English  => lilitaRegular,
                     ELanguage.Russian  => multiroundPro,
-                    ELanguage.German   => multiroundPro,
-                    ELanguage.Spanish  => multiroundPro,
-                    ELanguage.Portugal => multiroundPro,
+                    ELanguage.German   => lilitaRegularExt120,
+                    ELanguage.Spanish  => lilitaRegularExt120,
+                    ELanguage.Portugal => lilitaRegularExt120,
                     ELanguage.Japanese => "japanese_menu",
                     ELanguage.Korean   => "korean_menu",
                     _                  => throw new SwitchExpressionException(_Language)
@@ -67,9 +67,9 @@ namespace Common.Managers
                 {
                     ELanguage.English  => lilitaRegular,
                     ELanguage.Russian  => multiroundPro,
-                    ELanguage.German   => multiroundPro,
-                    ELanguage.Spanish  => multiroundPro,
-                    ELanguage.Portugal => multiroundPro,
+                    ELanguage.German   => lilitaRegularExt120,
+                    ELanguage.Spanish  => lilitaRegularExt120,
+                    ELanguage.Portugal => lilitaRegularExt120,
                     ELanguage.Japanese => "japanese_menu",
                     ELanguage.Korean   => "korean_menu",
                     _                  => throw new SwitchExpressionException(_Language)

@@ -16,7 +16,7 @@ MonoBehaviour:
     array:
     - main: {r: 0, g: 0.19457549, b: 0.2830189, a: 1}
       bacground1: {r: 0.2761659, g: 0.5471698, b: 0.41668642, a: 1}
-      bacground2: {r: 0.764151, g: 0.69065326, b: 0.24150053, a: 1}
+      bacground2: {r: 1, g: 0.7568628, b: 0.18823531, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -24,7 +24,7 @@ MonoBehaviour:
       characterBorderFillType: 0
       uiBackgroundFillType: 0
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.3
         color: {r: 1, g: 0, b: 0.5571456, a: 1}
         amount: 10
@@ -63,57 +63,6 @@ MonoBehaviour:
         additionalBackgroundName: additional_background_texture_1
         arguments:
         - daily_challenge
-    - main: {r: 0.07058824, g: 0.09610473, b: 0.16862746, a: 1}
-      bacground1: {r: 0.43529415, g: 0.7686275, b: 0.8000001, a: 1}
-      bacground2: {r: 0.18823531, g: 0.5568628, b: 0.6039216, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-      uiBackgroundFillType: 1
-      bloom:
-        enableBloom: 0
-        diffusion: 0.6
-        color: {r: 1, g: 0, b: 0.01845169, a: 1}
-        amount: 500
-        threshold: 10
-        softness: 1
-      additionalInfo:
-        dark: 1
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: fibrous_rings
-        additionalBackgroundName: additional_background_texture_1
-        arguments:
-        - puzzle_default
-        - puzzle_hint
-        - disable_for_main
-    - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
-      bacground1: {r: 0.6603774, g: 0.5875572, b: 0.4765931, a: 1}
-      bacground2: {r: 0.49056602, g: 0.31238875, b: 0.3717811, a: 1}
-      inUse: 1
-      pathItemFillType: 0
-      pathBackgroundFillType: 1
-      pathFillFillType: 2
-      characterBorderFillType: 0
-      uiBackgroundFillType: 0
-      bloom:
-        enableBloom: 1
-        diffusion: 0.3
-        color: {r: 1, g: 0, b: 0.5568628, a: 1}
-        amount: 10
-        threshold: 1.4
-        softness: 0.9
-      additionalInfo:
-        dark: 0
-        neonStreamColorCoefficient1: 0.1
-        swirlForPlanetColorCoefficient1: 1
-        wormHoleColorCoefficient1: 4
-        backgroundName: fibrous_rings
-        additionalBackgroundName: additional_background_texture_1
-        arguments: []
     - main: {r: 0.060039964, g: 0, b: 0.2924528, a: 1}
       bacground1: {r: 0.31670195, g: 0.18405126, b: 0.8301887, a: 1}
       bacground2: {r: 0.9686275, g: 0.6666667, b: 0.10980393, a: 1}
@@ -139,10 +88,34 @@ MonoBehaviour:
         additionalBackgroundName: additional_background_texture_1
         arguments:
         - disable_for_main
+    - main: {r: 0.23529412, g: 0.09803922, b: 0.2175854, a: 1}
+      bacground1: {r: 1, g: 0.61960787, b: 0.5254902, a: 1}
+      bacground2: {r: 0.4901961, g: 0.24705884, b: 0.32941177, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 0
+      bloom:
+        enableBloom: 0
+        diffusion: 0.3
+        color: {r: 1, g: 0, b: 0.5568628, a: 1}
+        amount: 10
+        threshold: 1.4
+        softness: 0.9
+      additionalInfo:
+        dark: 0
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: fibrous_rings
+        additionalBackgroundName: additional_background_texture_1
+        arguments: []
     - main: {r: 0.13612497, g: 0.14627092, b: 0.1792453, a: 1}
       bacground1: {r: 0, g: 0.7169812, b: 0.37556168, a: 1}
       bacground2: {r: 0.8207547, g: 0.36282343, b: 0.18195976, a: 1}
-      inUse: 1
+      inUse: 0
       pathItemFillType: 0
       pathBackgroundFillType: 1
       pathFillFillType: 2
@@ -199,7 +172,7 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.6
         color: {r: 0, g: 0.5568628, b: 1, a: 1}
         amount: 300
@@ -217,7 +190,7 @@ MonoBehaviour:
         - bonus
     - main: {r: 1, g: 0.07954545, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.3584906, g: 0.11131402, b: 0.093004644, a: 1}
+      bacground2: {r: 0.5849056, g: 0.15685056, b: 0.12967247, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -225,7 +198,7 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.6
         color: {r: 1, g: 0, b: 0.7466488, a: 1}
         amount: 200
@@ -243,7 +216,7 @@ MonoBehaviour:
         - bonus
     - main: {r: 0.01669991, g: 1, b: 0, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.09411764, g: 0.35686275, b: 0.10718974, a: 1}
+      bacground2: {r: 0.13616945, g: 0.5660378, b: 0.15541732, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -251,7 +224,7 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.6
         color: {r: 1, g: 0, b: 0.7466488, a: 1}
         amount: 200
@@ -269,7 +242,7 @@ MonoBehaviour:
         - bonus
     - main: {r: 1, g: 0, b: 0.80582285, a: 1}
       bacground1: {r: 0, g: 0, b: 0, a: 1}
-      bacground2: {r: 0.35686275, g: 0.09411764, b: 0.33672568, a: 1}
+      bacground2: {r: 0.5188679, g: 0.11992703, b: 0.48909616, a: 1}
       inUse: 1
       pathItemFillType: 0
       pathBackgroundFillType: 1
@@ -277,7 +250,7 @@ MonoBehaviour:
       characterBorderFillType: 1
       uiBackgroundFillType: 1
       bloom:
-        enableBloom: 1
+        enableBloom: 0
         diffusion: 0.6
         color: {r: 1, g: 0, b: 0.7466488, a: 1}
         amount: 200
@@ -369,3 +342,30 @@ MonoBehaviour:
         arguments:
         - disable_for_main
         - puzzle_hint
+    - main: {r: 0.07058824, g: 0.09610473, b: 0.16862746, a: 1}
+      bacground1: {r: 0.43529415, g: 0.7686275, b: 0.8000001, a: 1}
+      bacground2: {r: 0.18823531, g: 0.5568628, b: 0.6039216, a: 1}
+      inUse: 1
+      pathItemFillType: 0
+      pathBackgroundFillType: 1
+      pathFillFillType: 2
+      characterBorderFillType: 0
+      uiBackgroundFillType: 1
+      bloom:
+        enableBloom: 0
+        diffusion: 0.6
+        color: {r: 1, g: 0, b: 0.01845169, a: 1}
+        amount: 500
+        threshold: 10
+        softness: 1
+      additionalInfo:
+        dark: 1
+        neonStreamColorCoefficient1: 0.1
+        swirlForPlanetColorCoefficient1: 1
+        wormHoleColorCoefficient1: 4
+        backgroundName: fibrous_rings
+        additionalBackgroundName: additional_background_texture_1
+        arguments:
+        - puzzle_default
+        - puzzle_hint
+        - disable_for_main

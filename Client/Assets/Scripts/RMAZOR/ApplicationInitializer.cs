@@ -21,6 +21,7 @@ using mazing.common.Runtime.Managers.IAP;
 using mazing.common.Runtime.Network;
 using mazing.common.Runtime.Ticker;
 using mazing.common.Runtime.Utils;
+using RMAZOR.Constants;
 using RMAZOR.Controllers;
 using RMAZOR.Helpers;
 using RMAZOR.Managers;
@@ -226,7 +227,7 @@ namespace RMAZOR
         private IEnumerator InitGameManagersCoroutine()
         {
             yield return null;
-            AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic(AnalyticIds.SessionStart);
+            IncrementSessionNumber();
             InitAdsManager();
             InitRemoteConfigManager();
             InitAssetBundleManager();
@@ -235,6 +236,16 @@ namespace RMAZOR
             InitGameClient();
             InitLocalizationManager();
             InitPushNotificationsProvider();
+        }
+
+        private void IncrementSessionNumber()
+        {
+            int sessionNumber = SaveUtils.GetValue(SaveKeysMazor.Session);
+            SaveUtils.PutValue(SaveKeysMazor.Session, sessionNumber);
+            AnalyticsManager.Initialize += () => AnalyticsManager.SendAnalytic(
+                AnalyticIds.SessionStart, 
+                new Dictionary<string, object>
+                {{AnalyticIdsRmazor.SessionNumber, sessionNumber}});
         }
 
         private void InitAdsManager()

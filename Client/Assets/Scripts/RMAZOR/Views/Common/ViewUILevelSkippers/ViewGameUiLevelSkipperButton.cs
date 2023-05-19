@@ -110,7 +110,7 @@ namespace RMAZOR.Views.Common.ViewUILevelSkippers
             m_Background.SetColor(ColorProvider.GetColor(ColorIds.UI).SetA(0.5f))
                 .SetSortingOrder(SortingOrders.GameUI);
             InitButtonCore(go);
-            Text.color = Color.black;
+            Text.color = Color.white;
         }
         
         protected override IEnumerator ShowButtonCountdownCoroutine()

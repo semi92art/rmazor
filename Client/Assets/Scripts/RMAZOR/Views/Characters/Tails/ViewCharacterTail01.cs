@@ -23,7 +23,7 @@ namespace RMAZOR.Views.Characters.Tails
     {
         #region constants
 
-        private const float MaxTailLength = 4f;
+        private const float MaxTailLength = 2f;
         
         #endregion
         
@@ -223,7 +223,7 @@ namespace RMAZOR.Views.Characters.Tails
             var finishA = GetStartTailAPosition();
             yield return Cor.Lerp(
                 ViewGameTicker,
-                10f / ModelSettings.characterSpeed,
+                MaxTailLength * 2f / ModelSettings.characterSpeed,
                 _OnProgress: _P =>
                 {
                     var a = Vector2.Lerp(startA, finishA, _P);

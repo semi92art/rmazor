@@ -179,8 +179,9 @@ namespace RMAZOR.Views.UI
                             m_LevelText.text = locMan.GetTranslation("level") + " " + (Model.LevelStaging.LevelIndex + 1);
                             break;
                         case ParameterLevelTypeBonus:
-                            levelsGroupIdx = (int) Model.LevelStaging.LevelIndex * GlobalGameSettings.extraLevelEveryNStage + 1;
-                            m_StageText.text = locMan.GetTranslation("stage") + " " + levelsGroupIdx;
+                            levelsGroupIdx = ((int) Model.LevelStaging.LevelIndex * GlobalGameSettings.extraLevelEveryNStage)
+                                             + GlobalGameSettings.extraLevelFirstStage;
+                            m_StageText.text = locMan.GetTranslation("stage") + " " + (levelsGroupIdx + 1);
                             m_LevelText.text = locMan.GetTranslation("extra_level");
                             break;
                         default: throw new SwitchCaseNotImplementedException(nextLevelType);

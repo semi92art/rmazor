@@ -7,6 +7,7 @@ namespace Common
 {
     public static class SaveKeysMazor
     {
+        private static SaveKey<int>          _session;
         private static SaveKey<bool?>        _disableAds;
         private static SaveKey<bool>         _notFirstLaunch;
         private static SaveKey<string>       _login;
@@ -22,6 +23,8 @@ namespace Common
             CacheFromDisc();
         }
         
+        public static SaveKey<int> Session =>
+            _session ??= new SaveKey<int>(nameof(Session));
         public static SaveKey<bool?>  DisableAds               =>
             _disableAds ??= new SaveKey<bool?>(nameof(DisableAds));
         public static SaveKey<bool>   NotFirstLaunch           =>

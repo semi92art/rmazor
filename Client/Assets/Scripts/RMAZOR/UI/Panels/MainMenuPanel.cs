@@ -5,6 +5,7 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using Common.Entities;
+using Common.Helpers;
 using mazing.common.Runtime;
 using mazing.common.Runtime.CameraProviders;
 using mazing.common.Runtime.Entities;
@@ -65,6 +66,7 @@ namespace RMAZOR.UI.Panels
 
         #region inject
 
+        private GlobalGameSettings              GlobalGameSettings       { get; }
         private ViewSettings                    ViewSettings             { get; }
         private IViewLevelStageSwitcher         LevelStageSwitcher       { get; }
         private IDailyChallengePanel            DailyChallengePanel      { get; }
@@ -82,6 +84,7 @@ namespace RMAZOR.UI.Panels
         private IViewGameUiCreatingLevelMessage CreatingLevelMessage     { get; }
 
         private MainMenuPanel(
+            GlobalGameSettings              _GlobalGameSettings,
             ViewSettings                    _ViewSettings,
             IManagersGetter                 _Managers,
             IUITicker                       _Ticker,
@@ -111,6 +114,7 @@ namespace RMAZOR.UI.Panels
                 _TimePauser,
                 _CommandsProceeder)
         {
+            GlobalGameSettings = _GlobalGameSettings;
             ViewSettings                = _ViewSettings;
             LevelStageSwitcher          = _LevelStageSwitcher;
             DailyChallengePanel         = _DailyChallengePanel;
@@ -207,7 +211,9 @@ namespace RMAZOR.UI.Panels
             object levelIndexArg = savedGame.Arguments.GetSafe(KeyLevelIndexMainLevels, out _);
             long levelIndex = Convert.ToInt64(levelIndexArg);
             string levelType = (string) savedGame.Arguments.GetSafe(KeyCurrentLevelType, out _);
-            return levelType == ParameterLevelTypeBonus ? (int)levelIndex + 1 : RmazorUtils.GetLevelsGroupIndex(levelIndex);
+            return levelType == ParameterLevelTypeBonus
+                ? (int)levelIndex * GlobalGameSettings.extraLevelEveryNStage + GlobalGameSettings.extraLevelFirstStage + 1
+                : RmazorUtils.GetLevelsGroupIndex(levelIndex);
         }
 
         private int GetMainGameModeStagesTotalCount()

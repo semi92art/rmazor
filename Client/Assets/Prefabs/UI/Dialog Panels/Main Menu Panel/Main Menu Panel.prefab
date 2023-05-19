@@ -1933,36 +1933,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8228146440032823613, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_PixelsPerUnitMultiplier
-      value: 2.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 8228146440429016284, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8228146440429016285, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 42.0234
-      objectReference: {fileID: 0}
-    - target: {fileID: 8228146440429016285, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 45.6254
-      objectReference: {fileID: 0}
-    - target: {fileID: 8228146440429016285, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 9.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8228146440429016285, guid: fa1b77d509410a943946db76e7b4701f,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fa1b77d509410a943946db76e7b4701f, type: 3}
 --- !u!224 &2875276241956264653 stripped

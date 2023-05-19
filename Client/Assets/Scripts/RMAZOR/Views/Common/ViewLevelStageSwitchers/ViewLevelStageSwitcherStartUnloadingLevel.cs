@@ -51,7 +51,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageSwitchers
                             break;
                         case ParameterSourcePlayBonusLevelPanel:
                             long bonusLevelIndex = ViewLevelStageSwitcherUtils.GetNextLevelOfBonusTypeAfterLevelOfDefaultTypeIndex(
-                                Model.LevelStaging.LevelIndex, GlobalGameSettings.extraLevelEveryNStage);
+                                Model.LevelStaging.LevelIndex, GlobalGameSettings.extraLevelEveryNStage, GlobalGameSettings.extraLevelFirstStage);
                             _Args.SetSafe(KeyNextLevelType, ParameterLevelTypeBonus);
                             _Args.SetSafe(KeyLevelIndex, bonusLevelIndex);
                             break;

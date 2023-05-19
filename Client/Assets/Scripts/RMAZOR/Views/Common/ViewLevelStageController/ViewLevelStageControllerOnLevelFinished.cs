@@ -86,8 +86,9 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             UnlockAchievementOnLevelFinishedIfKeyExist(_Args);
             CheckForAllLevelsPassed(_Args);
             ShowLevelGroupFinishedDialogPanelIfNeed(_Args);
+            ShowPlayExtraLevelDialogPanelIfNeed(_Args);
             ProceedSounds(_Args);
-            SendAnalyticsEvent(_Args);
+            SendLevelFinishedAnalyticsEvents(_Args);
         }
         
         #endregion
@@ -96,7 +97,6 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         private void StartUnloadLevelWithDelay(LevelStageArgs _Args)
         {
-            
             string gameMode = (string) _Args.Arguments.GetSafe(KeyGameMode, out _);
             const float defaultDelay = 1.5f;
             const float shortDelay = 1f;
@@ -164,7 +164,7 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             }
         }
         
-        private void CheckForAllLevelsPassed(LevelStageArgs _Args)
+        private static void CheckForAllLevelsPassed(LevelStageArgs _Args)
         {
             if (_Args.PreviousStage == ELevelStage.Paused)
                 return;
@@ -173,51 +173,87 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
                 SaveUtils.PutValue(SaveKeysRmazor.AllLevelsPassed, true);
         }
 
+        private void ShowPlayExtraLevelDialogPanelIfNeed(LevelStageArgs _Args)
+        {
+            string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(_Args.Arguments);
+            string currentLevelType = ViewLevelStageSwitcherUtils.GetCurrentLevelType(_Args.Arguments);
+            bool mustShow = gameMode switch
+            {
+                ParameterGameModeMain when currentLevelType == ParameterLevelTypeBonus => false,
+                ParameterGameModeMain when
+                    currentLevelType == ParameterLevelTypeDefault
+                    && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
+                    && IsNextLevelBonus(_Args) => true,
+                ParameterGameModePuzzles when !_Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint) => true,
+                _ => false
+            };
+            if (!mustShow)
+                return;
+            RunShowPanelCommandWithDelayAndArguments(EInputCommand.PlayBonusLevelPanel, _Args, 0.5f);
+        }
+        
         private void ShowLevelGroupFinishedDialogPanelIfNeed(LevelStageArgs _Args)
         {
             string gameMode               = ViewLevelStageSwitcherUtils.GetGameMode(_Args.Arguments);
             string currentLevelType       = ViewLevelStageSwitcherUtils.GetCurrentLevelType(_Args.Arguments);
-            int levelGroupIndex           = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex);
-            int nextBonusLevelIndexToLoad = (levelGroupIndex - 1) / GlobalGameSettings.extraLevelEveryNStage;
-            var levelInfoArgs = new LevelInfoArgs {GameMode = ParameterGameModeMain, LevelType = ParameterLevelTypeBonus};
-            int bonusLevelsCount = LevelsLoader.GetLevelsCount(levelInfoArgs);
             bool mustShow = gameMode switch
             {
-                ParameterGameModeMain when currentLevelType == ParameterLevelTypeBonus             => true,
+                ParameterGameModeMain when currentLevelType == ParameterLevelTypeBonus => true,
                 ParameterGameModeMain when
                     currentLevelType == ParameterLevelTypeDefault
                     && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
-                    && (!GlobalGameSettings.enableExtraLevels
-                        || ((levelGroupIndex - 1) % GlobalGameSettings.extraLevelEveryNStage != 0)
-                        || nextBonusLevelIndexToLoad >= bonusLevelsCount)                          => true,
+                    && !IsNextLevelBonus((_Args)) => true,
                 ParameterGameModePuzzles when !_Args.Arguments.ContainsKey(KeyShowPuzzleLevelHint) => true,
-                _                                                                                  => false
+                _ => false
             };
             if (!mustShow)
                 return;
-            Cor.Run(Cor.Delay(0.5f, ViewGameTicker, () =>
+            RunShowPanelCommandWithDelayAndArguments(EInputCommand.FinishLevelGroupPanel, _Args, 0.5f);
+        }
+
+        private bool IsNextLevelBonus(LevelStageArgs _Args)
+        {
+            var bonusLevelInfoArgs = new LevelInfoArgs
+                {GameMode = ParameterGameModeMain, LevelType = ParameterLevelTypeBonus};
+            int bonusLevelsCount = LevelsLoader.GetLevelsCount(bonusLevelInfoArgs);
+            int levelGroupIndex           = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex);
+            int nextBonusLevelIndexToLoad = (levelGroupIndex - 1 - GlobalGameSettings.extraLevelFirstStage) 
+                                            / GlobalGameSettings.extraLevelEveryNStage;
+            return GlobalGameSettings.enableExtraLevels
+                   && ((levelGroupIndex - 1 - GlobalGameSettings.extraLevelFirstStage) %
+                       GlobalGameSettings.extraLevelEveryNStage == 0)
+                   && MathUtils.IsInRange(nextBonusLevelIndexToLoad, 0, bonusLevelsCount);
+        }
+
+        private void RunShowPanelCommandWithDelayAndArguments(
+            EInputCommand  _Command,
+            LevelStageArgs _Args,
+            float          _Delay)
+        {
+            Cor.Run(Cor.Delay(_Delay, ViewGameTicker, () =>
             {
                 CommandsProceeder.RaiseCommand(
-                    EInputCommand.FinishLevelGroupPanel,
+                    _Command,
                     _Args.Arguments, 
                     true);
             }));
         }
-        
+
         private bool MustLoadBonusLevel(LevelStageArgs _Args)
         {
             string gameMode               = ViewLevelStageSwitcherUtils.GetGameMode(_Args.Arguments);
             string currentLevelType       = ViewLevelStageSwitcherUtils.GetCurrentLevelType(_Args.Arguments);
             int levelGroupIndex           = RmazorUtils.GetLevelsGroupIndex(_Args.LevelIndex);
-            int nextBonusLevelIndexToLoad = (levelGroupIndex - 1) / GlobalGameSettings.extraLevelEveryNStage;
+            int nextBonusLevelIndexToLoad = (levelGroupIndex - 1 - GlobalGameSettings.extraLevelFirstStage) 
+                                            / GlobalGameSettings.extraLevelEveryNStage;
             var levelInfoArgs = new LevelInfoArgs {GameMode = ParameterGameModeMain, LevelType = ParameterLevelTypeBonus};
             int bonusLevelsCount = LevelsLoader.GetLevelsCount(levelInfoArgs);
             if (gameMode != ParameterGameModeMain
+                || !MathUtils.IsInRange(nextBonusLevelIndexToLoad, 0, bonusLevelsCount - 1)
                 || !GlobalGameSettings.enableExtraLevels
                 || !RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex)
                 || currentLevelType == ParameterLevelTypeBonus
-                || nextBonusLevelIndexToLoad >= bonusLevelsCount
-                || (levelGroupIndex - 1) % GlobalGameSettings.extraLevelEveryNStage != 0)
+                || (levelGroupIndex - 1 - GlobalGameSettings.extraLevelFirstStage) % GlobalGameSettings.extraLevelEveryNStage != 0)
             {
                 return false;
             }
@@ -244,23 +280,25 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
             }
         }
         
-        private void SendAnalyticsEvent(LevelStageArgs _Args)
+        private void SendLevelFinishedAnalyticsEvents(LevelStageArgs _Args)
         {
             if (_Args.PreviousStage != ELevelStage.StartedOrContinued)
                 return;
-            const string analyticId = AnalyticIds.LevelFinished;
-            string levelType = (string)Model.LevelStaging.Arguments.GetSafe(KeyCurrentLevelType, out _);
-            string gameMode  = (string) _Args.Arguments.GetSafe(KeyGameMode, out _);
-            var args = new Dictionary<string, object>
+            var args = ViewLevelStageSwitcherUtils.GetLevelParametersForAnalytic(_Args);
+            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.LevelFinished, args);
+            string gameMode = ViewLevelStageSwitcherUtils.GetGameMode(_Args.Arguments);
+            string levelFinisgedConcreteGameModeAnalyticId = gameMode switch
             {
-                {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
-                {AnalyticIdsRmazor.ParameterGameMode, GetGameModeAnalyticParameterValue(gameMode)},
-                {AnalyticIds.ParameterLevelType, GetLevelTypeAnalyticParameterValue(levelType)},
+                ParameterGameModeMain           => AnalyticIdsRmazor.LevelFinishedGameModeMain,
+                ParameterGameModePuzzles        => AnalyticIdsRmazor.LevelFinishedGameModePuzzles,
+                ParameterGameModeDailyChallenge => AnalyticIdsRmazor.LevelFinishedGameModeDailyChallenge,
+                ParameterGameModeBigLevels      => AnalyticIdsRmazor.LevelFinishedGameModeBigLevels,
+                _                               => null
             };
-            Managers.AnalyticsManager.SendAnalytic(analyticId, args);
-            Managers.AnalyticsManager.SendAnalytic(AnalyticIds.GetLevelFinishedAnalyticId(_Args.LevelIndex));
-            if (RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
-                Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.LevelStageFinished);
+            if (!string.IsNullOrEmpty(levelFinisgedConcreteGameModeAnalyticId))
+                Managers.AnalyticsManager.SendAnalytic(levelFinisgedConcreteGameModeAnalyticId);
+            if (gameMode == ParameterGameModeMain && RmazorUtils.IsLastLevelInGroup(_Args.LevelIndex))
+                Managers.AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.LevelStageFinished, args);
         }
 
         #endregion

@@ -55,5 +55,13 @@
 
         public const string ParameterCharacterId = "character_id";
         public const string ParameterColorSetId  = "color_set_id";
+
+        public const string SessionNumber = "session_number";
+
+        public const string LevelFinishedGameModeMain           = "level_finished_main";
+        public const string LevelFinishedGameModeRandom         = "level_finished_random";
+        public const string LevelFinishedGameModePuzzles        = "level_finished_puzzles";
+        public const string LevelFinishedGameModeDailyChallenge = "level_finished_daily_challenge";
+        public const string LevelFinishedGameModeBigLevels      = "level_finished_big_levels";
     }
 }

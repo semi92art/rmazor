@@ -16,7 +16,7 @@ MonoBehaviour:
   pathItemBorderThickness: 15
   blockItemsCount: 500
   pathItemsCount: 2400
-  mazeRotationSpeed: 5
+  mazeRotationSpeed: 2
   bottomScreenOffset: 5
   topScreenOffset: 5
   moveSwipeThreshold: 0.1

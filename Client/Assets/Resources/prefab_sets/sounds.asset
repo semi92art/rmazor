@@ -51,10 +51,10 @@ MonoBehaviour:
       item: {fileID: 8300000, guid: 1dca577c865adb74ea2af017eddf3daa, type: 3}
       bundle: 0
     - name: main_theme
-      item: {fileID: 8300000, guid: 091ff636bfd7e7d47909b0f9498f02e7, type: 3}
+      item: {fileID: 8300000, guid: eb81dea2c5548b04faad88311358ed48, type: 3}
       bundle: 0
     - name: main_menu_theme
-      item: {fileID: 8300000, guid: e9dc95a879040114ea1caa96f69694bd, type: 3}
+      item: {fileID: 8300000, guid: b93ba7a582ea7834f887ae82c771184d, type: 3}
       bundle: 0
     - name: maze_rotation
       item: {fileID: 8300000, guid: 475d12fd67cb38646b29adbc5e55c773, type: 3}

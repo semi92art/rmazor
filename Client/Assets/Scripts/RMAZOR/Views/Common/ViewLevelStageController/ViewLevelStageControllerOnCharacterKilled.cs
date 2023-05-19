@@ -3,6 +3,7 @@ using System.Linq;
 using Common;
 using Common.Constants;
 using mazing.common.Runtime.Constants;
+using mazing.common.Runtime.Extensions;
 using mazing.common.Runtime.Helpers;
 using mazing.common.Runtime.Managers;
 using mazing.common.Runtime.UI.DialogViewers;
@@ -12,6 +13,9 @@ using RMAZOR.Models.MazeInfos;
 using RMAZOR.UI.Panels;
 using RMAZOR.Views.Common.ViewLevelStageSwitchers;
 using RMAZOR.Views.MazeItems;
+using RMAZOR.Views.UI.Game_Logo;
+using RMAZOR.Views.Utils;
+using static RMAZOR.Models.ComInComArg;
 
 namespace RMAZOR.Views.Common.ViewLevelStageController
 {
@@ -20,34 +24,36 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
         void OnCharacterKilled(LevelStageArgs _Args, IEnumerable<IViewMazeItem> _MazeItems);
     }
     
-    public class ViewLevelStageControllerOnCharacterKilled : IViewLevelStageControllerOnCharacterKilled
+    public class ViewLevelStageControllerOnCharacterKilled : 
+        ViewLevelStageControllerOnSingleStageBase,
+        IViewLevelStageControllerOnCharacterKilled
     {
         #region inject
 
-        private IModelGame                          Model                          { get; }
-        private IMazeShaker                         MazeShaker                     { get; }
-        private IContainersGetter                   ContainersGetter               { get; }
-        private IViewLevelStageSwitcher LevelStageSwitcher { get; }
-        private IDialogPanelsSet                    DialogPanelsSet                { get; }
-        private IDialogViewersController            DialogViewersController        { get; }
-        private IAnalyticsManager                   AnalyticsManager               { get; }
+        private IMazeShaker              MazeShaker              { get; }
+        private IContainersGetter        ContainersGetter        { get; }
+        private IViewLevelStageSwitcher  LevelStageSwitcher      { get; }
+        private IDialogPanelsSet         DialogPanelsSet         { get; }
+        private IDialogViewersController DialogViewersController { get; }
+        private IAnalyticsManager        AnalyticsManager        { get; }
 
         public ViewLevelStageControllerOnCharacterKilled(
-            IModelGame                          _Model,
-            IMazeShaker                         _MazeShaker,
-            IContainersGetter                   _ContainersGetter,
-            IViewLevelStageSwitcher _LevelStageSwitcher,
-            IDialogPanelsSet                    _DialogPanelsSet,
-            IDialogViewersController            _DialogViewersController,
-            IAnalyticsManager                   _AnalyticsManager)
+            IModelGame               _Model,
+            IViewUIGameLogo          _GameLogo,
+            IMazeShaker              _MazeShaker,
+            IContainersGetter        _ContainersGetter,
+            IViewLevelStageSwitcher  _LevelStageSwitcher,
+            IDialogPanelsSet         _DialogPanelsSet,
+            IDialogViewersController _DialogViewersController,
+            IAnalyticsManager        _AnalyticsManager) 
+            : base(_Model, _GameLogo)
         {
-            Model                          = _Model;
-            MazeShaker                     = _MazeShaker;
-            ContainersGetter               = _ContainersGetter;
-            LevelStageSwitcher = _LevelStageSwitcher;
-            DialogPanelsSet                = _DialogPanelsSet;
-            DialogViewersController        = _DialogViewersController;
-            AnalyticsManager               = _AnalyticsManager;
+            MazeShaker              = _MazeShaker;
+            ContainersGetter        = _ContainersGetter;
+            LevelStageSwitcher      = _LevelStageSwitcher;
+            DialogPanelsSet         = _DialogPanelsSet;
+            DialogViewersController = _DialogViewersController;
+            AnalyticsManager        = _AnalyticsManager;
         }
 
         #endregion
@@ -88,21 +94,14 @@ namespace RMAZOR.Views.Common.ViewLevelStageController
 
         private void InvokeStartUnloadingLevel(string _Source)
         {
-            var args = new Dictionary<string, object> {{ComInComArg.KeySource, _Source}};
+            var args = new Dictionary<string, object> {{KeySource, _Source}};
             LevelStageSwitcher.SwitchLevelStage(EInputCommand.StartUnloadingLevel, args);
         }
         
         private void SendLevelAnalyticEvent(LevelStageArgs _Args)
         {
-            const string analyticId = AnalyticIdsRmazor.CharacterDied;
-
-            if (string.IsNullOrEmpty(analyticId))
-                return;
-            AnalyticsManager.SendAnalytic(analyticId, 
-                new Dictionary<string, object>
-                {
-                    {AnalyticIds.ParameterLevelIndex, _Args.LevelIndex},
-                });
+            var args = ViewLevelStageSwitcherUtils.GetLevelParametersForAnalytic(_Args);
+            AnalyticsManager.SendAnalytic(AnalyticIdsRmazor.CharacterDied, args);
         }
         
         #endregion

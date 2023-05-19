@@ -17,6 +17,7 @@ namespace Common.Helpers
         public float     betweenLevelAdShowIntervalInSeconds;
         public bool      enableExtraLevels;
         public int       extraLevelEveryNStage;
+        public int       extraLevelFirstStage;
         public bool      showOnlyRewardedAds;
         public string    urlGameServer;
         public string    urlBundles;

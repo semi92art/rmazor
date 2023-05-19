@@ -15,7 +15,7 @@ namespace RMAZOR.Views.UI.Game_UI_Top_Buttons
         #region nonpbulic members
 
         protected override string PrefabName => "settings_button";
-        protected override bool   CanShow    => true;
+        protected override bool   CanShow    => false;
 
         #endregion
         

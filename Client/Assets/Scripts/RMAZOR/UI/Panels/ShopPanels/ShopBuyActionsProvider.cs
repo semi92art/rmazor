@@ -142,9 +142,6 @@ namespace RMAZOR.UI.Panels.ShopPanels
                 Dbg.LogError("Analytic Id was not found by Purchase Key");
                 return;
             }
-            AnalyticsManager.SendAnalytic(
-                AnalyticIds.Purchase,
-                new Dictionary<string, object> { {AnalyticIds.ParameterPurchaseProductId, productId}});
         }
 
         #endregion
